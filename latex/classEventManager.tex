@@ -1,0 +1,129 @@
+\hypertarget{classEventManager}{\section{Event\-Manager Class Reference}
+\label{classEventManager}\index{Event\-Manager@{Event\-Manager}}
+}
+
+
+Implements the \hyperlink{interfaceEventManagerInterface}{Event\-Manager\-Interface}.  
+
+
+Inheritance diagram for Event\-Manager\-:\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[height=3.000000cm]{classEventManager}
+\end{center}
+\end{figure}
+\subsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\hyperlink{classEventManager_a5bd51c722bd90ea0e9dcb09cd9497155}{\-\_\-\-\_\-construct} ()
+\item 
+\hyperlink{classEventManager_ab75d670f0e0d69123495a08872126c13}{set\-Output} (\hyperlink{interfaceOutputManagerInterface}{Output\-Manager\-Interface} \$\hyperlink{classEventManager_ada57b61fe89a5325985c39a374dfc26d}{out})
+\begin{DoxyCompactList}\small\item\em Sets the output manager. \end{DoxyCompactList}\item 
+\hyperlink{classEventManager_ada57b61fe89a5325985c39a374dfc26d}{out} ()
+\begin{DoxyCompactList}\small\item\em Retrieves the output manager. \end{DoxyCompactList}\item 
+\hyperlink{classEventManager_a173cecd321289f65c8fd79d8d1240f69}{register\-Listener} (\$types, \hyperlink{interfaceEventListener}{Event\-Listener} \$listener)
+\begin{DoxyCompactList}\small\item\em Registers an object as listening for our system events. \end{DoxyCompactList}\item 
+\hyperlink{classEventManager_a1dd88102c578eb6a5e1f1ee927163f8e}{fire\-Event} (\$type, \&\$context=N\-U\-L\-L)
+\begin{DoxyCompactList}\small\item\em Fires an event to all the listeners for the provided type. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\subsection*{Private Attributes}
+\begin{DoxyCompactItemize}
+\item 
+\hyperlink{classEventManager_a7fae8c3403e187a9ca9fe8b87d2f48dd}{\$registry} = array()
+\item 
+\hyperlink{classEventManager_a1d4c701b4ee6cb87281754d546faa74c}{\$out}
+\end{DoxyCompactItemize}
+
+
+\subsection{Constructor \& Destructor Documentation}
+\hypertarget{classEventManager_a5bd51c722bd90ea0e9dcb09cd9497155}{\index{Event\-Manager@{Event\-Manager}!\-\_\-\-\_\-construct@{\-\_\-\-\_\-construct}}
+\index{\-\_\-\-\_\-construct@{\-\_\-\-\_\-construct}!EventManager@{Event\-Manager}}
+\subsubsection[{\-\_\-\-\_\-construct}]{\setlength{\rightskip}{0pt plus 5cm}Event\-Manager\-::\-\_\-\-\_\-construct (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)}}\label{classEventManager_a5bd51c722bd90ea0e9dcb09cd9497155}
+
+
+\subsection{Member Function Documentation}
+\hypertarget{classEventManager_a1dd88102c578eb6a5e1f1ee927163f8e}{\index{Event\-Manager@{Event\-Manager}!fire\-Event@{fire\-Event}}
+\index{fire\-Event@{fire\-Event}!EventManager@{Event\-Manager}}
+\subsubsection[{fire\-Event}]{\setlength{\rightskip}{0pt plus 5cm}Event\-Manager\-::fire\-Event (
+\begin{DoxyParamCaption}
+\item[{}]{\$type, }
+\item[{\&}]{\$context = {\ttfamily NULL}}
+\end{DoxyParamCaption}
+)}}\label{classEventManager_a1dd88102c578eb6a5e1f1ee927163f8e}
+
+\begin{DoxyParams}[1]{Parameters}
+string & {\em \$type} & The event type to fire. \\
+\hline
+object & {\em \$context} & A context object to pass by reference to each listener's capture\-Event() method. \\
+\hline
+\end{DoxyParams}
+
+
+Implements \hyperlink{interfaceEventManagerInterface_a56a99eb63ca41d0380bbb633ea38013c}{Event\-Manager\-Interface}.
+
+\hypertarget{classEventManager_ada57b61fe89a5325985c39a374dfc26d}{\index{Event\-Manager@{Event\-Manager}!out@{out}}
+\index{out@{out}!EventManager@{Event\-Manager}}
+\subsubsection[{out}]{\setlength{\rightskip}{0pt plus 5cm}Event\-Manager\-::out (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)}}\label{classEventManager_ada57b61fe89a5325985c39a374dfc26d}
+\begin{DoxyReturn}{Returns}
+\hyperlink{interfaceOutputManagerInterface}{Output\-Manager\-Interface} 
+\end{DoxyReturn}
+
+
+Implements \hyperlink{interfaceOutputDependency_aaae940f994ba7252d2ae5163b5fa97eb}{Output\-Dependency}.
+
+\hypertarget{classEventManager_a173cecd321289f65c8fd79d8d1240f69}{\index{Event\-Manager@{Event\-Manager}!register\-Listener@{register\-Listener}}
+\index{register\-Listener@{register\-Listener}!EventManager@{Event\-Manager}}
+\subsubsection[{register\-Listener}]{\setlength{\rightskip}{0pt plus 5cm}Event\-Manager\-::register\-Listener (
+\begin{DoxyParamCaption}
+\item[{}]{\$types, }
+\item[{{\bf Event\-Listener}}]{\$listener}
+\end{DoxyParamCaption}
+)}}\label{classEventManager_a173cecd321289f65c8fd79d8d1240f69}
+
+\begin{DoxyParams}[1]{Parameters}
+array & {\em \$types} & An array of event types that the \$listener wants to respond to. \\
+\hline
+\hyperlink{interfaceEventListener}{Event\-Listener} & {\em \$listener} & An event listener object. \\
+\hline
+\end{DoxyParams}
+
+
+Implements \hyperlink{interfaceEventManagerInterface_a660aec7d823ae3daa091b6d76568fa90}{Event\-Manager\-Interface}.
+
+\hypertarget{classEventManager_ab75d670f0e0d69123495a08872126c13}{\index{Event\-Manager@{Event\-Manager}!set\-Output@{set\-Output}}
+\index{set\-Output@{set\-Output}!EventManager@{Event\-Manager}}
+\subsubsection[{set\-Output}]{\setlength{\rightskip}{0pt plus 5cm}Event\-Manager\-::set\-Output (
+\begin{DoxyParamCaption}
+\item[{{\bf Output\-Manager\-Interface}}]{\$out}
+\end{DoxyParamCaption}
+)}}\label{classEventManager_ab75d670f0e0d69123495a08872126c13}
+
+\begin{DoxyParams}[1]{Parameters}
+\hyperlink{interfaceOutputManagerInterface}{Output\-Manager\-Interface} & {\em \$out} & \\
+\hline
+\end{DoxyParams}
+
+
+Implements \hyperlink{interfaceOutputDependency_af915894ca0a2985f759834517861ce9d}{Output\-Dependency}.
+
+
+
+\subsection{Member Data Documentation}
+\hypertarget{classEventManager_a1d4c701b4ee6cb87281754d546faa74c}{\index{Event\-Manager@{Event\-Manager}!\$out@{\$out}}
+\index{\$out@{\$out}!EventManager@{Event\-Manager}}
+\subsubsection[{\$out}]{\setlength{\rightskip}{0pt plus 5cm}Event\-Manager\-::\$out\hspace{0.3cm}{\ttfamily [private]}}}\label{classEventManager_a1d4c701b4ee6cb87281754d546faa74c}
+\hypertarget{classEventManager_a7fae8c3403e187a9ca9fe8b87d2f48dd}{\index{Event\-Manager@{Event\-Manager}!\$registry@{\$registry}}
+\index{\$registry@{\$registry}!EventManager@{Event\-Manager}}
+\subsubsection[{\$registry}]{\setlength{\rightskip}{0pt plus 5cm}Event\-Manager\-::\$registry = array()\hspace{0.3cm}{\ttfamily [private]}}}\label{classEventManager_a7fae8c3403e187a9ca9fe8b87d2f48dd}
+
+
+The documentation for this class was generated from the following file\-:\begin{DoxyCompactItemize}
+\item 
+\hyperlink{EventManager_8class}{Event\-Manager.\-class}\end{DoxyCompactItemize}

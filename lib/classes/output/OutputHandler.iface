@@ -1,0 +1,11 @@
+<?php
+/**
+ * @file Defines the OutputHandler interface.
+ */
+
+/**
+ * Used to tag handlers for output management.
+ */
+interface OutputHandler {
+  
+}

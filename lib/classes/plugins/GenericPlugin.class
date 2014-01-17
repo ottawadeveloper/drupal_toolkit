@@ -1,0 +1,194 @@
+<?php
+/**
+ * @file Defines the GenericPlugin class.
+ */
+
+/**
+ * Provides a generic plugin that can be easily extended as needed.
+ */
+abstract class GenericPlugin implements PluginInterface {
+  
+  /**
+   * Dependency injection variable for ArgsInterface.
+   * 
+   * @var ArgsInterface
+   */
+  private $args;
+  
+  /**
+   * Dependency injection variable for ConfigurationManagerInterface
+   * 
+   * @var ConfigurationManagerInterface
+   */
+  private $config;
+  
+  /**
+   * Dependency injection variable for EventManagerInterface
+   * 
+   * @var EventManagerInterface 
+   */
+  private $events;
+  
+  /**
+   * Dependency injection variable for OutputManagerInterface
+   * 
+   * @var OutputManagerInterface
+   */
+  private $out;
+  
+  /**
+   * Dependency injection variable for RouterInterface
+   * 
+   * @var RouterInterface
+   */
+  private $router;
+  
+  /**
+   * Dependency injection variable for StringManagerInterface
+   * 
+   * @var StringManagerInterface
+   */
+  private $sm;
+  
+  public function setArgs(ArgsInterface $a) {
+    $this->args = $a;
+  }
+  
+  public function setConfiguration(ConfigurationManagerInterface $c) {
+    $this->config = $c;
+  }
+  
+  public function setEventManager(EventManagerInterface $m) {
+    $this->events = $m;
+  }
+  
+  public function setOutput(OutputManagerInterface $o) {
+    $this->out = $o;
+  }
+  
+  public function setRouter(RouterInterface $r) {
+    $this->router = $r;
+  }
+  
+  public function setStringManager(StringManagerInterface $sm) {
+    $this->sm = $sm;
+  }
+  
+  public function strings() { return $this->sm; }
+  
+  public function args() { return $this->args; }
+  
+  public function config() { return $this->config; }
+  
+  public function events() { return $this->events; }
+  
+  public function out() { return $this->out; }
+  
+  public function router() { return $this->router; }
+
+  public function requiredPlugins() { return array(); }
+  
+  public function translate() {
+    
+  }
+  
+  public function checkExtraRequirements() {
+    return TRUE;
+  }
+  
+  /**
+   * Facade method to show an error to the user.
+   * 
+   * @param string $message
+   *   The error message.
+   * @param int $level
+   *   One of the @ref log_levels "log level constants".
+   */
+  protected function error($message, $level = CLOG_ERROR) {
+    $this->out()->log($message, $level);
+  }
+  
+  /**
+   * Facade method to show a warning to the user.
+   * 
+   * @param string $message
+   *   The warning message.
+   */
+  protected function warn($message) {
+    $this->out()->log($message, CLOG_WARNING);
+  }
+  
+  /**
+   * Shows a working message to the user.
+   * 
+   * @param string $message
+   *   The message.
+   */
+  protected function showWork($message) {
+    $this->out()->message($message, MESSAGE_WORKING);
+  }
+  
+  /**
+   * Shows a success message to the user.
+   * 
+   * @param string $message
+   *   The message.
+   */
+  protected function showSuccess($message) {
+    $this->out()->message($message, MESSAGE_WORKING);
+  }
+  
+  /**
+   * Shows a failure message to the user.
+   * 
+   * @param string $message
+   *   The message.
+   */
+  protected function showFailure($message) {
+    $this->out()->message($message, MESSAGE_FAILURE);
+  }
+  
+  /**
+   * Retrieves a set of configuration for the plugin.
+   * 
+   * This provides automatic error messages for some of the keys if they are
+   * not defined and should be used when you need to load lots of required
+   * keys.
+   * 
+   * @param array $keys
+   *   An array of keys to fetch from the configuration. The value is the name
+   *   of the configuration setting, the key is the name in the array it will
+   *   be returned under. If one of these keys is empty, the function returns
+   *   FALSE. Using a non-associative array or integer keys will result in the
+   *   configuration setting key being used as the array key.
+   * @param array $optional
+   *   Optional keys to append to the array. Follows same rules as $keys but
+   *   without the return value of FALSE if a key is not set.
+   * @return array|FALSE
+   *   The array of config keys or FALSE if a required key was missing.
+   */
+  protected function getConfig(array $keys, array $optional = NULL) {
+    $results = array();
+    foreach ($keys as $newKey => $key) {
+      if (is_int($newKey)) {
+        $newKey = $key;
+      }
+      $c = $this->config()->getConfig($key);
+      if (extra_empty($c)) {
+        $this->error('Plugin requires configuration setting ['.$key.']');
+        return FALSE;
+      }
+      $results[$newKey] = $c;
+    }
+    if (!empty($optional)) {
+      foreach ($optional as $newKey => $key) {
+        if (is_int($newKey)) {
+          $newKey = $key;
+        }
+        $results[$newKey] = $this->config()->getConfig($key);
+      }
+    }
+    return $results;
+  }
+  
+}

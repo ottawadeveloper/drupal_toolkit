@@ -1,0 +1,72 @@
+<?php
+/**
+ * @file Defines the DrupalSitePlugin class.
+ * 
+ * @defgroup local_site_options "Local Site Options"
+ * List of options for CONFIG_ALLOW_LOCAL_SITES
+ * @see @ref config "Configuration options"
+ */
+
+/**
+ * Config setting for the default build directory for non-local sites.
+ * 
+ * @ingroup config
+ */
+define('CONFIG_BUILD_DIRECTORY', 'build-directory');
+
+/**
+ * Config setting for whether or not local sites are allowed.
+ * 
+ * @see @ref local_site_options "Local site options
+ * @ingroup config
+ */
+define('CONFIG_ALLOW_LOCAL_SITES', 'local-sites');
+
+/**
+ * Config option that allows local sites.
+ * 
+ * @ingroup local_site_options
+ */
+define('LOCAL_SITES_ALLOW', 'allow');
+
+/**
+ * Config option that prevents local sites from being created.
+ * 
+ * @ingroup local_site_options
+ */
+define('LOCAL_SITES_NEVER', 'never');
+
+/**
+ * Config option that forces local sites to always be created.
+ * 
+ * @ingroup local_site_options
+ */
+define('LOCAL_SITES_ALWAYS', 'force');
+
+/**
+ * Argument for making a site local.
+ * 
+ * @ingroup args
+ */
+define('ARG_IS_LOCAL', 'local');
+
+/**
+ * Basic plugin that provides some useful classes and configuration settings
+ * for working with Drupal sites. Most plugins that rely on the DrupalSite 
+ * object will need to require this one.
+ * 
+ * @ingroup plugins
+ */
+class DrupalSitePlugin extends GenericPlugin {
+  
+  public function initialize() {
+    $root = dirname(__FILE__);
+    require assemble_path($root, 'DrupalSite.class');
+    require assemble_path($root, 'GenericSiteCommand.class');
+    $this->config()->extendDefaultConfiguration(array(
+      CONFIG_ALLOW_LOCAL_SITES => LOCAL_SITES_ALLOW,
+      CONFIG_BUILD_DIRECTORY => '',
+    ));
+  }
+  
+}

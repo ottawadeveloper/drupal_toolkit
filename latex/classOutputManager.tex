@@ -1,0 +1,209 @@
+\hypertarget{classOutputManager}{\section{Output\-Manager Class Reference}
+\label{classOutputManager}\index{Output\-Manager@{Output\-Manager}}
+}
+
+
+Implementation of \hyperlink{interfaceOutputManagerInterface}{Output\-Manager\-Interface}.  
+
+
+Inheritance diagram for Output\-Manager\-:\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[height=2.000000cm]{classOutputManager}
+\end{center}
+\end{figure}
+\subsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\hyperlink{classOutputManager_a132ba83d52ad9c215db71e10e230ed85}{\-\_\-\-\_\-construct} ()
+\item 
+\hyperlink{classOutputManager_a7e001734d74245f64a31ce2b0061b627}{register\-Listener} (\hyperlink{interfaceOutputHandler}{Output\-Handler} \$handler)
+\begin{DoxyCompactList}\small\item\em Registers an output listener. \end{DoxyCompactList}\item 
+\hyperlink{classOutputManager_a3405bdd3e4710b3f396f18df0271fd06}{write} (\$line)
+\begin{DoxyCompactList}\small\item\em Writes data to the outputs. \end{DoxyCompactList}\item 
+\hyperlink{classOutputManager_a06926e4738628f1fa9c715695b5972e1}{write\-Line} (\$line)
+\begin{DoxyCompactList}\small\item\em As \hyperlink{classOutputManager_a3405bdd3e4710b3f396f18df0271fd06}{write()} but with a line break appended automatically. \end{DoxyCompactList}\item 
+\hyperlink{classOutputManager_afa5ea784d0f13cb12c2683e469c29861}{message} (\$message, \$type=\hyperlink{Messenger_8iface_a42a959808a10ab30584347844a7d1657}{M\-E\-S\-S\-A\-G\-E\-\_\-\-W\-O\-R\-K\-I\-N\-G})
+\begin{DoxyCompactList}\small\item\em Sends a message to the user. \end{DoxyCompactList}\item 
+\hyperlink{classOutputManager_a3fe77819e4b74f2e3d88b657540ad27b}{log} (\$log, \$level=\hyperlink{group__log__levels_ga8fe5fb4d67cefbcc5556321a2a1ffaec}{C\-L\-O\-G\-\_\-\-N\-O\-T\-I\-C\-E})
+\begin{DoxyCompactList}\small\item\em Logs an error condition. \end{DoxyCompactList}\item 
+\hyperlink{classOutputManager_ad9afb08b0b31862b33c426e58f4f063e}{debug} (\$val)
+\begin{DoxyCompactList}\small\item\em Shortcut function for \hyperlink{classOutputManager_a3fe77819e4b74f2e3d88b657540ad27b}{log()} with \$level = C\-L\-O\-G\-\_\-\-D\-E\-B\-U\-G. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\subsection*{Static Public Attributes}
+\begin{DoxyCompactItemize}
+\item 
+static \hyperlink{classOutputManager_aeeb86fe276633c99f40c5e660461de09}{\$message\-Type\-Names}
+\item 
+static \hyperlink{classOutputManager_aa2f5c211c92b858d2255068f9e9e29cf}{\$log\-Level\-Names}
+\end{DoxyCompactItemize}
+\subsection*{Private Attributes}
+\begin{DoxyCompactItemize}
+\item 
+\hyperlink{classOutputManager_af94e88be35e1f308bb792bb0d229b0ac}{\$handlers} = array()
+\end{DoxyCompactItemize}
+
+
+\subsection{Constructor \& Destructor Documentation}
+\hypertarget{classOutputManager_a132ba83d52ad9c215db71e10e230ed85}{\index{Output\-Manager@{Output\-Manager}!\-\_\-\-\_\-construct@{\-\_\-\-\_\-construct}}
+\index{\-\_\-\-\_\-construct@{\-\_\-\-\_\-construct}!OutputManager@{Output\-Manager}}
+\subsubsection[{\-\_\-\-\_\-construct}]{\setlength{\rightskip}{0pt plus 5cm}Output\-Manager\-::\-\_\-\-\_\-construct (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)}}\label{classOutputManager_a132ba83d52ad9c215db71e10e230ed85}
+
+
+\subsection{Member Function Documentation}
+\hypertarget{classOutputManager_ad9afb08b0b31862b33c426e58f4f063e}{\index{Output\-Manager@{Output\-Manager}!debug@{debug}}
+\index{debug@{debug}!OutputManager@{Output\-Manager}}
+\subsubsection[{debug}]{\setlength{\rightskip}{0pt plus 5cm}Output\-Manager\-::debug (
+\begin{DoxyParamCaption}
+\item[{}]{\$val}
+\end{DoxyParamCaption}
+)}}\label{classOutputManager_ad9afb08b0b31862b33c426e58f4f063e}
+Used in case we need to register a debug callback.
+
+
+\begin{DoxyParams}[1]{Parameters}
+string & {\em \$val} & The message to log. \\
+\hline
+\end{DoxyParams}
+
+
+Implements \hyperlink{interfaceOutputManagerInterface_ad98706e407b683f8cbf3d96f014f9b09}{Output\-Manager\-Interface}.
+
+\hypertarget{classOutputManager_a3fe77819e4b74f2e3d88b657540ad27b}{\index{Output\-Manager@{Output\-Manager}!log@{log}}
+\index{log@{log}!OutputManager@{Output\-Manager}}
+\subsubsection[{log}]{\setlength{\rightskip}{0pt plus 5cm}Output\-Manager\-::log (
+\begin{DoxyParamCaption}
+\item[{}]{\$log, }
+\item[{}]{\$level = {\ttfamily {\bf C\-L\-O\-G\-\_\-\-N\-O\-T\-I\-C\-E}}}
+\end{DoxyParamCaption}
+)}}\label{classOutputManager_a3fe77819e4b74f2e3d88b657540ad27b}
+Should be used more for internal messages.
+
+
+\begin{DoxyParams}[1]{Parameters}
+string & {\em \$log} & The message to log. \\
+\hline
+int & {\em \$level} & The level of the error condition. See \hyperlink{group__log__levels}{log levels}. \\
+\hline
+\end{DoxyParams}
+
+
+Implements \hyperlink{interfaceOutputManagerInterface_a9976e3f986355fc263ca75cbd2418338}{Output\-Manager\-Interface}.
+
+\hypertarget{classOutputManager_afa5ea784d0f13cb12c2683e469c29861}{\index{Output\-Manager@{Output\-Manager}!message@{message}}
+\index{message@{message}!OutputManager@{Output\-Manager}}
+\subsubsection[{message}]{\setlength{\rightskip}{0pt plus 5cm}Output\-Manager\-::message (
+\begin{DoxyParamCaption}
+\item[{}]{\$message, }
+\item[{}]{\$type = {\ttfamily {\bf M\-E\-S\-S\-A\-G\-E\-\_\-\-W\-O\-R\-K\-I\-N\-G}}}
+\end{DoxyParamCaption}
+)}}\label{classOutputManager_afa5ea784d0f13cb12c2683e469c29861}
+Should be used for success/failure/working notifications.
+
+
+\begin{DoxyParams}[1]{Parameters}
+string & {\em \$message} & The message to send them. \\
+\hline
+string & {\em \$type} & One of the types from \hyperlink{group__message__types}{message types} \\
+\hline
+\end{DoxyParams}
+
+
+Implements \hyperlink{interfaceOutputManagerInterface_af42889ccb9cf2a08cc27c7287495fb5d}{Output\-Manager\-Interface}.
+
+\hypertarget{classOutputManager_a7e001734d74245f64a31ce2b0061b627}{\index{Output\-Manager@{Output\-Manager}!register\-Listener@{register\-Listener}}
+\index{register\-Listener@{register\-Listener}!OutputManager@{Output\-Manager}}
+\subsubsection[{register\-Listener}]{\setlength{\rightskip}{0pt plus 5cm}Output\-Manager\-::register\-Listener (
+\begin{DoxyParamCaption}
+\item[{{\bf Output\-Handler}}]{\$handler}
+\end{DoxyParamCaption}
+)}}\label{classOutputManager_a7e001734d74245f64a31ce2b0061b627}
+Output listeners will react to different commands depending on the interfaces they implement\-:
+\begin{DoxyItemize}
+\item \hyperlink{interfaceLogger}{Logger} interface\-: Responds to \hyperlink{classOutputManager_a3fe77819e4b74f2e3d88b657540ad27b}{log()} and \hyperlink{classOutputManager_ad9afb08b0b31862b33c426e58f4f063e}{debug()}.
+\item \hyperlink{interfaceMessenger}{Messenger} interface\-: Responds to \hyperlink{classOutputManager_afa5ea784d0f13cb12c2683e469c29861}{message()}.
+\item \hyperlink{interfaceWriter}{Writer} interface\-: Responds to \hyperlink{classOutputManager_a3405bdd3e4710b3f396f18df0271fd06}{write()} and \hyperlink{classOutputManager_a06926e4738628f1fa9c715695b5972e1}{write\-Line()}.
+\end{DoxyItemize}
+
+
+\begin{DoxyParams}[1]{Parameters}
+\hyperlink{interfaceOutputHandler}{Output\-Handler} & {\em \$handler} & \\
+\hline
+\end{DoxyParams}
+
+
+Implements \hyperlink{interfaceOutputManagerInterface_ac17d1f524e73680d73df01eed3a74163}{Output\-Manager\-Interface}.
+
+\hypertarget{classOutputManager_a3405bdd3e4710b3f396f18df0271fd06}{\index{Output\-Manager@{Output\-Manager}!write@{write}}
+\index{write@{write}!OutputManager@{Output\-Manager}}
+\subsubsection[{write}]{\setlength{\rightskip}{0pt plus 5cm}Output\-Manager\-::write (
+\begin{DoxyParamCaption}
+\item[{}]{\$line}
+\end{DoxyParamCaption}
+)}}\label{classOutputManager_a3405bdd3e4710b3f396f18df0271fd06}
+This has no formatting around it, and should be used for raw values that need to be displayed.
+
+
+\begin{DoxyParams}[1]{Parameters}
+string & {\em \$line} & The text to write. \\
+\hline
+\end{DoxyParams}
+
+
+Implements \hyperlink{interfaceOutputManagerInterface_aeef325f1edd1f975069a38ff1ea173a8}{Output\-Manager\-Interface}.
+
+\hypertarget{classOutputManager_a06926e4738628f1fa9c715695b5972e1}{\index{Output\-Manager@{Output\-Manager}!write\-Line@{write\-Line}}
+\index{write\-Line@{write\-Line}!OutputManager@{Output\-Manager}}
+\subsubsection[{write\-Line}]{\setlength{\rightskip}{0pt plus 5cm}Output\-Manager\-::write\-Line (
+\begin{DoxyParamCaption}
+\item[{}]{\$line}
+\end{DoxyParamCaption}
+)}}\label{classOutputManager_a06926e4738628f1fa9c715695b5972e1}
+
+\begin{DoxyParams}[1]{Parameters}
+string & {\em \$line} & The text to write. \\
+\hline
+\end{DoxyParams}
+
+
+Implements \hyperlink{interfaceOutputManagerInterface_a4820802ba74220d17619d509e988bc6a}{Output\-Manager\-Interface}.
+
+
+
+\subsection{Member Data Documentation}
+\hypertarget{classOutputManager_af94e88be35e1f308bb792bb0d229b0ac}{\index{Output\-Manager@{Output\-Manager}!\$handlers@{\$handlers}}
+\index{\$handlers@{\$handlers}!OutputManager@{Output\-Manager}}
+\subsubsection[{\$handlers}]{\setlength{\rightskip}{0pt plus 5cm}Output\-Manager\-::\$handlers = array()\hspace{0.3cm}{\ttfamily [private]}}}\label{classOutputManager_af94e88be35e1f308bb792bb0d229b0ac}
+\hypertarget{classOutputManager_aa2f5c211c92b858d2255068f9e9e29cf}{\index{Output\-Manager@{Output\-Manager}!\$log\-Level\-Names@{\$log\-Level\-Names}}
+\index{\$log\-Level\-Names@{\$log\-Level\-Names}!OutputManager@{Output\-Manager}}
+\subsubsection[{\$log\-Level\-Names}]{\setlength{\rightskip}{0pt plus 5cm}Output\-Manager\-::\$log\-Level\-Names\hspace{0.3cm}{\ttfamily [static]}}}\label{classOutputManager_aa2f5c211c92b858d2255068f9e9e29cf}
+{\bfseries Initial value\-:}
+\begin{DoxyCode}
+ array(
+    \hyperlink{group__log__levels_ga9e72f6a54bb75da33d3d8a8409cb9653}{CLOG\_CRITICAL} => \textcolor{stringliteral}{'Critical'},
+    \hyperlink{group__log__levels_gacd8b449d24550e76fa0b9682e816da94}{CLOG\_ERROR} => \textcolor{stringliteral}{'Error'},
+    \hyperlink{group__log__levels_ga68940804f97ceabbba29e52e2caf22b9}{CLOG\_WARNING} => \textcolor{stringliteral}{'Warning'},
+    \hyperlink{group__log__levels_ga8fe5fb4d67cefbcc5556321a2a1ffaec}{CLOG\_NOTICE} => \textcolor{stringliteral}{'Notice'},
+    \hyperlink{group__log__levels_gac0257446453fba0e349b1334d3a6c206}{CLOG\_INFO} => \textcolor{stringliteral}{'Info'},
+    \hyperlink{group__log__levels_ga7a20d07461d8da70f7ddccd254222419}{CLOG\_DEBUG} => \textcolor{stringliteral}{'Debug'},
+  )
+\end{DoxyCode}
+\hypertarget{classOutputManager_aeeb86fe276633c99f40c5e660461de09}{\index{Output\-Manager@{Output\-Manager}!\$message\-Type\-Names@{\$message\-Type\-Names}}
+\index{\$message\-Type\-Names@{\$message\-Type\-Names}!OutputManager@{Output\-Manager}}
+\subsubsection[{\$message\-Type\-Names}]{\setlength{\rightskip}{0pt plus 5cm}Output\-Manager\-::\$message\-Type\-Names\hspace{0.3cm}{\ttfamily [static]}}}\label{classOutputManager_aeeb86fe276633c99f40c5e660461de09}
+{\bfseries Initial value\-:}
+\begin{DoxyCode}
+ array(
+    \hyperlink{Messenger_8iface_a42a959808a10ab30584347844a7d1657}{MESSAGE\_WORKING} => \textcolor{stringliteral}{'Working'},
+    \hyperlink{Messenger_8iface_a380502784d2fa316c3e079af391c3b05}{MESSAGE\_SUCCESS} => \textcolor{stringliteral}{'Success'},
+    \hyperlink{Messenger_8iface_a7ffc56b0d4599e10d5f0e9e65f992dc1}{MESSAGE\_FAILURE} => \textcolor{stringliteral}{'Failure'},
+  )
+\end{DoxyCode}
+
+
+The documentation for this class was generated from the following file\-:\begin{DoxyCompactItemize}
+\item 
+\hyperlink{OutputManager_8class}{Output\-Manager.\-class}\end{DoxyCompactItemize}

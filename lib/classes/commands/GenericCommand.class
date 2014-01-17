@@ -1,0 +1,138 @@
+<?php
+/**
+ * @file Provides the GenericCommand class.
+ */
+
+/**
+ * Provides a basic implementation for commands, supporting most of the 
+ * basic dependency injection functionality.
+ */
+abstract class GenericCommand implements RouterCommand {
+  
+  private $output = NULL;
+  
+  private $args = NULL;
+  
+  private $config = NULL;
+  
+  private $events = NULL;
+  
+  public function __construct() {
+    
+  }
+  
+  public function setEventManager(EventManagerInterface $event) {
+    $this->events = $event;
+  }
+  
+  public function setArgs(ArgsInterface $a) {
+    $this->args = $a;
+  }
+  
+  public function setOutput(OutputManagerInterface $output) {
+    $this->output = $output;
+  }
+  
+  public function setConfiguration(ConfigurationManagerInterface $c) {
+    $this->config = $c;
+  }
+  
+  public function verifyRequirements() {
+    return TRUE;
+  }
+  
+  public function verifyArguments() {
+    return TRUE;
+  }
+  
+  public function args() {
+    return $this->args;
+  }
+  
+  public function config() {
+    return $this->config;
+  }
+  
+  public function out() {
+    return $this->output;
+  }
+  
+  public function events() {
+    return $this->events;
+  }
+  
+  /**
+   * Requires that the shell command be available.
+   * 
+   * @param string $commandName
+   *   The command to require.
+   * 
+   * @return boolean
+   *   TRUE if the command is available, otherwise false.
+   */
+  protected function requireCommand($commandName) {
+    if (!shell_command_available($commandName)) {
+      $this->out()->log('This command requires the [' . $commandName . '] tool to run.', CLOG_ERROR);
+      return FALSE;
+    }
+    return TRUE;
+  }
+  
+  /**
+   * 
+   * Requires that there be at least $pos arguments.
+   * 
+   * @param int $pos
+   *   The argument position to require.
+   * 
+   * @return boolean
+   *   TRUE if there are at least $pos arguments, otherwise FALSE.
+   */
+  protected function requireArgument($pos) {
+    if (!$this->args()->hasArg($pos)) {
+      $this->out()->log('This command requires at least ' . $pos . ' extra arguments.', CLOG_ERROR);
+      return FALSE;
+    }
+    return TRUE;
+  }
+  
+  /**
+   * Requires that the given configuration key is present.
+   * 
+   * @param string $key
+   *   The configuration key to require.
+   * 
+   * @return boolean
+   *   TRUE if the config key is present, otherwise FALSE.
+   */
+  protected function requireConfig($key) {
+    $config = $this->config()->getConfig($key);
+    if (empty($config)) {
+      $this->out()->log('This command requires the [' . $key . '] configuration variable.', CLOG_ERROR);
+      return FALSE;
+    }
+    return TRUE;
+  }
+  
+  /**
+   * Requires that the PHP function is available.
+   * 
+   * @param string $func_name
+   *   The function name to check.
+   * 
+   * @return boolean
+   *   TRUE if the function is present and enabled, otherwise FALSE.
+   */
+  protected function requireFunction($func_name) {
+    if (!php_function_available($func_name)) {
+      $this->out()->log('This  command requires the [' . $func_name . '] PHP function.', CLOG_ERROR);
+      return FALSE;
+    }
+    return TRUE;
+  }
+  
+  
+  
+  
+  
+}

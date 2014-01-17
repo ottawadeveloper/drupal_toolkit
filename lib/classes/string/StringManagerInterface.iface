@@ -1,0 +1,24 @@
+<?php
+/**
+ * @file Defines the StringManagerInterface
+ */
+
+/**
+ * Manages user-facing strings.
+ */
+interface StringManagerInterface {
+  
+  /**
+   * Finds a string for the given key.
+   * 
+   * @param string $key
+   *   The key to find a string for.
+   * @param string $default
+   *   Default to fall back on if not found.
+   * 
+   * @return string
+   *   User-friendly string.
+   */
+  function getString($key, $default = NULL);
+  
+}

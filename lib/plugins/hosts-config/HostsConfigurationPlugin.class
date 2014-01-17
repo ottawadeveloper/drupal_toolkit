@@ -1,0 +1,219 @@
+<?php
+/**
+ * @file Defines the HostsConfigurationPlugin class.
+ * 
+ * @defgroup managed_host_types "Managed Host Server Types"
+ * The different types of managed hosts that can be set. 
+ */
+
+/**
+ * Config key for whether or not the local server needs its host file 
+ * managed.
+ */
+define('CONFIG_MANAGED_HOSTS_USE_LOCAL', 'managed-host-local');
+
+/**
+ * Config key for the fallback type for managed host servers.
+ * 
+ * @see @ref managed_host_types "Managed Host Types"
+ * @ingroup config
+ */
+define('CONFIG_MANAGED_HOSTS_DEFAULT_TYPE', 'managed-host-default-type');
+
+/**
+ * Config key for the target IP address for host files.
+ * 
+ * @ingroup config
+ */
+define('CONFIG_MANAGED_HOSTS_TARGET_IP_ADDRESS', 'managed-host-ip-address');
+
+/**
+ * Server type for servers that want to have their host files managed by
+ * the toolkit.
+ * 
+ * @ingroup server_types
+ */
+define('SERVER_TYPE_MANAGED_HOST', 'managed-host');
+
+/**
+ * Fired when a managed host needs to be cast into a HostFileManagerInterface
+ * object.
+ * 
+ * @ingroup events
+ */
+define('EVENT_CAST_MANAGED_HOST_SERVER', 'cast-managed-host-server');
+
+/**
+ * Fired when a list of managed hosts is needed.
+ * 
+ * @ingroup events
+ */
+define('EVENT_FIND_MANAGED_HOST_SERVERS', 'find-managed-host-servers');
+
+/**
+ * Allows changing the managed host type.
+ * 
+ * @ingroup server_settings
+ * @see @ref managed_host_types "Managed Host Types"
+ */
+define('SERVER_SETTING_ENVIRONMENT', 'managed-host-type');
+
+/**
+ * Indicates that the host is a Linux machine.
+ * 
+ * @ingroup managed_host_types
+ */
+define('MANAGED_HOST_TYPE_LINUX', 'linux');
+
+/**
+ * Plugin to manage the hosts file configuration of one or more servers.
+ */
+class HostsConfigurationPlugin extends GenericPlugin implements EventListener {
+  
+  public function initialize() {
+    $base = dirname(__FILE__);
+    require assemble_path($base, 'HostFileManagerInterface.iface');
+    require assemble_path($base, 'GenericHostFileManager.class');
+    require assemble_path($base, 'LinuxHostFileManager.class');
+    $this->config()->extendDefaultConfiguration(array(
+      CONFIG_MANAGED_HOSTS_USE_LOCAL => TRUE,
+      CONFIG_MANAGED_HOSTS_DEFAULT_TYPE => 'linux',
+      CONFIG_MANAGED_HOSTS_TARGET_IP_ADDRESS => '127.0.0.1',
+      CONFIG_SERVER_LIST => array(
+        SERVER_TYPE_MANAGED_HOST => array(),
+      ),
+    ));
+    $this->events()->registerListener(array(
+      EVENT_CAST_MANAGED_HOST_SERVER,
+      EVENT_SITE_BUILD_MORE_CONFIG,
+      EVENT_FIND_MANAGED_HOST_SERVERS,
+    ), $this);
+  }
+  
+  public function requiredPlugins() {
+    return array('ServerInteractionPlugin', 'DrupalSitePlugin');
+  }
+  
+  public function captureEvent(&$context, $eventType) {
+    switch ($eventType) {
+      case EVENT_FIND_MANAGED_HOST_SERVERS:
+        $context->servers = array_merge($context->servers, $this->findManagedHostServers());
+        break;
+      case EVENT_CAST_MANAGED_HOST_SERVER:
+        $casted = $this->castManagedHostServer($context->server, $context->type);
+        if (!empty($casted)) {
+          $context->stopPropagation = TRUE;
+          $context->managedHostServer = $casted;
+        }
+        break;
+      case EVENT_SITE_BUILD_MORE_CONFIG:
+        if ($context->success) {
+          $context->success = $this->updateHostFile($context->site);
+        }
+        break;
+    }
+  }
+  
+  /**
+   * Responsible for updating the hosts file of many servers.
+   * 
+   * @param DrupalSite $site
+   *   The site we're creating host file entries for.
+   * 
+   * @return boolean
+   *   TRUE if all the hosts files were updated successfully, otherwise FALSE.
+   */
+  private function updateHostFile(DrupalSite $site) {
+    $config = $this->getConfig(array(
+      'ip' => CONFIG_MANAGED_HOSTS_TARGET_IP_ADDRESS,
+    ));
+    if (empty($config)) {
+      return FALSE;
+    }
+    $map = array();
+    foreach ($site->getAllURLs() as $url) {
+      $pieces = parse_url($url);
+      if (!empty($pieces)) {
+        $url = $pieces['host'];
+      }
+      $map[$url] = $config['ip'];
+    }
+    $context = (object) array(
+      'servers' => array(),
+    );
+    $this->events()->fireEvent(EVENT_FIND_MANAGED_HOST_SERVERS, $context);
+    foreach ($context->servers as $server) {
+      if ($server instanceof HostFileManagerInterface) {
+        if (!$server->addHostFileEntries($map)) {
+          $this->error('Unable to write host files to server.');
+          return FALSE;
+        }
+      }
+    }
+    return TRUE;
+  }
+  
+  /**
+   * Retrieves managed host servers from the ServerInteractionPlugin.
+   * 
+   * @return array
+   *   An array of managed host servers.
+   */
+  private function findManagedHostServers() {
+    $defaultType = $this->config()->getConfig(CONFIG_MANAGED_HOSTS_DEFAULT_TYPE);
+    $context = (object) array(
+      'type' => SERVER_TYPE_MANAGED_HOST,
+      'use_local' => TRUE,
+      'servers' => array(),
+    );
+    if (extra_empty($this->config()->getConfig(CONFIG_MANAGED_HOSTS_USE_LOCAL))) {
+      $context->use_local = FALSE;
+    }
+    $this->events()->fire(EVENT_FIND_SERVERS, $context);    
+    $servers = array();
+    foreach ($context->servers as $server) {
+      if ($server instanceof PhysicalServerInterface) {
+        $type = $server->getSetting(SERVER_SETTING_ENVIRONMENT);
+        if (empty($type)) {
+          $type = $defaultType;
+        }
+        $managedHostServer = $this->getCastedServer($server, $type);
+        if (!empty($managedHostServer)) {
+          $servers[] = $managedHostServer;
+        }
+      }
+    }
+    return $servers;
+  }
+  
+  /**
+   * Retrieves the casted server by firing an event to find the type.
+   * 
+   * @param PhysicalServerInterface $server
+   *   The server we're casting.
+   * @param string $type
+   *   The type we're casting to.
+   * 
+   * @return HostFileManagerInterface
+   *   An appropriately casted object or NULL if none could be found.
+   */
+  private function getCastedServer(PhysicalServerInterface $server, $type) {
+    $context = (object) array(
+      'server' => $server,
+      'type' => $type,
+      'managedHostServer' => NULL,
+    );
+    $this->events()->fire(EVENT_CAST_MANAGED_HOST_SERVER, $context);
+    return $context->managedHostServer;
+  }
+  
+  private function castManagedHostServer(PhysicalServerInterface $server, $type) {
+    switch ($type) {
+      case MANAGED_HOST_TYPE_LINUX:
+        return new LinuxHostFileManager($server);
+        break;
+    }
+    return NULL;
+  }
+  
+}

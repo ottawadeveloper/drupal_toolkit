@@ -1,0 +1,100 @@
+<?php
+/**
+ * @file Provides the DrupalSiteBuildPlugin class.
+ */
+
+/**
+ * Fired when we're ready for additional configuration.
+ * 
+ * Context settings:
+ * - \c success: Set to TRUE initially. If your plugin fails, you should set
+ *   this to FALSE. You may avoid creating your configuration if it is already
+ *   set to FALSE.
+ * - \c site: An instance of DrupalSite.
+ * 
+ * @ingroup events
+ */
+define('EVENT_SITE_BUILD_MORE_CONFIG', 'site-build-additional-config');
+
+/**
+ * Fired when its time to build the initial site structure.
+ * 
+ * @ingroup events
+ */
+define('EVENT_SITE_BUILD_STRUCTURE', 'site-build-structure');
+
+/**
+ * Fired when its time to build a new codebase.
+ * 
+ * @ingroup events
+ */
+define('EVENT_SITE_BUILD_CODEBASE', 'site-build-build');
+
+/**
+ * Fired when its time to configure the default sites.
+ * 
+ * @ingroup events
+ */
+define('EVENT_SITE_BUILD_SITES', 'site-build-sites');
+
+/**
+ * Fired when its time to build the server structure.
+ * 
+ * @ingroup events
+ */
+define('EVENT_SITE_BUILD_SERVER_STRUCTURE', 'site-build-server-init-struct');
+
+/**
+ * Fired when its time to configure the server.
+ * 
+ * @ingroup events
+ */
+define('EVENT_SITE_BUILD_CONFIGURE_SERVER', 'site-build-server-config');
+
+/**
+ * Fired when the site is built.
+ * 
+ * @ingroup events
+ */
+define('EVENT_SITE_BUILT', 'site-built');
+
+/**
+ * Fired before the site is built.
+ * 
+ * @ingroup events
+ */
+define('EVENT_SITE_BUILD_START', 'site-build-start');
+
+/**
+ * Config setting to determine whether or not we should cleanup on error.
+ * 
+ * @ingroup config
+ */
+define('CONFIG_SITE_CLEANUP_ON_ERROR', 'site-cleanup-on-error');
+
+/**
+ * Fired at the beginning of a build to allow plugins to configure the site
+ * further.
+ * 
+ * @ingroup events
+ */
+define('EVENT_SITE_CONFIGURE', 'site-config');
+
+class DrupalSiteBuildPlugin extends GenericPlugin {
+  
+  public function initialize() {
+    $root = dirname(__FILE__);
+    require assemble_path($root, 'SiteBuildCommand.class');
+    $this->router()->addCommand('site-build', new SiteBuildCommand());
+    $this->config()->extendDefaultConfiguration(array(
+      CONFIG_SITE_URL_PREFIX => '',
+      CONFIG_SITE_URL_PATTERN => '@@BUILD_NAME.localhost',
+      CONFIG_SITE_CLEANUP_ON_ERROR => TRUE,
+    ));
+  }
+  
+  public function requiredPlugins() {
+    return array('DrupalSitePlugin');
+  }
+  
+}

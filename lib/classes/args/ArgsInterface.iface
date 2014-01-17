@@ -1,0 +1,91 @@
+<?php
+
+interface ArgsInterface {
+  
+  /**
+   * Retrieves the argument at the given position.
+   * 
+   * Arguments are keyed by their numeric position after the script name. The
+   * first argument is 0.
+   * 
+   * @param int $pos
+   *   The position to retrieve.
+   * 
+   * @return string|NULL
+   *   The argument at the given position, or NULL if there is no argument.
+   */
+  function getArg($pos);
+  
+  /**
+   * Retrieves all the parsed arguments.
+   * 
+   * @return array
+   *   An array of arguments, keyed by position.
+   */
+  function getArgs();
+  
+  /**
+   * Checks if an argument was provided at the given position.
+   * 
+   * Arguments are keyed by their numeric position after the script name. The
+   * first argument is 0.
+   * 
+   * @param int $pos
+   *   The position to check.
+   * 
+   * @return boolean
+   *   TRUE if the argument was provided, otherwise FALSE.
+   */
+  function hasArg($pos);
+  
+  /**
+   * Retrieves the value of the requested option.
+   * 
+   * Options can be defined by one or two names - a long name (--$long[=VALUE])
+   * and a short name (-$short[VALUE]). 
+   * 
+   * @param mixed $long
+   *   The long name of the option. Should be one of the following:
+   *   - A string with the name of the option.
+   *   - NULL to ignore the long option (default).
+   * @param mixed $short
+   *   The short name of the option. Should be one of the following:
+   *   - A string with the short name of the option.
+   *   - TRUE to use the first letter from $long ($long must not be NULL)
+   *   - NULL to ignore the short option (default).
+   * 
+   * @return string|NULL
+   *   The value of the option or NULL if no value could be found.
+   */
+  function getOption($long = NULL, $short = NULL);
+  
+  /**
+   * Checks if the given option is set.
+   * 
+   * Options can be defined by one or two names - a long name (--$long[=VALUE])
+   * and a short name (-$short[VALUE]). 
+   * 
+   * @param mixed $long
+   *   The long name of the option. Should be one of the following:
+   *   - A string with the name of the option.
+   *   - NULL to ignore the long option (default).
+   * @param mixed $short
+   *   The short name of the option. Should be one of the following:
+   *   - A string with the short name of the option.
+   *   - TRUE to use the first letter from $long ($long must not be NULL)
+   *   - NULL to ignore the short option (default).
+   * 
+   * @return boolean
+   *   TRUE if the option exists, otherwise FALSE.
+   */
+  function hasOption($long = NULL, $short = NULL);
+  
+  /**
+   * Retrieves all the options set.
+   * 
+   * @return array
+   *   An array of options.
+   */
+  function getOptions();
+  
+}

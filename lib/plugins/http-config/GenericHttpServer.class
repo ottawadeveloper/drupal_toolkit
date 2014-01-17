@@ -1,0 +1,93 @@
+<?php
+/**
+ * @file Defines the GenericHttpServer class.
+ */
+
+/**
+ * Generalized support for HTTP servers.
+ */
+abstract class GenericHttpServer {
+  
+  /**
+   * The physical machine that's wrapped by this object.
+   * 
+   * @var PhysicalMachineInterface
+   */
+  private $machine = NULL;
+  
+  /**
+   * The directory we write config files to.
+   * 
+   * @var string
+   */
+  private $configDirectory = NULL;
+  
+  /**
+   * Constructor.
+   * 
+   * @param PhysicalServerInterface $server
+   *   The server we're wrapping.
+   * @param string $defaultConfig
+   *   The default configuration directory.
+   */
+  public function __construct(PhysicalServerInterface $server, $defaultConfig = NULL) {
+    $this->machine = $server;
+    $this->configDirectory = $defaultConfig;
+    $fromSettings = $server->getSetting(SERVER_SETTING_HTTP_CONFIG_DIR);
+    if (!empty($fromSettings)) {
+      $this->configDirectory = $fromSettings;
+    }
+  }
+  
+  public function machine() {
+    return $this->machine;
+  }
+  
+  /**
+   * Reboots the server. This should be done as gracefully as possible for
+   * the software and environment.
+   * 
+   * @return boolean
+   *   TRUE if the machine was rebooted, otherwise FALSE.
+   */
+  protected abstract function reboot();
+  
+  /**
+   * Tests the configuration. 
+   * 
+   * @return boolean
+   *   TRUE if the configuration is valid, otherwise FALSE.
+   */
+  protected abstract function testConfig();
+  
+  /**
+   * Checks if the server is available.
+   * 
+   * @return boolean
+   *   TRUE if the server can be managed, otherwise FALSE.
+   */
+  protected abstract function available();
+    
+  public function doReboot() {
+    $checkFlag = $this->machine()->getSetting('http-skip-remote-reboot');
+    if (empty($checkFlag)) {
+      if ($this->available() && $this->testConfig()) {
+        return $this->reboot();
+      }
+    }
+    return FALSE;
+  }
+  
+  public function isAvailable() {
+    return $this->available();
+  }
+  
+  public function writeConfig($configFile, $config) {
+    $path = assemble_path($this->configDirectory, $configFile);
+    if (!$this->machine()->writefile($path, $config)) {
+      return FALSE;
+    }
+    return TRUE;
+  }
+  
+}

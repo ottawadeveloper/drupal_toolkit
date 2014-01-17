@@ -1,0 +1,69 @@
+<?php
+/**
+ * @file Defines the ServerInteractionPlugin
+ * 
+ * @defgroup server_settings "Server Settings"
+ * Settings that can be define for server definitions.
+ * 
+ * @defgroup server_types "Server Types"
+ * The different types of servers that can be defined underneath the si-servers
+ * key.
+ */
+
+define('EVENT_FIND_SERVERS', 'find-servers');
+
+define('CONFIG_SERVER_LIST', 'si-servers');
+
+class ServerInteractionPlugin extends GenericPlugin implements EventListener {
+    
+  private $servers = array();
+  
+  public function initialize() {
+    $files = array(
+      'PhysicalServerInterface.iface',
+      'GenericMachine.class',
+      'LocalMachine.class',
+      'RemoteMachine.class',
+    );
+    $root = dirname(__FILE__);
+    foreach ($files as $file) {
+      require assemble_path($root, $file);
+    }
+  }
+  
+  private function loadServersOfType($type, $noLocal = FALSE) {
+    if (empty($this->servers[$type])) {
+      $servers = array();
+      $allServers = $this->config()->getConfig('si-servers');
+      if (!empty($allServers)) {
+        if (isset($allServers[$type])) {
+          foreach ($allServers[$type] as $key => $serverConfiguration) {
+            $machine = new RemoteMachine($serverConfiguration);
+            if ($machine->initialize()) {
+              $servers[] = $machine;
+            }
+            else {
+              $this->out()->log('Unable to connect to remote server [' . $key . ']', CLOG_WARNING);
+            }
+          }
+        }
+      }
+      if ((!$noLocal) && extra_empty($this->config()->getConfig('si-disable-local-' . $type))) {
+        $servers[] = new LocalMachine();
+      }
+      $this->servers[$type] = $servers;
+    }
+    return $this->servers[$type];
+  }
+  
+  public function captureEvent(&$context, $type) {
+    switch ($type) {
+      case 'find-servers':
+        $context->servers = array_merge($context->servers, $this->loadServersOfType($context->serverType, isset($context->skipLocal) ? $context->skipLocal : TRUE));
+        break;
+    }
+  }
+  
+  
+  
+}

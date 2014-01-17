@@ -1,0 +1,69 @@
+<?php
+/**
+ * @file Defines the FileLog class.
+ */
+
+/**
+ * Responsible for logging things to a file.
+ */
+class FileLog implements Logger, Messenger {
+  
+  /**
+   * Path to the log file.
+   * 
+   * @var string
+   */
+  private $filepath = '';
+  
+  /**
+   * Constructor.
+   * 
+   * @param string $filepath
+   *   Path to the log file.
+   */
+  public function __construct($filepath) {
+    $this->filepath = $filepath;
+  }
+  
+  /**
+   * Checks to make sure the given filepath is valid for logging.
+   * 
+   * @return boolean
+   *   TRUE if the file can be logged to, otherwise FALSE.
+   */
+  public function valid() {
+    if (is_writable($this->filepath)) {
+      return TRUE;
+    }
+    if (!file_exists($this->filepath)) {
+      return is_writable(dirname($this->filepath));
+    }
+    return FALSE;
+  }
+  
+  public function message($message, $type = MESSAGE_WORKING) {
+    $this->output($message, OutputManager::$messageTypeNames[$type]);
+  }
+  
+  public function log($entry, $level = CLOG_NOTICE) {
+    $this->output($entry, OutputManager::$logLevelNames[$level]);
+  }
+  
+  /**
+   * Writes a log message to the log in a common format.
+   * 
+   * @param string $message
+   *   The message to write.
+   * @param string $type
+   *   The type of message.
+   */
+  private function output($message, $type) {
+    $line = date('Y-m-d h:i:s') . '|' . $type . '|' . $message . PHP_EOL;
+    $h = fopen($this->filepath, 'a');
+    if (is_resource($h)) {
+      fwrite($h, $line);
+      fclose($h);
+    }
+  }
+  
+}

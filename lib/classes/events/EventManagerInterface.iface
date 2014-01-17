@@ -1,0 +1,32 @@
+<?php
+/**
+ * @file Defines the EventManagerInterface
+ */
+
+/**
+ * Event managers handle the firing of events.
+ */
+interface EventManagerInterface extends OutputDependency {
+  
+  /**
+   * Registers an object as listening for our system events.
+   * 
+   * @param array $types
+   *   An array of event types that the $listener wants to respond to. 
+   * @param EventListener $listener
+   *   An event listener object.
+   */
+  function registerListener($types, EventListener $listener);
+  
+  /**
+   * Fires an event to all the listeners for the provided type.
+   * 
+   * @param string $type
+   *   The event type to fire.
+   * @param object $context
+   *   A context object to pass by reference to each listener's captureEvent()
+   *   method.
+   */
+  function fireEvent($type, &$context = NULL);
+  
+}

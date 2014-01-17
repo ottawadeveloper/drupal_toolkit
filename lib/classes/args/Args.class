@@ -1,0 +1,140 @@
+<?php
+/**
+ * @file Defines the Args class. 
+ */
+
+/**
+ * Provides easy access to command-line arguments and options.
+ * 
+ * Options can be pased in one of several fashions:
+ * 
+ * @code{.sh}
+ * -x                 # Sets the flag "x" to TRUE
+ * --x-long           # Sets the flag "x-long" to TRUE
+ * -xValue            # Sets the flag "x" to "Value"
+ * -x=Value           # Sets the flag "x" to "Value"
+ * --x-long=Value     # Sets the flag "x-long" to "Value"
+ * 
+ * Often arguments have both a long and short format. When this is the case,
+ * both long and short can be passed to the getOption() function.
+ * 
+ * The order of precedence of options is as follows:
+ * - Long format options override the short format (unless you specifically
+ *   request the short form only).
+ * - Later options override previous options (except as above).
+ * 
+ * Arguments are keyed by their position, with 0 being the first argument after
+ * the script name (eg php ./toolkit.php arg0 arg1 arg2). Arguments are anything
+ * that doesn't match an option format above (anything starting with a character
+ * other than a hyphen).
+ */
+class Args implements ArgsInterface {
+  
+  /**
+   * Parsed arguments, keyed by position.
+   * 
+   * @var array
+   */
+  private $arguments = array();
+  
+  /**
+   * Parsed options, keyed by option name.
+   * 
+   * @var array
+   */
+  private $options = array();
+  
+  /**
+   * Constructor.
+   * 
+   * @param array $argsv
+   *   An array of arguments to pass. Normally this is taken from the global.
+   */
+  public function __construct($argsv) {
+    foreach ($argsv as $arg) {
+      $this->processArgument($arg);
+    }
+  }
+  
+  public function hasArg($pos) {
+    return isset($this->arguments[$pos]);
+  }
+  
+  public function getArg($pos) {
+    if (isset($this->arguments[$pos])) {
+      return $this->arguments[$pos];
+    }
+    return NULL;
+  }
+  
+  public function getArgs() {
+    return $this->arguments;
+  }
+  
+  public function hasOption($long = NULL, $short = NULL) {
+    return !extra_empty($this->getOption($long, $short));
+  }
+  
+  public function getOption($long = NULL, $short = NULL) {
+    if ($short === TRUE && !empty($long)) {
+      $short = substr($long, 0 ,1);
+    }
+    if (!empty($long) && isset($this->options[$long])) {
+      return $this->options[$long];
+    }
+    elseif (!empty($short) && isset($this->options[$short])) {
+      return $this->options[$short];
+    }
+    return NULL;
+  }
+  
+  public function getOptions() {
+    return $this->options;
+  }
+  
+  /**
+   * Process an arg string.
+   * 
+   * @param string $arg
+   *   A string that might contain an option or an argument.
+   */
+  private function processArgument($arg) {
+    if (strlen($arg) > 2) {
+      if (substr($arg, 0, 2) == '--') {
+        $this->processOption(substr($arg, 2), FALSE);
+        return;
+      }
+      elseif (substr($arg, 0, 1) == '-') {
+        $this->processOption(substr($arg, 1), TRUE);
+        return;
+      }
+    }
+    $this->arguments[] = $arg;
+  }
+  
+  /**
+   * Processes an arg string that is an option.
+   * 
+   * Note that if $short is set, $option contains no '=' character and
+   * the string length is longer than one, every character after the first is
+   * considered to be part of the value. 
+   * 
+   * @param string $option
+   *   The text of the option string.
+   * @param boolean $short
+   *   TRUE if the option is a short pattern, otherwise FALSE. 
+   */
+  private function processOption($option, $short = TRUE) {
+    if (($split = strpos($option, '=')) !== FALSE) {
+      $this->options[substr($option, 0, $split)] = substr($option, $split + 1);
+    }
+    elseif ($short && strlen($option) > 1) {
+      $this->options[substr($option, 0, 1)] = substr($option, 1);
+    }
+    else {
+      $this->options[$option] = TRUE;
+    }
+  }
+    
+  
+}

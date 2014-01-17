@@ -1,0 +1,49 @@
+<?php
+/**
+ * @file Defines the Apache2Server class.
+ */
+
+/**
+ * Implements GenericHttpServer for apache2 servers.
+ */
+class Apache2Server extends GenericHttpServer {
+  
+  /**
+   * Constructor.
+   * 
+   * @param PhysicalServerInterface $server
+   *   The server that has Apache2 on it.
+   */
+  public function __construct(PhysicalServerInterface $server) {
+    parent::__construct($server, '/etc/apache2/sites-available');
+  }
+  
+  protected function reboot() {
+    $this->machine()->executeCommand('service apache2 graceful', array(), $n, $exit);
+    return empty($exit);
+  }
+  
+  protected function testConfig() {
+    $this->machine()->executeCommand('apachectl configtest', array(), $n, $exit);
+    return empty($exit);
+  }
+  
+  public function available() {
+    $this->machine()->executeCommand('service apache2 status', array(), $n, $exit);
+    return empty($exit);
+  }
+  
+  public function writeConfig($configFile, $config) {
+    // Override so we can call a2ensite for Apache2 installs
+    if (parent::writeConfig($configFile, $config)) {
+      $this->machine()->executeCommand('a2ensite !sitename', array(
+        '!sitename' => $configFile,
+      ), $out, $exit);
+      return empty($exit);
+    }
+    return FALSE;
+  }
+  
+  
+  
+}

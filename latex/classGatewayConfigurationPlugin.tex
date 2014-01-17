@@ -1,0 +1,393 @@
+\hypertarget{classGatewayConfigurationPlugin}{\section{Gateway\-Configuration\-Plugin Class Reference}
+\label{classGatewayConfigurationPlugin}\index{Gateway\-Configuration\-Plugin@{Gateway\-Configuration\-Plugin}}
+}
+Inheritance diagram for Gateway\-Configuration\-Plugin\-:\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[height=2.488889cm]{classGatewayConfigurationPlugin}
+\end{center}
+\end{figure}
+\subsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\hyperlink{classGatewayConfigurationPlugin_a62d629bd3624b9036f1c2368b5e78115}{initialize} ()
+\begin{DoxyCompactList}\small\item\em Initializes this plugin. \end{DoxyCompactList}\item 
+\hyperlink{classGatewayConfigurationPlugin_a7a92f5b3fbe56f6036da1aacdd08ffee}{capture\-Event} (\&\$context, \$type)
+\begin{DoxyCompactList}\small\item\em Captures an event call. \end{DoxyCompactList}\item 
+\hyperlink{classGenericPlugin_abf0b12b47909ef3c4dada146ea775526}{set\-Args} (\hyperlink{interfaceArgsInterface}{Args\-Interface} \$a)
+\begin{DoxyCompactList}\small\item\em Sets the instance of args that will be used. \end{DoxyCompactList}\item 
+\hyperlink{classGenericPlugin_a009c5398920a9672a2f13af38756fd5f}{set\-Configuration} (\hyperlink{interfaceConfigurationManagerInterface}{Configuration\-Manager\-Interface} \$c)
+\begin{DoxyCompactList}\small\item\em Sets the configuration manager interface. \end{DoxyCompactList}\item 
+\hyperlink{classGenericPlugin_afc683b68f471d89aa6a95daebcbfe28a}{set\-Event\-Manager} (\hyperlink{interfaceEventManagerInterface}{Event\-Manager\-Interface} \$m)
+\begin{DoxyCompactList}\small\item\em Sets the event manager being used. \end{DoxyCompactList}\item 
+\hyperlink{classGenericPlugin_a00fb20d417f3ad2f9839591a84348218}{set\-Output} (\hyperlink{interfaceOutputManagerInterface}{Output\-Manager\-Interface} \$o)
+\begin{DoxyCompactList}\small\item\em Sets the output manager. \end{DoxyCompactList}\item 
+\hyperlink{classGenericPlugin_ac03553d95ea0e2d5023e3f78ef85f4b9}{set\-Router} (\hyperlink{interfaceRouterInterface}{Router\-Interface} \$r)
+\begin{DoxyCompactList}\small\item\em Sets the router object. \end{DoxyCompactList}\item 
+\hyperlink{classGenericPlugin_a1ce2fea9e153e37e019ff4b72fd3b819}{args} ()
+\begin{DoxyCompactList}\small\item\em Retrieves the instance of args that will be used. \end{DoxyCompactList}\item 
+\hyperlink{classGenericPlugin_aa7c4a335f37ee83cd131be29ed469c82}{config} ()
+\begin{DoxyCompactList}\small\item\em Retrieves the configuration manager interface that was set. \end{DoxyCompactList}\item 
+\hyperlink{classGenericPlugin_ab7d46f8bdaf1540eee1b988073294298}{events} ()
+\begin{DoxyCompactList}\small\item\em Fetches the event manager being used. \end{DoxyCompactList}\item 
+\hyperlink{classGenericPlugin_a005937e2c819abbb56fdc4b10fdeb666}{out} ()
+\begin{DoxyCompactList}\small\item\em Retrieves the output manager. \end{DoxyCompactList}\item 
+\hyperlink{classGenericPlugin_adc6c23c436e9979ed2c5b07dde6f3931}{router} ()
+\begin{DoxyCompactList}\small\item\em Retrieves the router object. \end{DoxyCompactList}\item 
+\hyperlink{classGenericPlugin_a32850f8424953482ef2b07df130941cf}{required\-Plugins} ()
+\begin{DoxyCompactList}\small\item\em Get the required plugins for this plugin. \end{DoxyCompactList}\item 
+\hyperlink{classGenericPlugin_a53983a917eccd1ee4b06355f688c0960}{check\-Extra\-Requirements} ()
+\begin{DoxyCompactList}\small\item\em Checks any extra requirements for this plugin. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\subsection*{Protected Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\hyperlink{classGenericPlugin_adb26ae57ef8765d8bb18f26216c5c2d6}{error} (\$message, \$level=\hyperlink{group__log__levels_gacd8b449d24550e76fa0b9682e816da94}{C\-L\-O\-G\-\_\-\-E\-R\-R\-O\-R})
+\begin{DoxyCompactList}\small\item\em Facade method to show an error to the user. \end{DoxyCompactList}\item 
+\hyperlink{classGenericPlugin_adc5289a073a5cae7197286792c7eb5e9}{warn} (\$message)
+\begin{DoxyCompactList}\small\item\em Facade method to show a warning to the user. \end{DoxyCompactList}\item 
+\hyperlink{classGenericPlugin_a6aaf2e225dcab0c5d759373d0ede60ce}{show\-Work} (\$message)
+\begin{DoxyCompactList}\small\item\em Shows a working message to the user. \end{DoxyCompactList}\item 
+\hyperlink{classGenericPlugin_aa6fa4fa1e988c64b045fe552c0905fbb}{show\-Success} (\$message)
+\begin{DoxyCompactList}\small\item\em Shows a success message to the user. \end{DoxyCompactList}\item 
+\hyperlink{classGenericPlugin_af2e0d786211846ea2b67841adb506c5d}{show\-Failure} (\$message)
+\begin{DoxyCompactList}\small\item\em Shows a failure message to the user. \end{DoxyCompactList}\item 
+\hyperlink{classGenericPlugin_a1c51ad511694c82131181d5f4c77d34c}{get\-Config} (array \$keys, array \$optional=N\-U\-L\-L)
+\begin{DoxyCompactList}\small\item\em Retrieves a set of configuration for the plugin. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\subsection*{Private Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\hyperlink{classGatewayConfigurationPlugin_a69adb35eefe78b4989d3835fe5a7a6ac}{publish\-Gateway\-Config} (\hyperlink{classDrupalSite}{Drupal\-Site} \$site)
+\item 
+\hyperlink{classGatewayConfigurationPlugin_ae2ee943590f913211f709c048a041d78}{get\-Casted\-Server} (\hyperlink{interfacePhysicalServerInterface}{Physical\-Server\-Interface} \$server, \$type)
+\item 
+\hyperlink{classGatewayConfigurationPlugin_a78dc97e74fa5164293d91889c0ef7243}{find\-Gateway\-Servers} ()
+\end{DoxyCompactItemize}
+
+
+\subsection{Member Function Documentation}
+\hypertarget{classGenericPlugin_a1ce2fea9e153e37e019ff4b72fd3b819}{\index{Gateway\-Configuration\-Plugin@{Gateway\-Configuration\-Plugin}!args@{args}}
+\index{args@{args}!GatewayConfigurationPlugin@{Gateway\-Configuration\-Plugin}}
+\subsubsection[{args}]{\setlength{\rightskip}{0pt plus 5cm}Generic\-Plugin\-::args (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [inherited]}}}\label{classGenericPlugin_a1ce2fea9e153e37e019ff4b72fd3b819}
+\begin{DoxyReturn}{Returns}
+\hyperlink{interfaceArgsInterface}{Args\-Interface} An argument manager. 
+\end{DoxyReturn}
+
+
+Implements \hyperlink{interfaceArgsDependency_a0f7b28344ad83bbab37c6a18ec74788d}{Args\-Dependency}.
+
+\hypertarget{classGatewayConfigurationPlugin_a7a92f5b3fbe56f6036da1aacdd08ffee}{\index{Gateway\-Configuration\-Plugin@{Gateway\-Configuration\-Plugin}!capture\-Event@{capture\-Event}}
+\index{capture\-Event@{capture\-Event}!GatewayConfigurationPlugin@{Gateway\-Configuration\-Plugin}}
+\subsubsection[{capture\-Event}]{\setlength{\rightskip}{0pt plus 5cm}Gateway\-Configuration\-Plugin\-::capture\-Event (
+\begin{DoxyParamCaption}
+\item[{\&}]{\$context, }
+\item[{}]{\$event\-Type}
+\end{DoxyParamCaption}
+)}}\label{classGatewayConfigurationPlugin_a7a92f5b3fbe56f6036da1aacdd08ffee}
+
+\begin{DoxyParams}[1]{Parameters}
+std\-Class & {\em \$context} & An object with various properties that depend on the \$event\-Type. \\
+\hline
+string & {\em \$event\-Type} & The type of event being called. \\
+\hline
+\end{DoxyParams}
+
+
+Implements \hyperlink{interfaceEventListener_a32713c9d44c0d8362953d222e9cb7d0d}{Event\-Listener}.
+
+\hypertarget{classGenericPlugin_a53983a917eccd1ee4b06355f688c0960}{\index{Gateway\-Configuration\-Plugin@{Gateway\-Configuration\-Plugin}!check\-Extra\-Requirements@{check\-Extra\-Requirements}}
+\index{check\-Extra\-Requirements@{check\-Extra\-Requirements}!GatewayConfigurationPlugin@{Gateway\-Configuration\-Plugin}}
+\subsubsection[{check\-Extra\-Requirements}]{\setlength{\rightskip}{0pt plus 5cm}Generic\-Plugin\-::check\-Extra\-Requirements (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [inherited]}}}\label{classGenericPlugin_a53983a917eccd1ee4b06355f688c0960}
+\begin{DoxyReturn}{Returns}
+boolean T\-R\-U\-E if all the extra requirements are met, otherwise F\-A\-L\-S\-E. 
+\end{DoxyReturn}
+
+
+Implements \hyperlink{interfacePluginInterface_a2710904eb2de8958d13396c558c8b127}{Plugin\-Interface}.
+
+
+
+Reimplemented in \hyperlink{classPermissionsPlugin_af3486b714be648b5713b64cf9f36c377}{Permissions\-Plugin}.
+
+\hypertarget{classGenericPlugin_aa7c4a335f37ee83cd131be29ed469c82}{\index{Gateway\-Configuration\-Plugin@{Gateway\-Configuration\-Plugin}!config@{config}}
+\index{config@{config}!GatewayConfigurationPlugin@{Gateway\-Configuration\-Plugin}}
+\subsubsection[{config}]{\setlength{\rightskip}{0pt plus 5cm}Generic\-Plugin\-::config (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [inherited]}}}\label{classGenericPlugin_aa7c4a335f37ee83cd131be29ed469c82}
+\begin{DoxyReturn}{Returns}
+\hyperlink{interfaceConfigurationManagerInterface}{Configuration\-Manager\-Interface} 
+\end{DoxyReturn}
+
+
+Implements \hyperlink{interfaceConfigurationDependency_a66f2b69553fee58df04e4a439ed539f1}{Configuration\-Dependency}.
+
+\hypertarget{classGenericPlugin_adb26ae57ef8765d8bb18f26216c5c2d6}{\index{Gateway\-Configuration\-Plugin@{Gateway\-Configuration\-Plugin}!error@{error}}
+\index{error@{error}!GatewayConfigurationPlugin@{Gateway\-Configuration\-Plugin}}
+\subsubsection[{error}]{\setlength{\rightskip}{0pt plus 5cm}Generic\-Plugin\-::error (
+\begin{DoxyParamCaption}
+\item[{}]{\$message, }
+\item[{}]{\$level = {\ttfamily {\bf C\-L\-O\-G\-\_\-\-E\-R\-R\-O\-R}}}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [protected]}, {\ttfamily [inherited]}}}\label{classGenericPlugin_adb26ae57ef8765d8bb18f26216c5c2d6}
+
+\begin{DoxyParams}[1]{Parameters}
+string & {\em \$message} & The error message. \\
+\hline
+int & {\em \$level} & One of the \hyperlink{group__log__levels}{log level constants}. \\
+\hline
+\end{DoxyParams}
+\hypertarget{classGenericPlugin_ab7d46f8bdaf1540eee1b988073294298}{\index{Gateway\-Configuration\-Plugin@{Gateway\-Configuration\-Plugin}!events@{events}}
+\index{events@{events}!GatewayConfigurationPlugin@{Gateway\-Configuration\-Plugin}}
+\subsubsection[{events}]{\setlength{\rightskip}{0pt plus 5cm}Generic\-Plugin\-::events (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [inherited]}}}\label{classGenericPlugin_ab7d46f8bdaf1540eee1b988073294298}
+\begin{DoxyReturn}{Returns}
+\hyperlink{interfaceEventManagerInterface}{Event\-Manager\-Interface} 
+\end{DoxyReturn}
+
+
+Implements \hyperlink{interfaceEventDependency_a6abcab4d92919174fcf029612f76814c}{Event\-Dependency}.
+
+\hypertarget{classGatewayConfigurationPlugin_a78dc97e74fa5164293d91889c0ef7243}{\index{Gateway\-Configuration\-Plugin@{Gateway\-Configuration\-Plugin}!find\-Gateway\-Servers@{find\-Gateway\-Servers}}
+\index{find\-Gateway\-Servers@{find\-Gateway\-Servers}!GatewayConfigurationPlugin@{Gateway\-Configuration\-Plugin}}
+\subsubsection[{find\-Gateway\-Servers}]{\setlength{\rightskip}{0pt plus 5cm}Gateway\-Configuration\-Plugin\-::find\-Gateway\-Servers (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [private]}}}\label{classGatewayConfigurationPlugin_a78dc97e74fa5164293d91889c0ef7243}
+\hypertarget{classGatewayConfigurationPlugin_ae2ee943590f913211f709c048a041d78}{\index{Gateway\-Configuration\-Plugin@{Gateway\-Configuration\-Plugin}!get\-Casted\-Server@{get\-Casted\-Server}}
+\index{get\-Casted\-Server@{get\-Casted\-Server}!GatewayConfigurationPlugin@{Gateway\-Configuration\-Plugin}}
+\subsubsection[{get\-Casted\-Server}]{\setlength{\rightskip}{0pt plus 5cm}Gateway\-Configuration\-Plugin\-::get\-Casted\-Server (
+\begin{DoxyParamCaption}
+\item[{{\bf Physical\-Server\-Interface}}]{\$server, }
+\item[{}]{\$type}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [private]}}}\label{classGatewayConfigurationPlugin_ae2ee943590f913211f709c048a041d78}
+\hypertarget{classGenericPlugin_a1c51ad511694c82131181d5f4c77d34c}{\index{Gateway\-Configuration\-Plugin@{Gateway\-Configuration\-Plugin}!get\-Config@{get\-Config}}
+\index{get\-Config@{get\-Config}!GatewayConfigurationPlugin@{Gateway\-Configuration\-Plugin}}
+\subsubsection[{get\-Config}]{\setlength{\rightskip}{0pt plus 5cm}Generic\-Plugin\-::get\-Config (
+\begin{DoxyParamCaption}
+\item[{array}]{\$keys, }
+\item[{array}]{\$optional = {\ttfamily NULL}}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [protected]}, {\ttfamily [inherited]}}}\label{classGenericPlugin_a1c51ad511694c82131181d5f4c77d34c}
+This provides automatic error messages for some of the keys if they are not defined and should be used when you need to load lots of required keys.
+
+
+\begin{DoxyParams}[1]{Parameters}
+array & {\em \$keys} & An array of keys to fetch from the configuration. The value is the name of the configuration setting, the key is the name in the array it will be returned under. If one of these keys is empty, the function returns F\-A\-L\-S\-E. Using a non-\/associative array or integer keys will result in the configuration setting key being used as the array key. \\
+\hline
+array & {\em \$optional} & Optional keys to append to the array. Follows same rules as \$keys but without the return value of F\-A\-L\-S\-E if a key is not set. \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+array$|$\-F\-A\-L\-S\-E The array of config keys or F\-A\-L\-S\-E if a required key was missing. 
+\end{DoxyReturn}
+\hypertarget{classGatewayConfigurationPlugin_a62d629bd3624b9036f1c2368b5e78115}{\index{Gateway\-Configuration\-Plugin@{Gateway\-Configuration\-Plugin}!initialize@{initialize}}
+\index{initialize@{initialize}!GatewayConfigurationPlugin@{Gateway\-Configuration\-Plugin}}
+\subsubsection[{initialize}]{\setlength{\rightskip}{0pt plus 5cm}Gateway\-Configuration\-Plugin\-::initialize (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)}}\label{classGatewayConfigurationPlugin_a62d629bd3624b9036f1c2368b5e78115}
+
+
+Implements \hyperlink{interfacePluginInterface_aa99b3d9a7b3d99cc603584e5bee521a1}{Plugin\-Interface}.
+
+\hypertarget{classGenericPlugin_a005937e2c819abbb56fdc4b10fdeb666}{\index{Gateway\-Configuration\-Plugin@{Gateway\-Configuration\-Plugin}!out@{out}}
+\index{out@{out}!GatewayConfigurationPlugin@{Gateway\-Configuration\-Plugin}}
+\subsubsection[{out}]{\setlength{\rightskip}{0pt plus 5cm}Generic\-Plugin\-::out (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [inherited]}}}\label{classGenericPlugin_a005937e2c819abbb56fdc4b10fdeb666}
+\begin{DoxyReturn}{Returns}
+\hyperlink{interfaceOutputManagerInterface}{Output\-Manager\-Interface} 
+\end{DoxyReturn}
+
+
+Implements \hyperlink{interfaceOutputDependency_aaae940f994ba7252d2ae5163b5fa97eb}{Output\-Dependency}.
+
+\hypertarget{classGatewayConfigurationPlugin_a69adb35eefe78b4989d3835fe5a7a6ac}{\index{Gateway\-Configuration\-Plugin@{Gateway\-Configuration\-Plugin}!publish\-Gateway\-Config@{publish\-Gateway\-Config}}
+\index{publish\-Gateway\-Config@{publish\-Gateway\-Config}!GatewayConfigurationPlugin@{Gateway\-Configuration\-Plugin}}
+\subsubsection[{publish\-Gateway\-Config}]{\setlength{\rightskip}{0pt plus 5cm}Gateway\-Configuration\-Plugin\-::publish\-Gateway\-Config (
+\begin{DoxyParamCaption}
+\item[{{\bf Drupal\-Site}}]{\$site}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [private]}}}\label{classGatewayConfigurationPlugin_a69adb35eefe78b4989d3835fe5a7a6ac}
+\hypertarget{classGenericPlugin_a32850f8424953482ef2b07df130941cf}{\index{Gateway\-Configuration\-Plugin@{Gateway\-Configuration\-Plugin}!required\-Plugins@{required\-Plugins}}
+\index{required\-Plugins@{required\-Plugins}!GatewayConfigurationPlugin@{Gateway\-Configuration\-Plugin}}
+\subsubsection[{required\-Plugins}]{\setlength{\rightskip}{0pt plus 5cm}Generic\-Plugin\-::required\-Plugins (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [inherited]}}}\label{classGenericPlugin_a32850f8424953482ef2b07df130941cf}
+\begin{DoxyReturn}{Returns}
+array An array of plugin class names. 
+\end{DoxyReturn}
+
+
+Implements \hyperlink{interfacePluginInterface_a5e05c3866b725af1fd43fa36c64bd922}{Plugin\-Interface}.
+
+
+
+Reimplemented in \hyperlink{classDatabaseConfigurationPlugin_a57958a5a251c34f64b7d150d7287e3cd}{Database\-Configuration\-Plugin}, \hyperlink{classHttpConfigurationPlugin_af4d95bc2fad0a9efa10beb1b5367c689}{Http\-Configuration\-Plugin}, \hyperlink{classDrupalSiteStandardStructurePlugin_a78939601400a66092fa6093b5f1cc28f}{Drupal\-Site\-Standard\-Structure\-Plugin}, \hyperlink{classHostsConfigurationPlugin_aba0c4ae00f36de5d2552a76e463ecc86}{Hosts\-Configuration\-Plugin}, \hyperlink{classDrupalSiteBuildPlugin_af140d7cfd4115b590a06684b69ab5337}{Drupal\-Site\-Build\-Plugin}, \hyperlink{classDrupalSiteStandardBuildPlugin_a26b9665ef1e753868f173ff31813d929}{Drupal\-Site\-Standard\-Build\-Plugin}, and \hyperlink{classDrupalSiteStandardSitePlugin_af056627fb8f6b62789cc559db75b5f0b}{Drupal\-Site\-Standard\-Site\-Plugin}.
+
+\hypertarget{classGenericPlugin_adc6c23c436e9979ed2c5b07dde6f3931}{\index{Gateway\-Configuration\-Plugin@{Gateway\-Configuration\-Plugin}!router@{router}}
+\index{router@{router}!GatewayConfigurationPlugin@{Gateway\-Configuration\-Plugin}}
+\subsubsection[{router}]{\setlength{\rightskip}{0pt plus 5cm}Generic\-Plugin\-::router (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [inherited]}}}\label{classGenericPlugin_adc6c23c436e9979ed2c5b07dde6f3931}
+\begin{DoxyReturn}{Returns}
+\hyperlink{interfaceRouterInterface}{Router\-Interface} 
+\end{DoxyReturn}
+
+
+Implements \hyperlink{interfaceRouterDependency_a418be22b7a1bdd25f68c89a38e71379d}{Router\-Dependency}.
+
+\hypertarget{classGenericPlugin_abf0b12b47909ef3c4dada146ea775526}{\index{Gateway\-Configuration\-Plugin@{Gateway\-Configuration\-Plugin}!set\-Args@{set\-Args}}
+\index{set\-Args@{set\-Args}!GatewayConfigurationPlugin@{Gateway\-Configuration\-Plugin}}
+\subsubsection[{set\-Args}]{\setlength{\rightskip}{0pt plus 5cm}Generic\-Plugin\-::set\-Args (
+\begin{DoxyParamCaption}
+\item[{{\bf Args\-Interface}}]{\$args}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [inherited]}}}\label{classGenericPlugin_abf0b12b47909ef3c4dada146ea775526}
+
+\begin{DoxyParams}[1]{Parameters}
+\hyperlink{interfaceArgsInterface}{Args\-Interface} & {\em \$args} & The argument manager that will be used. \\
+\hline
+\end{DoxyParams}
+
+
+Implements \hyperlink{interfaceArgsDependency_a254a16af37180b8d36e07d008c2f57f8}{Args\-Dependency}.
+
+\hypertarget{classGenericPlugin_a009c5398920a9672a2f13af38756fd5f}{\index{Gateway\-Configuration\-Plugin@{Gateway\-Configuration\-Plugin}!set\-Configuration@{set\-Configuration}}
+\index{set\-Configuration@{set\-Configuration}!GatewayConfigurationPlugin@{Gateway\-Configuration\-Plugin}}
+\subsubsection[{set\-Configuration}]{\setlength{\rightskip}{0pt plus 5cm}Generic\-Plugin\-::set\-Configuration (
+\begin{DoxyParamCaption}
+\item[{{\bf Configuration\-Manager\-Interface}}]{\$config}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [inherited]}}}\label{classGenericPlugin_a009c5398920a9672a2f13af38756fd5f}
+
+\begin{DoxyParams}[1]{Parameters}
+\hyperlink{interfaceConfigurationManagerInterface}{Configuration\-Manager\-Interface} & {\em \$config} & The configuration manager interface. \\
+\hline
+\end{DoxyParams}
+
+
+Implements \hyperlink{interfaceConfigurationDependency_a93b2f6f74680415c80eb4cd4fa3b3a82}{Configuration\-Dependency}.
+
+\hypertarget{classGenericPlugin_afc683b68f471d89aa6a95daebcbfe28a}{\index{Gateway\-Configuration\-Plugin@{Gateway\-Configuration\-Plugin}!set\-Event\-Manager@{set\-Event\-Manager}}
+\index{set\-Event\-Manager@{set\-Event\-Manager}!GatewayConfigurationPlugin@{Gateway\-Configuration\-Plugin}}
+\subsubsection[{set\-Event\-Manager}]{\setlength{\rightskip}{0pt plus 5cm}Generic\-Plugin\-::set\-Event\-Manager (
+\begin{DoxyParamCaption}
+\item[{{\bf Event\-Manager\-Interface}}]{\$em}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [inherited]}}}\label{classGenericPlugin_afc683b68f471d89aa6a95daebcbfe28a}
+
+\begin{DoxyParams}[1]{Parameters}
+\hyperlink{interfaceEventManagerInterface}{Event\-Manager\-Interface} & {\em \$em} & The event manager. \\
+\hline
+\end{DoxyParams}
+
+
+Implements \hyperlink{interfaceEventDependency_a234314a10fbba9b70639c5a6c5d89148}{Event\-Dependency}.
+
+\hypertarget{classGenericPlugin_a00fb20d417f3ad2f9839591a84348218}{\index{Gateway\-Configuration\-Plugin@{Gateway\-Configuration\-Plugin}!set\-Output@{set\-Output}}
+\index{set\-Output@{set\-Output}!GatewayConfigurationPlugin@{Gateway\-Configuration\-Plugin}}
+\subsubsection[{set\-Output}]{\setlength{\rightskip}{0pt plus 5cm}Generic\-Plugin\-::set\-Output (
+\begin{DoxyParamCaption}
+\item[{{\bf Output\-Manager\-Interface}}]{\$out}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [inherited]}}}\label{classGenericPlugin_a00fb20d417f3ad2f9839591a84348218}
+
+\begin{DoxyParams}[1]{Parameters}
+\hyperlink{interfaceOutputManagerInterface}{Output\-Manager\-Interface} & {\em \$out} & \\
+\hline
+\end{DoxyParams}
+
+
+Implements \hyperlink{interfaceOutputDependency_af915894ca0a2985f759834517861ce9d}{Output\-Dependency}.
+
+\hypertarget{classGenericPlugin_ac03553d95ea0e2d5023e3f78ef85f4b9}{\index{Gateway\-Configuration\-Plugin@{Gateway\-Configuration\-Plugin}!set\-Router@{set\-Router}}
+\index{set\-Router@{set\-Router}!GatewayConfigurationPlugin@{Gateway\-Configuration\-Plugin}}
+\subsubsection[{set\-Router}]{\setlength{\rightskip}{0pt plus 5cm}Generic\-Plugin\-::set\-Router (
+\begin{DoxyParamCaption}
+\item[{{\bf Router\-Interface}}]{\$router}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [inherited]}}}\label{classGenericPlugin_ac03553d95ea0e2d5023e3f78ef85f4b9}
+
+\begin{DoxyParams}[1]{Parameters}
+\hyperlink{interfaceRouterInterface}{Router\-Interface} & {\em \$router} & The router object to use. \\
+\hline
+\end{DoxyParams}
+
+
+Implements \hyperlink{interfaceRouterDependency_ae9be61b962cc6e7e9600a0cba1a52d09}{Router\-Dependency}.
+
+\hypertarget{classGenericPlugin_af2e0d786211846ea2b67841adb506c5d}{\index{Gateway\-Configuration\-Plugin@{Gateway\-Configuration\-Plugin}!show\-Failure@{show\-Failure}}
+\index{show\-Failure@{show\-Failure}!GatewayConfigurationPlugin@{Gateway\-Configuration\-Plugin}}
+\subsubsection[{show\-Failure}]{\setlength{\rightskip}{0pt plus 5cm}Generic\-Plugin\-::show\-Failure (
+\begin{DoxyParamCaption}
+\item[{}]{\$message}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [protected]}, {\ttfamily [inherited]}}}\label{classGenericPlugin_af2e0d786211846ea2b67841adb506c5d}
+
+\begin{DoxyParams}[1]{Parameters}
+string & {\em \$message} & The message. \\
+\hline
+\end{DoxyParams}
+\hypertarget{classGenericPlugin_aa6fa4fa1e988c64b045fe552c0905fbb}{\index{Gateway\-Configuration\-Plugin@{Gateway\-Configuration\-Plugin}!show\-Success@{show\-Success}}
+\index{show\-Success@{show\-Success}!GatewayConfigurationPlugin@{Gateway\-Configuration\-Plugin}}
+\subsubsection[{show\-Success}]{\setlength{\rightskip}{0pt plus 5cm}Generic\-Plugin\-::show\-Success (
+\begin{DoxyParamCaption}
+\item[{}]{\$message}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [protected]}, {\ttfamily [inherited]}}}\label{classGenericPlugin_aa6fa4fa1e988c64b045fe552c0905fbb}
+
+\begin{DoxyParams}[1]{Parameters}
+string & {\em \$message} & The message. \\
+\hline
+\end{DoxyParams}
+\hypertarget{classGenericPlugin_a6aaf2e225dcab0c5d759373d0ede60ce}{\index{Gateway\-Configuration\-Plugin@{Gateway\-Configuration\-Plugin}!show\-Work@{show\-Work}}
+\index{show\-Work@{show\-Work}!GatewayConfigurationPlugin@{Gateway\-Configuration\-Plugin}}
+\subsubsection[{show\-Work}]{\setlength{\rightskip}{0pt plus 5cm}Generic\-Plugin\-::show\-Work (
+\begin{DoxyParamCaption}
+\item[{}]{\$message}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [protected]}, {\ttfamily [inherited]}}}\label{classGenericPlugin_a6aaf2e225dcab0c5d759373d0ede60ce}
+
+\begin{DoxyParams}[1]{Parameters}
+string & {\em \$message} & The message. \\
+\hline
+\end{DoxyParams}
+\hypertarget{classGenericPlugin_adc5289a073a5cae7197286792c7eb5e9}{\index{Gateway\-Configuration\-Plugin@{Gateway\-Configuration\-Plugin}!warn@{warn}}
+\index{warn@{warn}!GatewayConfigurationPlugin@{Gateway\-Configuration\-Plugin}}
+\subsubsection[{warn}]{\setlength{\rightskip}{0pt plus 5cm}Generic\-Plugin\-::warn (
+\begin{DoxyParamCaption}
+\item[{}]{\$message}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [protected]}, {\ttfamily [inherited]}}}\label{classGenericPlugin_adc5289a073a5cae7197286792c7eb5e9}
+
+\begin{DoxyParams}[1]{Parameters}
+string & {\em \$message} & The warning message. \\
+\hline
+\end{DoxyParams}
+
+
+The documentation for this class was generated from the following file\-:\begin{DoxyCompactItemize}
+\item 
+\hyperlink{GatewayConfigurationPlugin_8class}{Gateway\-Configuration\-Plugin.\-class}\end{DoxyCompactItemize}

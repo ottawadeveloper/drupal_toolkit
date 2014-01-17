@@ -1,0 +1,86 @@
+<?php
+
+class PHPTerminal implements Writer, Logger, Messenger {
+  
+  private $timestamp = TRUE;
+  private $timestampFormat = '[H:i:s] ';
+  private $showTypes = TRUE;
+  private $typePadding = 16;
+  private $autoFlexPadding = TRUE;
+  
+  private $debugLevel = CLOG_NOTICE;
+  private $writeNonCriticalMessages = TRUE;  
+  
+  
+  public function __construct() {
+    
+  }
+  
+  public function setWriteNonCriticalMessages($writeNonCrit) {
+    $this->writeNonCriticalMessages = !extra_empty($writeNonCrit);
+  }
+  
+  public function setUseTimestamp($useTimestamp) {
+    $this->timestamp = !extra_empty($useTimestamp);
+  }
+  
+  public function setTimestampFormat($timestampFormat) {
+    $this->timestmapFormat = $timestampFormat;
+  }
+  
+  public function setShowTypes($showTypes) {
+    $this->showTypes = !extra_empty($showTypes);
+  }
+  
+  public function setTypePadding($typePadding) {
+    $this->typePadding = filter_var($typePadding, FILTER_SANITIZE_NUMBER_INT);
+  }
+  
+  public function setAutoFlexPadding($autoFlexPadding) {
+    $this->autoFlexPadding = !extra_empty($autoFlexPadding);
+  }
+  
+  public function setMinimumDebugLevel($debugLevel) {
+    $this->debugLevel = $debugLevel;
+  }
+  
+  public function log($logEntry, $logLevel = CLOG_NOTICE) {
+    if ($logLevel <= $this->debugLevel) {
+      $this->writeStatusMessage($logEntry, OutputManager::$logLevelNames[$logLevel]);
+    }
+  }
+  
+  public function message($message, $type = MESSAGE_WORKING) {
+    if ($type == MESSAGE_WORKING) {
+      if ($this->writeNonCriticalMessages) {
+        $this->writeStatusMessage($message, OutputManager::$messageTypeNames[$type]);
+      }
+    }
+    else {
+      $this->writeStatusMessage($message, OutputManager::$messageTypeNames[$type]);
+    }
+  }
+  
+  private function writeStatusMessage($status, $type) {
+    $message = '';
+    if ($this->timestamp) {
+      $message .= date($this->timestampFormat);
+    }
+    if ($this->showTypes) {
+      $type = '[' . strtolower($type) . ']';
+      if ($this->autoFlexPadding) {
+        if (strlen($type) > ($this->typePadding - 1)) {
+          $this->typePadding = strlen($type) + 1;
+        }
+      }
+      $message .= str_pad($type, $this->typePadding);
+    }
+    $message .= $status;
+    $this->write($message . "\r\n");
+  }
+  
+  public function write($message) {
+    echo $message;
+  }
+  
+}

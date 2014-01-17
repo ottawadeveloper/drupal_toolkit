@@ -1,0 +1,175 @@
+<?php
+/**
+ * Defines the DependencyManager class.
+ */
+
+/**
+ * Manages dependencies for the software.
+ */
+class DependencyManager implements DependencyManagerInterface {
+  
+  /**
+   * An array of DependencyInjector objects. 
+   * @var array
+   */
+  private $injectorMap = array();
+  
+  /**
+   * An array of objects to be used with the injectors.
+   * @var array
+   */
+  private $injectorObjects = array();
+  
+  /**
+   * Required classes for $injectorObjects.
+   * 
+   * Essentially if $injectorClasses[$key] is set, then $injectorObjects[$key]
+   * must be an instance of $injectorClasses[$key].
+   * 
+   * @var array
+   */
+  private $injectorClasses = array();
+  
+  /**
+   * Objects that have been processed by the dependency manager.
+   * 
+   * We do this so that we can keep them updated.
+   * 
+   * @var array
+   */
+  private $injectedObjects = array();
+  
+  /**
+   * Globally static reference to the dependency manager.
+   * 
+   * Singleton pattern may be bad but this is the only instance of it (thanks
+   * to dependency injection).
+   * 
+   * @var DependencyManagerInterface
+   */
+  private static $manager = NULL;
+  
+  /**
+   * Private constructor for singleton pattern.
+   */
+  private function __construct() {
+    // Self-register the DM.
+    $this->registerInjector('DependencyManagerDependency', 'setDependencyManager', '_dm','DependencyManagerInterface');
+    $this->registerObject('_dm', $this);
+  }
+  
+  public function registerObject($objectKey, &$object) {
+    if (isset($this->injectorClasses[$objectKey])) {
+      if (!($object instanceof $this->injectorClasses[$objectKey])) {
+        return FALSE;
+      }
+    }
+    $this->injectorObjects[$objectKey] = $object;
+    return TRUE;
+  }
+  
+  public function updateExisting() {
+    foreach ($this->injectedObjects as $object) {
+      $this->setDependencies($object);
+    }
+  }
+  
+  public function registerInjector($interfaceMatch, $callback, $objectKey, $objectType) {
+    $this->injectorMap[] = new DependencyInjector($interfaceMatch, $callback, $objectKey);
+    if (is_array($objectKey)) {
+      foreach ($objectKey as $key => $objKey) {
+        if (isset($objectType[$key])) {
+          $this->injectorClasses[$objKey] = $objectType[$key];
+        }
+      }
+    }
+    else {
+      $this->injectorClasses[$objectKey] = $objectType;
+    }
+  }
+  
+  public function setDependencies(&$object) {
+    if (!is_object($object)) {
+      return FALSE;
+    }
+    foreach ($this->injectorMap as $di) {
+      if ($di instanceof DependencyInjector) {
+        $di->injectDependency($object, $this->injectorObjects);
+      }
+    }
+    $this->injectedObjects[] = $object;
+    return TRUE;
+  }
+  
+  /**
+   * Global reference to the dependency manager. Enables the use of the 
+   * static methods here.
+   * 
+   * Singleton pattern.
+   * 
+   * @return DependencyManager
+   */
+  public static function dm() {
+    if (empty(self::$manager)) {
+      self::$manager = new DependencyManager();
+    }
+    return self::$manager;
+  }
+  
+  /**
+   * Registers a new dependency injector.
+   * 
+   * @param string $iface
+   *   Only objects that match this interface will be injected.
+   * @param string $cb
+   *   A method from $interfaceMatch that will be called to inject the object.
+   * @param string|array $objKey
+   *   One or more keys of objects set with registerObject() that will be passed
+   *   as arguments to $callback.
+   * @param string $objClass
+   *   The interface that the object set by registerObject() must match.
+   */
+  public static function register($iface, $cb, $objKey, $objClass) {
+    self::dm()->registerInjector($iface, $cb, $objKey, $objClass);
+  }
+  
+  /**
+   * Registers a dependency object.
+   * 
+   * @param string $key
+   *   The key to register.
+   * @param object $object
+   *   The object to register against the key.
+   * 
+   * @return boolean
+   *   TRUE if the object was registered, otherwise FALSE.
+   */
+  public static function setObject($key, &$object) {
+    return self::dm()->registerObject($key, $object);
+  }
+  
+  /**
+   * Injects all the appropriate dependencies into the object.
+   * 
+   * @param object $object
+   *   An object to set dependencies on.
+   * 
+   * @return boolean
+   *   TRUE if the dependencies were injected, otherwise FALSE.
+   */
+  public static function inject(&$object) {
+    if (!is_object($object)) {
+      return FALSE;
+    }
+    return self::dm()->setDependencies($object);
+  }
+  
+  /**
+   * Refreshes all the dependency injection information on existing objects.
+   */
+  public static function update() {
+    self::dm()->updateExisting();
+  }
+  
+  
+}

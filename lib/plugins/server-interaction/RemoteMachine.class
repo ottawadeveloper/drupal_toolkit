@@ -1,0 +1,69 @@
+<?php
+
+class RemoteMachine extends GenericMachine {
+  
+  private $handle;
+  
+  public function initialize() {
+    if (!extra_empty($this->getSetting('disabled'))) {
+      return FALSE;
+    }
+    $this->handle = ssh2_connect($this->getSetting('host'), $this->getSetting('port', 22));
+    if (empty($this->handle)) {
+      $this->handle = NULL;
+      return FALSE;
+    }
+    $fingerprint = ssh2_fingerprint($this->handle, SSH2_FINGERPRINT_MD5 | SSH2_FINGERPRINT_HEX);
+    if (strcmp($fingerprint, $this->getSetting('fingerprint')) !== 0) {
+      $this->handle = NULL;
+      return FALSE;
+    }
+    switch ($this->getSetting('connection')) {
+      case 'pubkey':
+        if (!ssh2_auth_pubkey_file($this->handle, 
+            $this->getSetting('user'), 
+            $this->getSetting('pubkey'), 
+            $this->getSetting('privkey'), 
+            $this->getSetting('passphrase'))) {
+          $this->handle = NULL;
+          return FALSE;
+        }
+      default:
+        $this->handle = NULL;
+        return FALSE;
+    }
+    return TRUE;
+  }
+  
+  public function executeCommand($command, $args, &$out = array(), &$exit = 0) {
+    $escapedCommand = escapeshellcmd(str_replace_all($command, $args, 'escapeshellarg'));
+    $fullCommand = '(' . $escapedCommand . '); echo -e "\n$?"';
+    $stream = ssh2_exec($this->handle, $fullCommand);
+    stream_set_blocking($stream, TRUE);
+    $output = stream_get_contents($stream);
+    fclose($stream);
+    $out = explode(PHP_EOL, $output);
+    $exit = array_pop($out);
+    return reset($out);
+  }
+  
+  public function writeFile($destination, $contents, $mode=0644) {
+    $temp = tempnam(sys_get_temp_dir(), 'dtk-up-');
+    file_put_contents($temp, $contents);
+    $result = ssh2_scp_send($this->handle, $temp, $destination, $mode);
+    unlink($temp);
+    return $result;
+  }
+  
+  public function readFile($file) {
+    $temp = tempnam(sys_get_temp_dir(), 'dtk-down-');
+    $result = ssh2_scp_recv($this->handle, $file, $temp);
+    $contents = FALSE;
+    if ($result) {
+      $contents = file_get_contents($temp);
+    }
+    unlink($temp);
+    return $contents;
+  }
+  
+}

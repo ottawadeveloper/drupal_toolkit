@@ -1,0 +1,17 @@
+<?php
+/**
+ * @file Provides the HelpCommand class.
+ */
+
+/**
+ * Basic command that provides help output.
+ * 
+ * @ingroup commands
+ */
+class HelpCommand extends GenericCommand {
+    
+  public function executeCommand() {
+    $this->out()->log('The [help] command is not available.', CLOG_ERROR);
+  }
+  
+}

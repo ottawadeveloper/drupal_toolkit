@@ -1,0 +1,216 @@
+<?php
+/**
+ * @file Defines the GatewayConfigurationPlugin.
+ */
+
+/**
+ * Event to register gateway servers.
+ * 
+ * @ingroup events
+ */
+define('EVENT_FIND_GATEWAY_SERVERS', 'find-gateway-servers');
+
+/**
+ * Config key to set whether or not the local server is a gateway server.
+ * 
+ * @ingroup config
+ */
+define('CONFIG_GATEWAY_USE_LOCAL', 'gateway-local');
+
+/**
+ * Config key to set the default gateway type.
+ * 
+ * @ingroup config
+ */
+define('CONFIG_GATEWAY_TYPE', 'gateway-server-type');
+
+/**
+ * Config key to set the default gateway config template.
+ * 
+ * @ingroup config
+ */
+define('CONFIG_GATEWAY_CONFIG_TEMPLATE', 'gateway-config-template');
+
+/**
+ * Config key to set the default gateway filename template.
+ * 
+ * @ingroup config
+ */
+define('CONFIG_GATEWAY_FILENAME_TEMPLATE', 'gateway-config-filename-template');
+
+/**
+ * Config key underneath the servers away for gateway servers
+ * 
+ * @ingroup server_types
+ */
+define('SERVER_TYPE_GATEWAY', 'gateway');
+
+/**
+ * Server setting to override the default gateway filename template.
+ * 
+ * @ingroup server_settings
+ */
+define('SERVER_SETTING_GATEWAY_FILENAME_TMEPLATE', 'gateway-filename-template');
+
+/**
+ * Server setting to override the default gateway configuration.
+ * 
+ * @ingroup server_settings
+ */
+define('SERVER_SETTING_GATEWAY_CONFIG_TEMPLATE', 'gateway-template-file');
+
+/**
+ * Server setting to override the default gateway type.
+ * 
+ * @ingroup server_settings
+ */
+define('SERVER_SETTING_GATEWAY_TYPE', 'gateway-type');
+
+/**
+ * Responsible for configuring any gateway servers that have been defined.
+ */
+class GatewayConfigurationPlugin extends GenericPlugin implements EventListener {
+  
+  public function initialize() {
+    $this->events()->registerListener(array(
+      EVENT_FIND_GATEWAY_SERVERS,
+      EVENT_SITE_BUILD_MORE_CONFIG,
+      EVENT_CAST_GATEWAY_SERVER,
+    ), $this);
+    $this->config()->extendDefaultConfiguration(array(
+      CONFIG_GATEWAY_USER_LOCAL => FALSE,
+      CONFIG_GATEWAY_TYPE => '',
+      CONFIG_GATEWAY_CONFIG_TEMPLATE => '',
+      CONFIG_GATEWAY_FILENAME_TEMPLATE => '@@BUILD_NAME',
+      CONFIG_SERVER_LIST => array(
+        SERVER_TYPE_GATEWAY => array(),
+      ),
+    ));
+  }
+  
+  public function requiredPlugins() {
+    return array('DrupalSitePlugin', 'ServerInteractionPlugin', 'HttpConfigurationPlugin');
+  }
+  
+  public function captureEvent(&$context, $type) {
+    switch ($type) {
+      case EVENT_FIND_GATEWAY_SERVERS:
+        $context->servers = array_merge($context->servers, $this->findGatewayServers());
+        break;
+      case EVENT_SITE_BUILD_CONFIGURE_SERVER:
+        if ($context->success) {
+          $context->success = $this->publishGatewayConfig($context->site);
+        }
+        break;
+    }
+  }
+  
+  /**
+   * Publishes the gateway configuration settings to all the gateway servers.
+   * 
+   * @param DrupalSite $site
+   *   The site to publish configuration for.
+   * 
+   * @return boolean
+   *   TRUE if the configuration was published successfully, otherwise FALSE.
+   */
+  private function publishGatewayConfig(DrupalSite $site) {
+    $c = $this->getConfig(array(
+      'template' => CONFIG_GATEWAY_CONFIG_TEMPLATE,
+      'fn_template' => CONFIG_GATEWAY_FILENAME_TEMPLATE,
+    ));
+    if (empty($c)) { return FALSE; }
+    if (!is_readable($c['template'])) {
+      $this->error('Unable to read template file');
+      return FALSE;
+    }
+    $defaultConfig = file_get_contents($c['template']);
+    $context = (object) array(
+      'servers' => array(),
+    );
+    $this->events()->fireEvent(EVENT_FIND_GATEWAY_SERVERS, $context);
+    foreach ($context->servers as $gatewayServer) {
+      if ($gatewayServer instanceof GenericHttpServer) {
+        $config = $defaultConfig;
+        $configFile = $gatewayServer->machine()->getSetting(SERVER_SETTING_GATEWAY_CONFIG_TEMPLATE);
+        if (is_readable($configFile)) {
+          $config = file_get_contents($configFile);
+        }
+        $config = $site->replaceTokens($config);
+        $file = $gatewayServer->machine()->getSetting(SERVER_SETTING_GATEWAY_FILENAME_TMEPLATE);
+        if (empty($file)) {
+          $file = $c['fn_template'];
+        }
+        $file = $site->replaceTokens($file);
+        if (!$gatewayServer->writeConfig($file, $config)) {
+          $this->error('Unable to write configuration to server');
+          return FALSE;
+        }
+        $gatewayServer->doReboot();
+      }
+    }
+    return TRUE;
+  }
+  
+  /**
+   * Casts a server instance into an HttpServer.
+   * 
+   * @param PhysicalServerInterface $server
+   *   The server to cast.
+   * @param string $type
+   *   The type of server.
+   * 
+   * @return GenericHttpServer
+   *   An HTTP server instance or NULL if none was found for $type.
+   * 
+   * @see @ref http_types "HTTP Server Types"
+   * @see GenericHttpServer
+   */
+  private function getCastedServer(PhysicalServerInterface $server, $type) {
+    $context = (object) array(
+      'httpServer' => NULL,
+      'type' => $type,
+      'server' => $server,
+    );
+    $this->events()->fireEvent(EVENT_CAST_HTTP_SERVER, $context);
+    return $context->httpServer;
+  }
+  
+  /**
+   * Finds gateway servers using ServerInteractionPlugin.
+   * 
+   * @return array
+   *   An array of GenericHttpServer objects.
+   */
+  private function findGatewayServers() {
+    $config = $this->getConfig(array(
+      'server_type' => CONFIG_GATEWAY_TYPE,
+    ), array(
+      'use_local' => CONFIG_GATEWAY_USE_LOCAL,
+    ));
+    if (empty($config)) {
+      return array();
+    }
+    $context = (object) array(
+      'type' => SERVER_TYPE_GATEWAY,
+      'skipLocal' => !$context['use_local'],
+      'servers' => array(),
+    );
+    $this->events()->fireEvent(EVENT_FIND_SERVERS, $context);
+    $gatewayServers = array();
+    foreach ($context->servers as $server) {
+      if ($server instanceof PhysicalServerInterface) {
+        $type = $server->getSetting(SERVER_SETTING_GATEWAY_TYPE);
+        if (empty($type)) {
+          $type = $config['server_type'];
+        }
+        $httpServer = $this->getCastedServer($server, $config['server_type']);
+        if (!empty($httpServer)) {
+          $gatewayServers[] = $httpServer;
+        }
+      }
+    }
+    return $gatewayServers;
+  }
+  
+}

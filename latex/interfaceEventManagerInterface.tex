@@ -1,0 +1,101 @@
+\hypertarget{interfaceEventManagerInterface}{\section{Event\-Manager\-Interface Interface Reference}
+\label{interfaceEventManagerInterface}\index{Event\-Manager\-Interface@{Event\-Manager\-Interface}}
+}
+
+
+Event managers handle the firing of events.  
+
+
+Inheritance diagram for Event\-Manager\-Interface\-:\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[height=3.000000cm]{interfaceEventManagerInterface}
+\end{center}
+\end{figure}
+\subsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\hyperlink{interfaceEventManagerInterface_a660aec7d823ae3daa091b6d76568fa90}{register\-Listener} (\$types, \hyperlink{interfaceEventListener}{Event\-Listener} \$listener)
+\begin{DoxyCompactList}\small\item\em Registers an object as listening for our system events. \end{DoxyCompactList}\item 
+\hyperlink{interfaceEventManagerInterface_a56a99eb63ca41d0380bbb633ea38013c}{fire\-Event} (\$type, \&\$context=N\-U\-L\-L)
+\begin{DoxyCompactList}\small\item\em Fires an event to all the listeners for the provided type. \end{DoxyCompactList}\item 
+\hyperlink{interfaceOutputDependency_af915894ca0a2985f759834517861ce9d}{set\-Output} (\hyperlink{interfaceOutputManagerInterface}{Output\-Manager\-Interface} \$\hyperlink{interfaceOutputDependency_aaae940f994ba7252d2ae5163b5fa97eb}{out})
+\begin{DoxyCompactList}\small\item\em Sets the output manager. \end{DoxyCompactList}\item 
+\hyperlink{interfaceOutputDependency_aaae940f994ba7252d2ae5163b5fa97eb}{out} ()
+\begin{DoxyCompactList}\small\item\em Retrieves the output manager. \end{DoxyCompactList}\end{DoxyCompactItemize}
+
+
+\subsection{Member Function Documentation}
+\hypertarget{interfaceEventManagerInterface_a56a99eb63ca41d0380bbb633ea38013c}{\index{Event\-Manager\-Interface@{Event\-Manager\-Interface}!fire\-Event@{fire\-Event}}
+\index{fire\-Event@{fire\-Event}!EventManagerInterface@{Event\-Manager\-Interface}}
+\subsubsection[{fire\-Event}]{\setlength{\rightskip}{0pt plus 5cm}Event\-Manager\-Interface\-::fire\-Event (
+\begin{DoxyParamCaption}
+\item[{}]{\$type, }
+\item[{\&}]{\$context = {\ttfamily NULL}}
+\end{DoxyParamCaption}
+)}}\label{interfaceEventManagerInterface_a56a99eb63ca41d0380bbb633ea38013c}
+
+\begin{DoxyParams}[1]{Parameters}
+string & {\em \$type} & The event type to fire. \\
+\hline
+object & {\em \$context} & A context object to pass by reference to each listener's capture\-Event() method. \\
+\hline
+\end{DoxyParams}
+
+
+Implemented in \hyperlink{classEventManager_a1dd88102c578eb6a5e1f1ee927163f8e}{Event\-Manager}.
+
+\hypertarget{interfaceOutputDependency_aaae940f994ba7252d2ae5163b5fa97eb}{\index{Event\-Manager\-Interface@{Event\-Manager\-Interface}!out@{out}}
+\index{out@{out}!EventManagerInterface@{Event\-Manager\-Interface}}
+\subsubsection[{out}]{\setlength{\rightskip}{0pt plus 5cm}Output\-Dependency\-::out (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [inherited]}}}\label{interfaceOutputDependency_aaae940f994ba7252d2ae5163b5fa97eb}
+\begin{DoxyReturn}{Returns}
+\hyperlink{interfaceOutputManagerInterface}{Output\-Manager\-Interface} 
+\end{DoxyReturn}
+
+
+Implemented in \hyperlink{classGenericCommand_a08478bb9a4cce51c5eec24b4dab17cc8}{Generic\-Command}, \hyperlink{classGenericPlugin_a005937e2c819abbb56fdc4b10fdeb666}{Generic\-Plugin}, and \hyperlink{classEventManager_ada57b61fe89a5325985c39a374dfc26d}{Event\-Manager}.
+
+\hypertarget{interfaceEventManagerInterface_a660aec7d823ae3daa091b6d76568fa90}{\index{Event\-Manager\-Interface@{Event\-Manager\-Interface}!register\-Listener@{register\-Listener}}
+\index{register\-Listener@{register\-Listener}!EventManagerInterface@{Event\-Manager\-Interface}}
+\subsubsection[{register\-Listener}]{\setlength{\rightskip}{0pt plus 5cm}Event\-Manager\-Interface\-::register\-Listener (
+\begin{DoxyParamCaption}
+\item[{}]{\$types, }
+\item[{{\bf Event\-Listener}}]{\$listener}
+\end{DoxyParamCaption}
+)}}\label{interfaceEventManagerInterface_a660aec7d823ae3daa091b6d76568fa90}
+
+\begin{DoxyParams}[1]{Parameters}
+array & {\em \$types} & An array of event types that the \$listener wants to respond to. \\
+\hline
+\hyperlink{interfaceEventListener}{Event\-Listener} & {\em \$listener} & An event listener object. \\
+\hline
+\end{DoxyParams}
+
+
+Implemented in \hyperlink{classEventManager_a173cecd321289f65c8fd79d8d1240f69}{Event\-Manager}.
+
+\hypertarget{interfaceOutputDependency_af915894ca0a2985f759834517861ce9d}{\index{Event\-Manager\-Interface@{Event\-Manager\-Interface}!set\-Output@{set\-Output}}
+\index{set\-Output@{set\-Output}!EventManagerInterface@{Event\-Manager\-Interface}}
+\subsubsection[{set\-Output}]{\setlength{\rightskip}{0pt plus 5cm}Output\-Dependency\-::set\-Output (
+\begin{DoxyParamCaption}
+\item[{{\bf Output\-Manager\-Interface}}]{\$out}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [inherited]}}}\label{interfaceOutputDependency_af915894ca0a2985f759834517861ce9d}
+
+\begin{DoxyParams}[1]{Parameters}
+\hyperlink{interfaceOutputManagerInterface}{Output\-Manager\-Interface} & {\em \$out} & \\
+\hline
+\end{DoxyParams}
+
+
+Implemented in \hyperlink{classGenericPlugin_a00fb20d417f3ad2f9839591a84348218}{Generic\-Plugin}, \hyperlink{classGenericCommand_aee43238a646b83c341ccb27b7d8e0978}{Generic\-Command}, and \hyperlink{classEventManager_ab75d670f0e0d69123495a08872126c13}{Event\-Manager}.
+
+
+
+The documentation for this interface was generated from the following file\-:\begin{DoxyCompactItemize}
+\item 
+\hyperlink{EventManagerInterface_8iface}{Event\-Manager\-Interface.\-iface}\end{DoxyCompactItemize}

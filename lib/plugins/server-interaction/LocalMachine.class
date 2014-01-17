@@ -1,0 +1,21 @@
+<?php
+
+class LocalMachine extends GenericMachine {
+  
+  public function executeCommand($command, $args = array(), &$out = array(), &$exit = 0) {
+    return execute_system_command($command, $args, $out, $exit);
+  }
+  
+  public function initialize() {
+    return TRUE;
+  }
+  
+  public function writeFile($location, $contents) {
+    return file_put_contents($location, $contents);
+  }
+  
+  public function readFile($file) {
+    return file_get_contents($file);
+  }
+  
+}

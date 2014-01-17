@@ -1,0 +1,129 @@
+\hypertarget{interfaceDatabaseManagerInterface}{\section{Database\-Manager\-Interface Interface Reference}
+\label{interfaceDatabaseManagerInterface}\index{Database\-Manager\-Interface@{Database\-Manager\-Interface}}
+}
+
+
+Implementations can manage certain aspects of the databases.  
+
+
+Inheritance diagram for Database\-Manager\-Interface\-:\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[height=3.000000cm]{interfaceDatabaseManagerInterface}
+\end{center}
+\end{figure}
+\subsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\hyperlink{interfaceDatabaseManagerInterface_a1bdc962627a768e26d780cd0a26e2743}{available} ()
+\begin{DoxyCompactList}\small\item\em Verifies that this D\-B\-M is available. \end{DoxyCompactList}\item 
+\hyperlink{interfaceDatabaseManagerInterface_a6082d67a8a02ffd538c5193adfa8f605}{create\-Database} (\$database, \$username=N\-U\-L\-L, \$password=N\-U\-L\-L, \$host=N\-U\-L\-L)
+\begin{DoxyCompactList}\small\item\em Creates a new database and also perhaps a new user to access that database. \end{DoxyCompactList}\item 
+\hyperlink{interfaceDatabaseManagerInterface_a2b452f2d50f76f1f0f7fe6c8ff2f6da3}{sanitize\-Username} (\$username)
+\begin{DoxyCompactList}\small\item\em Cleans up the username before it is created. \end{DoxyCompactList}\item 
+\hyperlink{interfaceDatabaseManagerInterface_a15b880b5862fed9d6affae6bbcc1a402}{sanitize\-Database\-Name} (\$database)
+\begin{DoxyCompactList}\small\item\em Cleans up the database name before it is created. \end{DoxyCompactList}\item 
+\hyperlink{interfaceDatabaseManagerInterface_ae23eea67d89617c974b33f02bac77e33}{random\-Password} ()
+\begin{DoxyCompactList}\small\item\em Generates a randomized password suitable for this database. \end{DoxyCompactList}\end{DoxyCompactItemize}
+
+
+\subsection{Member Function Documentation}
+\hypertarget{interfaceDatabaseManagerInterface_a1bdc962627a768e26d780cd0a26e2743}{\index{Database\-Manager\-Interface@{Database\-Manager\-Interface}!available@{available}}
+\index{available@{available}!DatabaseManagerInterface@{Database\-Manager\-Interface}}
+\subsubsection[{available}]{\setlength{\rightskip}{0pt plus 5cm}Database\-Manager\-Interface\-::available (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)}}\label{interfaceDatabaseManagerInterface_a1bdc962627a768e26d780cd0a26e2743}
+\begin{DoxyReturn}{Returns}
+boolean T\-R\-U\-E if we can run commands on the database, otherwise F\-A\-L\-S\-E. 
+\end{DoxyReturn}
+
+
+Implemented in \hyperlink{classMySqlDBM_a7825183a0e5c0db83d65f69afd284005}{My\-Sql\-D\-B\-M}.
+
+\hypertarget{interfaceDatabaseManagerInterface_a6082d67a8a02ffd538c5193adfa8f605}{\index{Database\-Manager\-Interface@{Database\-Manager\-Interface}!create\-Database@{create\-Database}}
+\index{create\-Database@{create\-Database}!DatabaseManagerInterface@{Database\-Manager\-Interface}}
+\subsubsection[{create\-Database}]{\setlength{\rightskip}{0pt plus 5cm}Database\-Manager\-Interface\-::create\-Database (
+\begin{DoxyParamCaption}
+\item[{}]{\$database, }
+\item[{}]{\$username = {\ttfamily NULL}, }
+\item[{}]{\$password = {\ttfamily NULL}, }
+\item[{}]{\$host = {\ttfamily NULL}}
+\end{DoxyParamCaption}
+)}}\label{interfaceDatabaseManagerInterface_a6082d67a8a02ffd538c5193adfa8f605}
+
+\begin{DoxyParams}[1]{Parameters}
+string & {\em \$database} & The name of the database to create. It must not exist. \\
+\hline
+string & {\em \$username} & The username to create. If left empty, one will not be created. \\
+\hline
+string & {\em \$password} & The password for the user. If left empty, they will not have a password. \\
+\hline
+string & {\em \$host} & The host from which the user can connect. If left empty, they will not have any restrictions on their access.\\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+boolean T\-R\-U\-E if the creation was successful, otherwise F\-A\-L\-S\-E. 
+\end{DoxyReturn}
+
+
+Implemented in \hyperlink{classMySqlDBM_a95c69c660d9137f2ad738c00f76efbba}{My\-Sql\-D\-B\-M}.
+
+\hypertarget{interfaceDatabaseManagerInterface_ae23eea67d89617c974b33f02bac77e33}{\index{Database\-Manager\-Interface@{Database\-Manager\-Interface}!random\-Password@{random\-Password}}
+\index{random\-Password@{random\-Password}!DatabaseManagerInterface@{Database\-Manager\-Interface}}
+\subsubsection[{random\-Password}]{\setlength{\rightskip}{0pt plus 5cm}Database\-Manager\-Interface\-::random\-Password (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)}}\label{interfaceDatabaseManagerInterface_ae23eea67d89617c974b33f02bac77e33}
+\begin{DoxyReturn}{Returns}
+string The randomized password. 
+\end{DoxyReturn}
+
+
+Implemented in \hyperlink{classGenericDBM_a4cd49851039d573019ad0f025766297d}{Generic\-D\-B\-M}.
+
+\hypertarget{interfaceDatabaseManagerInterface_a15b880b5862fed9d6affae6bbcc1a402}{\index{Database\-Manager\-Interface@{Database\-Manager\-Interface}!sanitize\-Database\-Name@{sanitize\-Database\-Name}}
+\index{sanitize\-Database\-Name@{sanitize\-Database\-Name}!DatabaseManagerInterface@{Database\-Manager\-Interface}}
+\subsubsection[{sanitize\-Database\-Name}]{\setlength{\rightskip}{0pt plus 5cm}Database\-Manager\-Interface\-::sanitize\-Database\-Name (
+\begin{DoxyParamCaption}
+\item[{}]{\$database}
+\end{DoxyParamCaption}
+)}}\label{interfaceDatabaseManagerInterface_a15b880b5862fed9d6affae6bbcc1a402}
+
+\begin{DoxyParams}[1]{Parameters}
+string & {\em \$database} & The database name to clean up.\\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+string The sanitized username. 
+\end{DoxyReturn}
+
+
+Implemented in \hyperlink{classGenericDBM_a0fffdaea424473cad66b61d0e8fab06c}{Generic\-D\-B\-M}, and \hyperlink{classMySqlDBM_afcfca1d07e8fe8ba73b21c7a41c9d8cd}{My\-Sql\-D\-B\-M}.
+
+\hypertarget{interfaceDatabaseManagerInterface_a2b452f2d50f76f1f0f7fe6c8ff2f6da3}{\index{Database\-Manager\-Interface@{Database\-Manager\-Interface}!sanitize\-Username@{sanitize\-Username}}
+\index{sanitize\-Username@{sanitize\-Username}!DatabaseManagerInterface@{Database\-Manager\-Interface}}
+\subsubsection[{sanitize\-Username}]{\setlength{\rightskip}{0pt plus 5cm}Database\-Manager\-Interface\-::sanitize\-Username (
+\begin{DoxyParamCaption}
+\item[{}]{\$username}
+\end{DoxyParamCaption}
+)}}\label{interfaceDatabaseManagerInterface_a2b452f2d50f76f1f0f7fe6c8ff2f6da3}
+
+\begin{DoxyParams}[1]{Parameters}
+string & {\em \$username} & The username to clean up\\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+string The sanitized username. 
+\end{DoxyReturn}
+
+
+Implemented in \hyperlink{classGenericDBM_abfda5d7c3be8438496507e538907d82d}{Generic\-D\-B\-M}, and \hyperlink{classMySqlDBM_ac59dfbf9d93fef330016e8b26b157eb6}{My\-Sql\-D\-B\-M}.
+
+
+
+The documentation for this interface was generated from the following file\-:\begin{DoxyCompactItemize}
+\item 
+\hyperlink{DatabaseManagerInterface_8iface}{Database\-Manager\-Interface.\-iface}\end{DoxyCompactItemize}

@@ -1,0 +1,36 @@
+<?php
+/**
+ * @file Defines the HostFileManagerInterface interface
+ */
+
+/**
+ * Responsible for managing the host file of a machine.
+ */
+interface HostFileManagerInterface {
+  
+  /**
+   * Adds an entry to the host file.
+   * 
+   * @param string $host
+   *   The hostname. Can be multiple entries for the same IP.
+   * @param type $ip
+   *   The IP address that $host should point to. Can be IPv4 or v6.
+   * 
+   * @return boolean
+   *   TRUE if the host file entries are added successfully, otherwise FALSE.
+   */
+  function addHostFileEntry($host, $ip);
+  
+  /**
+   * Adds multiple lines to the host file.
+   * 
+   * @param array $map
+   *   An array where keys are host name strings and the values are IP 
+   *   addresses.
+   * 
+   * @return boolean
+   *   TRUE if the host file entries are added successfully, otherwise FALSE.
+   */
+  function addHostFileEntries(array $map);
+  
+}

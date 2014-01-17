@@ -1,0 +1,123 @@
+<?php
+/**
+ * @file Defines the GenericSiteCommand abstract class.
+ */
+
+/**
+ * Provides a base for commands that need to work with sites.
+ */
+abstract class GenericSiteCommand extends GenericCommand {
+  
+  /**
+   * Retrieves the build name specified by the argument.
+   * 
+   * @param int $pos 
+   *   The position of the argument in the build name.
+   * @return string
+   *   The build name.
+   */
+  protected function getBuildName($pos = 1) {
+    $buildName = $this->args()->getArg($pos);
+    $buildName = preg_replace('`[^A-Za-z0-9_-]`i', '_', $buildName);
+    $buildName = preg_replace('`_{2,}`', '_', $buildName);
+    return strtolower($buildName);
+  }
+  
+  /**
+   * Checks to see if the site should be local.
+   * 
+   * @return boolean
+   *   TRUE if the site should be local, otherwise FALSE.
+   */
+  protected function isLocal() {
+    $config = $this->config()->getConfig(CONFIG_ALLOW_LOCAL_SITES);
+    if ($config == LOCAL_SITES_ALWAYS) {
+      return TRUE;
+    }
+    elseif ($config == LOCAL_SITES_NEVER) {
+      return FALSE;
+    }
+    return $this->args()->hasOption(ARG_IS_LOCAL);
+  }
+  
+  /**
+   * Verifies that the site exists and can be worked on with this version of
+   * the toolkit.
+   * 
+   * @param string $name
+   *   The name of the site. If not specified, it will be loaded via getSite().
+   * 
+   * @return boolean
+   *   TRUE if the site is present, otherwise FALSE.
+   */
+  protected function requireSite($name = NULL) {
+    $site = $this->getSite($name);
+    if (empty($site)) {
+      $this->out()->log('Could not build a site object.', CLOG_ERROR);
+      return FALSE;
+    }
+    if ($site->existsBackwards()) {
+      $this->out()->log('This site is too old to use with this command, update it first', CLOG_ERROR);
+      return FALSE;
+    }
+    if (!$site->exists()) {
+      $this->out()->log('No site with the given name exists.', CLOG_ERROR);
+      return FALSE;
+    }
+    return TRUE;
+  }
+  
+  /**
+   * Requires that the site does not exist.
+   * 
+   * @param string $name
+   *   The name of the site. If not specified, it will be loaded via getSite().
+   * 
+   * @return boolean
+   *   TRUE if the site is not present, otherwise FALSE.
+   */
+  protected function requireNoSite($name = NULL) {
+    $site = $this->getSite($name);
+    if (empty($site)) {
+      $this->out()->log('Could not build a site object.', CLOG_ERROR);
+      return FALSE;
+    }
+    if ($site->exists() || $site->existsBackwards()) {
+      $this->out()->log('A site with the given name already exists.', CLOG_ERROR);
+      return FALSE;
+    }
+    return TRUE;
+  }
+  
+  /**
+   * Retrieves the site specified by the given name.
+   * 
+   * @param string $name
+   *   The name of the build. If none is specified, then it is retrieved via
+   *   getBuildName().
+   * 
+   * @return DrupalSite
+   *   A DrupalSite object or NULL if one could not be loaded.
+   * 
+   * @see DrupalSite::createSite()
+   */
+  protected function getSite($name = NULL) {
+    if (empty($name)) {
+      $name = $this->getBuildName();
+    }
+    return DrupalSite::createSite($this->config(), $name, $this->isLocal());
+  }
+  
+  public function verifyRequirements() {
+    // Most commands will require these things. If your plugin does not, then
+    // you can override this completely.
+    return $this->requireCommand('mysql')
+        && $this->requireCommand('git')
+        && $this->requireCommand('drush')
+        && $this->requireFunction('exec')
+        && $this->requireFunction('rename')
+        && $this->requireFunction('copy')
+        && $this->requireFunction('symlink');
+  }
+  
+}

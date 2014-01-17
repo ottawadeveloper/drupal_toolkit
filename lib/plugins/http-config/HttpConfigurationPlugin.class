@@ -1,0 +1,274 @@
+<?php
+/**
+ * @file Defines the HttpConfigurationPlugin class.
+ * 
+ * @defgroup http_types "HTTP Server Types"
+ * The different HTTP server types.
+ */
+
+/**
+ * Server setting to override the HTTP configuration directory from the 
+ * default for the server type.
+ * 
+ * @ingroup server_settings
+ */
+define('SERVER_SETTING_HTTP_CONFIG_DIR', 'http-config-dir');
+
+/**
+ * Fired when a list of HTTP servers is needed.
+ * 
+ * @ingroup events
+ */
+define('EVENT_FIND_HTTP_SERVERS', 'find-http-servers');
+
+/**
+ * Fired when an HTTP server needs to be cast based on its type.
+ * 
+ * @ingroup events
+ */
+define('EVENT_CAST_HTTP_SERVER', 'cast-http-server');
+
+/**
+ * Config key for whether or not we should use the local server as an HTTP
+ * server.
+ * 
+ * @ingroup config
+ */
+define('CONFIG_HTTP_USE_LOCAL', 'http-local');
+
+/**
+ * Config key for the default server type.
+ * 
+ * @ingroup config
+ * @see @ref http_types "HTTP Server Types"
+ */
+define('CONFIG_HTTP_DEFAULT_SERVER_TYPE', 'http-server-type');
+
+/**
+ * Config key for the default config template file.
+ * 
+ * @ingroup config
+ * @see DrupalSite::replaceTokens()
+ */
+define('CONFIG_HTTP_DEFAULT_CONFIG_TEMPLATE', 'http-config-template');
+
+/**
+ * Config key for the default config filename tempalte.
+ * 
+ * @ingroup config
+ * @see DrupalSite::replaceTokens()
+ */
+define('CONFIG_HTTP_DEFAULT_FILENAME_TEMPLATE', 'http-config-filename-template');
+
+/**
+ * Server type for HTTP servers.
+ * 
+ * @ingroup server_types
+ */
+define('SERVER_TYPE_HTTP', 'http');
+
+/**
+ * HTTP server type for apache2 servers.
+ * 
+ * @ingroup http_types
+ */
+define('HTTP_TYPE_APACHE2', 'apache2');
+
+/**
+ * HTTP server type for nginx servers.
+ * 
+ * @ingroup http_types
+ */
+define('HTTP_TYPE_NGINX', 'nginx');
+
+/**
+ * HTTP server type for httpd servers.
+ * 
+ * @ingroup http_types
+ */
+define('HTTP_TYPE_HTTPD', 'httpd');
+
+/**
+ * Server setting to override the default HTTP type.
+ * 
+ * @ingroup server_settings
+ */
+define('SERVER_SETTING_HTTP_TYPE', 'http-type');
+
+/**
+ * Plugin to manage configuring the HTTP server for the Drupal install.
+ */
+class HttpConfigurationPlugin extends GenericPlugin implements EventListener {
+  
+  public function initialize() {
+    $self = dirname(__FILE__);
+    require assemble_path($self, 'GenericHttpServer.class');
+    require assemble_path($self, 'Apache2Server.class');
+    require assemble_path($self, 'HttpdServer.class');
+    require assemble_path($self, 'NginxServer.class');
+    $this->events()->registerListener(array(
+      EVENT_FIND_HTTP_SERVERS,
+      EVENT_CAST_HTTP_SERVER,
+      EVENT_SITE_BUILD_CONFIGURE_SERVER,
+    ), $this);
+    $this->config()->extendDefaultConfiguration(array(
+      CONFIG_HTTP_USE_LOCAL => TRUE,
+      CONFIG_HTTP_DEFAULT_SERVER_TYPE => '',
+      CONFIG_HTTP_DEFAULT_CONFIG_TEMPLATE => '',
+      CONFIG_HTTP_DEFAULT_FILENAME_TEMPLATE => '@@BUILD_NAME',
+      CONFIG_SERVER_LIST => array(
+        SERVER_TYPE_HTTP => array(),
+      ),
+    ));
+  }
+  
+  public function captureEvent(&$context, $eventType) {
+    switch ($eventType) {
+      case EVENT_FIND_HTTP_SERVERS:
+        $context->servers = array_merge($context->servers, $this->getHttpServers());
+        break;
+      case EVENT_CAST_HTTP_SERVER:
+        $cast = $this->castServer($context->server, $context->type);
+        if (!empty($cast)) {
+          $context->httpServer = $cast;
+          $context->stopPropagation = TRUE;
+        }
+        break;
+      case EVENT_SITE_BUILD_CONFIGURE_SERVER:
+        $context->success = $this->publishConfig($context->site);
+        $context->stopPropagation = TRUE;
+        break;
+    }
+  }
+  
+  public function requiredPlugins() {
+    return array('ServerInteractionPlugin', 'DrupalSitePlugin');
+  }
+  
+  /**
+   * Publishes the HTTP server configuration where its needed.
+   * 
+   * @param DrupalSite $site
+   * @return boolean
+   */
+  private function publishConfig(DrupalSite $site) {
+    $c = $this->getConfig(array(
+      'template' => CONFIG_HTTP_DEFAULT_CONFIG_TEMPLATE,
+      'fn_template' => CONFIG_HTTP_DEFAULT_FILENAME_TEMPLATE,
+    ));
+    if (!is_readable($c['template'])) {
+      $this->error('Unable to read template file');
+      return FALSE;
+    }
+    $fullConfig = $site->replaceTokens(file_get_contents($c['template']));
+    if (empty($fullConfig)) {
+      $this->error('No configuration was loaded.');
+      return FALSE;
+    }
+    $filename = $site->replaceTokens($c['fn_template']);
+    $context = (object) array(
+      'servers' => array(),
+    );
+    $this->events()->fireEvent(EVENT_FIND_HTTP_SERVERS, $context);
+    foreach ($context->servers as $httpServer) {
+      if ($httpServer instanceof GenericHttpServer) {
+        if (!$httpServer->writeConfig($filename, $fullConfig)) {
+          $this->error('Unable to write configuration to server');
+          return FALSE;
+        }
+        $httpServer->doReboot();
+      }
+    }
+    $context = (object) array(
+      'site' => $site,
+      'success' => TRUE,
+    );
+    return $context->success;
+  }
+  
+  /**
+   * Casts a server into an HTTP type.
+   * 
+   * @param PhysicalServerInterface $server
+   *   The physical server object
+   * @param string $type
+   *   The HTTP type, see @ref http_types "HTTP Server Types"
+   * 
+   * @return HttpServerInterface
+   *   An appropriate server interface, or NULL if none could be found.
+   */
+  private function castServer(PhysicalServerInterface $server, $type) {
+    switch ($type) {
+      case HTTP_TYPE_APACHE2:
+        return new Apache2Server($server);
+      case HTTP_TYPE_HTTPD:
+        return new HttpdServer($server);
+      case HTTP_TYPE_NGINX:
+        return new NginxServer($server);
+      default:
+        return NULL;
+    }
+  }
+  
+  /**
+   * Retrieves a casted server object using a hook.
+   * 
+   * @param PhysicalServerInterface $server
+   *   The server to cast
+   * @param string $type
+   *   The HTTP type, see @ref http_types "HTTP Server Types"
+   * 
+   * @return HttpServerInterface
+   *   An appropriate server interface, or NULL if none could be found.
+   */
+  private function getCastedServer(PhysicalServerInterface $server, $type) {
+    $context = (object) array(
+      'server' => $server,
+      'type' => $type,
+      'httpServer' => NULL,
+    );
+    $this->events()->fireEvent(EVENT_CAST_HTTP_SERVER, $context);
+    if (!empty($context->httpServer)) {
+      return $context->httpServer;
+    }
+    return NULL;
+  }
+  
+  /**
+   * Retrieves a list of HTTP server objects using the ServerInteractionPlugin.
+   * 
+   * @return array
+   *   An array of HTTP server objects.
+   */
+  private function getHttpServers() {
+    $config = $this->getConfig(array(
+      'server_type' => CONFIG_HTTP_DEFAULT_SERVER_TYPE,
+    ), array(
+      'use_local' => CONFIG_HTTP_USE_LOCAL,
+    ));
+    if (empty($config)) {
+      return array();
+    }
+    $context = (object) array(
+      'type' => SERVER_TYPE_HTTP,
+      'skipLocal' => !$context['use_local'],
+      'servers' => array(),
+    );
+    $this->events()->fireEvent(EVENT_FIND_SERVERS, $context);
+    $httpServers = array();
+    foreach ($context->servers as $server) {
+      if ($server instanceof PhysicalServerInterface) {
+        $type = $server->getSetting(SERVER_SETTING_HTTP_TYPE);
+        if (empty($type)) {
+          $type = $config['server_type'];
+        }
+        $httpServer = $this->getCastedServer($server, $type);
+        if (!empty($httpServer)) {
+          $httpServers[] = $httpServer;
+        }
+      }
+    }
+    return $httpServers;
+  }
+  
+}

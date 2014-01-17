@@ -1,0 +1,376 @@
+\hypertarget{classSiteBuildCommand}{\section{Site\-Build\-Command Class Reference}
+\label{classSiteBuildCommand}\index{Site\-Build\-Command@{Site\-Build\-Command}}
+}
+Inheritance diagram for Site\-Build\-Command\-:\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[height=5.000000cm]{classSiteBuildCommand}
+\end{center}
+\end{figure}
+\subsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\hyperlink{classSiteBuildCommand_a28937f6520fae61f4e49be11f990a215}{verify\-Requirements} ()
+\begin{DoxyCompactList}\small\item\em Verifies that all the requirements are present for the command. \end{DoxyCompactList}\item 
+\hyperlink{classSiteBuildCommand_abb995731e7f6e81316c7557409311f18}{verify\-Arguments} ()
+\begin{DoxyCompactList}\small\item\em Verifies that all the arguments are sensible for the command. \end{DoxyCompactList}\item 
+\hyperlink{classSiteBuildCommand_a5bc9cc514c654c6c8bf276b744eae537}{execute\-Command} ()
+\begin{DoxyCompactList}\small\item\em Called when the command is being executed. \end{DoxyCompactList}\item 
+\hyperlink{classGenericCommand_acba0758cce439b8aeaff359578ba5d1d}{set\-Event\-Manager} (\hyperlink{interfaceEventManagerInterface}{Event\-Manager\-Interface} \$event)
+\item 
+\hyperlink{classGenericCommand_ab918b084bc099cb5f8f56db2d6ed4cac}{set\-Args} (\hyperlink{interfaceArgsInterface}{Args\-Interface} \$a)
+\begin{DoxyCompactList}\small\item\em Sets the instance of args that will be used. \end{DoxyCompactList}\item 
+\hyperlink{classGenericCommand_aee43238a646b83c341ccb27b7d8e0978}{set\-Output} (\hyperlink{interfaceOutputManagerInterface}{Output\-Manager\-Interface} \$output)
+\begin{DoxyCompactList}\small\item\em Sets the output manager. \end{DoxyCompactList}\item 
+\hyperlink{classGenericCommand_a3677ddac20e11f61766c56820f74555b}{set\-Configuration} (\hyperlink{interfaceConfigurationManagerInterface}{Configuration\-Manager\-Interface} \$c)
+\begin{DoxyCompactList}\small\item\em Sets the configuration manager interface. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\subsection*{Protected Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\hyperlink{classSiteBuildCommand_a247fa27974563e8161e6403942ce5d0d}{get\-Extra\-U\-R\-Ls} ()
+\item 
+\hyperlink{classGenericSiteCommand_a5562058d3e947b9d9306f473c64e6108}{get\-Build\-Name} (\$pos=1)
+\begin{DoxyCompactList}\small\item\em Retrieves the build name specified by the argument. \end{DoxyCompactList}\item 
+\hyperlink{classGenericSiteCommand_a5c0051d0cef1a895622617a706a34f9a}{is\-Local} ()
+\begin{DoxyCompactList}\small\item\em Checks to see if the site should be local. \end{DoxyCompactList}\item 
+\hyperlink{classGenericSiteCommand_afde72fc4f48280c3c60705977cdfdb78}{require\-Site} (\$name=N\-U\-L\-L)
+\begin{DoxyCompactList}\small\item\em Verifies that the site exists and can be worked on with this version of the toolkit. \end{DoxyCompactList}\item 
+\hyperlink{classGenericSiteCommand_a4fb8cea3d6d8e3fb81ab0f1d2852e606}{require\-No\-Site} (\$name=N\-U\-L\-L)
+\begin{DoxyCompactList}\small\item\em Requires that the site does not exist. \end{DoxyCompactList}\item 
+\hyperlink{classGenericSiteCommand_aab58878eb7b665d8c02b29d14856c5c6}{get\-Site} (\$name=N\-U\-L\-L)
+\begin{DoxyCompactList}\small\item\em Retrieves the site specified by the given name. \end{DoxyCompactList}\item 
+\hyperlink{classGenericCommand_a2b5ffbef597bcac2bb27fb9fe9ceb996}{args} ()
+\item 
+\hyperlink{classGenericCommand_a806e73ae27fe8187419963c1839531b4}{config} ()
+\item 
+\hyperlink{classGenericCommand_a08478bb9a4cce51c5eec24b4dab17cc8}{out} ()
+\item 
+\hyperlink{classGenericCommand_ac45bd478789164f7c5fc219ead8cf9d2}{events} ()
+\item 
+\hyperlink{classGenericCommand_a7153033aa09664492cfb43ed990fd763}{require\-Command} (\$command\-Name)
+\begin{DoxyCompactList}\small\item\em Requires that the shell command be available. \end{DoxyCompactList}\item 
+\hyperlink{classGenericCommand_a5707289b6d0b2d8afd0bc63a82e99ad1}{require\-Argument} (\$pos)
+\begin{DoxyCompactList}\small\item\em Requires that there be at least \$pos arguments. \end{DoxyCompactList}\item 
+\hyperlink{classGenericCommand_a5161604bad2812fb55f62f5258dd4830}{require\-Config} (\$key)
+\begin{DoxyCompactList}\small\item\em Requires that the given configuration key is present. \end{DoxyCompactList}\item 
+\hyperlink{classGenericCommand_adc40591203a5344603b7365f12829cd8}{require\-Function} (\$func\-\_\-name)
+\begin{DoxyCompactList}\small\item\em Requires that the P\-H\-P function is available. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\subsection*{Private Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\hyperlink{classSiteBuildCommand_a86599dd03da2052d7b8bfd75a820dc02}{third\-Party\-Build\-Step} (\$site, \$stepname, \$extra=array())
+\item 
+\hyperlink{classSiteBuildCommand_ade1f18b278b655fb5543bc1ec638b442}{get\-Site\-U\-R\-L} (\hyperlink{classDrupalSite}{Drupal\-Site} \$site)
+\end{DoxyCompactItemize}
+
+
+\subsection{Member Function Documentation}
+\hypertarget{classGenericCommand_a2b5ffbef597bcac2bb27fb9fe9ceb996}{\index{Site\-Build\-Command@{Site\-Build\-Command}!args@{args}}
+\index{args@{args}!SiteBuildCommand@{Site\-Build\-Command}}
+\subsubsection[{args}]{\setlength{\rightskip}{0pt plus 5cm}Generic\-Command\-::args (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [protected]}, {\ttfamily [inherited]}}}\label{classGenericCommand_a2b5ffbef597bcac2bb27fb9fe9ceb996}
+\begin{DoxyReturn}{Returns}
+Args 
+\end{DoxyReturn}
+
+
+Implements \hyperlink{interfaceArgsDependency_a0f7b28344ad83bbab37c6a18ec74788d}{Args\-Dependency}.
+
+\hypertarget{classGenericCommand_a806e73ae27fe8187419963c1839531b4}{\index{Site\-Build\-Command@{Site\-Build\-Command}!config@{config}}
+\index{config@{config}!SiteBuildCommand@{Site\-Build\-Command}}
+\subsubsection[{config}]{\setlength{\rightskip}{0pt plus 5cm}Generic\-Command\-::config (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [protected]}, {\ttfamily [inherited]}}}\label{classGenericCommand_a806e73ae27fe8187419963c1839531b4}
+\begin{DoxyReturn}{Returns}
+\hyperlink{classConfiguration}{Configuration} 
+\end{DoxyReturn}
+
+
+Implements \hyperlink{interfaceConfigurationDependency_a66f2b69553fee58df04e4a439ed539f1}{Configuration\-Dependency}.
+
+\hypertarget{classGenericCommand_ac45bd478789164f7c5fc219ead8cf9d2}{\index{Site\-Build\-Command@{Site\-Build\-Command}!events@{events}}
+\index{events@{events}!SiteBuildCommand@{Site\-Build\-Command}}
+\subsubsection[{events}]{\setlength{\rightskip}{0pt plus 5cm}Generic\-Command\-::events (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [protected]}, {\ttfamily [inherited]}}}\label{classGenericCommand_ac45bd478789164f7c5fc219ead8cf9d2}
+\begin{DoxyReturn}{Returns}
+\hyperlink{classEventManager}{Event\-Manager} 
+\end{DoxyReturn}
+\hypertarget{classSiteBuildCommand_a5bc9cc514c654c6c8bf276b744eae537}{\index{Site\-Build\-Command@{Site\-Build\-Command}!execute\-Command@{execute\-Command}}
+\index{execute\-Command@{execute\-Command}!SiteBuildCommand@{Site\-Build\-Command}}
+\subsubsection[{execute\-Command}]{\setlength{\rightskip}{0pt plus 5cm}Site\-Build\-Command\-::execute\-Command (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)}}\label{classSiteBuildCommand_a5bc9cc514c654c6c8bf276b744eae537}
+
+
+Implements \hyperlink{interfaceRouterCommand_ab0eb6b733558c299ebe69e8b0199e9f6}{Router\-Command}.
+
+\hypertarget{classGenericSiteCommand_a5562058d3e947b9d9306f473c64e6108}{\index{Site\-Build\-Command@{Site\-Build\-Command}!get\-Build\-Name@{get\-Build\-Name}}
+\index{get\-Build\-Name@{get\-Build\-Name}!SiteBuildCommand@{Site\-Build\-Command}}
+\subsubsection[{get\-Build\-Name}]{\setlength{\rightskip}{0pt plus 5cm}Generic\-Site\-Command\-::get\-Build\-Name (
+\begin{DoxyParamCaption}
+\item[{}]{\$pos = {\ttfamily 1}}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [protected]}, {\ttfamily [inherited]}}}\label{classGenericSiteCommand_a5562058d3e947b9d9306f473c64e6108}
+
+\begin{DoxyParams}[1]{Parameters}
+int & {\em \$pos} & The position of the argument in the build name. \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+string The build name. 
+\end{DoxyReturn}
+\hypertarget{classSiteBuildCommand_a247fa27974563e8161e6403942ce5d0d}{\index{Site\-Build\-Command@{Site\-Build\-Command}!get\-Extra\-U\-R\-Ls@{get\-Extra\-U\-R\-Ls}}
+\index{get\-Extra\-U\-R\-Ls@{get\-Extra\-U\-R\-Ls}!SiteBuildCommand@{Site\-Build\-Command}}
+\subsubsection[{get\-Extra\-U\-R\-Ls}]{\setlength{\rightskip}{0pt plus 5cm}Site\-Build\-Command\-::get\-Extra\-U\-R\-Ls (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [protected]}}}\label{classSiteBuildCommand_a247fa27974563e8161e6403942ce5d0d}
+\hypertarget{classGenericSiteCommand_aab58878eb7b665d8c02b29d14856c5c6}{\index{Site\-Build\-Command@{Site\-Build\-Command}!get\-Site@{get\-Site}}
+\index{get\-Site@{get\-Site}!SiteBuildCommand@{Site\-Build\-Command}}
+\subsubsection[{get\-Site}]{\setlength{\rightskip}{0pt plus 5cm}Generic\-Site\-Command\-::get\-Site (
+\begin{DoxyParamCaption}
+\item[{}]{\$name = {\ttfamily NULL}}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [protected]}, {\ttfamily [inherited]}}}\label{classGenericSiteCommand_aab58878eb7b665d8c02b29d14856c5c6}
+
+\begin{DoxyParams}[1]{Parameters}
+string & {\em \$name} & The name of the build. If none is specified, then it is retrieved via \hyperlink{classGenericSiteCommand_a5562058d3e947b9d9306f473c64e6108}{get\-Build\-Name()}.\\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+\hyperlink{classDrupalSite}{Drupal\-Site} A \hyperlink{classDrupalSite}{Drupal\-Site} object or N\-U\-L\-L if one could not be loaded.
+\end{DoxyReturn}
+\begin{DoxySeeAlso}{See Also}
+\hyperlink{classDrupalSite_a446d5a50b10b165e0518606862954acc}{Drupal\-Site\-::create\-Site()} 
+\end{DoxySeeAlso}
+\hypertarget{classSiteBuildCommand_ade1f18b278b655fb5543bc1ec638b442}{\index{Site\-Build\-Command@{Site\-Build\-Command}!get\-Site\-U\-R\-L@{get\-Site\-U\-R\-L}}
+\index{get\-Site\-U\-R\-L@{get\-Site\-U\-R\-L}!SiteBuildCommand@{Site\-Build\-Command}}
+\subsubsection[{get\-Site\-U\-R\-L}]{\setlength{\rightskip}{0pt plus 5cm}Site\-Build\-Command\-::get\-Site\-U\-R\-L (
+\begin{DoxyParamCaption}
+\item[{{\bf Drupal\-Site}}]{\$site}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [private]}}}\label{classSiteBuildCommand_ade1f18b278b655fb5543bc1ec638b442}
+\hypertarget{classGenericSiteCommand_a5c0051d0cef1a895622617a706a34f9a}{\index{Site\-Build\-Command@{Site\-Build\-Command}!is\-Local@{is\-Local}}
+\index{is\-Local@{is\-Local}!SiteBuildCommand@{Site\-Build\-Command}}
+\subsubsection[{is\-Local}]{\setlength{\rightskip}{0pt plus 5cm}Generic\-Site\-Command\-::is\-Local (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [protected]}, {\ttfamily [inherited]}}}\label{classGenericSiteCommand_a5c0051d0cef1a895622617a706a34f9a}
+\begin{DoxyReturn}{Returns}
+boolean T\-R\-U\-E if the site should be local, otherwise F\-A\-L\-S\-E. 
+\end{DoxyReturn}
+\hypertarget{classGenericCommand_a08478bb9a4cce51c5eec24b4dab17cc8}{\index{Site\-Build\-Command@{Site\-Build\-Command}!out@{out}}
+\index{out@{out}!SiteBuildCommand@{Site\-Build\-Command}}
+\subsubsection[{out}]{\setlength{\rightskip}{0pt plus 5cm}Generic\-Command\-::out (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [protected]}, {\ttfamily [inherited]}}}\label{classGenericCommand_a08478bb9a4cce51c5eec24b4dab17cc8}
+\begin{DoxyReturn}{Returns}
+\hyperlink{classOutputManager}{Output\-Manager} 
+\end{DoxyReturn}
+
+
+Implements \hyperlink{interfaceOutputDependency_aaae940f994ba7252d2ae5163b5fa97eb}{Output\-Dependency}.
+
+\hypertarget{classGenericCommand_a5707289b6d0b2d8afd0bc63a82e99ad1}{\index{Site\-Build\-Command@{Site\-Build\-Command}!require\-Argument@{require\-Argument}}
+\index{require\-Argument@{require\-Argument}!SiteBuildCommand@{Site\-Build\-Command}}
+\subsubsection[{require\-Argument}]{\setlength{\rightskip}{0pt plus 5cm}Generic\-Command\-::require\-Argument (
+\begin{DoxyParamCaption}
+\item[{}]{\$pos}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [protected]}, {\ttfamily [inherited]}}}\label{classGenericCommand_a5707289b6d0b2d8afd0bc63a82e99ad1}
+
+\begin{DoxyParams}[1]{Parameters}
+int & {\em \$pos} & The argument position to require.\\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+boolean T\-R\-U\-E if there are at least \$pos arguments, otherwise F\-A\-L\-S\-E. 
+\end{DoxyReturn}
+\hypertarget{classGenericCommand_a7153033aa09664492cfb43ed990fd763}{\index{Site\-Build\-Command@{Site\-Build\-Command}!require\-Command@{require\-Command}}
+\index{require\-Command@{require\-Command}!SiteBuildCommand@{Site\-Build\-Command}}
+\subsubsection[{require\-Command}]{\setlength{\rightskip}{0pt plus 5cm}Generic\-Command\-::require\-Command (
+\begin{DoxyParamCaption}
+\item[{}]{\$command\-Name}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [protected]}, {\ttfamily [inherited]}}}\label{classGenericCommand_a7153033aa09664492cfb43ed990fd763}
+
+\begin{DoxyParams}[1]{Parameters}
+string & {\em \$command\-Name} & The command to require.\\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+boolean T\-R\-U\-E if the command is available, otherwise false. 
+\end{DoxyReturn}
+\hypertarget{classGenericCommand_a5161604bad2812fb55f62f5258dd4830}{\index{Site\-Build\-Command@{Site\-Build\-Command}!require\-Config@{require\-Config}}
+\index{require\-Config@{require\-Config}!SiteBuildCommand@{Site\-Build\-Command}}
+\subsubsection[{require\-Config}]{\setlength{\rightskip}{0pt plus 5cm}Generic\-Command\-::require\-Config (
+\begin{DoxyParamCaption}
+\item[{}]{\$key}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [protected]}, {\ttfamily [inherited]}}}\label{classGenericCommand_a5161604bad2812fb55f62f5258dd4830}
+
+\begin{DoxyParams}[1]{Parameters}
+string & {\em \$key} & The configuration key to require.\\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+boolean T\-R\-U\-E if the config key is present, otherwise F\-A\-L\-S\-E. 
+\end{DoxyReturn}
+\hypertarget{classGenericCommand_adc40591203a5344603b7365f12829cd8}{\index{Site\-Build\-Command@{Site\-Build\-Command}!require\-Function@{require\-Function}}
+\index{require\-Function@{require\-Function}!SiteBuildCommand@{Site\-Build\-Command}}
+\subsubsection[{require\-Function}]{\setlength{\rightskip}{0pt plus 5cm}Generic\-Command\-::require\-Function (
+\begin{DoxyParamCaption}
+\item[{}]{\$func\-\_\-name}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [protected]}, {\ttfamily [inherited]}}}\label{classGenericCommand_adc40591203a5344603b7365f12829cd8}
+
+\begin{DoxyParams}[1]{Parameters}
+string & {\em \$func\-\_\-name} & The function name to check.\\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+boolean T\-R\-U\-E if the function is present and enabled, otherwise F\-A\-L\-S\-E. 
+\end{DoxyReturn}
+\hypertarget{classGenericSiteCommand_a4fb8cea3d6d8e3fb81ab0f1d2852e606}{\index{Site\-Build\-Command@{Site\-Build\-Command}!require\-No\-Site@{require\-No\-Site}}
+\index{require\-No\-Site@{require\-No\-Site}!SiteBuildCommand@{Site\-Build\-Command}}
+\subsubsection[{require\-No\-Site}]{\setlength{\rightskip}{0pt plus 5cm}Generic\-Site\-Command\-::require\-No\-Site (
+\begin{DoxyParamCaption}
+\item[{}]{\$name = {\ttfamily NULL}}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [protected]}, {\ttfamily [inherited]}}}\label{classGenericSiteCommand_a4fb8cea3d6d8e3fb81ab0f1d2852e606}
+
+\begin{DoxyParams}[1]{Parameters}
+string & {\em \$name} & The name of the site. If not specified, it will be loaded via \hyperlink{classGenericSiteCommand_aab58878eb7b665d8c02b29d14856c5c6}{get\-Site()}.\\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+boolean T\-R\-U\-E if the site is not present, otherwise F\-A\-L\-S\-E. 
+\end{DoxyReturn}
+\hypertarget{classGenericSiteCommand_afde72fc4f48280c3c60705977cdfdb78}{\index{Site\-Build\-Command@{Site\-Build\-Command}!require\-Site@{require\-Site}}
+\index{require\-Site@{require\-Site}!SiteBuildCommand@{Site\-Build\-Command}}
+\subsubsection[{require\-Site}]{\setlength{\rightskip}{0pt plus 5cm}Generic\-Site\-Command\-::require\-Site (
+\begin{DoxyParamCaption}
+\item[{}]{\$name = {\ttfamily NULL}}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [protected]}, {\ttfamily [inherited]}}}\label{classGenericSiteCommand_afde72fc4f48280c3c60705977cdfdb78}
+
+\begin{DoxyParams}[1]{Parameters}
+string & {\em \$name} & The name of the site. If not specified, it will be loaded via \hyperlink{classGenericSiteCommand_aab58878eb7b665d8c02b29d14856c5c6}{get\-Site()}.\\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+boolean T\-R\-U\-E if the site is present, otherwise F\-A\-L\-S\-E. 
+\end{DoxyReturn}
+\hypertarget{classGenericCommand_ab918b084bc099cb5f8f56db2d6ed4cac}{\index{Site\-Build\-Command@{Site\-Build\-Command}!set\-Args@{set\-Args}}
+\index{set\-Args@{set\-Args}!SiteBuildCommand@{Site\-Build\-Command}}
+\subsubsection[{set\-Args}]{\setlength{\rightskip}{0pt plus 5cm}Generic\-Command\-::set\-Args (
+\begin{DoxyParamCaption}
+\item[{{\bf Args\-Interface}}]{\$args}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [inherited]}}}\label{classGenericCommand_ab918b084bc099cb5f8f56db2d6ed4cac}
+
+\begin{DoxyParams}[1]{Parameters}
+\hyperlink{interfaceArgsInterface}{Args\-Interface} & {\em \$args} & The argument manager that will be used. \\
+\hline
+\end{DoxyParams}
+
+
+Implements \hyperlink{interfaceArgsDependency_a254a16af37180b8d36e07d008c2f57f8}{Args\-Dependency}.
+
+\hypertarget{classGenericCommand_a3677ddac20e11f61766c56820f74555b}{\index{Site\-Build\-Command@{Site\-Build\-Command}!set\-Configuration@{set\-Configuration}}
+\index{set\-Configuration@{set\-Configuration}!SiteBuildCommand@{Site\-Build\-Command}}
+\subsubsection[{set\-Configuration}]{\setlength{\rightskip}{0pt plus 5cm}Generic\-Command\-::set\-Configuration (
+\begin{DoxyParamCaption}
+\item[{{\bf Configuration\-Manager\-Interface}}]{\$config}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [inherited]}}}\label{classGenericCommand_a3677ddac20e11f61766c56820f74555b}
+
+\begin{DoxyParams}[1]{Parameters}
+\hyperlink{interfaceConfigurationManagerInterface}{Configuration\-Manager\-Interface} & {\em \$config} & The configuration manager interface. \\
+\hline
+\end{DoxyParams}
+
+
+Implements \hyperlink{interfaceConfigurationDependency_a93b2f6f74680415c80eb4cd4fa3b3a82}{Configuration\-Dependency}.
+
+\hypertarget{classGenericCommand_acba0758cce439b8aeaff359578ba5d1d}{\index{Site\-Build\-Command@{Site\-Build\-Command}!set\-Event\-Manager@{set\-Event\-Manager}}
+\index{set\-Event\-Manager@{set\-Event\-Manager}!SiteBuildCommand@{Site\-Build\-Command}}
+\subsubsection[{set\-Event\-Manager}]{\setlength{\rightskip}{0pt plus 5cm}Generic\-Command\-::set\-Event\-Manager (
+\begin{DoxyParamCaption}
+\item[{{\bf Event\-Manager\-Interface}}]{\$event}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [inherited]}}}\label{classGenericCommand_acba0758cce439b8aeaff359578ba5d1d}
+\hypertarget{classGenericCommand_aee43238a646b83c341ccb27b7d8e0978}{\index{Site\-Build\-Command@{Site\-Build\-Command}!set\-Output@{set\-Output}}
+\index{set\-Output@{set\-Output}!SiteBuildCommand@{Site\-Build\-Command}}
+\subsubsection[{set\-Output}]{\setlength{\rightskip}{0pt plus 5cm}Generic\-Command\-::set\-Output (
+\begin{DoxyParamCaption}
+\item[{{\bf Output\-Manager\-Interface}}]{\$out}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [inherited]}}}\label{classGenericCommand_aee43238a646b83c341ccb27b7d8e0978}
+
+\begin{DoxyParams}[1]{Parameters}
+\hyperlink{interfaceOutputManagerInterface}{Output\-Manager\-Interface} & {\em \$out} & \\
+\hline
+\end{DoxyParams}
+
+
+Implements \hyperlink{interfaceOutputDependency_af915894ca0a2985f759834517861ce9d}{Output\-Dependency}.
+
+\hypertarget{classSiteBuildCommand_a86599dd03da2052d7b8bfd75a820dc02}{\index{Site\-Build\-Command@{Site\-Build\-Command}!third\-Party\-Build\-Step@{third\-Party\-Build\-Step}}
+\index{third\-Party\-Build\-Step@{third\-Party\-Build\-Step}!SiteBuildCommand@{Site\-Build\-Command}}
+\subsubsection[{third\-Party\-Build\-Step}]{\setlength{\rightskip}{0pt plus 5cm}Site\-Build\-Command\-::third\-Party\-Build\-Step (
+\begin{DoxyParamCaption}
+\item[{}]{\$site, }
+\item[{}]{\$stepname, }
+\item[{}]{\$extra = {\ttfamily array()}}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [private]}}}\label{classSiteBuildCommand_a86599dd03da2052d7b8bfd75a820dc02}
+\hypertarget{classSiteBuildCommand_abb995731e7f6e81316c7557409311f18}{\index{Site\-Build\-Command@{Site\-Build\-Command}!verify\-Arguments@{verify\-Arguments}}
+\index{verify\-Arguments@{verify\-Arguments}!SiteBuildCommand@{Site\-Build\-Command}}
+\subsubsection[{verify\-Arguments}]{\setlength{\rightskip}{0pt plus 5cm}Site\-Build\-Command\-::verify\-Arguments (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)}}\label{classSiteBuildCommand_abb995731e7f6e81316c7557409311f18}
+\begin{DoxyReturn}{Returns}
+boolean Whether or not the arguments are sensible. 
+\end{DoxyReturn}
+
+
+Reimplemented from \hyperlink{classGenericCommand_a3ceec8b56361aeb4b09bee46bb85bac4}{Generic\-Command}.
+
+\hypertarget{classSiteBuildCommand_a28937f6520fae61f4e49be11f990a215}{\index{Site\-Build\-Command@{Site\-Build\-Command}!verify\-Requirements@{verify\-Requirements}}
+\index{verify\-Requirements@{verify\-Requirements}!SiteBuildCommand@{Site\-Build\-Command}}
+\subsubsection[{verify\-Requirements}]{\setlength{\rightskip}{0pt plus 5cm}Site\-Build\-Command\-::verify\-Requirements (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)}}\label{classSiteBuildCommand_a28937f6520fae61f4e49be11f990a215}
+These requirements should be able to be checked without arguments.
+
+\begin{DoxyReturn}{Returns}
+boolean Whether or not the requirements are met. 
+\end{DoxyReturn}
+
+
+Reimplemented from \hyperlink{classGenericSiteCommand_a984e5d6fa123e9443f14d99a7919e85d}{Generic\-Site\-Command}.
+
+
+
+The documentation for this class was generated from the following file\-:\begin{DoxyCompactItemize}
+\item 
+\hyperlink{SiteBuildCommand_8class}{Site\-Build\-Command.\-class}\end{DoxyCompactItemize}

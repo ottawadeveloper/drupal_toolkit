@@ -1,0 +1,106 @@
+<?php
+/**
+ * @file Provides the GenericDBM class.
+ */
+
+/**
+ * Provides basic functionality that is likely similar between different 
+ * database implementations.
+ */
+abstract class GenericDBM implements DatabaseManagerInterface {
+  
+  /**
+   * The connection data from the configuration settings. 
+   * @var array
+   */
+  private $connectionData = array();
+  
+  /**
+   * The maximum length of a random password.
+   * @var int
+   */
+  private $passwordMaxLength = 32;
+  
+  /**
+   * The minimum length of a random password.
+   * @var int
+   */
+  private $passwordMinLength = 24;
+  
+  /**
+   * The character set that can be used in random passwords.
+   * @var string
+   */
+  private $charset = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz1234567890_-!.=';
+  
+  /**
+   * Constructor.
+   * 
+   * @param array $connectionData
+   *   String of connection data.
+   * @param string $charset
+   *   Valid characters for passwords, all in a string, or NULL if we should use
+   *   the defaults.
+   * @param int $passwordMaxLength
+   *   The maximum length of a random password.
+   * @param int $passwordMinLength
+   *   The minimum length of a random password.
+   */
+  public function __construct($connectionData, $charset = NULL, $passwordMaxLength = NULL, $passwordMinLength = NULL) {
+    $this->connectionData = $connectionData;
+    if (!empty($charset)) {
+      $this->charset = $charset;
+    }
+    if (!empty($passwordMinLength)) {
+      $this->passwordMinLength = $passwordMinLength;
+    }
+    if (!empty($passwordMaxLength)) {
+      $this->passwordMaxLength = $passwordMaxLength;
+    }
+  }
+  
+  /**
+   * Generates a random character from the character set.
+   * 
+   * @return string
+   *   A random character from $this->charset.
+   */
+  private function randomCharacter() {
+    $rand = mt_rand(0, strlen($this->charset) - 1);
+    return $this->charset[$rand];
+  }
+  
+  /**
+   * Retrieves a setting from the connection data.
+   * 
+   * @param string $key
+   *   A setting key to retrieve.
+   * 
+   * @return string
+   *   The setting value or NULL if not defined.
+   */
+  protected function getSetting($key) {
+    if (isset($this->connectionData[$key])) {
+      return $this->connectionData[$key];
+    }
+    return NULL;
+  }
+  
+  public function randomPassword() {
+    $password = '';
+    $length = mt_rand($this->passwordMinLength, $this->passwordMaxLength);
+    for ($k = 0; $k < $length; $k++) {
+      $password .= $this->randomCharacter();
+    }
+    return $password;
+  }
+  
+  public function sanitizeDatabaseName($database) {
+    return $database;
+  }
+  
+  public function sanitizeUsername($username) {
+    return $username;
+  }
+  
+}

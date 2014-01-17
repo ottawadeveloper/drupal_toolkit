@@ -1,0 +1,193 @@
+\hypertarget{system_8inc}{\section{system.\-inc File Reference}
+\label{system_8inc}\index{system.\-inc@{system.\-inc}}
+}
+\subsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+\hyperlink{system_8inc_a9ee2cecceab0183d4131fb3bada09b06}{get\-\_\-system\-\_\-username} ()
+\begin{DoxyCompactList}\small\item\em Attempts to retrieve the current system username. \end{DoxyCompactList}\item 
+\hyperlink{system_8inc_a42c75bda6715af3454dc8780c4ff2fe5}{expand\-\_\-path} (\$path)
+\begin{DoxyCompactList}\small\item\em Expands a path in ways that realpath() doesn't and without necessarily ensuring the file exists. \end{DoxyCompactList}\item 
+\hyperlink{system_8inc_a2f17c192f771840162549a7ec741723f}{get\-\_\-system\-\_\-primary\-\_\-group} (\$username=N\-U\-L\-L)
+\begin{DoxyCompactList}\small\item\em Attempts to determine the user's primary group (usually the one that is the same as the username, but not necessarily that one). \end{DoxyCompactList}\item 
+\hyperlink{system_8inc_a45b2a5f8e0b0ecf6c6751b2af8500a57}{shell\-\_\-command\-\_\-available} (\$command\-\_\-name)
+\begin{DoxyCompactList}\small\item\em Checks to see if a shell command is available. \end{DoxyCompactList}\item 
+\hyperlink{system_8inc_ad69548f9b921ea81ee4b4e0f64101ba7}{chmog} (\$target, \$owner, \$group, \$access, \$recursive=F\-A\-L\-S\-E)
+\begin{DoxyCompactList}\small\item\em Apply a chmod, chown and chgrp operation to a set of files. \end{DoxyCompactList}\item 
+\hyperlink{system_8inc_afac6dffabc4c3d916afd6b1b4156d7d6}{assemble\-\_\-path} (\$path1, \$path2)
+\begin{DoxyCompactList}\small\item\em Assembles two or more path components into a single path. \end{DoxyCompactList}\item 
+\hyperlink{system_8inc_addcd1c8f031184d61bc621c5b950f29a}{register\-\_\-system\-\_\-command\-\_\-listener} (\$cb=N\-U\-L\-L)
+\begin{DoxyCompactList}\small\item\em Registers a listener for \hyperlink{system_8inc_aceaebfbfc4f946410755f6df59f5f8cf}{execute\-\_\-system\-\_\-command()}. \end{DoxyCompactList}\item 
+\hyperlink{system_8inc_aceaebfbfc4f946410755f6df59f5f8cf}{execute\-\_\-system\-\_\-command} (\$command, array \$args=array(), \&\$output=array(), \&\$return\-Code= '')
+\begin{DoxyCompactList}\small\item\em Safely executes a system command using prepared argument like syntax. \end{DoxyCompactList}\end{DoxyCompactItemize}
+
+
+\subsection{Function Documentation}
+\hypertarget{system_8inc_afac6dffabc4c3d916afd6b1b4156d7d6}{\index{system.\-inc@{system.\-inc}!assemble\-\_\-path@{assemble\-\_\-path}}
+\index{assemble\-\_\-path@{assemble\-\_\-path}!system.inc@{system.\-inc}}
+\subsubsection[{assemble\-\_\-path}]{\setlength{\rightskip}{0pt plus 5cm}assemble\-\_\-path (
+\begin{DoxyParamCaption}
+\item[{}]{\$path1, }
+\item[{}]{\$path2}
+\end{DoxyParamCaption}
+)}}\label{system_8inc_afac6dffabc4c3d916afd6b1b4156d7d6}
+
+\begin{DoxyParams}[1]{Parameters}
+string & {\em \$path1} & First path component. \\
+\hline
+string & {\em \$path2} & Second path component. \\
+\hline
+ & {\em string} & ... Additional path components, as needed.\\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+string The assembled path. 
+\end{DoxyReturn}
+\hypertarget{system_8inc_ad69548f9b921ea81ee4b4e0f64101ba7}{\index{system.\-inc@{system.\-inc}!chmog@{chmog}}
+\index{chmog@{chmog}!system.inc@{system.\-inc}}
+\subsubsection[{chmog}]{\setlength{\rightskip}{0pt plus 5cm}chmog (
+\begin{DoxyParamCaption}
+\item[{}]{\$target, }
+\item[{}]{\$owner, }
+\item[{}]{\$group, }
+\item[{}]{\$access, }
+\item[{}]{\$recursive = {\ttfamily FALSE}}
+\end{DoxyParamCaption}
+)}}\label{system_8inc_ad69548f9b921ea81ee4b4e0f64101ba7}
+This is a helper function specifically designed to make recursive applications easier since the directories only need to be opened once.
+
+Relies on chmod(), chown() and chgrp().
+
+
+\begin{DoxyParams}[1]{Parameters}
+string & {\em \$target} & A directory or file to apply the settings to. \\
+\hline
+string & {\em \$owner} & The new owner of the file. \\
+\hline
+string & {\em \$group} & The new group of the file. \\
+\hline
+string & {\em \$access} & The new access modifier of the file (eg 0755). Note that if you are using a string to provide the value (eg \char`\"{}755\char`\"{}) then you must use decoct() to convert it first. \\
+\hline
+boolean & {\em \$recursive} & Set to T\-R\-U\-E if you want to operate recursively on all available directories.\\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+int The number of errors that occured during the process. 
+\end{DoxyReturn}
+\hypertarget{system_8inc_aceaebfbfc4f946410755f6df59f5f8cf}{\index{system.\-inc@{system.\-inc}!execute\-\_\-system\-\_\-command@{execute\-\_\-system\-\_\-command}}
+\index{execute\-\_\-system\-\_\-command@{execute\-\_\-system\-\_\-command}!system.inc@{system.\-inc}}
+\subsubsection[{execute\-\_\-system\-\_\-command}]{\setlength{\rightskip}{0pt plus 5cm}execute\-\_\-system\-\_\-command (
+\begin{DoxyParamCaption}
+\item[{}]{\$command, }
+\item[{array}]{\$args = {\ttfamily array()}, }
+\item[{\&}]{\$output = {\ttfamily array()}, }
+\item[{\&}]{\$return\-Code = {\ttfamily ''}}
+\end{DoxyParamCaption}
+)}}\label{system_8inc_aceaebfbfc4f946410755f6df59f5f8cf}
+Essentially \$command can have many strings in the format !argname. These then get passed to \$args. Each will be escaped using escapeshellarg() before they are executed (note that this adds quotes!!)
+
+
+\begin{DoxyParams}[1]{Parameters}
+string & {\em \$command} & The command to execute. \\
+\hline
+array & {\em \$args} & An array of arguments to replace. \\
+\hline
+array & {\em \$output} & Will be set to an array of the output lines. \\
+\hline
+int & {\em \$return\-Code} & Will be set to the exit code of the function.\\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+string The last time returned by \$command. 
+\end{DoxyReturn}
+\hypertarget{system_8inc_a42c75bda6715af3454dc8780c4ff2fe5}{\index{system.\-inc@{system.\-inc}!expand\-\_\-path@{expand\-\_\-path}}
+\index{expand\-\_\-path@{expand\-\_\-path}!system.inc@{system.\-inc}}
+\subsubsection[{expand\-\_\-path}]{\setlength{\rightskip}{0pt plus 5cm}expand\-\_\-path (
+\begin{DoxyParamCaption}
+\item[{}]{\$path}
+\end{DoxyParamCaption}
+)}}\label{system_8inc_a42c75bda6715af3454dc8780c4ff2fe5}
+Current supports\-:
+\begin{DoxyItemize}
+\item expansion of a starting tilde ($\sim$) to the current H\-O\-M\-E directory if provided by the \$\-\_\-\-S\-E\-R\-V\-E\-R global.
+\end{DoxyItemize}
+
+
+\begin{DoxyParams}[1]{Parameters}
+string & {\em \$path} & The path to expand.\\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+string The expanded path. 
+\end{DoxyReturn}
+\hypertarget{system_8inc_a2f17c192f771840162549a7ec741723f}{\index{system.\-inc@{system.\-inc}!get\-\_\-system\-\_\-primary\-\_\-group@{get\-\_\-system\-\_\-primary\-\_\-group}}
+\index{get\-\_\-system\-\_\-primary\-\_\-group@{get\-\_\-system\-\_\-primary\-\_\-group}!system.inc@{system.\-inc}}
+\subsubsection[{get\-\_\-system\-\_\-primary\-\_\-group}]{\setlength{\rightskip}{0pt plus 5cm}get\-\_\-system\-\_\-primary\-\_\-group (
+\begin{DoxyParamCaption}
+\item[{}]{\$username = {\ttfamily NULL}}
+\end{DoxyParamCaption}
+)}}\label{system_8inc_a2f17c192f771840162549a7ec741723f}
+Right now this returns the first group listed in getent group \mbox{[}username\mbox{]}.
+
+
+\begin{DoxyParams}[1]{Parameters}
+string & {\em \$username} & The username to get the group of. If not provided, will attempt to lookup the current user using \hyperlink{system_8inc_a9ee2cecceab0183d4131fb3bada09b06}{get\-\_\-system\-\_\-username()}.\\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+string The primary group of the user or N\-U\-L\-L if one could not be determined 
+\end{DoxyReturn}
+\hypertarget{system_8inc_a9ee2cecceab0183d4131fb3bada09b06}{\index{system.\-inc@{system.\-inc}!get\-\_\-system\-\_\-username@{get\-\_\-system\-\_\-username}}
+\index{get\-\_\-system\-\_\-username@{get\-\_\-system\-\_\-username}!system.inc@{system.\-inc}}
+\subsubsection[{get\-\_\-system\-\_\-username}]{\setlength{\rightskip}{0pt plus 5cm}get\-\_\-system\-\_\-username (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)}}\label{system_8inc_a9ee2cecceab0183d4131fb3bada09b06}
+Linux support only at this point.
+
+Relies on the system whoami command.
+
+\begin{DoxyReturn}{Returns}
+string The username of the current system user, or N\-U\-L\-L if unable to determine. 
+\end{DoxyReturn}
+\hypertarget{system_8inc_addcd1c8f031184d61bc621c5b950f29a}{\index{system.\-inc@{system.\-inc}!register\-\_\-system\-\_\-command\-\_\-listener@{register\-\_\-system\-\_\-command\-\_\-listener}}
+\index{register\-\_\-system\-\_\-command\-\_\-listener@{register\-\_\-system\-\_\-command\-\_\-listener}!system.inc@{system.\-inc}}
+\subsubsection[{register\-\_\-system\-\_\-command\-\_\-listener}]{\setlength{\rightskip}{0pt plus 5cm}register\-\_\-system\-\_\-command\-\_\-listener (
+\begin{DoxyParamCaption}
+\item[{}]{\$cb = {\ttfamily NULL}}
+\end{DoxyParamCaption}
+)}}\label{system_8inc_addcd1c8f031184d61bc621c5b950f29a}
+This will call the callback with a message every time \hyperlink{system_8inc_aceaebfbfc4f946410755f6df59f5f8cf}{execute\-\_\-system\-\_\-command()} is called.
+
+array \$system\-\_\-command\-\_\-listeners Keeps track of all the callbacks.
+
+
+\begin{DoxyParams}[1]{Parameters}
+callable & {\em \$cb} & The callback. Should take one parameter for a message.\\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+array An array of callback methods currently registered. 
+\end{DoxyReturn}
+\hypertarget{system_8inc_a45b2a5f8e0b0ecf6c6751b2af8500a57}{\index{system.\-inc@{system.\-inc}!shell\-\_\-command\-\_\-available@{shell\-\_\-command\-\_\-available}}
+\index{shell\-\_\-command\-\_\-available@{shell\-\_\-command\-\_\-available}!system.inc@{system.\-inc}}
+\subsubsection[{shell\-\_\-command\-\_\-available}]{\setlength{\rightskip}{0pt plus 5cm}shell\-\_\-command\-\_\-available (
+\begin{DoxyParamCaption}
+\item[{}]{\$command\-\_\-name}
+\end{DoxyParamCaption}
+)}}\label{system_8inc_a45b2a5f8e0b0ecf6c6751b2af8500a57}
+This includes both that the command exists on the system and that the command can be executed by the current user.
+
+This relies on which (Linux) or where (Windows).
+
+array \$checked\-\_\-commands The array of already checked commands.  string \$environment L for linux, W for Windows.
+
+
+\begin{DoxyParams}[1]{Parameters}
+string & {\em \$command\-\_\-name} & The command name to check.\\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+boolean T\-R\-U\-E if the command can be run, otherwise F\-A\-L\-S\-E. 
+\end{DoxyReturn}

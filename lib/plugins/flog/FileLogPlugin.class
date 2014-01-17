@@ -1,0 +1,56 @@
+<?php
+/**
+ * @file Defines the FileLogPlugin class.
+ */
+
+/**
+ * Config key for the log file name.
+ * 
+ * Should be a path to a file for logging.
+ * 
+ * @ingroup config
+ */
+define('CONFIG_LOG_FILE', 'log-file');
+
+/**
+ * Responsible for setting up file logging if requested.
+ */
+class FileLogPlugin extends GenericPlugin implements EventListener {
+  
+  public function initialize() {
+    $root = dirname(__FILE__);
+    require assemble_path($root, 'FileLog.class');
+    $this->events()->registerListener(EVENT_CORE_REGISTER_OUTPUTS, $this);
+    $this->config()->extendDefaultConfiguration(array(
+      CONFIG_LOG_FILE => NULL,
+    ));
+  }
+  
+  public function captureEvent(&$context, $type) {
+    switch ($type) {
+      case EVENT_CORE_REGISTER_OUTPUTS:
+        $this->registerFileLogHandler($context->debugLevel);
+        break;
+    }
+  }
+  
+  /**
+   * Registers a file log handler if requested and the settings are valid.
+   * 
+   * @param int $debugLevel
+   *   The current debug level see @ref debug_levels "Debug levels"
+   */
+  private function registerFileLogHandler($debugLevel) {
+    $path = $this->config()->getConfig(CONFIG_LOG_FILE);
+    if (!empty($path)) {
+      $flog = new FileLog($path);
+      if ($flog->valid()) {
+        $this->out()->registerListener($flog);
+      }
+      else {
+        $this->out()->log('Unable to open ['.$path.'] for logging, file logging skipped');
+      }
+    }
+  }
+  
+}

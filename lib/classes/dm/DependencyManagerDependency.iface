@@ -1,0 +1,26 @@
+<?php
+/**
+ * @file Defines the DependencyManagerDependency interface.
+ */
+
+/**
+ * Used to tag the object as requiring a reference to the dependency manager.
+ */
+interface DependencyManagerDependency {
+  
+  /**
+   * Sets the dependency manager.
+   * 
+   * @param DependencyManagerInterface $dm
+   *   The dependency manager.
+   */
+  function setDependencyManager(DependencyManagerInterface $dm);
+  
+  /**
+   * Returns the set dependency manager.
+   * 
+   * @return DependencyManagerInterface
+   */
+  function dm();
+  
+}

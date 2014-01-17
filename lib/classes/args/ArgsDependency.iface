@@ -1,0 +1,28 @@
+<?php
+/**
+ * @file Defines the ArgsDependency interface.
+ */
+
+/**
+ * Denotes that this class requires a reference to command line arguments and
+ * options.
+ */
+interface ArgsDependency {
+  
+  /**
+   * Sets the instance of args that will be used.
+   * 
+   * @param ArgsInterface $args 
+   *   The argument manager that will be used.
+   */
+  function setArgs(ArgsInterface $args);
+  
+  /**
+   * Retrieves the instance of args that will be used.
+   * 
+   * @return ArgsInterface
+   *   An argument manager.
+   */
+  function args();
+  
+}

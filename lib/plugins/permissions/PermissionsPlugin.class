@@ -1,0 +1,110 @@
+<?php
+
+class PermissionsPlugin extends GenericPlugin implements EventListener {
+  
+  public function checkExtraRequirements() {
+    if (!php_function_available('chmod')) {
+      return FALSE;
+    }
+    if (!php_function_available('chown')) {
+      return FALSE;
+    }
+    if (!php_function_available('chgrp')) {
+      return FALSE;
+    }
+    return parent::checkExtraRequirements();
+  }
+  
+  public function initialize() {
+    $this->config()->extendDefaultConfiguration(array(
+      'permissions-ignore-all' => FALSE,
+      'permissions-default-owner' => NULL,
+      'permissions-default-group' => NULL,
+      'permissions-default-access' => '755',
+      'permissions-build-owner' => NULL,
+      'permissions-build-group' => NULL,
+      'permissions-build-access' => '755',
+      'permissions-build-ignore' => FALSE,
+      'permissions-server-owner' => 'apache',
+      'permissions-server-group' => 'apache',
+      'permissions-server-access' => '700',
+      'permissions-server-ignore' => FALSE,
+      'permissions-system-owner' => 'root',
+      'permissions-system-group' => 'root',
+      'permissions-system-access' => '700',
+      'permissions-system-ignore' => FALSE,
+    ));
+    $this->events()->registerListener(array('site-built'), $this);
+  }
+  
+  private function applyPermissions($target, $cat, $recursive = FALSE) {
+    if (!extra_empty($this->config()->getConfig('permissions-ignore-all'))) {
+      return NULL;
+    }
+    if (!extra_empty($this->config()->getConfig('permissions-' . $cat . '-ignore'))) {
+      return NULL;
+    }
+    $user = $this->config()->getConfig('permissions-' . $cat . '-owner');
+    if (empty($user)) {
+      $user = $this->config()->getConfig('permissions-default-owner');
+      if (empty($user)) {
+        $user = get_system_username();
+      }
+    }
+    if (empty($user)) {
+      $this->out()->log('Unable to apply permissions, could not determine a suitable user.', CLOG_WARNING);
+      return FALSE;
+    }
+    $group = $this->config()->getConfig('permissions-' . $cat . '-group');
+    if (empty($group)) {
+      $group = $this->config()->getConfig('permissions-default-group');
+      if (empty($group)) {
+        $group = get_system_primary_group($user);
+      }
+    }
+    if (empty($group)) {
+      $this->out()->log('Unable to apply permissions, could not determine a suitable group.', CLOG_WARNING);
+      return FALSE;
+    }
+    $access = $this->config()->getConfig('permissions-' . $cat . '-access');
+    if (empty($access)) {
+      $access = $this->config()->getConfig('permissions-default-access');
+      if (empty($access)) {
+        $access = "755";
+      }
+    }
+    $access = octdec($access);
+    if (!is_array($target)) {
+      $target = array($target);
+    }
+    $failures = 0;
+    foreach ($target as $tfile) {
+      $message = 'Updating permissions on ' . $tfile . ' to [' . 
+            $user . ':' . $group . ':' . decoct($access) . ']';
+      if ($recursive) {
+        $message .= ' recursively';
+      }
+      $this->out()->message($message);
+      $failures += chmog($tfile, $user, $group, $access, $recursive);
+    }
+    if (!empty($failures)) {
+      $this->out()->log('Unable to completely modify permissions, ['.$failures.'] actions failed');
+      return FALSE;
+    }
+    return TRUE;
+  }
+  
+  public function captureEvent(&$context, $type) {
+    switch ($type) {
+      case 'site-built':
+        $site = $context->site;
+        if ($site instanceof DrupalSite) {
+          $this->applyPermissions($site->getBuildFolder(), 'build', TRUE);
+          $this->applyPermissions($site->getServerFiles(), 'server', TRUE);
+          $this->applyPermissions($site->getSystemFiles(), 'system', TRUE);
+        }
+        break;
+    }
+  }
+  
+}

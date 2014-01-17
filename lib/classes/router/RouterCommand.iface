@@ -1,0 +1,37 @@
+<?php
+/**
+ * @file Defines the RouterCommand interface.
+ */
+
+/**
+ * A router command is called to process a command.
+ */
+interface RouterCommand 
+    extends ArgsDependency, 
+            ConfigurationDependency, 
+            OutputDependency,
+            EventDependency {
+  
+  /**
+   * Called when the command is being executed.
+   */
+  function executeCommand();
+  
+  /**
+   * Verifies that all the requirements are present for the command. These
+   * requirements should be able to be checked without arguments.
+   * 
+   * @return boolean
+   *   Whether or not the requirements are met.
+   */
+  function verifyRequirements();
+  
+  /**
+   * Verifies that all the arguments are sensible for the command. 
+   * 
+   * @return boolean
+   *   Whether or not the arguments are sensible.
+   */
+  function verifyArguments();
+  
+}

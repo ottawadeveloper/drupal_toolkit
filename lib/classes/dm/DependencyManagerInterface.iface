@@ -1,0 +1,78 @@
+<?php
+/**
+ * @file Defines the DependencyManagerInterface interface.
+ */
+
+/**
+ * Implements a simple version of the dependency injection process.
+ * 
+ * Anyone can register injectors with this class. Injectors 
+ * include an interface that must be matched,  a callback from that interface,
+ * one or more object keys and their matching object types.
+ * 
+ * Once registered, any object passing through the setDependencies() method that
+ * has the appropriate interface will have the callback method called with
+ * the appropriate objects if they are defined.
+ * 
+ * Dependencies can be set either using the static pattern (defined in
+ * DependencyManager()) or they can use DI themselves by requesting the
+ * DependencyManager itself as a DependencyManager (implement 
+ * DependencyManagerDependency). 
+ * 
+ * To leverage DI in your own classes, you must make sure they are instatiated
+ * in a way that calls the dependency injector. 
+ */
+interface DependencyManagerInterface {
+  
+  /**
+   * Injects all the appropriate dependencies into objects.
+   * 
+   * For each registered injector, if $object matches $interfaceMatch, then
+   * $callback is called with the arguments set by registerObject() that match
+   * the keys in $objectKey.
+   * 
+   * @param object $object
+   *   An object to set dependencies on.
+   * 
+   * @return boolean
+   *   TRUE if the dependencies were injected, otherwise FALSE.
+   */
+  function setDependencies(&$object);
+  
+  /**
+   * Updates the dependencies on all objects that were set previously.
+   */
+  function updateExisting();
+  
+  /**
+   * Registers a new dependency injector.
+   * 
+   * @param string $interfaceMatch
+   *   Only objects that match this interface will be injected.
+   * @param string $callback
+   *   A method from $interfaceMatch that will be called to inject the object.
+   * @param string|array $objectKey
+   *   One or more keys of objects set with registerObject() that will be passed
+   *   as arguments to $callback.
+   * @param string $objectType
+   *   The interface that the object set by registerObject() must match.
+   */
+  function registerInjector($interfaceMatch, $callback, $objectKey, $objectType);
+  
+  /**
+   * Registers a dependency object.
+   * 
+   * If $this->injectorClasses[$objectKey] is set, $object must be an instance
+   * of the class $this->injectorClasses[$objectKey].
+   * 
+   * @param string $objectKey
+   *   The key to register.
+   * @param object $object
+   *   The object to register against the key.
+   * 
+   * @return boolean
+   *   TRUE if the object was registered, otherwise FALSE.
+   */
+  function registerObject($objectKey, &$object);
+  
+}

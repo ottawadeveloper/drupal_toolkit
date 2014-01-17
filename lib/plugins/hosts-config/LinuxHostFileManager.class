@@ -1,0 +1,22 @@
+<?php
+/**
+ * @file Defines the LinuxHostFileManager class.
+ */
+
+/**
+ * Implementation of HostFileManagerInterface for Linux systems that keep
+ * their hosts file at /etc/hosts
+ */
+class LinuxHostFileManager extends GenericHostFileManager {
+  
+  /**
+   * Constructor.
+   * 
+   * @param PhysicalServerInterface $server
+   *   The server we're working with.
+   */
+  public function __construct(PhysicalServerInterface $server) {
+    parent::__construct($server, '/etc/hosts');
+  }
+  
+}

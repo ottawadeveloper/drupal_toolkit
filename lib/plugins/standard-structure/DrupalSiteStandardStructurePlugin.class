@@ -1,0 +1,58 @@
+<?php
+
+class DrupalSiteStandardStructurePlugin extends GenericPlugin implements EventListener {
+  
+  public function initialize() {
+    $this->events()->registerListener(array('site-build-structure'), $this);
+  }
+  
+  private function buildSite(DrupalSite $site) {
+    // @todo we should generate these through a hook.
+    $dirs = array(
+      '/',
+      'codebases',
+      'backups',
+      'metrics',
+      'restored',
+      'reverted',
+      'sites',
+      'test-output',
+    );
+    $root = $site->getBuildFolder();
+    foreach ($dirs as $dir) {
+      $full = assemble_path($root, $dir);
+      if (!is_dir($full)) {
+        mkdir($full);
+        if (!is_dir($full)) {
+          $this->error('Unable to create directory ['.$full.']');
+          return FALSE;
+        }
+      }
+    }
+    $site->setSetting('structure_codebases_dir', 'codebases');
+    $site->setSetting('structure_sites_dir', 'sites');
+    
+    $context = (object) array(
+      'success' => TRUE,
+      'site' => $site,
+    );
+    
+    $this->events()->fireEvent('standard-structure-continue', $context);
+    
+    return $context->success;
+  }
+  
+  public function requiredPlugins() {
+    return array('DrupalSitePlugin');
+  }
+  
+  public function captureEvent(&$context, $type) {
+    switch ($type) {
+      case 'site-build-structure':
+        $context->success = $this->buildSite($context->site);
+        $context->stopPropagation = TRUE;
+        break;
+    }
+  }
+  
+}

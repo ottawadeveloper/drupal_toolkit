@@ -1,0 +1,64 @@
+<?php
+/**
+ * @file Defines the GenericHostFileManager class.
+ */
+
+/**
+ * Responsible for managing the hosts file of a server.
+ */
+abstract class GenericHostFileManager implements HostFileManagerInterface {
+  
+  /**
+   * The path to the host file.
+   * 
+   * @var string
+   */
+  private $hostfile = '';
+  
+  /**
+   * The physical machine.
+   * 
+   * @var PhysicalServerInterface
+   */
+  private $machine = NULL;
+  
+  /**
+   * Constructor.
+   * 
+   * @param PhysicalServerInterface $server
+   *   The physical machine.
+   * @param string $hostfile
+   *   The location of the host file for this machine.
+   */
+  public function __construct(PhysicalServerInterface $server, $hostfile) {
+    $this->hostfile = $hostfile;
+    $this->machine = $server;
+  }
+  
+  /**
+   * Retrieves the physical machine.
+   * 
+   * @return PhysicalServerInterface
+   *   The physical machine being managed by this class.
+   */
+  protected function machine() {
+    return $this->machine;
+  }
+  
+  public function addHostFileEntries(array $map) {
+    $contents = $this->machine()->readFile($this->hostfile);
+    if (!empty($contents)) {
+      $contents = trim($contents);
+      foreach ($map as $host => $ip) {
+        $contents .= PHP_EOL . $ip . "\t" . $host;
+      }
+      return $this->machine()->writeFile($this->hostfile, $contents);
+    }
+    return FALSE;
+  }
+  
+  public function addHostFileEntry($host, $ip) {
+    return $this->addHostFileEntries(array($host => $ip));
+  }
+  
+}

@@ -1,0 +1,39 @@
+<?php
+/**
+ * @file Defines the RouterInterface interface.
+ */
+
+/**
+ * The router system manages the routing items that can be used
+ * by the toolkit. Each one provides a command string and zero or more aliases
+ * along with a callback class that performs the action.
+ * 
+ * Note that the primary commandName always overrides aliases.
+ */
+interface RouterInterface extends DependencyManagerDependency {
+  
+  /**
+   * Registers the command with the router.
+   * 
+   * @param string $commandName
+   *   The name of the command.
+   * @param RouterCommand $command
+   *   The command to register.
+   * @param type $aliases
+   *   One or more aliases.
+   */
+  function addCommand($commandName, RouterCommand $command, $aliases = array());
+  
+  /**
+   * Retrieves the command with the given name or alias.
+   * 
+   * @param string $commandName
+   *   The name of a command or its alias.
+   * 
+   * @return RouterCommand
+   *   The RouterCommand object associated with the commandName or NULL if 
+   *   no item was found.
+   */
+  function findCommand($commandName);
+      
+}

@@ -1,0 +1,36 @@
+<?php
+/**
+ * Defines the NginxServer class.
+ */
+
+/**
+ * Implements HttpServerInterface for nginx.
+ */
+class NginxServer extends GenericHttpServer {
+  
+  /**
+   * Constructor.
+   * 
+   * @param PhysicalServerInterface $server
+   *   The server we're wrapping.
+   */
+  public function __construct(PhysicalServerInterface $server) {
+    parent::__construct($server, '/etc/nginx/conf.d');
+  }
+  
+  protected function reboot() {
+    $this->machine()->executeCommand('service nginx graceful', array(), $n, $exit);
+    return empty($exit);
+  }
+  
+  protected function testConfig() {
+    $this->machine()->executeCommand('service nginx configtest', array(), $n, $exit);
+    return empty($exit);
+  }
+  
+  public function available() {
+    $this->machine()->executeCommand('service nginx status', array(), $n, $exit);
+    return empty($exit);
+  }
+  
+}

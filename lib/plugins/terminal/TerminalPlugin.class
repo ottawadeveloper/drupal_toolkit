@@ -1,0 +1,52 @@
+<?php
+
+class TerminalPlugin extends GenericPlugin implements EventListener {
+  
+  public function captureEvent(&$context, $type) {
+    switch($type) {
+      case 'core-register-outputs':
+        $this->registerTerminalHandler($context->debugLevel);
+        break;
+    }
+  }
+  
+  private function registerTerminalHandler($debugLevel) {
+    $cli = new PHPTerminal();
+    $cli->setAutoFlexPadding($this->config()->getConfig('cli-auto-flex-padding'));
+    $cli->setShowTypes($this->config()->getConfig('cli-show-types'));
+    $cli->setTimestampFormat($this->config()->getConfig('cli-timestamp-format'));
+    $cli->setTypePadding($this->config()->getConfig('cli-type-padding'));
+    $cli->setUseTimestamp($this->config()->getConfig('cli-use-timestamp'));
+    $cli->setWriteNonCriticalMessages($this->config()->getConfig('cli-write-non-critical-messages'));
+    switch ($debugLevel) {
+      case DEBUG_LEVEL_VERBOSE:
+        $cli->setMinimumDebugLevel(CLOG_INFO);
+        $cli->setWriteNonCriticalMessages(TRUE);
+        break;
+      case DEBUG_LEVEL_DEBUG:
+        $cli->setMinimumDebugLevel(CLOG_DEBUG);
+        $cli->setWriteNonCriticalMessages(TRUE);
+        break;
+      case DEBUG_LEVEL_SILENT:
+        $cli->setMinimumDebugLevel(CLOG_ERROR);
+        $cli->setWRiteNonCriticalMessages(FALSE);
+        break;
+    }
+    $this->out()->registerListener($cli);
+  }
+  
+  public function initialize() {
+    $root = dirname(__FILE__);
+    require assemble_path($root, 'PHPTerminal.class');
+    $this->events()->registerListener('core-register-outputs', $this);
+    $this->config()->extendDefaultConfiguration(array(
+      'cli-use-timestamp' => TRUE,
+      'cli-show-types' => TRUE,
+      'cli-auto-flex-padding' => TRUE,
+      'cli-type-padding' => 16,
+      'cli-timestamp-format' => '[H:i:s]',
+      'cli-write-non-critical-messages' => TRUE,
+    ));
+  }
+  
+}

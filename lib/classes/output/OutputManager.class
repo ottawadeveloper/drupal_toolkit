@@ -1,0 +1,85 @@
+<?php
+/**
+ * @file Defines the OutputManager class.
+ */
+
+/**
+ * Implementation of OutputManagerInterface.
+ */
+class OutputManager implements OutputManagerInterface {
+  
+  /**
+   * Stores all the OutputHandlers.
+   * 
+   * @var array
+   */
+  private $handlers = array();
+  
+  /**
+   * Stores the user-friendly names for the message types.
+   * 
+   * @var array
+   */
+  public static $messageTypeNames = array(
+    MESSAGE_WORKING => 'Working',
+    MESSAGE_SUCCESS => 'Success',
+    MESSAGE_FAILURE => 'Failure',
+  );
+  
+  /**
+   * Stores the user-friendly names for the error levels.
+   * 
+   * @var array
+   */
+  public static $logLevelNames = array(
+    CLOG_CRITICAL => 'Critical',
+    CLOG_ERROR => 'Error',
+    CLOG_WARNING => 'Warning',
+    CLOG_NOTICE => 'Notice',
+    CLOG_INFO => 'Info',
+    CLOG_DEBUG => 'Debug',
+  );
+  
+  public function __construct() {
+  }
+  
+  public function registerListener(OutputHandler $handler) {
+    $this->handlers[] = $handler;
+  }
+  
+  public function write($line) {
+    foreach ($this->handlers as $handler) {
+      if ($handler instanceof Writer) {
+        $handler->write($line);
+      }
+    }
+  }
+  
+  public function writeLine($line) {
+    $this->write($line . PHP_EOL);
+  }
+  
+  public function message($message, $type = MESSAGE_WORKING) {
+    foreach ($this->handlers as $handler) {
+      if ($handler instanceof Messenger) {
+        $handler->message($message, $type);
+      }
+    }
+  }
+  
+  public function log($log, $level = CLOG_NOTICE) {
+    foreach ($this->handlers as $handler) {
+      if ($handler instanceof Logger) {
+        $handler->log($log, $level);
+      }
+    }
+  }
+  
+  public function debug($val) {
+    if (!is_string($val)) {
+      $val = var_export($val);
+    }
+    $this->log($val, CLOG_DEBUG);
+  }
+  
+}

@@ -1,0 +1,91 @@
+<?php
+/**
+ * @file Defines the DependencyInjector class.
+ */
+
+/**
+ * Helps the DependencyManager inject dependencies into objects.
+ */
+class DependencyInjector {
+  
+  /**
+   * The interface that the object must match.
+   * @var string
+   */
+  private $interface;
+  
+  /**
+   * The callback mutator function on $interface that will be called.
+   * 
+   * @todo Can we use annotations to get this data perhaps?
+   * 
+   * @var string
+   */
+  private $callback;
+  
+  /**
+   * The object key that is passed to $callback. Can be an array if more than
+   * one object must be passed to the mutator.
+   * @var array|string
+   */
+  private $objectKey;
+  
+  /**
+   * Constructor.
+   * 
+   * @param string $interface
+   *   The interface that must be matched.
+   * @param string $callback
+   *   The mutator callback on $interface.
+   * @param string|array $objectKey
+   *   One or more object keys that will be used as arguments for the 
+   *   mutator method.
+   */
+  public function __construct($interface, $callback, $objectKey) {
+    $this->interface = $interface;
+    $this->callback = $callback;
+    $this->objectKey = $objectKey;
+  }
+  
+  /**
+   * Injects the dependency into the object if needed.
+   * 
+   * @param object $object
+   *   The object to inject.
+   * @param array $injectionObjects
+   *   The array of An object key objects to inject from.
+   * 
+   * @return boolean|NULL
+   *   - TRUE if the object was injected
+   *   - FALSE if the object should have been injected but could not be.
+   *   - NULL if the injection does not apply.
+   */
+  public function injectDependency(&$object, array &$injectionObjects) {
+    if ($object instanceof $this->interface) {
+      if (is_callable(array($object, $this->callback))) {
+        $values = array();
+        if (is_array($this->objectKey)) {
+          foreach ($this->objectKey as $key) {
+            if (isset($injectionObjects[$key])) {
+              $values[] = $injectionObjects[$key];
+            }
+            else {
+              return FALSE;
+            }
+          }
+        }
+        elseif (isset($injectionObjects[$this->objectKey])) {
+          $values[] = $injectionObjects[$this->objectKey];
+        }
+        else {
+          return FALSE;
+        }
+        call_user_func_array(array($object, $this->callback), $values);
+        return TRUE;
+      }
+      return FALSE;
+    }
+    return NULL;
+  }
+  
+}

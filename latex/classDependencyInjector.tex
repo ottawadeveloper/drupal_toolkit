@@ -1,0 +1,88 @@
+\hypertarget{classDependencyInjector}{\section{Dependency\-Injector Class Reference}
+\label{classDependencyInjector}\index{Dependency\-Injector@{Dependency\-Injector}}
+}
+
+
+Helps the \hyperlink{classDependencyManager}{Dependency\-Manager} inject dependencies into objects.  
+
+
+\subsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\hyperlink{classDependencyInjector_aaf725667c8258b3d1ebdd412aac59e0e}{\-\_\-\-\_\-construct} (\$interface, \$callback, \$object\-Key)
+\begin{DoxyCompactList}\small\item\em Constructor. \end{DoxyCompactList}\item 
+\hyperlink{classDependencyInjector_a05fa48e4d3cd9ce03f8be591a78a90bf}{inject\-Dependency} (\&\$object, array \&\$injection\-Objects)
+\begin{DoxyCompactList}\small\item\em Injects the dependency into the object if needed. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\subsection*{Private Attributes}
+\begin{DoxyCompactItemize}
+\item 
+\hyperlink{classDependencyInjector_a08a02ea3c20bf5c0c4663295be333de9}{\$interface}
+\item 
+\hyperlink{classDependencyInjector_aab7e000c185ede09f6e9eb1e21ea3a0f}{\$callback}
+\item 
+\hyperlink{classDependencyInjector_afc1499f659e305063106b42975a69c76}{\$object\-Key}
+\end{DoxyCompactItemize}
+
+
+\subsection{Constructor \& Destructor Documentation}
+\hypertarget{classDependencyInjector_aaf725667c8258b3d1ebdd412aac59e0e}{\index{Dependency\-Injector@{Dependency\-Injector}!\-\_\-\-\_\-construct@{\-\_\-\-\_\-construct}}
+\index{\-\_\-\-\_\-construct@{\-\_\-\-\_\-construct}!DependencyInjector@{Dependency\-Injector}}
+\subsubsection[{\-\_\-\-\_\-construct}]{\setlength{\rightskip}{0pt plus 5cm}Dependency\-Injector\-::\-\_\-\-\_\-construct (
+\begin{DoxyParamCaption}
+\item[{}]{\$interface, }
+\item[{}]{\$callback, }
+\item[{}]{\$object\-Key}
+\end{DoxyParamCaption}
+)}}\label{classDependencyInjector_aaf725667c8258b3d1ebdd412aac59e0e}
+
+\begin{DoxyParams}[1]{Parameters}
+string & {\em \$interface} & The interface that must be matched. \\
+\hline
+string & {\em \$callback} & The mutator callback on \$interface. \\
+\hline
+string | array & {\em \$object\-Key} & One or more object keys that will be used as arguments for the mutator method. \\
+\hline
+\end{DoxyParams}
+
+
+\subsection{Member Function Documentation}
+\hypertarget{classDependencyInjector_a05fa48e4d3cd9ce03f8be591a78a90bf}{\index{Dependency\-Injector@{Dependency\-Injector}!inject\-Dependency@{inject\-Dependency}}
+\index{inject\-Dependency@{inject\-Dependency}!DependencyInjector@{Dependency\-Injector}}
+\subsubsection[{inject\-Dependency}]{\setlength{\rightskip}{0pt plus 5cm}Dependency\-Injector\-::inject\-Dependency (
+\begin{DoxyParamCaption}
+\item[{\&}]{\$object, }
+\item[{array \&}]{\$injection\-Objects}
+\end{DoxyParamCaption}
+)}}\label{classDependencyInjector_a05fa48e4d3cd9ce03f8be591a78a90bf}
+
+\begin{DoxyParams}[1]{Parameters}
+object & {\em \$object} & The object to inject. \\
+\hline
+array & {\em \$injection\-Objects} & The array of An object key objects to inject from.\\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+boolean$|$\-N\-U\-L\-L
+\begin{DoxyItemize}
+\item T\-R\-U\-E if the object was injected
+\item F\-A\-L\-S\-E if the object should have been injected but could not be.
+\item N\-U\-L\-L if the injection does not apply. 
+\end{DoxyItemize}
+\end{DoxyReturn}
+
+
+\subsection{Member Data Documentation}
+\hypertarget{classDependencyInjector_aab7e000c185ede09f6e9eb1e21ea3a0f}{\index{Dependency\-Injector@{Dependency\-Injector}!\$callback@{\$callback}}
+\index{\$callback@{\$callback}!DependencyInjector@{Dependency\-Injector}}
+\subsubsection[{\$callback}]{\setlength{\rightskip}{0pt plus 5cm}Dependency\-Injector\-::\$callback\hspace{0.3cm}{\ttfamily [private]}}}\label{classDependencyInjector_aab7e000c185ede09f6e9eb1e21ea3a0f}
+\hypertarget{classDependencyInjector_a08a02ea3c20bf5c0c4663295be333de9}{\index{Dependency\-Injector@{Dependency\-Injector}!\$interface@{\$interface}}
+\index{\$interface@{\$interface}!DependencyInjector@{Dependency\-Injector}}
+\subsubsection[{\$interface}]{\setlength{\rightskip}{0pt plus 5cm}Dependency\-Injector\-::\$interface\hspace{0.3cm}{\ttfamily [private]}}}\label{classDependencyInjector_a08a02ea3c20bf5c0c4663295be333de9}
+\hypertarget{classDependencyInjector_afc1499f659e305063106b42975a69c76}{\index{Dependency\-Injector@{Dependency\-Injector}!\$object\-Key@{\$object\-Key}}
+\index{\$object\-Key@{\$object\-Key}!DependencyInjector@{Dependency\-Injector}}
+\subsubsection[{\$object\-Key}]{\setlength{\rightskip}{0pt plus 5cm}Dependency\-Injector\-::\$object\-Key\hspace{0.3cm}{\ttfamily [private]}}}\label{classDependencyInjector_afc1499f659e305063106b42975a69c76}
+
+
+The documentation for this class was generated from the following file\-:\begin{DoxyCompactItemize}
+\item 
+\hyperlink{DependencyInjector_8class}{Dependency\-Injector.\-class}\end{DoxyCompactItemize}

@@ -1,0 +1,28 @@
+<?php
+/**
+ * @file Defines the StringDependency interface.
+ */
+
+/**
+ * Tags the class as requiring access to string translation mechanisms.
+ */
+interface StringDependency {
+  
+  /**
+   * Sets the string manager object.
+   * 
+   * @param StringManagerInterface $sm
+   *   The string manager object.
+   */
+  function setStringManager(StringManagerInterface $sm);
+  
+  /**
+   * Retrieves the string manager object.
+   * 
+   * @return StringManagerInterface
+   *   The string manager object.
+   */
+  function strings();
+  
+}
+

@@ -1,0 +1,102 @@
+<?php
+/**
+ * @file Define the ConfigurationManagerInterface interface.
+ */
+
+/**
+ * Manages global configuration settings.
+ * 
+ * Configuration can be provided by YAML files or INI files, as well as 
+ * arrays of settings.
+ * 
+ * Configuration can be provided as default configuration or just normal 
+ * configuration. Normal configuration overrides default configuration where 
+ * possible.
+ * 
+ * In most cases, overridding a configuration value replaces the existing value.
+ * However, if an array is present, the values are extended (numeric keys
+ * are appended at the end, which changes the keys, associative keys 
+ * replace/extend their values as appropriate). 
+ */
+interface ConfigurationManagerInterface extends ArgsDependency {
+  
+  /**
+   * Retrieves a configuration setting.
+   * 
+   * @param string $key
+   *   The setting name to retrieve.
+   */
+  function getConfig($key);
+  
+  /**
+   * Retrieves configuration from the arguments.
+   * 
+   * @param string $key
+   *   The configuration key to set.
+   * @param mixed $long
+   *   One of the following:
+   *   - A string which is the name of an argument
+   *   - TRUE to use the value of $key
+   *   - NULL to skip
+   * @param mixed $short
+   *   One of the following:
+   *   - A string which is the short name of an argument
+   *   - TRUE to use the first letter of $long ($long must not be NULL)
+   *   - NULL to skip.
+   * @param mixed $split
+   *   One of the following:
+   *   - A string to split the input on (to make an array)
+   *   - TRUE to use the default split character (comma).
+   */
+  function extendFromOption($key, $long = NULL, $short = NULL, $split = FALSE);
+  
+  /**
+   * Extends the default configuration.
+   * 
+   * The default configuration never takes precedence over other types of
+   * configuration. However, values defined in arrays may be merged with
+   * the normal configuration.
+   * 
+   * @param array $defaultConfig
+   *   An array of configuration settings.
+   */
+  function extendDefaultConfiguration(array $defaultConfig);
+  
+  /**
+   * Extends the configuration.
+   * 
+   * This will override the default configuration except for arrays which will
+   * be merged on top of the default configuration.
+   * 
+   * @param array $extra_config
+   *   An array of configuration settings.
+   */
+  function extendConfiguration(array $extra_config);
+  
+  /**
+   * Parses a file as a YAML file and calls extendConfiguration() with the
+   * results.
+   * 
+   * Requires the Spyc library be available.
+   * 
+   * @param string $yamlfile
+   *   The name of a YAML file.
+   * 
+   * @return boolean TRUE if the file was parsed successfully or FALSE
+   *   if it could not be.
+   */
+  function appendYamlFile($yamlfile);
+  
+  /**
+   * Parses a file as an INI file and calls extendConfiguration() with the
+   * results.
+   * 
+   * @param string $configFile
+   *   The name of a config file.
+   * 
+   * @return boolean TRUE if the file was parsed successfully or FALSE
+   *   if it could not be.
+   */
+  function appendIniFile($configFile);
+  
+}

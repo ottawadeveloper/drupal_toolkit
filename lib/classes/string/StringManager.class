@@ -1,0 +1,67 @@
+<?php
+/**
+ * @file Defines the StringManager class.
+ */
+
+/**
+ * Implements StringManagerInterface.
+ */
+class StringManager implements StringManagerInterface, EventDependency {
+  
+  /**
+   * The event manager.
+   * 
+   * @var EventManagerInterface
+   */
+  private $events;
+  
+  /**
+   * Cached string lookup results.
+   * 
+   * @var array
+   */
+  private $stringCache = array();
+  
+  public function setEventManager(EventManagerInterface $em) {
+    $this->events = $em;
+  }
+  
+  public function events() {
+    return $this->events;
+  }
+  
+  public function getString($key, $default = NULL) {
+    if (!isset($this->stringCache[$key])) {
+      $this->stringCache[$key] = $this->findString($key, $default);
+    }
+    return $this->stringCache[$key];
+  }
+  
+  /**
+   * Attempts to find a relevant string translation using events.
+   * 
+   * @param string $key
+   *   The key to lookup.
+   * @param string $default
+   *   The default to fall back on.
+   * 
+   * @return string
+   *   The appropriate string if one was found, or $default if not empty, or
+   *   $key itself as a last resort.
+   */
+  private function findString($key, $default) {
+    $context = (object) array(
+      'key' => $key,
+      'string' => NULL,
+    );
+    $this->events()->fireEvent(EVENT_GET_STRING, $context);
+    if (empty($context->string)) {
+      if (empty($default)) {
+        return $key;
+      }
+      return $default;
+    }
+    return $context->string;
+  }
+  
+}

@@ -1,0 +1,68 @@
+<?php
+/**
+ * @file Defines the EventManager class.
+ */
+
+/**
+ * Implements the EventManagerInterface.
+ */
+class EventManager implements EventManagerInterface {
+  
+  /**
+   * An array of event listeners keyed by event type.
+   * 
+   * @var array.
+   */
+  private $registry = array();
+  
+  /**
+   * The output manager.
+   * 
+   * @var OutputManagerInterface
+   */
+  private $out;
+  
+  public function __construct() {
+  }
+  
+  public function setOutput(OutputManagerInterface $out) {
+    $this->out = $out;
+  }
+  
+  public function out() {
+    return $this->out;
+  }
+  
+  public function registerListener($types, EventListener $listener) {
+    if (!is_array($types)) {
+      $types = array($types);
+    }
+    foreach ($types as $type) {
+      if (!isset($this->registry[$type])) {
+        $this->registry[$type] = array();
+      }
+      $this->registry[$type][] = $listener;
+    }
+    return TRUE;
+  }
+  
+  public function fireEvent($type, &$context = NULL) {
+    $this->out->debug('Firing event ['.$type.']');
+    if (empty($context)) {
+      $context = (object) array();
+    }
+    if (is_array($context)) {
+      $context = (object) $context;
+    }
+    $context->stopPropagation = FALSE;
+    if (isset($this->registry[$type])) {
+      foreach ($this->registry[$type] as $listener) {
+        $listener->captureEvent($context, $type);
+        if ($context->stopPropagation) {
+          break;
+        }
+      }
+    }
+  }
+  
+}

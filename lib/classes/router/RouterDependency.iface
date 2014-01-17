@@ -1,0 +1,26 @@
+<?php
+/**
+ * @file Defines the RouterDependency interface.
+ */
+
+/**
+ * Tags the class as having a router dependency.
+ */
+interface RouterDependency {
+  
+  /**
+   * Retrieves the router object.
+   * 
+   * @return RouterInterface
+   */
+  function router();
+  
+  /**
+   * Sets the router object.
+   * 
+   * @param RouterInterface $router
+   *   The router object to use.
+   */
+  function setRouter(RouterInterface $router);
+  
+}

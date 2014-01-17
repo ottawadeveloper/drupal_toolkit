@@ -1,0 +1,66 @@
+\hypertarget{plugins_8php}{\section{plugins.\-php File Reference}
+\label{plugins_8php}\index{plugins.\-php@{plugins.\-php}}
+}
+\subsection*{Variables}
+\begin{DoxyCompactItemize}
+\item 
+\hyperlink{plugins_8php_ab6573c439a183cf07dd2a2a6b8ca873d}{\$disabled\-\_\-plugins} = \$settings-\/$>$get\-Config('core-\/disabled-\/plugins')
+\item 
+\hyperlink{common_8php_ab5cc02e0dea17e26d5401b25d28c71a5}{if}(empty(\$disabled\-\_\-plugins)) \hyperlink{plugins_8php_a852e19bbf55d6c51c0109c5822c885e8}{\$core\-\_\-plugin\-\_\-root} = \hyperlink{system_8php_afac6dffabc4c3d916afd6b1b4156d7d6}{assemble\-\_\-path}(\hyperlink{common_8php_aa4d5af32469e1957022a401beed654e2}{T\-O\-O\-L\-K\-I\-T\-\_\-\-C\-O\-M\-M\-O\-N\-\_\-\-D\-I\-R}, 'plugins')
+\item 
+\hyperlink{plugins_8php_a27b356eb1d411e7f7ed1785d15968a45}{\$core\-\_\-plugin\-\_\-list} = array()
+\item 
+\hyperlink{plugins_8php_aaf1557085743461047339e32fe24037f}{\$core\-\_\-plugin\-\_\-includes} = array()
+\item 
+\hyperlink{plugins_8php_a122ee7f8aad4a1f7a48008ff12eed8f1}{\$plugin\-Includes} = \$settings-\/$>$get\-Config('plugin-\/includes')
+\item 
+foreach(\$plugin\-Includes as \\*
+\$include) \hyperlink{plugins_8php_a7d093d3181ef48feca688de5ba5578a0}{\$plugin\-Keys} = \$settings-\/$>$get\-Config('plugin-\/registry')
+\item 
+\hyperlink{plugins_8php_a868418a16e416f86d25b355ef70abf8e}{\$plugin\-Stubs} = array()
+\item 
+foreach(\$plugin\-Keys as \$plugin) \hyperlink{plugins_8php_a843689f8628a0cc2a361697895b56ff2}{\$changed} = !empty(\$plugin\-Stubs)
+\item 
+\hyperlink{plugins_8php_ac7efc2293a590953b6c6640eaf342787}{\$added\-Plugin\-Classes} = array()
+\item 
+while(\$changed) \hyperlink{plugins_8php_a4440f2a80a414d71dc20fa13b53ca1b8}{\$context}
+\end{DoxyCompactItemize}
+
+
+\subsection{Variable Documentation}
+\hypertarget{plugins_8php_ac7efc2293a590953b6c6640eaf342787}{\index{plugins.\-php@{plugins.\-php}!\$added\-Plugin\-Classes@{\$added\-Plugin\-Classes}}
+\index{\$added\-Plugin\-Classes@{\$added\-Plugin\-Classes}!plugins.php@{plugins.\-php}}
+\subsubsection[{\$added\-Plugin\-Classes}]{\setlength{\rightskip}{0pt plus 5cm}\$added\-Plugin\-Classes = array()}}\label{plugins_8php_ac7efc2293a590953b6c6640eaf342787}
+\hypertarget{plugins_8php_a843689f8628a0cc2a361697895b56ff2}{\index{plugins.\-php@{plugins.\-php}!\$changed@{\$changed}}
+\index{\$changed@{\$changed}!plugins.php@{plugins.\-php}}
+\subsubsection[{\$changed}]{\setlength{\rightskip}{0pt plus 5cm}foreach (\$plugin\-Keys as \$plugin) \$changed = !empty(\$plugin\-Stubs)}}\label{plugins_8php_a843689f8628a0cc2a361697895b56ff2}
+\hypertarget{plugins_8php_a4440f2a80a414d71dc20fa13b53ca1b8}{\index{plugins.\-php@{plugins.\-php}!\$context@{\$context}}
+\index{\$context@{\$context}!plugins.php@{plugins.\-php}}
+\subsubsection[{\$context}]{\setlength{\rightskip}{0pt plus 5cm}while (\$changed) \$context}}\label{plugins_8php_a4440f2a80a414d71dc20fa13b53ca1b8}
+{\bfseries Initial value\-:}
+\begin{DoxyCode}
+ (object) array(
+  \textcolor{stringliteral}{'plugins'} => \hyperlink{setup_8php_a4ab51386acb82cd0a0066eac2567b2bd}{$plugins},
+)
+\end{DoxyCode}
+\hypertarget{plugins_8php_aaf1557085743461047339e32fe24037f}{\index{plugins.\-php@{plugins.\-php}!\$core\-\_\-plugin\-\_\-includes@{\$core\-\_\-plugin\-\_\-includes}}
+\index{\$core\-\_\-plugin\-\_\-includes@{\$core\-\_\-plugin\-\_\-includes}!plugins.php@{plugins.\-php}}
+\subsubsection[{\$core\-\_\-plugin\-\_\-includes}]{\setlength{\rightskip}{0pt plus 5cm}\$core\-\_\-plugin\-\_\-includes = array()}}\label{plugins_8php_aaf1557085743461047339e32fe24037f}
+\hypertarget{plugins_8php_a27b356eb1d411e7f7ed1785d15968a45}{\index{plugins.\-php@{plugins.\-php}!\$core\-\_\-plugin\-\_\-list@{\$core\-\_\-plugin\-\_\-list}}
+\index{\$core\-\_\-plugin\-\_\-list@{\$core\-\_\-plugin\-\_\-list}!plugins.php@{plugins.\-php}}
+\subsubsection[{\$core\-\_\-plugin\-\_\-list}]{\setlength{\rightskip}{0pt plus 5cm}\$core\-\_\-plugin\-\_\-list = array()}}\label{plugins_8php_a27b356eb1d411e7f7ed1785d15968a45}
+\hypertarget{plugins_8php_a852e19bbf55d6c51c0109c5822c885e8}{\index{plugins.\-php@{plugins.\-php}!\$core\-\_\-plugin\-\_\-root@{\$core\-\_\-plugin\-\_\-root}}
+\index{\$core\-\_\-plugin\-\_\-root@{\$core\-\_\-plugin\-\_\-root}!plugins.php@{plugins.\-php}}
+\subsubsection[{\$core\-\_\-plugin\-\_\-root}]{\setlength{\rightskip}{0pt plus 5cm}{\bf if} (empty(\$disabled\-\_\-plugins)) \$core\-\_\-plugin\-\_\-root = {\bf assemble\-\_\-path}({\bf T\-O\-O\-L\-K\-I\-T\-\_\-\-C\-O\-M\-M\-O\-N\-\_\-\-D\-I\-R}, 'plugins')}}\label{plugins_8php_a852e19bbf55d6c51c0109c5822c885e8}
+\hypertarget{plugins_8php_ab6573c439a183cf07dd2a2a6b8ca873d}{\index{plugins.\-php@{plugins.\-php}!\$disabled\-\_\-plugins@{\$disabled\-\_\-plugins}}
+\index{\$disabled\-\_\-plugins@{\$disabled\-\_\-plugins}!plugins.php@{plugins.\-php}}
+\subsubsection[{\$disabled\-\_\-plugins}]{\setlength{\rightskip}{0pt plus 5cm}\$disabled\-\_\-plugins = \$settings-\/$>$get\-Config('core-\/disabled-\/plugins')}}\label{plugins_8php_ab6573c439a183cf07dd2a2a6b8ca873d}
+\hypertarget{plugins_8php_a122ee7f8aad4a1f7a48008ff12eed8f1}{\index{plugins.\-php@{plugins.\-php}!\$plugin\-Includes@{\$plugin\-Includes}}
+\index{\$plugin\-Includes@{\$plugin\-Includes}!plugins.php@{plugins.\-php}}
+\subsubsection[{\$plugin\-Includes}]{\setlength{\rightskip}{0pt plus 5cm}\$plugin\-Includes = \$settings-\/$>$get\-Config('plugin-\/includes')}}\label{plugins_8php_a122ee7f8aad4a1f7a48008ff12eed8f1}
+\hypertarget{plugins_8php_a7d093d3181ef48feca688de5ba5578a0}{\index{plugins.\-php@{plugins.\-php}!\$plugin\-Keys@{\$plugin\-Keys}}
+\index{\$plugin\-Keys@{\$plugin\-Keys}!plugins.php@{plugins.\-php}}
+\subsubsection[{\$plugin\-Keys}]{\setlength{\rightskip}{0pt plus 5cm}foreach (\$plugin\-Includes as \$include) \$plugin\-Keys = \$settings-\/$>$get\-Config('plugin-\/registry')}}\label{plugins_8php_a7d093d3181ef48feca688de5ba5578a0}
+\hypertarget{plugins_8php_a868418a16e416f86d25b355ef70abf8e}{\index{plugins.\-php@{plugins.\-php}!\$plugin\-Stubs@{\$plugin\-Stubs}}
+\index{\$plugin\-Stubs@{\$plugin\-Stubs}!plugins.php@{plugins.\-php}}
+\subsubsection[{\$plugin\-Stubs}]{\setlength{\rightskip}{0pt plus 5cm}\$plugin\-Stubs = array()}}\label{plugins_8php_a868418a16e416f86d25b355ef70abf8e}

@@ -1,0 +1,117 @@
+\hypertarget{classRemoteMachine}{\section{Remote\-Machine Class Reference}
+\label{classRemoteMachine}\index{Remote\-Machine@{Remote\-Machine}}
+}
+Inheritance diagram for Remote\-Machine\-:\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[height=3.000000cm]{classRemoteMachine}
+\end{center}
+\end{figure}
+\subsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\hyperlink{classRemoteMachine_a6ae2f4b473fd1d2defb20e39f4cfb9e6}{initialize} ()
+\item 
+\hyperlink{classRemoteMachine_ac9f075d061970e49aece217a33313a40}{execute\-Command} (\$command, \$args, \&\$out=array(), \&\$exit=0)
+\item 
+\hyperlink{classRemoteMachine_a0f74d3a87ae5fc4c6609ed49aa4bb4f8}{write\-File} (\$destination, \$contents, \$mode=0644)
+\item 
+\hyperlink{classRemoteMachine_ae2d60a33ab596237bd679aded8681ad2}{read\-File} (\$file)
+\item 
+\hyperlink{classGenericMachine_ae4e9eb3e4e7809afe0151d3435a927f9}{get\-Setting} (\$key, \$default=N\-U\-L\-L)
+\item 
+\hyperlink{interfacePhysicalServerInterface_a86167983d096e7dd41f7a4007774d0cb}{get\-Setting} (\$key)
+\item 
+\hyperlink{interfacePhysicalServerInterface_ad4488de39c860dc5b8d868c89d90a58f}{write\-File} (\$destination, \$contents)
+\end{DoxyCompactItemize}
+\subsection*{Private Attributes}
+\begin{DoxyCompactItemize}
+\item 
+\hyperlink{classRemoteMachine_ae130e0a68f147af07e27034af6e94f42}{\$handle}
+\end{DoxyCompactItemize}
+
+
+\subsection{Member Function Documentation}
+\hypertarget{classRemoteMachine_ac9f075d061970e49aece217a33313a40}{\index{Remote\-Machine@{Remote\-Machine}!execute\-Command@{execute\-Command}}
+\index{execute\-Command@{execute\-Command}!RemoteMachine@{Remote\-Machine}}
+\subsubsection[{execute\-Command}]{\setlength{\rightskip}{0pt plus 5cm}Remote\-Machine\-::execute\-Command (
+\begin{DoxyParamCaption}
+\item[{}]{\$command, }
+\item[{}]{\$args, }
+\item[{\&}]{\$out = {\ttfamily array()}, }
+\item[{\&}]{\$exit = {\ttfamily 0}}
+\end{DoxyParamCaption}
+)}}\label{classRemoteMachine_ac9f075d061970e49aece217a33313a40}
+
+
+Implements \hyperlink{interfacePhysicalServerInterface_a15565cb4469f6ccfc53167d60280a69e}{Physical\-Server\-Interface}.
+
+\hypertarget{interfacePhysicalServerInterface_a86167983d096e7dd41f7a4007774d0cb}{\index{Remote\-Machine@{Remote\-Machine}!get\-Setting@{get\-Setting}}
+\index{get\-Setting@{get\-Setting}!RemoteMachine@{Remote\-Machine}}
+\subsubsection[{get\-Setting}]{\setlength{\rightskip}{0pt plus 5cm}Physical\-Server\-Interface\-::get\-Setting (
+\begin{DoxyParamCaption}
+\item[{}]{\$key}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [inherited]}}}\label{interfacePhysicalServerInterface_a86167983d096e7dd41f7a4007774d0cb}
+\hypertarget{classGenericMachine_ae4e9eb3e4e7809afe0151d3435a927f9}{\index{Remote\-Machine@{Remote\-Machine}!get\-Setting@{get\-Setting}}
+\index{get\-Setting@{get\-Setting}!RemoteMachine@{Remote\-Machine}}
+\subsubsection[{get\-Setting}]{\setlength{\rightskip}{0pt plus 5cm}Generic\-Machine\-::get\-Setting (
+\begin{DoxyParamCaption}
+\item[{}]{\$key, }
+\item[{}]{\$default = {\ttfamily NULL}}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [inherited]}}}\label{classGenericMachine_ae4e9eb3e4e7809afe0151d3435a927f9}
+\hypertarget{classRemoteMachine_a6ae2f4b473fd1d2defb20e39f4cfb9e6}{\index{Remote\-Machine@{Remote\-Machine}!initialize@{initialize}}
+\index{initialize@{initialize}!RemoteMachine@{Remote\-Machine}}
+\subsubsection[{initialize}]{\setlength{\rightskip}{0pt plus 5cm}Remote\-Machine\-::initialize (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)}}\label{classRemoteMachine_a6ae2f4b473fd1d2defb20e39f4cfb9e6}
+
+
+Implements \hyperlink{interfacePhysicalServerInterface_ab17bfdfe9efdc4caf982f8e9b127e034}{Physical\-Server\-Interface}.
+
+\hypertarget{classRemoteMachine_ae2d60a33ab596237bd679aded8681ad2}{\index{Remote\-Machine@{Remote\-Machine}!read\-File@{read\-File}}
+\index{read\-File@{read\-File}!RemoteMachine@{Remote\-Machine}}
+\subsubsection[{read\-File}]{\setlength{\rightskip}{0pt plus 5cm}Remote\-Machine\-::read\-File (
+\begin{DoxyParamCaption}
+\item[{}]{\$file}
+\end{DoxyParamCaption}
+)}}\label{classRemoteMachine_ae2d60a33ab596237bd679aded8681ad2}
+
+
+Implements \hyperlink{interfacePhysicalServerInterface_a6845be492b00e24879f3f48ea7780374}{Physical\-Server\-Interface}.
+
+\hypertarget{interfacePhysicalServerInterface_ad4488de39c860dc5b8d868c89d90a58f}{\index{Remote\-Machine@{Remote\-Machine}!write\-File@{write\-File}}
+\index{write\-File@{write\-File}!RemoteMachine@{Remote\-Machine}}
+\subsubsection[{write\-File}]{\setlength{\rightskip}{0pt plus 5cm}Physical\-Server\-Interface\-::write\-File (
+\begin{DoxyParamCaption}
+\item[{}]{\$destination, }
+\item[{}]{\$contents}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [inherited]}}}\label{interfacePhysicalServerInterface_ad4488de39c860dc5b8d868c89d90a58f}
+
+
+Implemented in \hyperlink{classLocalMachine_a0802e0cbce73b409047574f7fccfc0e2}{Local\-Machine}.
+
+\hypertarget{classRemoteMachine_a0f74d3a87ae5fc4c6609ed49aa4bb4f8}{\index{Remote\-Machine@{Remote\-Machine}!write\-File@{write\-File}}
+\index{write\-File@{write\-File}!RemoteMachine@{Remote\-Machine}}
+\subsubsection[{write\-File}]{\setlength{\rightskip}{0pt plus 5cm}Remote\-Machine\-::write\-File (
+\begin{DoxyParamCaption}
+\item[{}]{\$destination, }
+\item[{}]{\$contents, }
+\item[{}]{\$mode = {\ttfamily 0644}}
+\end{DoxyParamCaption}
+)}}\label{classRemoteMachine_a0f74d3a87ae5fc4c6609ed49aa4bb4f8}
+
+
+\subsection{Member Data Documentation}
+\hypertarget{classRemoteMachine_ae130e0a68f147af07e27034af6e94f42}{\index{Remote\-Machine@{Remote\-Machine}!\$handle@{\$handle}}
+\index{\$handle@{\$handle}!RemoteMachine@{Remote\-Machine}}
+\subsubsection[{\$handle}]{\setlength{\rightskip}{0pt plus 5cm}Remote\-Machine\-::\$handle\hspace{0.3cm}{\ttfamily [private]}}}\label{classRemoteMachine_ae130e0a68f147af07e27034af6e94f42}
+
+
+The documentation for this class was generated from the following file\-:\begin{DoxyCompactItemize}
+\item 
+\hyperlink{RemoteMachine_8class}{Remote\-Machine.\-class}\end{DoxyCompactItemize}

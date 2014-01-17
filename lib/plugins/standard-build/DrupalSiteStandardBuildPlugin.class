@@ -1,0 +1,110 @@
+<?php
+
+class DrupalSiteStandardBuildPlugin extends GenericPlugin implements EventListener {
+  
+  public function initialize() {
+    $this->events()->registerListener(array('site-build-build'), $this);
+    $this->config()->extendDefaultConfiguration(array(
+      'git-repository-root' => '',
+      'drush-make-repository' => '',
+      'drush-make-file' => '',
+      'drush-make-options' => array(),
+      'default-branch' => '',
+      'branch-whitelist' => array(),
+    ));
+  }
+  
+  public function requiredPlugins() {
+    return array('DrupalSitePlugin');
+  }
+  
+  public function captureEvent(&$context, $type) {
+    switch ($type) {
+      case 'site-build-build':
+        $context->success = $this->buildSite($context->site, $context->build_id);
+        $context->stopPropagation = TRUE;
+        break;
+    }
+  }
+  
+  private function buildSite(DrupalSite $site, $buildID) {
+    $repoServer = $this->config()->getConfig('git-repository-root');
+    if (empty($repoServer)) { 
+      $this->error('Missing configuration [git-repository-root]');
+      return FALSE; 
+    }
+    $gitRepo = $this->config()->getConfig('drush-make-repository');
+    if (empty($gitRepo)) { 
+      $this->error('Missing configuration [drush-make-repository]');
+      return FALSE; 
+    }
+    $makeFile = $this->config()->getConfig('drush-make-file');
+    if (empty($makeFile)) { 
+      $this->error('Missing configuration [drush-make-file]');
+      return FALSE; 
+    }
+    $options = $this->config()->getConfig('drush-make-options');
+    if (empty($options)) { $options = array(); }
+    $branch = $this->getBranch();
+    if (empty($branch)) { 
+      $this->error('You must provide a branch name.');
+      return FALSE;
+    }
+    $cbDir = $site->getSetting('structure_codebases_dir');
+    if (empty($cbDir)) { 
+      $this->error('Missing site configuration setting [structure_codebases_dir].');
+      return FALSE; 
+    }
+    $newCodebase = assemble_path($site->getBuildFolder(), $cbDir, $buildID);
+    if (!is_writable(dirname($newCodebase))) {
+      $this->error('Cannot write to codebases directory');
+      return FALSE;
+    }
+    if (!git_clone($repoServer, $gitRepo, $newCodebase, $branch)) {
+      $this->error('Cannot clone the Drush make file.');
+      return FALSE;
+    }
+    $site->setSetting('cloned_branch', $branch);
+    if (!drush_make(assemble_path($newCodebase, $makeFile), $options)) {
+      $this->error('An error occured while running the Drush make.');
+      return FALSE;
+    }
+    $site->setSetting('build_current_codebase_dir', $newCodebase);
+    $currentLink = assemble_path($site->getBuildFolder(), 'current');
+    
+    if (is_link($currentLink)) {
+      unlink($currentLink);
+    }
+    if (!symlink($newCodebase, $currentLink)) {
+      $this->error('Could not create the current site symlink');
+      return FALSE;
+    }
+    
+    $context = (object) array(
+      'success' => TRUE,
+      'site' => $site,
+    );
+    
+    $this->events()->fireEvent('standard-build-continue', $context);
+    
+    return $context->success;
+  }
+  
+  private function getBranch() {
+    $branch = $this->args()->getOption('branch');
+    if (empty($branch)) {
+      $branch = $this->config()->getConfig('branch-default');
+    }
+    if (empty($branch)) {
+      return NULL;
+    }
+    $branchWhitelist = $this->config()->getConfig('branch-whitelist');
+    if (!empty($branchWhitelist) && is_array($branchWhitelist)) {
+      if (!in_array($branch, $branchWhitelist)) {
+        return NULL;
+      }
+    }
+    return $branch;
+  }
+  
+}

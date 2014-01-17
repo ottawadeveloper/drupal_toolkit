@@ -1,0 +1,82 @@
+<?php
+/**
+ * @file Defines the TranslationPlugin class.
+ */
+
+/**
+ * Config key for the user language.
+ * 
+ * @ingroup config
+ */
+define('CONFIG_LANGUAGE_SELECT', 'language');
+
+/**
+ * Config key for the pattern for language file paths.
+ * 
+ * !language is used to represent the language.
+ * 
+ * @ingroup config
+ */
+define('CONFIG_LANGUAGE_FILE', 'language-file-pattern');
+
+/**
+ * Plugin to provide translation services.
+ */
+class TranslationPlugin extends GenericPlugin implements EventListener {
+  
+  private $languageCache = array();
+  private $loaded = FALSE;
+  
+  public function initialize() {
+    $this->config()->extendDefaultConfiguration(array(
+      CONFIG_LANGUAGE_SELECT => 'en',
+      CONFIG_LANGUAGE_FILE => array(
+        assemble_path(TOOLKIT_COMMON_DIR, 'translations' , '!language.tr'),
+      ),
+    ));
+    $this->events()->registerListener(array(
+      
+    ), $this);
+  }
+  
+  public function captureEvent(&$context, $eventType) {
+    switch ($eventType) {
+      case EVENT_GET_STRING:
+        if (empty($context->translation)) {
+          $context->string = $this->getTranslation($context->key);
+        }
+        break;
+    }
+  }
+  
+  private function getTranslation($string) {
+    if (!$this->loaded) {
+      $this->loadTranslations();
+    }
+    if (isset($this->languageCache[$string])) {
+      return $this->languageCache[$string];
+    }
+    return FALSE;
+  }
+  
+  private function loadTranslations() {
+    $config = $this->getConfig(array(
+      CONFIG_LANGUAGE_SELECT,
+      CONFIG_LANGUAGE_DIR,
+    ));
+    if (!empty($config)) {
+      foreach ($config[CONFIG_LANGUAGE_FILE] as $file) {
+        $translation_path = str_replace_all($file, array(
+          '!language' => $config[CONFIG_LANGUAGE_SELECT],
+        ));
+        if (is_readable($translation_path)) {
+          $incoming = parse_ini_file($translation_path);
+          array_extend($this->languageCache, $incoming);
+        }
+      }
+    }
+    $this->loaded = TRUE;
+  }
+  
+}
+  

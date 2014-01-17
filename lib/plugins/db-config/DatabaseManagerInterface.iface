@@ -1,0 +1,67 @@
+<?php
+/**
+ * @file Provides the DatabaseManagerInterface interface.
+ */
+
+/**
+ * Implementations can manage certain aspects of the databases.
+ */
+interface DatabaseManagerInterface {
+  
+  /**
+   * Verifies that this DBM is available.
+   * 
+   * @return boolean
+   *   TRUE if we can run commands on the database, otherwise FALSE.
+   */
+  function available();
+  
+  /**
+   * Creates a new database and also perhaps a new user to access that database.
+   * 
+   * @param string $database
+   *   The name of the database to create. It must not exist.
+   * @param string $username
+   *   The username to create. If left empty, one will not be created.
+   * @param string $password
+   *   The password for the user. If left empty, they will not have a password.
+   * @param string $host
+   *   The host from which the user can connect. If left empty, they will not
+   *   have any restrictions on their access.
+   * 
+   * @return boolean
+   *   TRUE if the creation was successful, otherwise FALSE.
+   */
+  function createDatabase($database, $username = NULL, $password = NULL, $host = NULL);
+  
+  /**
+   * Cleans up the username before it is created.
+   * 
+   * @param string $username
+   *   The username to clean up
+   * 
+   * @return string
+   *   The sanitized username.
+   */
+  function sanitizeUsername($username);
+  
+  /**
+   * Cleans up the database name before it is created.
+   * 
+   * @param string $database
+   *   The database name to clean up.
+   * 
+   * @return string
+   *   The sanitized username.
+   */
+  function sanitizeDatabaseName($database);
+  
+  /**
+   * Generates a randomized password suitable for this database.
+   * 
+   * @return string
+   *   The randomized password.
+   */
+  function randomPassword();
+  
+}

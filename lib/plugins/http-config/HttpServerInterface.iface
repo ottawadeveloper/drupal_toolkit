@@ -1,0 +1,54 @@
+<?php
+/**
+ * @file Defines the HttpServerInterface interface.
+ */
+
+/**
+ * An HTTP server provides access to the functions surrounding the HTTP server.
+ */
+interface HttpServerInterface {
+  
+  /**
+   * Reboots the HTTP server.
+   * 
+   * Implementors should implement the most graceful option possible for their
+   * server. They should also run a config test if possible.
+   * 
+   * @return boolean
+   *   TRUE if the server was rebooted, otherwise FALSE.
+   */
+  function doReboot();
+  
+  /**
+   * Checks to see if the server is available.
+   * 
+   * @return boolean
+   *   TRUE if we can work with this server, otherwise FALSE.
+   */
+  function isAvailable();
+  
+  /**
+   * Writes a configuration file to the server.
+   * 
+   * This should leverage a PhysicalMachineInterface object so that it doesn't
+   * matter if the server is local or remote.
+   * 
+   * @param string $configFile
+   *   The name of the configuration file. The directory is determined 
+   *   automatically by the server object.
+   * @param string $config
+   *   The configuration to write to the file.
+   * 
+   * @return boolean
+   *   TRUE if the file was written, otherwise FALSE.
+   */
+  function writeconfig($configFile, $config);
+  
+  /**
+   * Returns the server machine that this is wrapped around.
+   * 
+   * @return PhysicalInterfaceMachine
+   */
+  function machine();
+
+}

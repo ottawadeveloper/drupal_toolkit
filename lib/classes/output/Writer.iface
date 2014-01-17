@@ -1,0 +1,19 @@
+<?php
+/**
+ * @file Defines the Writer interface.
+ */
+
+/**
+ * Tags the class as being able to disable raw output to the user.
+ */
+interface Writer extends OutputHandler {
+  
+  /**
+   * Displays raw output to the user.
+   * 
+   * @param string $message
+   *   The text to show the user.
+   */
+  function write($message);
+  
+}

@@ -1,0 +1,136 @@
+<?php
+/**
+ * @file Defines the Configuration class.
+ */
+
+/**
+ * Manages configuration settings for the application.
+ * 
+ * Configuration settings can be defined in one of three formats:
+ * - YAML: YAML files can be used to specify more detailed nested configuration.
+ * - INI: INI files can be used to specify simple configuration.
+ * - Runtime: Runtime arguments can be converted into configuration settings.
+ * 
+ * YAML parsing requires the Spyc library be available, otherwise the parsing
+ * will fail.
+ */
+class Configuration implements ConfigurationManagerInterface {
+  
+  /**
+   * Stores configuration set by the user, keyed by configuration key.
+   * 
+   * @var array
+   */
+  private $config = array();
+  
+  /**
+   * Stores the defaults set by the program itself, keyed by configuration key.
+   * 
+   * @var array 
+   */
+  private $defaults = array();
+  
+  /**
+   * Dependency injection for the arguments class.
+   * 
+   * @var ArgsInterface
+   */
+  private $args;
+  
+  /**
+   * Constructor
+   * 
+   * @param array $defaults
+   *   Default set of configuration settings.
+   */
+  public function __construct(array $defaults = array()) {
+    $this->extendDefaultConfiguration($defaults);
+  }
+  
+  public function args() {
+    return $this->args;
+  }
+  
+  public function setArgs(ArgsInterface $args) {
+    $this->args = $args;
+  }
+  
+  public function getConfig($key) {
+    $value = NULL;
+    if (isset($this->defaults[$key])) {
+      $value = $this->defaults[$key];
+    }
+    if (isset($this->config[$key])) {
+      if (empty($value)) {
+        $value = $this->config[$key];
+      }
+      else {
+        if (is_array($this->config[$key])) {
+          if (!is_array($value)) {
+            $value = array($value);
+          }
+          array_merge($value, $this->config[$key]);
+        }
+        else {
+          if (is_array($value)) {
+            $value[] = $this->config[$key];
+          }
+          else {
+            $value = $this->config[$key];
+          }
+        }
+      }
+    }
+    return $value;
+  }
+  
+  public function extendFromOption($key, $long = NULL, $short = NULL, $split = FALSE) {
+    if ($long === TRUE) { $long = $key; }
+    if ($split === TRUE) { $split = DEFAULT_SPLIT_CHARACTER; }
+    $arg = $this->args->getOption($long, $short);
+    if (!empty($split)) {
+      $arg = explode($split, $arg);
+    }
+    $this->extendConfiguration(array(
+      $key => $arg,
+    ));
+  }
+  
+  public function extendDefaultConfiguration(array $defaultConfig) {
+    array_extend($this->defaults, $defaultConfig);
+  }
+  
+  public function extendConfiguration(array $extra_config) {
+    array_extend($this->config, $extra_config);
+  }
+  
+  public function appendIniFile($file) {
+    if (!is_readable($file)) {
+      return FALSE;
+    }
+    $ini = parse_ini_file($file);
+    if ($ini === FALSE) {
+      return FALSE;
+    }
+    $this->extendConfiguration($ini);
+    return TRUE;
+  }
+  
+  public function appendYamlFile($yamlfile) {
+    if (!is_readable($yamlfile)) {
+      return FALSE;
+    }
+    if (!class_exists('Spyc')) {
+      return FALSE;
+    }
+    $config = Spyc::YAMLLoad($yamlfile);
+    if (empty($config)) {
+      return FALSE;
+    }
+    $this->extendConfiguration($yamlfile);
+    return TRUE;
+  }
+  
+  
+}
+

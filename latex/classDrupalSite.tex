@@ -1,0 +1,418 @@
+\hypertarget{classDrupalSite}{\section{Drupal\-Site Class Reference}
+\label{classDrupalSite}\index{Drupal\-Site@{Drupal\-Site}}
+}
+
+
+Stores information about a site installation.  
+
+
+\subsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\hyperlink{classDrupalSite_a2b0b0c16eca712ede8f6b281a3956898}{save\-Configuration} ()
+\begin{DoxyCompactList}\small\item\em Saves the configuration file. \end{DoxyCompactList}\item 
+\hyperlink{classDrupalSite_a97d48f8693619c744e46a08a82e368fe}{set\-Token} (\$token, \$value)
+\begin{DoxyCompactList}\small\item\em Sets a token for the site. \end{DoxyCompactList}\item 
+\hyperlink{classDrupalSite_a31651eb0ac741ef2ecea5da5d0bee28a}{replace\-Tokens} (\$in)
+\begin{DoxyCompactList}\small\item\em Replaces all tokens in \$in with their replacement values. \end{DoxyCompactList}\item 
+\hyperlink{classDrupalSite_a95978674ab1047b9b1525e0bfb0fbf67}{uuid} ()
+\begin{DoxyCompactList}\small\item\em Retrieves a unique I\-D for this site. \end{DoxyCompactList}\item 
+\hyperlink{classDrupalSite_aedd9ec0ad7c0a927326386c525b9172c}{register\-System\-File} (\$file)
+\begin{DoxyCompactList}\small\item\em Registers a file as a system file. \end{DoxyCompactList}\item 
+\hyperlink{classDrupalSite_adce0bd20228368a9b11c02e2dd8c24c9}{register\-Server\-File} (\$file)
+\begin{DoxyCompactList}\small\item\em Registers a file as a server file. \end{DoxyCompactList}\item 
+\hyperlink{classDrupalSite_aa09ad5d5676e2f5953cd7f7df68eedf9}{get\-Server\-Files} ()
+\begin{DoxyCompactList}\small\item\em Retrieves all server files. \end{DoxyCompactList}\item 
+\hyperlink{classDrupalSite_aedd15bbc27ff19bcfc022f69bdd3efb2}{get\-System\-Files} ()
+\begin{DoxyCompactList}\small\item\em Retrieves all system files. \end{DoxyCompactList}\item 
+\hyperlink{classDrupalSite_a62af99ae8b14a035d42b86ffa4563f97}{get\-Setting} (\$key, \$default=N\-U\-L\-L)
+\begin{DoxyCompactList}\small\item\em Retrieves a setting from the site. \end{DoxyCompactList}\item 
+\hyperlink{classDrupalSite_aeea4e89b17c15ca8fdb935626ff5b013}{append\-Setting\-Value} (\$key, \$value)
+\begin{DoxyCompactList}\small\item\em Appends a setting value to the settings array. \end{DoxyCompactList}\item 
+\hyperlink{classDrupalSite_adccf702a1e724e6e14f815f280d18ce2}{set\-Primary\-U\-R\-L} (\$url)
+\begin{DoxyCompactList}\small\item\em Sets the primary U\-R\-L. \end{DoxyCompactList}\item 
+\hyperlink{classDrupalSite_a8dadb2dee1366d250e570ade9b9c4f0d}{add\-Extra\-U\-R\-L} (\$url)
+\begin{DoxyCompactList}\small\item\em Adds an extra U\-R\-L. \end{DoxyCompactList}\item 
+\hyperlink{classDrupalSite_a34cbbd0ec10bdafc70251407e27c0dda}{get\-All\-U\-R\-Ls} ()
+\begin{DoxyCompactList}\small\item\em Retrieves all the U\-R\-Ls (primary and extra). \end{DoxyCompactList}\item 
+\hyperlink{classDrupalSite_a7136efbd5f8544a2d0d6464012986c51}{set\-Setting} (\$key, \$value)
+\begin{DoxyCompactList}\small\item\em Sets the specified setting to \$value. \end{DoxyCompactList}\item 
+\hyperlink{classDrupalSite_a4861be457dff1432fb9a895509cc5da1}{get\-Build\-Folder} ()
+\begin{DoxyCompactList}\small\item\em Retrieves the build folder. \end{DoxyCompactList}\item 
+\hyperlink{classDrupalSite_a8f70562d6de286532a5fae32e4f4b3b7}{get\-Build\-Name} ()
+\begin{DoxyCompactList}\small\item\em Retrieves the build name. \end{DoxyCompactList}\item 
+\hyperlink{classDrupalSite_a1f852dbb2fc780a545c34051894371b0}{register\-New\-Build\-I\-D} (\$build\-I\-D)
+\begin{DoxyCompactList}\small\item\em Registers a new build I\-D. \end{DoxyCompactList}\item 
+\hyperlink{classDrupalSite_a61b5a30d92860c3739650f59dc7bbbb8}{extend\-Settings} (array \$settings)
+\begin{DoxyCompactList}\small\item\em Extends the settings with more settings. \end{DoxyCompactList}\item 
+\hyperlink{classDrupalSite_a5d4a34516300037bce7148da096bc1e3}{load\-Settings} ()
+\begin{DoxyCompactList}\small\item\em Loads settings from the settings file. \end{DoxyCompactList}\item 
+\hyperlink{classDrupalSite_a607caaf2f7e4124c228538e8f6e1b297}{exists} ()
+\begin{DoxyCompactList}\small\item\em Checks to see if the site exists already. \end{DoxyCompactList}\item 
+\hyperlink{classDrupalSite_a5a8309bdbbc44366a003eb945817d174}{exists\-Backwards} ()
+\begin{DoxyCompactList}\small\item\em Checks to see if the site exists in an older format. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\subsection*{Static Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+static \hyperlink{classDrupalSite_adfbb4d4c499f64777cfbf14b64a0b410}{convert\-U\-R\-L\-To\-Site\-Name} (\$url)
+\begin{DoxyCompactList}\small\item\em Converts a Drupal U\-R\-L path (eg example.\-com/mydrupal) to a Drupal site name (eg example.\-com.\-mydrupal). \end{DoxyCompactList}\item 
+static \hyperlink{classDrupalSite_a446d5a50b10b165e0518606862954acc}{create\-Site} (\hyperlink{classConfiguration}{Configuration} \$config, \$name, \$is\-Local)
+\begin{DoxyCompactList}\small\item\em Creates a site object. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\subsection*{Private Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\hyperlink{classDrupalSite_a459fc56d0bbc5787b066548e6dd3f18b}{\-\_\-\-\_\-construct} (\$name, \$folder, \$local=F\-A\-L\-S\-E)
+\begin{DoxyCompactList}\small\item\em Constructs an instance of \hyperlink{classDrupalSite}{Drupal\-Site}. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\subsection*{Private Attributes}
+\begin{DoxyCompactItemize}
+\item 
+\hyperlink{classDrupalSite_aa68deb563e47389d18801a7b65aba1b4}{\$settings} = array()
+\item 
+\hyperlink{classDrupalSite_a7640e2992d474dafa15b5764456816b8}{\$server\-Files} = array()
+\item 
+\hyperlink{classDrupalSite_a0ad106122ccf08f1b9ba547159018ba2}{\$system\-Files} = array()
+\item 
+\hyperlink{classDrupalSite_a37624cd207b1d019f87c02d22ed245e0}{\$placeholders} = array()
+\end{DoxyCompactItemize}
+
+
+\subsection{Constructor \& Destructor Documentation}
+\hypertarget{classDrupalSite_a459fc56d0bbc5787b066548e6dd3f18b}{\index{Drupal\-Site@{Drupal\-Site}!\-\_\-\-\_\-construct@{\-\_\-\-\_\-construct}}
+\index{\-\_\-\-\_\-construct@{\-\_\-\-\_\-construct}!DrupalSite@{Drupal\-Site}}
+\subsubsection[{\-\_\-\-\_\-construct}]{\setlength{\rightskip}{0pt plus 5cm}Drupal\-Site\-::\-\_\-\-\_\-construct (
+\begin{DoxyParamCaption}
+\item[{}]{\$name, }
+\item[{}]{\$folder, }
+\item[{}]{\$local = {\ttfamily FALSE}}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [private]}}}\label{classDrupalSite_a459fc56d0bbc5787b066548e6dd3f18b}
+You should use the factory method instead.
+
+
+\begin{DoxyParams}[1]{Parameters}
+string & {\em \$name} & The build name. \\
+\hline
+string & {\em \$folder} & The root folder for the build. \\
+\hline
+boolean & {\em \$local} & Whether or not this is a local build. \\
+\hline
+\end{DoxyParams}
+
+
+\subsection{Member Function Documentation}
+\hypertarget{classDrupalSite_a8dadb2dee1366d250e570ade9b9c4f0d}{\index{Drupal\-Site@{Drupal\-Site}!add\-Extra\-U\-R\-L@{add\-Extra\-U\-R\-L}}
+\index{add\-Extra\-U\-R\-L@{add\-Extra\-U\-R\-L}!DrupalSite@{Drupal\-Site}}
+\subsubsection[{add\-Extra\-U\-R\-L}]{\setlength{\rightskip}{0pt plus 5cm}Drupal\-Site\-::add\-Extra\-U\-R\-L (
+\begin{DoxyParamCaption}
+\item[{}]{\$url}
+\end{DoxyParamCaption}
+)}}\label{classDrupalSite_a8dadb2dee1366d250e570ade9b9c4f0d}
+
+\begin{DoxyParams}[1]{Parameters}
+string & {\em \$url} & The extra U\-R\-L. \\
+\hline
+\end{DoxyParams}
+\hypertarget{classDrupalSite_aeea4e89b17c15ca8fdb935626ff5b013}{\index{Drupal\-Site@{Drupal\-Site}!append\-Setting\-Value@{append\-Setting\-Value}}
+\index{append\-Setting\-Value@{append\-Setting\-Value}!DrupalSite@{Drupal\-Site}}
+\subsubsection[{append\-Setting\-Value}]{\setlength{\rightskip}{0pt plus 5cm}Drupal\-Site\-::append\-Setting\-Value (
+\begin{DoxyParamCaption}
+\item[{}]{\$key, }
+\item[{}]{\$value}
+\end{DoxyParamCaption}
+)}}\label{classDrupalSite_aeea4e89b17c15ca8fdb935626ff5b013}
+Use this over \hyperlink{classDrupalSite_a7136efbd5f8544a2d0d6464012986c51}{set\-Setting()} when you want to create an array of values that is extensible.
+
+
+\begin{DoxyParams}[1]{Parameters}
+string & {\em \$key} & The key to extend. \\
+\hline
+mixed & {\em \$value} & The value to append to the settings key. \\
+\hline
+\end{DoxyParams}
+\hypertarget{classDrupalSite_adfbb4d4c499f64777cfbf14b64a0b410}{\index{Drupal\-Site@{Drupal\-Site}!convert\-U\-R\-L\-To\-Site\-Name@{convert\-U\-R\-L\-To\-Site\-Name}}
+\index{convert\-U\-R\-L\-To\-Site\-Name@{convert\-U\-R\-L\-To\-Site\-Name}!DrupalSite@{Drupal\-Site}}
+\subsubsection[{convert\-U\-R\-L\-To\-Site\-Name}]{\setlength{\rightskip}{0pt plus 5cm}static Drupal\-Site\-::convert\-U\-R\-L\-To\-Site\-Name (
+\begin{DoxyParamCaption}
+\item[{}]{\$url}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [static]}}}\label{classDrupalSite_adfbb4d4c499f64777cfbf14b64a0b410}
+
+\begin{DoxyParams}[1]{Parameters}
+string & {\em \$url} & The Drupal U\-R\-L path to convert.\\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+string The Drupal site name equivalent. 
+\end{DoxyReturn}
+\hypertarget{classDrupalSite_a446d5a50b10b165e0518606862954acc}{\index{Drupal\-Site@{Drupal\-Site}!create\-Site@{create\-Site}}
+\index{create\-Site@{create\-Site}!DrupalSite@{Drupal\-Site}}
+\subsubsection[{create\-Site}]{\setlength{\rightskip}{0pt plus 5cm}static Drupal\-Site\-::create\-Site (
+\begin{DoxyParamCaption}
+\item[{{\bf Configuration}}]{\$config, }
+\item[{}]{\$name, }
+\item[{}]{\$is\-Local}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [static]}}}\label{classDrupalSite_a446d5a50b10b165e0518606862954acc}
+
+\begin{DoxyParams}[1]{Parameters}
+\hyperlink{classConfiguration}{Configuration} & {\em \$config} & The configuration object. \\
+\hline
+string & {\em \$name} & The name of the site. \\
+\hline
+boolean & {\em \$is\-Local} & Whether or not the site is a local site.\\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+\hyperlink{classDrupalSite}{Drupal\-Site} An instance of \hyperlink{classDrupalSite}{Drupal\-Site} or N\-U\-L\-L if the information provided is invalid. 
+\end{DoxyReturn}
+\hypertarget{classDrupalSite_a607caaf2f7e4124c228538e8f6e1b297}{\index{Drupal\-Site@{Drupal\-Site}!exists@{exists}}
+\index{exists@{exists}!DrupalSite@{Drupal\-Site}}
+\subsubsection[{exists}]{\setlength{\rightskip}{0pt plus 5cm}Drupal\-Site\-::exists (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)}}\label{classDrupalSite_a607caaf2f7e4124c228538e8f6e1b297}
+\begin{DoxyReturn}{Returns}
+boolean Returns T\-R\-U\-E if the site already exists, otherwise F\-A\-L\-S\-E. 
+\end{DoxyReturn}
+\hypertarget{classDrupalSite_a5a8309bdbbc44366a003eb945817d174}{\index{Drupal\-Site@{Drupal\-Site}!exists\-Backwards@{exists\-Backwards}}
+\index{exists\-Backwards@{exists\-Backwards}!DrupalSite@{Drupal\-Site}}
+\subsubsection[{exists\-Backwards}]{\setlength{\rightskip}{0pt plus 5cm}Drupal\-Site\-::exists\-Backwards (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)}}\label{classDrupalSite_a5a8309bdbbc44366a003eb945817d174}
+\begin{DoxyReturn}{Returns}
+boolean Returns T\-R\-U\-E if the site existed from the last builder, otherwise F\-A\-L\-S\-E. 
+\end{DoxyReturn}
+\hypertarget{classDrupalSite_a61b5a30d92860c3739650f59dc7bbbb8}{\index{Drupal\-Site@{Drupal\-Site}!extend\-Settings@{extend\-Settings}}
+\index{extend\-Settings@{extend\-Settings}!DrupalSite@{Drupal\-Site}}
+\subsubsection[{extend\-Settings}]{\setlength{\rightskip}{0pt plus 5cm}Drupal\-Site\-::extend\-Settings (
+\begin{DoxyParamCaption}
+\item[{array}]{\$settings}
+\end{DoxyParamCaption}
+)}}\label{classDrupalSite_a61b5a30d92860c3739650f59dc7bbbb8}
+
+\begin{DoxyParams}[1]{Parameters}
+array & {\em \$settings} & An array of settings\\
+\hline
+\end{DoxyParams}
+\begin{DoxySeeAlso}{See Also}
+\hyperlink{functions_8inc_a7232b02d8ee62e9d1f6e57573b6c1df6}{array\-\_\-extend()} 
+\end{DoxySeeAlso}
+\hypertarget{classDrupalSite_a34cbbd0ec10bdafc70251407e27c0dda}{\index{Drupal\-Site@{Drupal\-Site}!get\-All\-U\-R\-Ls@{get\-All\-U\-R\-Ls}}
+\index{get\-All\-U\-R\-Ls@{get\-All\-U\-R\-Ls}!DrupalSite@{Drupal\-Site}}
+\subsubsection[{get\-All\-U\-R\-Ls}]{\setlength{\rightskip}{0pt plus 5cm}Drupal\-Site\-::get\-All\-U\-R\-Ls (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)}}\label{classDrupalSite_a34cbbd0ec10bdafc70251407e27c0dda}
+\begin{DoxyReturn}{Returns}
+array An array of U\-R\-Ls. 
+\end{DoxyReturn}
+\hypertarget{classDrupalSite_a4861be457dff1432fb9a895509cc5da1}{\index{Drupal\-Site@{Drupal\-Site}!get\-Build\-Folder@{get\-Build\-Folder}}
+\index{get\-Build\-Folder@{get\-Build\-Folder}!DrupalSite@{Drupal\-Site}}
+\subsubsection[{get\-Build\-Folder}]{\setlength{\rightskip}{0pt plus 5cm}Drupal\-Site\-::get\-Build\-Folder (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)}}\label{classDrupalSite_a4861be457dff1432fb9a895509cc5da1}
+\begin{DoxyReturn}{Returns}
+string The path to the build folder. 
+\end{DoxyReturn}
+\hypertarget{classDrupalSite_a8f70562d6de286532a5fae32e4f4b3b7}{\index{Drupal\-Site@{Drupal\-Site}!get\-Build\-Name@{get\-Build\-Name}}
+\index{get\-Build\-Name@{get\-Build\-Name}!DrupalSite@{Drupal\-Site}}
+\subsubsection[{get\-Build\-Name}]{\setlength{\rightskip}{0pt plus 5cm}Drupal\-Site\-::get\-Build\-Name (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)}}\label{classDrupalSite_a8f70562d6de286532a5fae32e4f4b3b7}
+\begin{DoxyReturn}{Returns}
+string The name of the build. 
+\end{DoxyReturn}
+\hypertarget{classDrupalSite_aa09ad5d5676e2f5953cd7f7df68eedf9}{\index{Drupal\-Site@{Drupal\-Site}!get\-Server\-Files@{get\-Server\-Files}}
+\index{get\-Server\-Files@{get\-Server\-Files}!DrupalSite@{Drupal\-Site}}
+\subsubsection[{get\-Server\-Files}]{\setlength{\rightskip}{0pt plus 5cm}Drupal\-Site\-::get\-Server\-Files (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)}}\label{classDrupalSite_aa09ad5d5676e2f5953cd7f7df68eedf9}
+\begin{DoxyReturn}{Returns}
+array An array of server files. 
+\end{DoxyReturn}
+\hypertarget{classDrupalSite_a62af99ae8b14a035d42b86ffa4563f97}{\index{Drupal\-Site@{Drupal\-Site}!get\-Setting@{get\-Setting}}
+\index{get\-Setting@{get\-Setting}!DrupalSite@{Drupal\-Site}}
+\subsubsection[{get\-Setting}]{\setlength{\rightskip}{0pt plus 5cm}Drupal\-Site\-::get\-Setting (
+\begin{DoxyParamCaption}
+\item[{}]{\$key, }
+\item[{}]{\$default = {\ttfamily NULL}}
+\end{DoxyParamCaption}
+)}}\label{classDrupalSite_a62af99ae8b14a035d42b86ffa4563f97}
+
+\begin{DoxyParams}[1]{Parameters}
+string & {\em \$key} & The key to retrieve. \\
+\hline
+mixed & {\em \$default} & A default value to return if not found. Defaults to N\-U\-L\-L.\\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+mixed The value of the setting defined by \$key or the value of \$default if \$key is not set. 
+\end{DoxyReturn}
+\hypertarget{classDrupalSite_aedd15bbc27ff19bcfc022f69bdd3efb2}{\index{Drupal\-Site@{Drupal\-Site}!get\-System\-Files@{get\-System\-Files}}
+\index{get\-System\-Files@{get\-System\-Files}!DrupalSite@{Drupal\-Site}}
+\subsubsection[{get\-System\-Files}]{\setlength{\rightskip}{0pt plus 5cm}Drupal\-Site\-::get\-System\-Files (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)}}\label{classDrupalSite_aedd15bbc27ff19bcfc022f69bdd3efb2}
+\begin{DoxyReturn}{Returns}
+array An array of system files. 
+\end{DoxyReturn}
+\hypertarget{classDrupalSite_a5d4a34516300037bce7148da096bc1e3}{\index{Drupal\-Site@{Drupal\-Site}!load\-Settings@{load\-Settings}}
+\index{load\-Settings@{load\-Settings}!DrupalSite@{Drupal\-Site}}
+\subsubsection[{load\-Settings}]{\setlength{\rightskip}{0pt plus 5cm}Drupal\-Site\-::load\-Settings (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)}}\label{classDrupalSite_a5d4a34516300037bce7148da096bc1e3}
+\begin{DoxyReturn}{Returns}
+boolean T\-R\-U\-E if the settings file was loaded correctly, otherwise F\-A\-L\-S\-E. 
+\end{DoxyReturn}
+\hypertarget{classDrupalSite_a1f852dbb2fc780a545c34051894371b0}{\index{Drupal\-Site@{Drupal\-Site}!register\-New\-Build\-I\-D@{register\-New\-Build\-I\-D}}
+\index{register\-New\-Build\-I\-D@{register\-New\-Build\-I\-D}!DrupalSite@{Drupal\-Site}}
+\subsubsection[{register\-New\-Build\-I\-D}]{\setlength{\rightskip}{0pt plus 5cm}Drupal\-Site\-::register\-New\-Build\-I\-D (
+\begin{DoxyParamCaption}
+\item[{}]{\$build\-I\-D}
+\end{DoxyParamCaption}
+)}}\label{classDrupalSite_a1f852dbb2fc780a545c34051894371b0}
+
+\begin{DoxyParams}[1]{Parameters}
+string & {\em \$build\-I\-D} & The build I\-D. \\
+\hline
+\end{DoxyParams}
+\hypertarget{classDrupalSite_adce0bd20228368a9b11c02e2dd8c24c9}{\index{Drupal\-Site@{Drupal\-Site}!register\-Server\-File@{register\-Server\-File}}
+\index{register\-Server\-File@{register\-Server\-File}!DrupalSite@{Drupal\-Site}}
+\subsubsection[{register\-Server\-File}]{\setlength{\rightskip}{0pt plus 5cm}Drupal\-Site\-::register\-Server\-File (
+\begin{DoxyParamCaption}
+\item[{}]{\$file}
+\end{DoxyParamCaption}
+)}}\label{classDrupalSite_adce0bd20228368a9b11c02e2dd8c24c9}
+
+\begin{DoxyParams}[1]{Parameters}
+string & {\em \$file} & The path to a server file. \\
+\hline
+\end{DoxyParams}
+\hypertarget{classDrupalSite_aedd9ec0ad7c0a927326386c525b9172c}{\index{Drupal\-Site@{Drupal\-Site}!register\-System\-File@{register\-System\-File}}
+\index{register\-System\-File@{register\-System\-File}!DrupalSite@{Drupal\-Site}}
+\subsubsection[{register\-System\-File}]{\setlength{\rightskip}{0pt plus 5cm}Drupal\-Site\-::register\-System\-File (
+\begin{DoxyParamCaption}
+\item[{}]{\$file}
+\end{DoxyParamCaption}
+)}}\label{classDrupalSite_aedd9ec0ad7c0a927326386c525b9172c}
+
+\begin{DoxyParams}[1]{Parameters}
+string & {\em \$file} & The path to a system file. \\
+\hline
+\end{DoxyParams}
+\hypertarget{classDrupalSite_a31651eb0ac741ef2ecea5da5d0bee28a}{\index{Drupal\-Site@{Drupal\-Site}!replace\-Tokens@{replace\-Tokens}}
+\index{replace\-Tokens@{replace\-Tokens}!DrupalSite@{Drupal\-Site}}
+\subsubsection[{replace\-Tokens}]{\setlength{\rightskip}{0pt plus 5cm}Drupal\-Site\-::replace\-Tokens (
+\begin{DoxyParamCaption}
+\item[{}]{\$in}
+\end{DoxyParamCaption}
+)}}\label{classDrupalSite_a31651eb0ac741ef2ecea5da5d0bee28a}
+Note that all tokens should be upper case!
+
+
+\begin{DoxyParams}[1]{Parameters}
+string & {\em \$in} & An input string to replace tokens in.\\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+string \$in with all instances of tokens replaced.
+\end{DoxyReturn}
+\begin{DoxySeeAlso}{See Also}
+\hyperlink{group__site__tokens}{Site token types} 
+\end{DoxySeeAlso}
+\hypertarget{classDrupalSite_a2b0b0c16eca712ede8f6b281a3956898}{\index{Drupal\-Site@{Drupal\-Site}!save\-Configuration@{save\-Configuration}}
+\index{save\-Configuration@{save\-Configuration}!DrupalSite@{Drupal\-Site}}
+\subsubsection[{save\-Configuration}]{\setlength{\rightskip}{0pt plus 5cm}Drupal\-Site\-::save\-Configuration (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)}}\label{classDrupalSite_a2b0b0c16eca712ede8f6b281a3956898}
+\begin{DoxyReturn}{Returns}
+boolean T\-R\-U\-E if the file was saved, otherwise F\-A\-L\-S\-E. 
+\end{DoxyReturn}
+\hypertarget{classDrupalSite_adccf702a1e724e6e14f815f280d18ce2}{\index{Drupal\-Site@{Drupal\-Site}!set\-Primary\-U\-R\-L@{set\-Primary\-U\-R\-L}}
+\index{set\-Primary\-U\-R\-L@{set\-Primary\-U\-R\-L}!DrupalSite@{Drupal\-Site}}
+\subsubsection[{set\-Primary\-U\-R\-L}]{\setlength{\rightskip}{0pt plus 5cm}Drupal\-Site\-::set\-Primary\-U\-R\-L (
+\begin{DoxyParamCaption}
+\item[{}]{\$url}
+\end{DoxyParamCaption}
+)}}\label{classDrupalSite_adccf702a1e724e6e14f815f280d18ce2}
+
+\begin{DoxyParams}[1]{Parameters}
+string & {\em \$url} & The primary U\-R\-L. \\
+\hline
+\end{DoxyParams}
+\hypertarget{classDrupalSite_a7136efbd5f8544a2d0d6464012986c51}{\index{Drupal\-Site@{Drupal\-Site}!set\-Setting@{set\-Setting}}
+\index{set\-Setting@{set\-Setting}!DrupalSite@{Drupal\-Site}}
+\subsubsection[{set\-Setting}]{\setlength{\rightskip}{0pt plus 5cm}Drupal\-Site\-::set\-Setting (
+\begin{DoxyParamCaption}
+\item[{}]{\$key, }
+\item[{}]{\$value}
+\end{DoxyParamCaption}
+)}}\label{classDrupalSite_a7136efbd5f8544a2d0d6464012986c51}
+
+\begin{DoxyParams}[1]{Parameters}
+string & {\em \$key} & The setting key. \\
+\hline
+mixed & {\em \$value} & The setting value. \\
+\hline
+\end{DoxyParams}
+\hypertarget{classDrupalSite_a97d48f8693619c744e46a08a82e368fe}{\index{Drupal\-Site@{Drupal\-Site}!set\-Token@{set\-Token}}
+\index{set\-Token@{set\-Token}!DrupalSite@{Drupal\-Site}}
+\subsubsection[{set\-Token}]{\setlength{\rightskip}{0pt plus 5cm}Drupal\-Site\-::set\-Token (
+\begin{DoxyParamCaption}
+\item[{}]{\$token, }
+\item[{}]{\$value}
+\end{DoxyParamCaption}
+)}}\label{classDrupalSite_a97d48f8693619c744e46a08a82e368fe}
+
+\begin{DoxyParams}[1]{Parameters}
+string & {\em \$token} & The token name to set. See \hyperlink{group__site__tokens}{token types}. \\
+\hline
+string & {\em \$value} & The value for the token. \\
+\hline
+\end{DoxyParams}
+\hypertarget{classDrupalSite_a95978674ab1047b9b1525e0bfb0fbf67}{\index{Drupal\-Site@{Drupal\-Site}!uuid@{uuid}}
+\index{uuid@{uuid}!DrupalSite@{Drupal\-Site}}
+\subsubsection[{uuid}]{\setlength{\rightskip}{0pt plus 5cm}Drupal\-Site\-::uuid (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)}}\label{classDrupalSite_a95978674ab1047b9b1525e0bfb0fbf67}
+\begin{DoxyReturn}{Returns}
+string A unique I\-D for the site. 
+\end{DoxyReturn}
+
+
+\subsection{Member Data Documentation}
+\hypertarget{classDrupalSite_a37624cd207b1d019f87c02d22ed245e0}{\index{Drupal\-Site@{Drupal\-Site}!\$placeholders@{\$placeholders}}
+\index{\$placeholders@{\$placeholders}!DrupalSite@{Drupal\-Site}}
+\subsubsection[{\$placeholders}]{\setlength{\rightskip}{0pt plus 5cm}Drupal\-Site\-::\$placeholders = array()\hspace{0.3cm}{\ttfamily [private]}}}\label{classDrupalSite_a37624cd207b1d019f87c02d22ed245e0}
+\hypertarget{classDrupalSite_a7640e2992d474dafa15b5764456816b8}{\index{Drupal\-Site@{Drupal\-Site}!\$server\-Files@{\$server\-Files}}
+\index{\$server\-Files@{\$server\-Files}!DrupalSite@{Drupal\-Site}}
+\subsubsection[{\$server\-Files}]{\setlength{\rightskip}{0pt plus 5cm}Drupal\-Site\-::\$server\-Files = array()\hspace{0.3cm}{\ttfamily [private]}}}\label{classDrupalSite_a7640e2992d474dafa15b5764456816b8}
+\hypertarget{classDrupalSite_aa68deb563e47389d18801a7b65aba1b4}{\index{Drupal\-Site@{Drupal\-Site}!\$settings@{\$settings}}
+\index{\$settings@{\$settings}!DrupalSite@{Drupal\-Site}}
+\subsubsection[{\$settings}]{\setlength{\rightskip}{0pt plus 5cm}Drupal\-Site\-::\$settings = array()\hspace{0.3cm}{\ttfamily [private]}}}\label{classDrupalSite_aa68deb563e47389d18801a7b65aba1b4}
+\hypertarget{classDrupalSite_a0ad106122ccf08f1b9ba547159018ba2}{\index{Drupal\-Site@{Drupal\-Site}!\$system\-Files@{\$system\-Files}}
+\index{\$system\-Files@{\$system\-Files}!DrupalSite@{Drupal\-Site}}
+\subsubsection[{\$system\-Files}]{\setlength{\rightskip}{0pt plus 5cm}Drupal\-Site\-::\$system\-Files = array()\hspace{0.3cm}{\ttfamily [private]}}}\label{classDrupalSite_a0ad106122ccf08f1b9ba547159018ba2}
+
+
+The documentation for this class was generated from the following file\-:\begin{DoxyCompactItemize}
+\item 
+\hyperlink{DrupalSite_8class}{Drupal\-Site.\-class}\end{DoxyCompactItemize}

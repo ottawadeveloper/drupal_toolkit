@@ -1,0 +1,130 @@
+<?php
+
+class DrupalSiteStandardSitePlugin extends GenericPlugin implements EventListener {
+  
+  public function initialize() {
+    $this->events()->registerListener(array('site-build-sites'), $this);
+    $this->config()->extendDefaultConfiguration(array(
+      'skip-redundant-symlinks' => FALSE,
+    ));
+    $this->config()->extendFromOption('skip-redundant-symlinks', TRUE);
+  }
+  
+  public function requiredPlugins() {
+    return array('DrupalSitePlugin');
+  }
+  
+  public function captureEvent(&$context, $type) {
+    switch ($type) {
+      case 'site-build-sites':
+        $context->success = $this->initializeSites($context->site);
+        $context->stopPropagation = TRUE;
+        break;
+    }
+  }
+  
+  private function initializeSites(DrupalSite $site) {
+    $currentBase = $site->getSetting('build_current_codebase_dir');
+    if (empty($currentBase)) { 
+      $this->error('This plugin requires the site setting [build_current_codebase_dir].');
+      return FALSE; 
+    }
+    $structureSites = $site->getSetting('structure_sites_dir');
+    if (empty($structureSites)) { 
+      $this->error('This plugin requires the site setting [structure_sites_dir]');
+      return FALSE;
+    }
+    
+    // Move default site to where we want it to be.
+    $realDefault = assemble_path($site->getBuildFolder(), $structureSites, 'default');
+    rename(assemble_path($currentBase, 'sites', 'default'), $realDefault);
+    
+    $defaultSettingsFile = assemble_path($realDefault, 'default.settings.php');
+    
+    if (!file_exists($defaultSettingsFile)) {
+      $this->error('Unable to find the default.settings.php file for the default site.');
+      return FALSE;
+    }
+    
+    // Make symlinks out of all the URLs if desired
+    $makeSymlinks = !extra_empty($this->config()->getConfig('skip-redundant-symlinks'));
+    if ($makeSymlinks) {
+      $urls = $site->getAllURLs();
+      foreach ($urls as $url) {
+        $name = DrupalSite::convertURLToSiteName($url);
+        $site->appendSettingValue('existing_sites', $name);
+        $link = assemble_path($structureSites, $name);
+        symlink($realDefault, $link);
+        if (!is_link($link)) {
+          $this->error('Unable to create a symlink for site ['.$name.']');
+          return FALSE;
+        }
+      }
+    }
+
+    // Allow other plugins to change the settings if needed.
+    $context = (object) array(
+      'extra_settings' => '',
+    );
+    $this->events()->fireEvent('get-extra-settings', $context);
+    if (!empty($context->extra_settings)) {
+      if (!file_append_contents($defaultSettingsFile, $context->extra_settings)) {
+        $this->error('Unable to write extra settings to settings.php');
+        return FALSE;
+      }
+    }
+    
+    // Copy the settings to the real template file.
+    $settingsFile = assemble_path($realDefault, 'settings.php');
+    copy($defaultSettingsFile, $settingsFile);
+    if (!is_readable($settingsFile)) {
+      $this->error('Unable to create template-settings.php');
+      return FALSE;
+    }
+    $site->setSetting('site_settings_file', $settingsFile);
+    $site->setSetting('site_default_settings', $defaultSettingsFile);
+    $site->registerServerFile($defaultSettingsFile);
+    $site->registerServerFile($settingsFile);
+    
+    if (!$this->symlinkAllSites($site)) {
+      return FALSE;
+    }
+    
+    $context = (object) array(
+      'success' => TRUE,
+      'site' => $site,
+    );
+    
+    $this->events()->fireEvent('standard-site-setup-continue', $context);
+    
+    return $context->success;
+  }
+  
+  
+  private function symlinkAllSites(DrupalSite $site) {    
+    $staticSites = assemble_path($site->getBuildFolder(), $site->getSetting('structure_sites_dir'));
+    $h = opendir();
+    if (empty($h)) {
+      $this->error('Unable to open the static sites directory for reading ['.$staticSites.']');
+      return FALSE;
+    }
+    $targetBase = assemble_path($site->getBuildFolder(), $site->getSetting('build_current_codebase_dir'), 'sites');
+    while (($dir = readdir($h)) !== FALSE) {
+      if ($dir != '.' && $dir != '..') {
+        $full = assemble_path($staticSites, $dir);
+        if (is_dir($full)) {
+          $linkPath = assemble_path($targetBase, $dir);
+          if (!is_link($linkPath)) {
+            symlink($full, $linkPath);
+            if (!is_link($linkPath)) {
+              $this->error('Unable to symlink ['.$linkPath.'] to ['.$full.']');
+              return FALSE;
+            }
+          }
+        }
+      }
+    }
+    return TRUE;
+  }
+  
+}

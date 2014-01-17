@@ -1,0 +1,107 @@
+\hypertarget{classFileLog}{\section{File\-Log Class Reference}
+\label{classFileLog}\index{File\-Log@{File\-Log}}
+}
+Inheritance diagram for File\-Log\-:\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[height=3.000000cm]{classFileLog}
+\end{center}
+\end{figure}
+\subsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\hyperlink{classFileLog_af5db36841991cd1c97bf52518cdd4d69}{\-\_\-\-\_\-construct} (\$filepath)
+\item 
+\hyperlink{classFileLog_aad2c8a446e482b02e75bd220941b376d}{valid} ()
+\item 
+\hyperlink{classFileLog_a4032cc03bff070c5b4db901b94882bca}{message} (\$message, \$type=\hyperlink{Messenger_8iface_a42a959808a10ab30584347844a7d1657}{M\-E\-S\-S\-A\-G\-E\-\_\-\-W\-O\-R\-K\-I\-N\-G})
+\begin{DoxyCompactList}\small\item\em Send a message to the user. \end{DoxyCompactList}\item 
+\hyperlink{classFileLog_ac117b17bb28c6e1cec5f175a9d2b5e1c}{log} (\$entry, \$level=\hyperlink{group__log__levels_ga8fe5fb4d67cefbcc5556321a2a1ffaec}{C\-L\-O\-G\-\_\-\-N\-O\-T\-I\-C\-E})
+\begin{DoxyCompactList}\small\item\em Create a log entry. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\subsection*{Private Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\hyperlink{classFileLog_a4fdea8b9e461189e3af353fc891590f0}{output} (\$\hyperlink{classFileLog_a4032cc03bff070c5b4db901b94882bca}{message}, \$type)
+\end{DoxyCompactItemize}
+\subsection*{Private Attributes}
+\begin{DoxyCompactItemize}
+\item 
+\hyperlink{classFileLog_a328e146bf8c4173c7cbbee8110851e24}{\$filepath} = ''
+\end{DoxyCompactItemize}
+
+
+\subsection{Constructor \& Destructor Documentation}
+\hypertarget{classFileLog_af5db36841991cd1c97bf52518cdd4d69}{\index{File\-Log@{File\-Log}!\-\_\-\-\_\-construct@{\-\_\-\-\_\-construct}}
+\index{\-\_\-\-\_\-construct@{\-\_\-\-\_\-construct}!FileLog@{File\-Log}}
+\subsubsection[{\-\_\-\-\_\-construct}]{\setlength{\rightskip}{0pt plus 5cm}File\-Log\-::\-\_\-\-\_\-construct (
+\begin{DoxyParamCaption}
+\item[{}]{\$filepath}
+\end{DoxyParamCaption}
+)}}\label{classFileLog_af5db36841991cd1c97bf52518cdd4d69}
+
+
+\subsection{Member Function Documentation}
+\hypertarget{classFileLog_ac117b17bb28c6e1cec5f175a9d2b5e1c}{\index{File\-Log@{File\-Log}!log@{log}}
+\index{log@{log}!FileLog@{File\-Log}}
+\subsubsection[{log}]{\setlength{\rightskip}{0pt plus 5cm}File\-Log\-::log (
+\begin{DoxyParamCaption}
+\item[{}]{\$log\-Entry, }
+\item[{}]{\$level = {\ttfamily {\bf C\-L\-O\-G\-\_\-\-N\-O\-T\-I\-C\-E}}}
+\end{DoxyParamCaption}
+)}}\label{classFileLog_ac117b17bb28c6e1cec5f175a9d2b5e1c}
+
+\begin{DoxyParams}[1]{Parameters}
+string & {\em \$log\-Entry} & The message to log. \\
+\hline
+int & {\em \$level} & The level of the message. See \hyperlink{group__log__levels}{log levels} for a list of constants. \\
+\hline
+\end{DoxyParams}
+
+
+Implements \hyperlink{interfaceLogger_ab923c39364b954fe934591324e4de7e7}{Logger}.
+
+\hypertarget{classFileLog_a4032cc03bff070c5b4db901b94882bca}{\index{File\-Log@{File\-Log}!message@{message}}
+\index{message@{message}!FileLog@{File\-Log}}
+\subsubsection[{message}]{\setlength{\rightskip}{0pt plus 5cm}File\-Log\-::message (
+\begin{DoxyParamCaption}
+\item[{}]{\$message, }
+\item[{}]{\$message\-Type = {\ttfamily {\bf M\-E\-S\-S\-A\-G\-E\-\_\-\-W\-O\-R\-K\-I\-N\-G}}}
+\end{DoxyParamCaption}
+)}}\label{classFileLog_a4032cc03bff070c5b4db901b94882bca}
+
+\begin{DoxyParams}[1]{Parameters}
+string & {\em \$message} & The message to show the user. \\
+\hline
+type & {\em \$message\-Type} & The type of the message. See the list of \hyperlink{group__message__types}{message types} for a list of options. \\
+\hline
+\end{DoxyParams}
+
+
+Implements \hyperlink{interfaceMessenger_a72973fc58a0249ea656daa36547969ad}{Messenger}.
+
+\hypertarget{classFileLog_a4fdea8b9e461189e3af353fc891590f0}{\index{File\-Log@{File\-Log}!output@{output}}
+\index{output@{output}!FileLog@{File\-Log}}
+\subsubsection[{output}]{\setlength{\rightskip}{0pt plus 5cm}File\-Log\-::output (
+\begin{DoxyParamCaption}
+\item[{}]{\$message, }
+\item[{}]{\$type}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [private]}}}\label{classFileLog_a4fdea8b9e461189e3af353fc891590f0}
+\hypertarget{classFileLog_aad2c8a446e482b02e75bd220941b376d}{\index{File\-Log@{File\-Log}!valid@{valid}}
+\index{valid@{valid}!FileLog@{File\-Log}}
+\subsubsection[{valid}]{\setlength{\rightskip}{0pt plus 5cm}File\-Log\-::valid (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)}}\label{classFileLog_aad2c8a446e482b02e75bd220941b376d}
+
+
+\subsection{Member Data Documentation}
+\hypertarget{classFileLog_a328e146bf8c4173c7cbbee8110851e24}{\index{File\-Log@{File\-Log}!\$filepath@{\$filepath}}
+\index{\$filepath@{\$filepath}!FileLog@{File\-Log}}
+\subsubsection[{\$filepath}]{\setlength{\rightskip}{0pt plus 5cm}File\-Log\-::\$filepath = ''\hspace{0.3cm}{\ttfamily [private]}}}\label{classFileLog_a328e146bf8c4173c7cbbee8110851e24}
+
+
+The documentation for this class was generated from the following file\-:\begin{DoxyCompactItemize}
+\item 
+\hyperlink{FileLog_8class}{File\-Log.\-class}\end{DoxyCompactItemize}

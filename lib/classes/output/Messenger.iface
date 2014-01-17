@@ -1,0 +1,43 @@
+<?php
+/**
+ * @file Defines the Messenger interface and several of its constants.
+ */
+
+/**
+ * Denotes a success message.
+ * 
+ * @ingroup message_type
+ */
+define('MESSAGE_SUCCESS', 's');
+
+/**
+ * Denotes a message notifying that the user is doing something.
+ * 
+ * @ingroup message_type
+ */
+define('MESSAGE_WORKING', 'w');
+
+/**
+ * Denotes a failure message.
+ * 
+ * @ingroup message_type
+ */
+define('MESSAGE_FAILURE', 'f');
+
+/**
+ * Tags classes that can message the user of what's happening in the system.
+ */
+interface Messenger extends OutputHandler {
+  
+  /**
+   * Send a message to the user.
+   * 
+   * @param string $message
+   *   The message to show the user.
+   * @param type $messageType
+   *   The type of the message. See the list of @ref message_types "message types"
+   *   for a list of options.
+   */
+  function message($message, $messageType = MESSAGE_WORKING);
+  
+}

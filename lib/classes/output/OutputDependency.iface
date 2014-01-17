@@ -1,0 +1,25 @@
+<?php
+/**
+ * @file Defines the OutputDependency interface.
+ */
+
+/**
+ * Used to tag classes that have a dependency on producing output.
+ */
+interface OutputDependency {
+  
+  /**
+   * Sets the output manager.
+   * 
+   * @param OutputManagerInterface $out
+   */
+  function setOutput(OutputManagerInterface $out);
+  
+  /**
+   * Retrieves the output manager.
+   * 
+   * @return OutputManagerInterface
+   */
+  function out();
+  
+}

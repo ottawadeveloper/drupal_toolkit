@@ -1,0 +1,66 @@
+<?php
+/**
+ * @file Defines the Logger interface and several of its constants.
+ */
+
+/**
+ * Denotes a critical error. Critical errors are ones that come from extreme
+ * error conditions.
+ * 
+ * @ingroup log_levels
+ */
+define('CLOG_CRITICAL', 5);
+
+/**
+ * Denotes an error in the system.
+ * 
+ * @ingroup log_levels
+ */
+define('CLOG_ERROR', 10);
+
+/**
+ * Denotes an error that can be recovered from but may impact the results.
+ * 
+ * @ingroup log_levels
+ */
+define('CLOG_WARNING', 15);
+
+/**
+ * Denotes an error that can be recovered from and will not likely impact
+ * the results.
+ * 
+ * @ingroup log_levels
+ */
+define('CLOG_NOTICE', 20);
+
+/**
+ * Denotes informational output.
+ * 
+ * @ingroup log_levels
+ */
+define('CLOG_INFO', 25);
+
+/**
+ * Denotes a debug log entry.
+ * 
+ * @ingroup log_levels
+ */
+define('CLOG_DEBUG', 30);
+
+/**
+ * Tags a class that can log messages.
+ */
+interface Logger extends OutputHandler {
+  
+  /**
+   * Create a log entry.
+   * 
+   * @param string $logEntry
+   *   The message to log.
+   * @param int $level
+   *   The level of the message. See @ref log_levels "log levels" for a list of
+   *   constants.
+   */
+  function log($logEntry, $level = CLOG_NOTICE);
+  
+}

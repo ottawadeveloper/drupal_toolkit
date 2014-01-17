@@ -1,0 +1,38 @@
+<?php
+/*
+ * @file Defines the PluginInterface class.
+ */
+
+/**
+ * A plugin provides extra functionality for the system.
+ */
+interface PluginInterface 
+    extends ArgsDependency,
+            ConfigurationDependency,
+            EventDependency,
+            OutputDependency,
+            RouterDependency,
+            StringDependency {
+  
+  /**
+   * Get the required plugins for this plugin.
+   * 
+   * @return array
+   *   An array of plugin class names.
+   */
+  function requiredPlugins();
+  
+  /**
+   * Checks any extra requirements for this plugin.
+   * 
+   * @return boolean
+   *   TRUE if all the extra requirements are met, otherwise FALSE.
+   */
+  function checkExtraRequirements();
+  
+  /**
+   * Initializes this plugin.
+   */
+  function initialize();
+  
+}

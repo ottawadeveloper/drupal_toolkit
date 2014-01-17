@@ -1,0 +1,209 @@
+\hypertarget{interfaceConfigurationManagerInterface}{\section{Configuration\-Manager\-Interface Interface Reference}
+\label{interfaceConfigurationManagerInterface}\index{Configuration\-Manager\-Interface@{Configuration\-Manager\-Interface}}
+}
+
+
+Manages global configuration settings.  
+
+
+Inheritance diagram for Configuration\-Manager\-Interface\-:\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[height=3.000000cm]{interfaceConfigurationManagerInterface}
+\end{center}
+\end{figure}
+\subsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\hyperlink{interfaceConfigurationManagerInterface_a4cdfd6f50bcd009bf5d5319c8d8cf735}{get\-Config} (\$key)
+\begin{DoxyCompactList}\small\item\em Retrieves a configuration setting. \end{DoxyCompactList}\item 
+\hyperlink{interfaceConfigurationManagerInterface_afefe2ed7fa23a9b5c394505afbb108af}{extend\-From\-Option} (\$key, \$long=N\-U\-L\-L, \$short=N\-U\-L\-L, \$split=F\-A\-L\-S\-E)
+\begin{DoxyCompactList}\small\item\em Retrieves configuration from the arguments. \end{DoxyCompactList}\item 
+\hyperlink{interfaceConfigurationManagerInterface_add03fd09e040207a4620bc434da85ab6}{extend\-Default\-Configuration} (array \$default\-Config)
+\begin{DoxyCompactList}\small\item\em Extends the default configuration. \end{DoxyCompactList}\item 
+\hyperlink{interfaceConfigurationManagerInterface_a728b1d304084f2118b5f709257531ca5}{extend\-Configuration} (array \$extra\-\_\-config)
+\begin{DoxyCompactList}\small\item\em Extends the configuration. \end{DoxyCompactList}\item 
+\hyperlink{interfaceConfigurationManagerInterface_a0f77fdbc31965a674c15dab2ec068f6e}{append\-Yaml\-File} (\$yamlfile)
+\begin{DoxyCompactList}\small\item\em Parses a file as a Y\-A\-M\-L file and calls \hyperlink{interfaceConfigurationManagerInterface_a728b1d304084f2118b5f709257531ca5}{extend\-Configuration()} with the results. \end{DoxyCompactList}\item 
+\hyperlink{interfaceConfigurationManagerInterface_ae0bd040a0ef470cdec353738e6306870}{append\-Ini\-File} (\$config\-File)
+\begin{DoxyCompactList}\small\item\em Parses a file as an I\-N\-I file and calls \hyperlink{interfaceConfigurationManagerInterface_a728b1d304084f2118b5f709257531ca5}{extend\-Configuration()} with the results. \end{DoxyCompactList}\item 
+\hyperlink{interfaceArgsDependency_a254a16af37180b8d36e07d008c2f57f8}{set\-Args} (\hyperlink{interfaceArgsInterface}{Args\-Interface} \$\hyperlink{interfaceArgsDependency_a0f7b28344ad83bbab37c6a18ec74788d}{args})
+\begin{DoxyCompactList}\small\item\em Sets the instance of args that will be used. \end{DoxyCompactList}\item 
+\hyperlink{interfaceArgsDependency_a0f7b28344ad83bbab37c6a18ec74788d}{args} ()
+\begin{DoxyCompactList}\small\item\em Retrieves the instance of args that will be used. \end{DoxyCompactList}\end{DoxyCompactItemize}
+
+
+\subsection{Detailed Description}
+\hyperlink{classConfiguration}{Configuration} can be provided by Y\-A\-M\-L files or I\-N\-I files, as well as arrays of settings.
+
+\hyperlink{classConfiguration}{Configuration} can be provided as default configuration or just normal configuration. Normal configuration overrides default configuration where possible.
+
+In most cases, overridding a configuration value replaces the existing value. However, if an array is present, the values are extended (numeric keys are appended at the end, which changes the keys, associative keys replace/extend their values as appropriate). 
+
+\subsection{Member Function Documentation}
+\hypertarget{interfaceConfigurationManagerInterface_ae0bd040a0ef470cdec353738e6306870}{\index{Configuration\-Manager\-Interface@{Configuration\-Manager\-Interface}!append\-Ini\-File@{append\-Ini\-File}}
+\index{append\-Ini\-File@{append\-Ini\-File}!ConfigurationManagerInterface@{Configuration\-Manager\-Interface}}
+\subsubsection[{append\-Ini\-File}]{\setlength{\rightskip}{0pt plus 5cm}Configuration\-Manager\-Interface\-::append\-Ini\-File (
+\begin{DoxyParamCaption}
+\item[{}]{\$config\-File}
+\end{DoxyParamCaption}
+)}}\label{interfaceConfigurationManagerInterface_ae0bd040a0ef470cdec353738e6306870}
+
+\begin{DoxyParams}[1]{Parameters}
+string & {\em \$config\-File} & The name of a config file.\\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+boolean T\-R\-U\-E if the file was parsed successfully or F\-A\-L\-S\-E if it could not be. 
+\end{DoxyReturn}
+
+
+Implemented in \hyperlink{classConfiguration_a1a68bd7003ada223c2ae78b5a9716a7c}{Configuration}.
+
+\hypertarget{interfaceConfigurationManagerInterface_a0f77fdbc31965a674c15dab2ec068f6e}{\index{Configuration\-Manager\-Interface@{Configuration\-Manager\-Interface}!append\-Yaml\-File@{append\-Yaml\-File}}
+\index{append\-Yaml\-File@{append\-Yaml\-File}!ConfigurationManagerInterface@{Configuration\-Manager\-Interface}}
+\subsubsection[{append\-Yaml\-File}]{\setlength{\rightskip}{0pt plus 5cm}Configuration\-Manager\-Interface\-::append\-Yaml\-File (
+\begin{DoxyParamCaption}
+\item[{}]{\$yamlfile}
+\end{DoxyParamCaption}
+)}}\label{interfaceConfigurationManagerInterface_a0f77fdbc31965a674c15dab2ec068f6e}
+Requires the Spyc library be available.
+
+
+\begin{DoxyParams}[1]{Parameters}
+string & {\em \$yamlfile} & The name of a Y\-A\-M\-L file.\\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+boolean T\-R\-U\-E if the file was parsed successfully or F\-A\-L\-S\-E if it could not be. 
+\end{DoxyReturn}
+
+
+Implemented in \hyperlink{classConfiguration_a84e022c43ba2c8eb328c8378a8d12598}{Configuration}.
+
+\hypertarget{interfaceArgsDependency_a0f7b28344ad83bbab37c6a18ec74788d}{\index{Configuration\-Manager\-Interface@{Configuration\-Manager\-Interface}!args@{args}}
+\index{args@{args}!ConfigurationManagerInterface@{Configuration\-Manager\-Interface}}
+\subsubsection[{args}]{\setlength{\rightskip}{0pt plus 5cm}Args\-Dependency\-::args (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [inherited]}}}\label{interfaceArgsDependency_a0f7b28344ad83bbab37c6a18ec74788d}
+\begin{DoxyReturn}{Returns}
+\hyperlink{interfaceArgsInterface}{Args\-Interface} An argument manager. 
+\end{DoxyReturn}
+
+
+Implemented in \hyperlink{classGenericCommand_a2b5ffbef597bcac2bb27fb9fe9ceb996}{Generic\-Command}, \hyperlink{classConfiguration_ad064f8385551f9949d659303553395c7}{Configuration}, and \hyperlink{classGenericPlugin_a1ce2fea9e153e37e019ff4b72fd3b819}{Generic\-Plugin}.
+
+\hypertarget{interfaceConfigurationManagerInterface_a728b1d304084f2118b5f709257531ca5}{\index{Configuration\-Manager\-Interface@{Configuration\-Manager\-Interface}!extend\-Configuration@{extend\-Configuration}}
+\index{extend\-Configuration@{extend\-Configuration}!ConfigurationManagerInterface@{Configuration\-Manager\-Interface}}
+\subsubsection[{extend\-Configuration}]{\setlength{\rightskip}{0pt plus 5cm}Configuration\-Manager\-Interface\-::extend\-Configuration (
+\begin{DoxyParamCaption}
+\item[{array}]{\$extra\-\_\-config}
+\end{DoxyParamCaption}
+)}}\label{interfaceConfigurationManagerInterface_a728b1d304084f2118b5f709257531ca5}
+This will override the default configuration except for arrays which will be merged on top of the default configuration.
+
+
+\begin{DoxyParams}[1]{Parameters}
+array & {\em \$extra\-\_\-config} & An array of configuration settings. \\
+\hline
+\end{DoxyParams}
+
+
+Implemented in \hyperlink{classConfiguration_ac9c2b2d609bda5a5ac7da322af3c8b29}{Configuration}.
+
+\hypertarget{interfaceConfigurationManagerInterface_add03fd09e040207a4620bc434da85ab6}{\index{Configuration\-Manager\-Interface@{Configuration\-Manager\-Interface}!extend\-Default\-Configuration@{extend\-Default\-Configuration}}
+\index{extend\-Default\-Configuration@{extend\-Default\-Configuration}!ConfigurationManagerInterface@{Configuration\-Manager\-Interface}}
+\subsubsection[{extend\-Default\-Configuration}]{\setlength{\rightskip}{0pt plus 5cm}Configuration\-Manager\-Interface\-::extend\-Default\-Configuration (
+\begin{DoxyParamCaption}
+\item[{array}]{\$default\-Config}
+\end{DoxyParamCaption}
+)}}\label{interfaceConfigurationManagerInterface_add03fd09e040207a4620bc434da85ab6}
+The default configuration never takes precedence over other types of configuration. However, values defined in arrays may be merged with the normal configuration.
+
+
+\begin{DoxyParams}[1]{Parameters}
+array & {\em \$default\-Config} & An array of configuration settings. \\
+\hline
+\end{DoxyParams}
+
+
+Implemented in \hyperlink{classConfiguration_a60ba070c68333cb81c979ce4d27b7f2b}{Configuration}.
+
+\hypertarget{interfaceConfigurationManagerInterface_afefe2ed7fa23a9b5c394505afbb108af}{\index{Configuration\-Manager\-Interface@{Configuration\-Manager\-Interface}!extend\-From\-Option@{extend\-From\-Option}}
+\index{extend\-From\-Option@{extend\-From\-Option}!ConfigurationManagerInterface@{Configuration\-Manager\-Interface}}
+\subsubsection[{extend\-From\-Option}]{\setlength{\rightskip}{0pt plus 5cm}Configuration\-Manager\-Interface\-::extend\-From\-Option (
+\begin{DoxyParamCaption}
+\item[{}]{\$key, }
+\item[{}]{\$long = {\ttfamily NULL}, }
+\item[{}]{\$short = {\ttfamily NULL}, }
+\item[{}]{\$split = {\ttfamily FALSE}}
+\end{DoxyParamCaption}
+)}}\label{interfaceConfigurationManagerInterface_afefe2ed7fa23a9b5c394505afbb108af}
+
+\begin{DoxyParams}[1]{Parameters}
+string & {\em \$key} & The configuration key to set. \\
+\hline
+mixed & {\em \$long} & One of the following\-:
+\begin{DoxyItemize}
+\item A string which is the name of an argument
+\item T\-R\-U\-E to use the value of \$key
+\item N\-U\-L\-L to skip 
+\end{DoxyItemize}\\
+\hline
+mixed & {\em \$short} & One of the following\-:
+\begin{DoxyItemize}
+\item A string which is the short name of an argument
+\item T\-R\-U\-E to use the first letter of \$long (\$long must not be N\-U\-L\-L)
+\item N\-U\-L\-L to skip. 
+\end{DoxyItemize}\\
+\hline
+mixed & {\em \$split} & One of the following\-:
+\begin{DoxyItemize}
+\item A string to split the input on (to make an array)
+\item T\-R\-U\-E to use the default split character (comma). 
+\end{DoxyItemize}\\
+\hline
+\end{DoxyParams}
+
+
+Implemented in \hyperlink{classConfiguration_a5dd09b0016a43624c98bab1241e9c0da}{Configuration}.
+
+\hypertarget{interfaceConfigurationManagerInterface_a4cdfd6f50bcd009bf5d5319c8d8cf735}{\index{Configuration\-Manager\-Interface@{Configuration\-Manager\-Interface}!get\-Config@{get\-Config}}
+\index{get\-Config@{get\-Config}!ConfigurationManagerInterface@{Configuration\-Manager\-Interface}}
+\subsubsection[{get\-Config}]{\setlength{\rightskip}{0pt plus 5cm}Configuration\-Manager\-Interface\-::get\-Config (
+\begin{DoxyParamCaption}
+\item[{}]{\$key}
+\end{DoxyParamCaption}
+)}}\label{interfaceConfigurationManagerInterface_a4cdfd6f50bcd009bf5d5319c8d8cf735}
+
+\begin{DoxyParams}[1]{Parameters}
+string & {\em \$key} & The setting name to retrieve. \\
+\hline
+\end{DoxyParams}
+
+
+Implemented in \hyperlink{classConfiguration_a6ba7a36ac889882a8711ee7388af2609}{Configuration}.
+
+\hypertarget{interfaceArgsDependency_a254a16af37180b8d36e07d008c2f57f8}{\index{Configuration\-Manager\-Interface@{Configuration\-Manager\-Interface}!set\-Args@{set\-Args}}
+\index{set\-Args@{set\-Args}!ConfigurationManagerInterface@{Configuration\-Manager\-Interface}}
+\subsubsection[{set\-Args}]{\setlength{\rightskip}{0pt plus 5cm}Args\-Dependency\-::set\-Args (
+\begin{DoxyParamCaption}
+\item[{{\bf Args\-Interface}}]{\$args}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [inherited]}}}\label{interfaceArgsDependency_a254a16af37180b8d36e07d008c2f57f8}
+
+\begin{DoxyParams}[1]{Parameters}
+\hyperlink{interfaceArgsInterface}{Args\-Interface} & {\em \$args} & The argument manager that will be used. \\
+\hline
+\end{DoxyParams}
+
+
+Implemented in \hyperlink{classConfiguration_affa059ec3bfaa3cdcb4177ae1a0b61e0}{Configuration}, \hyperlink{classGenericCommand_ab918b084bc099cb5f8f56db2d6ed4cac}{Generic\-Command}, and \hyperlink{classGenericPlugin_abf0b12b47909ef3c4dada146ea775526}{Generic\-Plugin}.
+
+
+
+The documentation for this interface was generated from the following file\-:\begin{DoxyCompactItemize}
+\item 
+\hyperlink{ConfigurationManagerInterface_8iface}{Configuration\-Manager\-Interface.\-iface}\end{DoxyCompactItemize}

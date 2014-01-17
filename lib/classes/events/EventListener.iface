@@ -1,0 +1,21 @@
+<?php
+/**
+ * @file Defines the EventListener interface
+ */
+
+/**
+ * Tags a class as being able to receive events.
+ */
+interface EventListener {
+  
+  /**
+   * Captures an event call.
+   * 
+   * @param stdClass $context
+   *   An object with various properties that depend on the $eventType.
+   * @param string $eventType
+   *   The type of event being called.
+   */
+  function captureEvent(&$context, $eventType);
+  
+}

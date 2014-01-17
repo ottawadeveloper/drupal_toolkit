@@ -1,0 +1,51 @@
+<?php
+
+class DrupalSiteStandardServerStructurePlugin extends GenericPlugin implements EventListener {
+  
+  public function initialize() {
+    $this->events()->registerListener(array('site-build-server-init-struct'), $this);
+    $this->config()->extendDefaultConfiguration(array(
+      'server-sites-dir' => '',
+    ));
+  }
+  
+  private function initializeLocalStructure(DrupalSite $site) {
+    $site->setSetting('server_doc_root', assemble_path($site->getBuildFolder(), 'current'));
+    $site->setToken('SITE_DOCROOT', $site->getSetting('server_doc_root'));
+    return TRUE;
+  }
+  
+  private function initializeServerStructure(DrupalSite $site) {
+    if ($site->getSetting('is_local')) {
+      return $this->initializeLocalStructure($site);
+    }
+    $serverDir = $this->config()->getConfig('server-sites-dir');
+    if (empty($serverDir)) {
+      $this->error('Plugin requires the configuration option [server-sites-dir]');
+      return FALSE;
+    }
+    $link = assemble_path($serverDir, $site->getBuildName());
+    if (is_link($link)) {
+      $this->error('A link for a site already exists at ['.$link.']');
+      return FALSE;
+    }
+    symlink(assemble_path($site->getBuildFolder(), 'current'), $link);
+    if (!is_link($link)) {
+      $this->error('Unable to create symlink for site');
+      return FALSE;
+    }
+    $site->setSetting('server_doc_root', $link);
+    $site->setToken('SITE_DOCROOT', $site->getSetting('server_doc_root'));
+    return TRUE;
+  }
+  
+  public function captureEvent(&$context, $type) {
+    switch ($type) {
+      case 'site-build-server-init-struct':
+        $context->success = $this->initializeServerStructure($context->site);
+        $context->stopPropagation(TRUE);
+        break;
+    }
+  }
+  
+}

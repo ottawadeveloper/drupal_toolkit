@@ -1,0 +1,228 @@
+<?php
+/**
+ * @file Provides the SiteBuildCommand class.
+ */
+
+/**
+ * Manages the creation of a new site. Plugins that want to do something should
+ * capture one of the events and possibly disable some core plugins if you want
+ * to override some of the one-step processes.
+ */
+class SiteBuildCommand extends GenericSiteCommand {
+    
+  public function verifyArguments() {
+    $buildName = $this->getBuildName();
+    if (empty($buildName)) {
+      $this->out()->log('This command requires a build name to be provided.', CLOG_ERROR);
+      return FALSE;
+    }
+    if (!$this->isLocal()) {
+      if (!$this->requireConfig(CONFIG_BUILD_DIRECTORY)) {
+        return FALSE;
+      }
+    }
+    return parent::verifyArguments()
+        && $this->requireNoSite();
+  }
+  
+  /**
+   * Executes a third-party build step. This fires an event named $stepname
+   * for other people to process. Each step is mandatory.
+   * 
+   * @param DrupalSite $site
+   *   The site we're building.
+   * @param string $stepname
+   *   The event name to fire.
+   * @param array $extra
+   *   Extra configuration options.
+   * 
+   * @return boolean
+   *   TRUE if the event reported success, otherwise FALSE.
+   */
+  private function thirdPartyBuildStep($site, $stepname, $extra = array()) {
+    $context = (object) (array(
+      'site' => $site,
+    ) + $extra);
+    $context->success = FALSE;
+    $this->events()->fireEvent($stepname, $context);
+    $success = $context->success;
+    return $success;
+  }
+  
+  /**
+   * Responsible for configuring the site before work starts on it.
+   * 
+   * @param DrupalSite $site
+   *   The site to configure
+   * 
+   * @return boolean
+   *   TRUE if no plugin reported an error, otherwise FALSE.
+   */
+  private function fireConfigureSite(DrupalSite $site) {
+    $context = (object) array(
+      'site' => $site,
+      'success' => TRUE,
+    );
+    $this->events()->fireEvent(EVENT_SITE_CONFIGURE, $context);
+    if (!$context->success) {
+      $this->out()->log('Unable to configure site');
+      return FALSE;
+    }
+    return TRUE;
+  }
+  
+  /**
+   * Responsible for assembling the structure of the site.
+   * 
+   * @param DrupalSite $site
+   *   The site to assemble.
+   * 
+   * @return boolean
+   *   TRUE if at least one plugin took responsibility for the structure
+   *   and there were no errors with the process, otherwise FALSE.
+   */
+  private function fireBuildSiteStructure(DrupalSite $site) {
+    // Fire structure hook
+    if (!$this->thirdPartyBuildStep($site, EVENT_SITE_BUILD_STRUCTURE)) {
+      $this->out()->log('Unable to initialize build structure', CLOG_ERROR);
+      return FALSE;
+    }
+    return TRUE;
+  }
+  
+  /**
+   * Responsible for building the codebase of the site.
+   * 
+   * @param DrupalSite $site
+   *   The site to assemble.
+   * 
+   * @return boolean
+   *   TRUE if at least one plugin took responsibility for the codebase
+   *   and there were no errors with the process, otherwise FALSE.
+   */
+  private function fireBuildSiteCodebase(DrupalSite $site) {
+     // Fire build hook
+    $buildID = date('Ymd-His');
+    if (!$this->thirdPartyBuildStep($site, EVENT_SITE_BUILD_CODEBASE, array(
+      'build_id' => $buildID,
+    ))) {
+      $this->out()->log('Unable to create a new build', CLOG_ERROR);
+      return FALSE;
+    }
+    // Make sure the site remembers the build ID
+    $site->registerNewBuildID($buildID);
+    return TRUE;
+  }
+  
+  /**
+   * Responsible for setting up the sites folder.
+   * 
+   * @param DrupalSite $site
+   *   The site to assemble.
+   * 
+   * @return boolean
+   *   TRUE if at least one plugin took responsibility for the sites
+   *   and there were no errors with the process, otherwise FALSE.
+   */
+  private function fireBuildSiteSites(DrupalSite $site) {
+    if (!$this->thirdPartyBuildStep($site, EVENT_SITE_BUILD_SITES)) {
+      $this->out()->log('Unable to setup the sites structure', CLOG_ERROR);
+      return FALSE;
+    }
+    return TRUE;
+  }
+  
+  /**
+   * Responsible for doing anything that is required for the server structure.
+   * 
+   * @param DrupalSite $site
+   *   The site to assemble.
+   * 
+   * @return boolean
+   *   TRUE if at least one plugin took responsibility for the server structure
+   *   and there were no errors with the process, otherwise FALSE.
+   */
+  private function buildServerStructure(DrupalSite $site) {
+    if (!$this->thirdPartyBuildStep($site, EVENT_SITE_BUILD_SERVER_STRUCTURE)) {
+      $this->out()->log('Unable to initialize the server structure', CLOG_ERROR);
+      return FALSE;
+    }
+    return TRUE;
+  }
+  
+  /**
+   * Responsible for configuring the server.
+   * 
+   * @param DrupalSite $site
+   *   The site to assemble.
+   * 
+   * @return boolean
+   *   TRUE if at least one plugin took responsibility for the structure
+   *   and there were no errors with the process and all the additional 
+   *   configuration operations reported success, otherwise FALSE.
+   */
+  private function buildServerConfiguration(DrupalSite $site) {
+    if (!$this->thirdPartyBuildStep($site, EVENT_SITE_BUILD_CONFIGURE_SERVER)) {
+      $this->out()->log('Unable to configure the server', CLOG_ERROR);
+      return FALSE;
+    }
+    $configContext = (object) array(
+      'success' => TRUE,
+      'site' => $site,
+    );
+    $this->events()->fireEvent(EVENT_SITE_BUILD_MORE_CONFIG, $configContext);
+    if (!$configContext->success) {
+      $this->out()->log('An error occured during additional configuration steps', CLOG_ERROR);
+      return FALSE;
+    }
+    return TRUE;
+  }
+  
+  /**
+   * Cleans up the site if a failed build occurred.
+   * 
+   * @param DrupalSite $site
+   *   The site to cleanup.
+   */
+  private function cleanup(DrupalSite $site) {
+    
+  }
+  
+  public function executeCommand() {
+    $site = $this->getSite();
+    $cleanup = !extra_empty($this->config()->getConfig(CONFIG_SITE_CLEANUP_ON_ERROR));
+    $context = array('site' => $site);
+    $this->events()->fireEvent(EVENT_SITE_BUILD_START, $context);
+    if (!$this->fireConfigureSite($site)) {
+      if ($cleanup) { $this->cleanup($site); }
+      exit(1);
+    }
+    if (!$this->fireBuildSiteStructure($site)) {
+      if ($cleanup) { $this->cleanup($site); }
+      exit(1);
+    }
+    if (!$this->fireBuildSiteCodebase($site)) {
+      if ($cleanup) { $this->cleanup($site); }
+      exit(1);
+    }
+    if (!$this->fireBuildSiteSites($site)) {
+      if ($cleanup) { $this->cleanup($site); }
+      exit(1);
+    }
+    if (!$this->buildServerStructure($site)) {
+      if ($cleanup) { $this->cleanup($site); }
+      exit(1);
+    }
+    if (!$this->buildServerConfiguration($site)) {
+      if ($cleanup) { $this->cleanup($site); }
+      exit(1);
+    }
+    if (!$site->saveConfiguration()) {
+      $this->out()->log('Unable to save configuration details.');
+      if ($cleanup) { $this->cleanup($site); }
+      exit(1);
+    }
+    $this->events()->fireEvent(EVENT_SITE_BUILT, $context);
+  }
+  
+}

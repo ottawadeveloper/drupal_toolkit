@@ -1,0 +1,254 @@
+\hypertarget{classDependencyManager}{\section{Dependency\-Manager Class Reference}
+\label{classDependencyManager}\index{Dependency\-Manager@{Dependency\-Manager}}
+}
+
+
+Defines the \hyperlink{classDependencyManager}{Dependency\-Manager} class.  
+
+
+Inheritance diagram for Dependency\-Manager\-:\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[height=2.000000cm]{classDependencyManager}
+\end{center}
+\end{figure}
+\subsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\hyperlink{classDependencyManager_a3640db4711fa27c693eea64b40aad06a}{register\-Object} (\$object\-Key, \&\$object)
+\begin{DoxyCompactList}\small\item\em Registers a dependency object. \end{DoxyCompactList}\item 
+\hyperlink{classDependencyManager_ae895b528a91fe1cc2de05bdc3f4b371a}{update\-Existing} ()
+\begin{DoxyCompactList}\small\item\em Updates the dependencies on all objects that were set previously. \end{DoxyCompactList}\item 
+\hyperlink{classDependencyManager_a5ea8c9e858247eda9408037cb9ae364c}{register\-Injector} (\$interface\-Match, \$callback, \$object\-Key, \$object\-Type)
+\begin{DoxyCompactList}\small\item\em Registers a new dependency injector. \end{DoxyCompactList}\item 
+\hyperlink{classDependencyManager_a069efa0cc8857115f1440df4a4768b90}{set\-Dependencies} (\&\$object)
+\begin{DoxyCompactList}\small\item\em Injects all the appropriate dependencies into objects. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\subsection*{Static Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+static \hyperlink{classDependencyManager_a9ad47b81726abff687bd46b2e183931b}{dm} ()
+\begin{DoxyCompactList}\small\item\em Global reference to the dependency manager. \end{DoxyCompactList}\item 
+static \hyperlink{classDependencyManager_a4c8a978f6db672cbfa1e371600dfac25}{register} (\$iface, \$cb, \$obj\-Key, \$obj\-Class)
+\begin{DoxyCompactList}\small\item\em Registers a new dependency injector. \end{DoxyCompactList}\item 
+static \hyperlink{classDependencyManager_a45e951902849e91e0c2f4be04fb29902}{set\-Object} (\$key, \&\$object)
+\begin{DoxyCompactList}\small\item\em Registers a dependency object. \end{DoxyCompactList}\item 
+static \hyperlink{classDependencyManager_a04d435fa48e2820fb665962463ba4edb}{inject} (\&\$object)
+\begin{DoxyCompactList}\small\item\em Injects all the appropriate dependencies into the object. \end{DoxyCompactList}\item 
+static \hyperlink{classDependencyManager_aac8afdb7452596f80b4f5b4210271a84}{update} ()
+\begin{DoxyCompactList}\small\item\em Refreshes all the dependency injection information on existing objects. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\subsection*{Private Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\hyperlink{classDependencyManager_a903c38b4ce12a2bca35fd64567ccbd66}{\-\_\-\-\_\-construct} ()
+\begin{DoxyCompactList}\small\item\em Private constructor for singleton pattern. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\subsection*{Private Attributes}
+\begin{DoxyCompactItemize}
+\item 
+\hyperlink{classDependencyManager_aa0ff1358e1d38ce910b7b1dbe9abc823}{\$injector\-Map} = array()
+\item 
+\hyperlink{classDependencyManager_ac4253ae8337e1115a8ce7fc386e2ee8d}{\$injector\-Objects} = array()
+\item 
+\hyperlink{classDependencyManager_ab0de225665263f8ac4154b7b76333363}{\$injector\-Classes} = array()
+\item 
+\hyperlink{classDependencyManager_a849ce9e04cb45cab46ad489f506234a8}{\$injected\-Objects} = array()
+\end{DoxyCompactItemize}
+\subsection*{Static Private Attributes}
+\begin{DoxyCompactItemize}
+\item 
+static \hyperlink{classDependencyManager_a8679939d89361bdc35730f4391a0fa36}{\$manager} = N\-U\-L\-L
+\end{DoxyCompactItemize}
+
+
+\subsection{Detailed Description}
+Manages dependencies for the software. 
+
+\subsection{Constructor \& Destructor Documentation}
+\hypertarget{classDependencyManager_a903c38b4ce12a2bca35fd64567ccbd66}{\index{Dependency\-Manager@{Dependency\-Manager}!\-\_\-\-\_\-construct@{\-\_\-\-\_\-construct}}
+\index{\-\_\-\-\_\-construct@{\-\_\-\-\_\-construct}!DependencyManager@{Dependency\-Manager}}
+\subsubsection[{\-\_\-\-\_\-construct}]{\setlength{\rightskip}{0pt plus 5cm}Dependency\-Manager\-::\-\_\-\-\_\-construct (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [private]}}}\label{classDependencyManager_a903c38b4ce12a2bca35fd64567ccbd66}
+
+
+\subsection{Member Function Documentation}
+\hypertarget{classDependencyManager_a9ad47b81726abff687bd46b2e183931b}{\index{Dependency\-Manager@{Dependency\-Manager}!dm@{dm}}
+\index{dm@{dm}!DependencyManager@{Dependency\-Manager}}
+\subsubsection[{dm}]{\setlength{\rightskip}{0pt plus 5cm}static Dependency\-Manager\-::dm (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [static]}}}\label{classDependencyManager_a9ad47b81726abff687bd46b2e183931b}
+Enables the use of the static methods here.
+
+Singleton pattern.
+
+\begin{DoxyReturn}{Returns}
+\hyperlink{classDependencyManager}{Dependency\-Manager} 
+\end{DoxyReturn}
+\hypertarget{classDependencyManager_a04d435fa48e2820fb665962463ba4edb}{\index{Dependency\-Manager@{Dependency\-Manager}!inject@{inject}}
+\index{inject@{inject}!DependencyManager@{Dependency\-Manager}}
+\subsubsection[{inject}]{\setlength{\rightskip}{0pt plus 5cm}static Dependency\-Manager\-::inject (
+\begin{DoxyParamCaption}
+\item[{\&}]{\$object}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [static]}}}\label{classDependencyManager_a04d435fa48e2820fb665962463ba4edb}
+
+\begin{DoxyParams}[1]{Parameters}
+object & {\em \$object} & An object to set dependencies on.\\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+boolean T\-R\-U\-E if the dependencies were injected, otherwise F\-A\-L\-S\-E. 
+\end{DoxyReturn}
+\hypertarget{classDependencyManager_a4c8a978f6db672cbfa1e371600dfac25}{\index{Dependency\-Manager@{Dependency\-Manager}!register@{register}}
+\index{register@{register}!DependencyManager@{Dependency\-Manager}}
+\subsubsection[{register}]{\setlength{\rightskip}{0pt plus 5cm}static Dependency\-Manager\-::register (
+\begin{DoxyParamCaption}
+\item[{}]{\$iface, }
+\item[{}]{\$cb, }
+\item[{}]{\$obj\-Key, }
+\item[{}]{\$obj\-Class}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [static]}}}\label{classDependencyManager_a4c8a978f6db672cbfa1e371600dfac25}
+
+\begin{DoxyParams}[1]{Parameters}
+string & {\em \$iface} & Only objects that match this interface will be injected. \\
+\hline
+string & {\em \$cb} & A method from \$interface\-Match that will be called to inject the object. \\
+\hline
+string | array & {\em \$obj\-Key} & One or more keys of objects set with \hyperlink{classDependencyManager_a3640db4711fa27c693eea64b40aad06a}{register\-Object()} that will be passed as arguments to \$callback. \\
+\hline
+string & {\em \$obj\-Class} & The interface that the object set by \hyperlink{classDependencyManager_a3640db4711fa27c693eea64b40aad06a}{register\-Object()} must match. \\
+\hline
+\end{DoxyParams}
+\hypertarget{classDependencyManager_a5ea8c9e858247eda9408037cb9ae364c}{\index{Dependency\-Manager@{Dependency\-Manager}!register\-Injector@{register\-Injector}}
+\index{register\-Injector@{register\-Injector}!DependencyManager@{Dependency\-Manager}}
+\subsubsection[{register\-Injector}]{\setlength{\rightskip}{0pt plus 5cm}Dependency\-Manager\-::register\-Injector (
+\begin{DoxyParamCaption}
+\item[{}]{\$interface\-Match, }
+\item[{}]{\$callback, }
+\item[{}]{\$object\-Key, }
+\item[{}]{\$object\-Type}
+\end{DoxyParamCaption}
+)}}\label{classDependencyManager_a5ea8c9e858247eda9408037cb9ae364c}
+
+\begin{DoxyParams}[1]{Parameters}
+string & {\em \$interface\-Match} & Only objects that match this interface will be injected. \\
+\hline
+string & {\em \$callback} & A method from \$interface\-Match that will be called to inject the object. \\
+\hline
+string | array & {\em \$object\-Key} & One or more keys of objects set with \hyperlink{classDependencyManager_a3640db4711fa27c693eea64b40aad06a}{register\-Object()} that will be passed as arguments to \$callback. \\
+\hline
+string & {\em \$object\-Type} & The interface that the object set by \hyperlink{classDependencyManager_a3640db4711fa27c693eea64b40aad06a}{register\-Object()} must match. \\
+\hline
+\end{DoxyParams}
+
+
+Implements \hyperlink{interfaceDependencyManagerInterface_a004b87c671ceef9a96a3b644791ebbf7}{Dependency\-Manager\-Interface}.
+
+\hypertarget{classDependencyManager_a3640db4711fa27c693eea64b40aad06a}{\index{Dependency\-Manager@{Dependency\-Manager}!register\-Object@{register\-Object}}
+\index{register\-Object@{register\-Object}!DependencyManager@{Dependency\-Manager}}
+\subsubsection[{register\-Object}]{\setlength{\rightskip}{0pt plus 5cm}Dependency\-Manager\-::register\-Object (
+\begin{DoxyParamCaption}
+\item[{}]{\$object\-Key, }
+\item[{\&}]{\$object}
+\end{DoxyParamCaption}
+)}}\label{classDependencyManager_a3640db4711fa27c693eea64b40aad06a}
+If \$this-\/$>$injector\-Classes\mbox{[}\$object\-Key\mbox{]} is set, \$object must be an instance of the class \$this-\/$>$injector\-Classes\mbox{[}\$object\-Key\mbox{]}.
+
+
+\begin{DoxyParams}[1]{Parameters}
+string & {\em \$object\-Key} & The key to register. \\
+\hline
+object & {\em \$object} & The object to register against the key.\\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+boolean T\-R\-U\-E if the object was registered, otherwise F\-A\-L\-S\-E. 
+\end{DoxyReturn}
+
+
+Implements \hyperlink{interfaceDependencyManagerInterface_a7cbf2766f05c6e2ba6bcae7a80d9e7ad}{Dependency\-Manager\-Interface}.
+
+\hypertarget{classDependencyManager_a069efa0cc8857115f1440df4a4768b90}{\index{Dependency\-Manager@{Dependency\-Manager}!set\-Dependencies@{set\-Dependencies}}
+\index{set\-Dependencies@{set\-Dependencies}!DependencyManager@{Dependency\-Manager}}
+\subsubsection[{set\-Dependencies}]{\setlength{\rightskip}{0pt plus 5cm}Dependency\-Manager\-::set\-Dependencies (
+\begin{DoxyParamCaption}
+\item[{\&}]{\$object}
+\end{DoxyParamCaption}
+)}}\label{classDependencyManager_a069efa0cc8857115f1440df4a4768b90}
+For each registered injector, if \$object matches \$interface\-Match, then \$callback is called with the arguments set by \hyperlink{classDependencyManager_a3640db4711fa27c693eea64b40aad06a}{register\-Object()} that match the keys in \$object\-Key.
+
+
+\begin{DoxyParams}[1]{Parameters}
+object & {\em \$object} & An object to set dependencies on.\\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+boolean T\-R\-U\-E if the dependencies were injected, otherwise F\-A\-L\-S\-E. 
+\end{DoxyReturn}
+
+
+Implements \hyperlink{interfaceDependencyManagerInterface_aeff0122054e837d487325eb6d03c5631}{Dependency\-Manager\-Interface}.
+
+\hypertarget{classDependencyManager_a45e951902849e91e0c2f4be04fb29902}{\index{Dependency\-Manager@{Dependency\-Manager}!set\-Object@{set\-Object}}
+\index{set\-Object@{set\-Object}!DependencyManager@{Dependency\-Manager}}
+\subsubsection[{set\-Object}]{\setlength{\rightskip}{0pt plus 5cm}static Dependency\-Manager\-::set\-Object (
+\begin{DoxyParamCaption}
+\item[{}]{\$key, }
+\item[{\&}]{\$object}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [static]}}}\label{classDependencyManager_a45e951902849e91e0c2f4be04fb29902}
+
+\begin{DoxyParams}[1]{Parameters}
+string & {\em \$key} & The key to register. \\
+\hline
+object & {\em \$object} & The object to register against the key.\\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+boolean T\-R\-U\-E if the object was registered, otherwise F\-A\-L\-S\-E. 
+\end{DoxyReturn}
+\hypertarget{classDependencyManager_aac8afdb7452596f80b4f5b4210271a84}{\index{Dependency\-Manager@{Dependency\-Manager}!update@{update}}
+\index{update@{update}!DependencyManager@{Dependency\-Manager}}
+\subsubsection[{update}]{\setlength{\rightskip}{0pt plus 5cm}static Dependency\-Manager\-::update (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [static]}}}\label{classDependencyManager_aac8afdb7452596f80b4f5b4210271a84}
+\hypertarget{classDependencyManager_ae895b528a91fe1cc2de05bdc3f4b371a}{\index{Dependency\-Manager@{Dependency\-Manager}!update\-Existing@{update\-Existing}}
+\index{update\-Existing@{update\-Existing}!DependencyManager@{Dependency\-Manager}}
+\subsubsection[{update\-Existing}]{\setlength{\rightskip}{0pt plus 5cm}Dependency\-Manager\-::update\-Existing (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)}}\label{classDependencyManager_ae895b528a91fe1cc2de05bdc3f4b371a}
+
+
+Implements \hyperlink{interfaceDependencyManagerInterface_ae933f368556537a5d543ffcf367cc3db}{Dependency\-Manager\-Interface}.
+
+
+
+\subsection{Member Data Documentation}
+\hypertarget{classDependencyManager_a849ce9e04cb45cab46ad489f506234a8}{\index{Dependency\-Manager@{Dependency\-Manager}!\$injected\-Objects@{\$injected\-Objects}}
+\index{\$injected\-Objects@{\$injected\-Objects}!DependencyManager@{Dependency\-Manager}}
+\subsubsection[{\$injected\-Objects}]{\setlength{\rightskip}{0pt plus 5cm}Dependency\-Manager\-::\$injected\-Objects = array()\hspace{0.3cm}{\ttfamily [private]}}}\label{classDependencyManager_a849ce9e04cb45cab46ad489f506234a8}
+\hypertarget{classDependencyManager_ab0de225665263f8ac4154b7b76333363}{\index{Dependency\-Manager@{Dependency\-Manager}!\$injector\-Classes@{\$injector\-Classes}}
+\index{\$injector\-Classes@{\$injector\-Classes}!DependencyManager@{Dependency\-Manager}}
+\subsubsection[{\$injector\-Classes}]{\setlength{\rightskip}{0pt plus 5cm}Dependency\-Manager\-::\$injector\-Classes = array()\hspace{0.3cm}{\ttfamily [private]}}}\label{classDependencyManager_ab0de225665263f8ac4154b7b76333363}
+\hypertarget{classDependencyManager_aa0ff1358e1d38ce910b7b1dbe9abc823}{\index{Dependency\-Manager@{Dependency\-Manager}!\$injector\-Map@{\$injector\-Map}}
+\index{\$injector\-Map@{\$injector\-Map}!DependencyManager@{Dependency\-Manager}}
+\subsubsection[{\$injector\-Map}]{\setlength{\rightskip}{0pt plus 5cm}Dependency\-Manager\-::\$injector\-Map = array()\hspace{0.3cm}{\ttfamily [private]}}}\label{classDependencyManager_aa0ff1358e1d38ce910b7b1dbe9abc823}
+\hypertarget{classDependencyManager_ac4253ae8337e1115a8ce7fc386e2ee8d}{\index{Dependency\-Manager@{Dependency\-Manager}!\$injector\-Objects@{\$injector\-Objects}}
+\index{\$injector\-Objects@{\$injector\-Objects}!DependencyManager@{Dependency\-Manager}}
+\subsubsection[{\$injector\-Objects}]{\setlength{\rightskip}{0pt plus 5cm}Dependency\-Manager\-::\$injector\-Objects = array()\hspace{0.3cm}{\ttfamily [private]}}}\label{classDependencyManager_ac4253ae8337e1115a8ce7fc386e2ee8d}
+\hypertarget{classDependencyManager_a8679939d89361bdc35730f4391a0fa36}{\index{Dependency\-Manager@{Dependency\-Manager}!\$manager@{\$manager}}
+\index{\$manager@{\$manager}!DependencyManager@{Dependency\-Manager}}
+\subsubsection[{\$manager}]{\setlength{\rightskip}{0pt plus 5cm}Dependency\-Manager\-::\$manager = N\-U\-L\-L\hspace{0.3cm}{\ttfamily [static]}, {\ttfamily [private]}}}\label{classDependencyManager_a8679939d89361bdc35730f4391a0fa36}
+
+
+The documentation for this class was generated from the following file\-:\begin{DoxyCompactItemize}
+\item 
+\hyperlink{DependencyManager_8class}{Dependency\-Manager.\-class}\end{DoxyCompactItemize}

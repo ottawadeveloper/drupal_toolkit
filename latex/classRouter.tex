@@ -1,0 +1,137 @@
+\hypertarget{classRouter}{\section{Router Class Reference}
+\label{classRouter}\index{Router@{Router}}
+}
+
+
+Implementation of \hyperlink{interfaceRouterInterface}{Router\-Interface}.  
+
+
+Inheritance diagram for Router\-:\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[height=3.000000cm]{classRouter}
+\end{center}
+\end{figure}
+\subsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\hyperlink{classRouter_a7e6a5676f5599dedca57e257b8866961}{\-\_\-\-\_\-construct} ()
+\item 
+\hyperlink{classRouter_accbae4193c109f38cf4344a45a59f4e2}{set\-Dependency\-Manager} (\hyperlink{interfaceDependencyManagerInterface}{Dependency\-Manager\-Interface} \$\hyperlink{classRouter_a30bdbace1d83a791796a35df14811942}{dm})
+\begin{DoxyCompactList}\small\item\em Sets the dependency manager. \end{DoxyCompactList}\item 
+\hyperlink{classRouter_a30bdbace1d83a791796a35df14811942}{dm} ()
+\begin{DoxyCompactList}\small\item\em Returns the set dependency manager. \end{DoxyCompactList}\item 
+\hyperlink{classRouter_a32049ea75355169c53ef8dec3217a55a}{add\-Command} (\$command\-Name, \hyperlink{interfaceRouterCommand}{Router\-Command} \$command, \$aliases=array())
+\begin{DoxyCompactList}\small\item\em Registers the command with the router. \end{DoxyCompactList}\item 
+\hyperlink{classRouter_aadae3200dcc446518eccd079fb76b568}{find\-Command} (\$command\-Name)
+\begin{DoxyCompactList}\small\item\em Retrieves the command with the given name or alias. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\subsection*{Private Attributes}
+\begin{DoxyCompactItemize}
+\item 
+\hyperlink{classRouter_a7c6ae1fdc0faf7630a40cbb5a73e1088}{\$commands} = array()
+\item 
+\hyperlink{classRouter_af09b7cc88ca75fe10ff4e1310f04e03f}{\$aliases} = array()
+\item 
+\hyperlink{classRouter_acdd92b74b2f98bbec9bc868b63122ce0}{\$dm}
+\end{DoxyCompactItemize}
+
+
+\subsection{Constructor \& Destructor Documentation}
+\hypertarget{classRouter_a7e6a5676f5599dedca57e257b8866961}{\index{Router@{Router}!\-\_\-\-\_\-construct@{\-\_\-\-\_\-construct}}
+\index{\-\_\-\-\_\-construct@{\-\_\-\-\_\-construct}!Router@{Router}}
+\subsubsection[{\-\_\-\-\_\-construct}]{\setlength{\rightskip}{0pt plus 5cm}Router\-::\-\_\-\-\_\-construct (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)}}\label{classRouter_a7e6a5676f5599dedca57e257b8866961}
+
+
+\subsection{Member Function Documentation}
+\hypertarget{classRouter_a32049ea75355169c53ef8dec3217a55a}{\index{Router@{Router}!add\-Command@{add\-Command}}
+\index{add\-Command@{add\-Command}!Router@{Router}}
+\subsubsection[{add\-Command}]{\setlength{\rightskip}{0pt plus 5cm}Router\-::add\-Command (
+\begin{DoxyParamCaption}
+\item[{}]{\$command\-Name, }
+\item[{{\bf Router\-Command}}]{\$command, }
+\item[{}]{\$aliases = {\ttfamily array()}}
+\end{DoxyParamCaption}
+)}}\label{classRouter_a32049ea75355169c53ef8dec3217a55a}
+
+\begin{DoxyParams}[1]{Parameters}
+string & {\em \$command\-Name} & The name of the command. \\
+\hline
+\hyperlink{interfaceRouterCommand}{Router\-Command} & {\em \$command} & The command to register. \\
+\hline
+type & {\em \$aliases} & One or more aliases. \\
+\hline
+\end{DoxyParams}
+
+
+Implements \hyperlink{interfaceRouterInterface_a15c6b0e9c47bce74f071526aedd05c01}{Router\-Interface}.
+
+\hypertarget{classRouter_a30bdbace1d83a791796a35df14811942}{\index{Router@{Router}!dm@{dm}}
+\index{dm@{dm}!Router@{Router}}
+\subsubsection[{dm}]{\setlength{\rightskip}{0pt plus 5cm}Router\-::dm (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)}}\label{classRouter_a30bdbace1d83a791796a35df14811942}
+\begin{DoxyReturn}{Returns}
+\hyperlink{interfaceDependencyManagerInterface}{Dependency\-Manager\-Interface} 
+\end{DoxyReturn}
+
+
+Implements \hyperlink{interfaceDependencyManagerDependency_aefcac5c2e195eaab895ce6378fc5aa31}{Dependency\-Manager\-Dependency}.
+
+\hypertarget{classRouter_aadae3200dcc446518eccd079fb76b568}{\index{Router@{Router}!find\-Command@{find\-Command}}
+\index{find\-Command@{find\-Command}!Router@{Router}}
+\subsubsection[{find\-Command}]{\setlength{\rightskip}{0pt plus 5cm}Router\-::find\-Command (
+\begin{DoxyParamCaption}
+\item[{}]{\$command\-Name}
+\end{DoxyParamCaption}
+)}}\label{classRouter_aadae3200dcc446518eccd079fb76b568}
+
+\begin{DoxyParams}[1]{Parameters}
+string & {\em \$command\-Name} & The name of a command or its alias.\\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+\hyperlink{interfaceRouterCommand}{Router\-Command} The \hyperlink{interfaceRouterCommand}{Router\-Command} object associated with the command\-Name or N\-U\-L\-L if no item was found. 
+\end{DoxyReturn}
+
+
+Implements \hyperlink{interfaceRouterInterface_a3207428a5b9cd1f54ba0e141aba4873c}{Router\-Interface}.
+
+\hypertarget{classRouter_accbae4193c109f38cf4344a45a59f4e2}{\index{Router@{Router}!set\-Dependency\-Manager@{set\-Dependency\-Manager}}
+\index{set\-Dependency\-Manager@{set\-Dependency\-Manager}!Router@{Router}}
+\subsubsection[{set\-Dependency\-Manager}]{\setlength{\rightskip}{0pt plus 5cm}Router\-::set\-Dependency\-Manager (
+\begin{DoxyParamCaption}
+\item[{{\bf Dependency\-Manager\-Interface}}]{\$dm}
+\end{DoxyParamCaption}
+)}}\label{classRouter_accbae4193c109f38cf4344a45a59f4e2}
+
+\begin{DoxyParams}[1]{Parameters}
+\hyperlink{interfaceDependencyManagerInterface}{Dependency\-Manager\-Interface} & {\em \$dm} & The dependency manager. \\
+\hline
+\end{DoxyParams}
+
+
+Implements \hyperlink{interfaceDependencyManagerDependency_a9ff6287d65d2a7337595cd66c839e33f}{Dependency\-Manager\-Dependency}.
+
+
+
+\subsection{Member Data Documentation}
+\hypertarget{classRouter_af09b7cc88ca75fe10ff4e1310f04e03f}{\index{Router@{Router}!\$aliases@{\$aliases}}
+\index{\$aliases@{\$aliases}!Router@{Router}}
+\subsubsection[{\$aliases}]{\setlength{\rightskip}{0pt plus 5cm}Router\-::\$aliases = array()\hspace{0.3cm}{\ttfamily [private]}}}\label{classRouter_af09b7cc88ca75fe10ff4e1310f04e03f}
+\hypertarget{classRouter_a7c6ae1fdc0faf7630a40cbb5a73e1088}{\index{Router@{Router}!\$commands@{\$commands}}
+\index{\$commands@{\$commands}!Router@{Router}}
+\subsubsection[{\$commands}]{\setlength{\rightskip}{0pt plus 5cm}Router\-::\$commands = array()\hspace{0.3cm}{\ttfamily [private]}}}\label{classRouter_a7c6ae1fdc0faf7630a40cbb5a73e1088}
+\hypertarget{classRouter_acdd92b74b2f98bbec9bc868b63122ce0}{\index{Router@{Router}!\$dm@{\$dm}}
+\index{\$dm@{\$dm}!Router@{Router}}
+\subsubsection[{\$dm}]{\setlength{\rightskip}{0pt plus 5cm}Router\-::\$dm\hspace{0.3cm}{\ttfamily [private]}}}\label{classRouter_acdd92b74b2f98bbec9bc868b63122ce0}
+
+
+The documentation for this class was generated from the following file\-:\begin{DoxyCompactItemize}
+\item 
+\hyperlink{Router_8class}{Router.\-class}\end{DoxyCompactItemize}

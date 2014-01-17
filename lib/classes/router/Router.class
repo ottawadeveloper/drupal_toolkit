@@ -1,0 +1,63 @@
+<?php
+/**
+ * @file Defines the Router class.
+ */
+
+/**
+ * Implementation of RouterInterface.
+ */
+class Router implements RouterInterface {
+  
+  /**
+   * An array of commands keyed by their primary command name.
+   * 
+   * @var array
+   */
+  private $commands = array();
+  
+  /**
+   * An array of commands keyed by their aliases.
+   * 
+   * @var array
+   */
+  private $aliases = array();
+  
+  /**
+   * Dependency manager.
+   * 
+   * @var DependencyManagerInterface
+   */
+  private $dm;
+  
+  public function __construct() {
+  }
+  
+  public function setDependencyManager(DependencyManagerInterface $dm) {
+    $this->dm = $dm;
+  }
+  
+  public function dm() {
+    return $this->dm();
+  }
+  
+  public function addCommand($commandName, RouterCommand $command, $aliases = array()) {
+    $this->dm()->setDependencies($command);
+    $this->commands[$commandName] = $command;
+    foreach ($aliases as $alias) {
+      $this->aliases[$alias] = $command;
+    }
+  }
+  
+  public function findCommand($commandName) {
+    if (isset($this->commands[$commandName])) {
+      return $this->commands[$commandName];
+    }
+    elseif (isset($this->aliases[$commandName])) {
+      return $this->aliases[$commandName];
+    }
+    else {
+      return NULL;
+    }
+  }
+  
+}

@@ -1,0 +1,36 @@
+<?php
+/**
+ * @file Defines the HttpdServer class.
+ */
+
+/**
+ * Implements HttpServerInterface for HTTPD.
+ */
+class HttpdServer extends GenericHttpServer {
+  
+  /**
+   * The server we're wrapping.
+   * 
+   * @param PhysicalServerInterface $server
+   *   The server we're wrapping.
+   */
+  public function __construct(PhysicalServerInterface $server) {
+    parent::__construct($server, '/etc/httpd/conf.d');
+  }
+  
+  protected function reboot() {
+    $this->machine()->executeCommand('service httpd graceful', array(), $n, $exit);
+    return empty($exit);
+  }
+  
+  protected function testConfig() {
+    $this->machine()->executeCommand('apachectl configtest', array(), $n, $exit);
+    return empty($exit);
+  }
+  
+  public function available() {
+    $this->machine()->executeCommand('service httpd status', array(), $n, $exit);
+    return empty($exit);
+  }
+  
+}

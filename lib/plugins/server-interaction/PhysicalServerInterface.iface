@@ -1,0 +1,11 @@
+<?php
+
+interface PhysicalServerInterface {
+  
+  function executeCommand($command, $args, &$out = array(), &$exit = 0);
+  function writeFile($destination, $contents);
+  function readFile($file);
+  function initialize();
+  function getSetting($key);
+  
+}

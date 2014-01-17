@@ -1,0 +1,26 @@
+<?php
+/**
+ * @file Defines the EventDependency interface.
+ */
+
+/**
+ * Dependency injection interface for interfaces.
+ */
+interface EventDependency {
+  
+  /**
+   * Fetches the event manager being used.
+   * 
+   * @return EventManagerInterface
+   */
+  function events();
+  
+  /**
+   * Sets the event manager being used.
+   * 
+   * @param EventManagerInterface $em
+   *   The event manager.
+   */
+  function setEventManager(EventManagerInterface $em);
+  
+}

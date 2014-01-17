@@ -1,0 +1,76 @@
+<?php
+/**
+ * @file Defines the OutputManagerInterface interface.
+ */
+
+/**
+ * Manages output for the system.
+ * 
+ * Has its own handler system so that other types of output can be registered
+ * as needed.
+ */
+interface OutputManagerInterface {
+  
+  /**
+   * Registers an output listener.
+   * 
+   * Output listeners will react to different commands depending on the
+   * interfaces they implement:
+   * - Logger interface: Responds to log() and debug().
+   * - Messenger interface: Responds to message().
+   * - Writer interface: Responds to write() and writeLine().
+   * 
+   * @param OutputHandler $handler
+   */
+  function registerListener(OutputHandler $handler);
+  
+  /**
+   * Writes data to the outputs.
+   * 
+   * This has no formatting around it, and should be used for raw values
+   * that need to be displayed.
+   * 
+   * @param string $line
+   *   The text to write.
+   */
+  function write($line);
+  
+  /**
+   * As write() but with a line break appended automatically.
+   * 
+   * @param string $line
+   *   The text to write.
+   */
+  function writeLine($line);
+  
+  /**
+   * Sends a message to the user. Should be used for success/failure/working
+   * notifications.
+   * 
+   * @param string $message
+   *   The message to send them.
+   * @param string $type
+   *   One of the types from @ref message_types "message types"
+   */
+  function message($message, $type = MESSAGE_WORKING);
+  
+  /**
+   * Logs an error condition. Should be used more for internal messages.
+   * 
+   * @param string $log
+   *   The message to log.
+   * @param int $level
+   *   The level of the error condition. See @ref log_levels "log levels".
+   */
+  function log($log, $level = CLOG_NOTICE);
+  
+  /**
+   * Shortcut function for log() with $level = CLOG_DEBUG. Used in case
+   * we need to register a debug callback.
+   * 
+   * @param string $val
+   *   The message to log.
+   */
+  function debug($val);
+  
+}

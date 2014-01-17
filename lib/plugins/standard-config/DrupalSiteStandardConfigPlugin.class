@@ -1,0 +1,131 @@
+<?php
+
+/**
+ * Config setting to specify a prefix for all created URLs.
+ * 
+ * Usually the non-prefixed versions will be created as well.
+ * 
+ * @ingroup config
+ */
+define('CONFIG_SITE_URL_PREFIX', 'site-url-prefix');
+
+/**
+ * Config setting to specify a pattern for the primary URL.
+ * 
+ * @see DrupalSite::replaceTokens().
+ * @ingroup config
+ */
+define('CONFIG_SITE_URL_PATTERN', 'site-url-pattern');
+
+/**
+ * Argument to provide extra URLs for the site.
+ * 
+ * @ingroup args
+ */
+define('ARG_SITE_URLS', 'site-extra-urls');
+
+/**
+ * Argument to specify the site's primary URL.
+ * 
+ * @ingroup args
+ */
+define('ARG_SITE_URL', 'site-url');
+class DrupalSiteStandardConfigPlugin extends GenericPlugin implements EventListener {
+  
+  public function initialize() {
+    
+  }
+  
+  public function captureEvent(&$context, $type) {
+    switch ($type) {
+      case EVENT_SITE_CONFIGURE:
+        if ($context->success) {
+          $context->success = $this->configureSite($context->site);
+        }
+        break;
+    }
+  } 
+  
+  
+  /**
+   * Retrieves a list of extra URLs.
+   * 
+   * @return array
+   */
+  protected function getExtraURLs() {
+    $urls = array();
+    $fromArg = $this->args()->getOption(ARG_SITE_URLS);
+    if (!empty($fromArg)) {
+      $urls = array_merge($urls, explode(DEFAULT_SPLIT_CHARACTER, $fromArg));
+    }
+    return array_unique($urls);
+  }
+  
+  /**
+   * Retrieves the primary site URL
+   * 
+   * @param DrupalSite $site
+   *   The site we're operating on.
+   * 
+   * @return string
+   *   The primary URL or null if we cannot figure out one.
+   */
+  private function getSiteURL(DrupalSite $site) {
+    $fromArg = $this->args()->getOption(ARG_SITE_URL);
+    if (!empty($fromArg)) {
+      return $fromArg;
+    }
+    $pattern = $this->config()->getConfig(CONFIG_SITE_URL_PATTERN);
+    if (!empty($pattern)) {
+      return $site->replaceTokens($pattern);
+    }
+    return NULL;
+  }
+  
+  /**
+   * Retrieves the domain from a URL.
+   * 
+   * @param string $url
+   *   A URL to parse
+   * 
+   * @return string
+   *   The domain name of URL
+   */
+  private function fetchDomain($url) {
+    $pieces = parse_url($url);
+    if (isset($pieces['host'])) {
+      return $pieces['host'];
+    }
+    return NULL;
+  }
+  
+  
+  private function configureSite(DrupalSite $site) {
+    $primary = trim($this->getSiteURL($site));
+    $site->setPrimaryURL($primary);
+    $primaryDomain = $this->fetchDomain($primary);
+    $allDomains = array($primaryDomain);
+    foreach ($this->getExtraURLs() as $url) {
+      $url = trim($url);
+      if ($url != $primary) {
+        $site->addExtraURL($url);
+        $domain = $this->fetchDomain($url);
+        if (!in_array($domain, $allDomains)) {
+          $allDomains[] = $domain;
+        }
+      }
+    }
+    $prefix = $this->config()->getConfig(CONFIG_SITE_URL_PREFIX);
+    if (!empty($prefix)) {
+      foreach($site->getAllURLs() as $url) {
+        $prefixed = $prefix . $url;
+        $site->addExtraURL($prefixed);
+      }
+    }
+    
+    $site->setToken(SITE_TOKEN_PRIMARY_URL, $primary);
+    $extras = $site->getAllURLs();
+    $site->setToken(SITE_TOKEN_ALL_URLS, implode(', ', $extras));
+  }
+  
+}
