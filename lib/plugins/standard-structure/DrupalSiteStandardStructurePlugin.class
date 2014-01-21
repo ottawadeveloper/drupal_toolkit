@@ -1,5 +1,8 @@
 <?php
 
+define('SITE_CODEBASE_DIR', 'structure_codebases_dir');
+define('SITE_SITES_DIR', 'structure_sites_dir');
+
 class DrupalSiteStandardStructurePlugin extends GenericPlugin implements EventListener {
   
   public function initialize() {

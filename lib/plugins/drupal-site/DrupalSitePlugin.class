@@ -51,6 +51,13 @@ define('LOCAL_SITES_ALWAYS', 'force');
 define('ARG_IS_LOCAL', 'local');
 
 /**
+ * String token for when a site setting is missing.
+ * 
+ * @ingroup strings
+ */
+define('STRING_SITE_MISSING_SETTING', 'drupal_site.error.no-setting');
+
+/**
  * Basic plugin that provides some useful classes and configuration settings
  * for working with Drupal sites. Most plugins that rely on the DrupalSite 
  * object will need to require this one.

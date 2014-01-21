@@ -1,16 +1,150 @@
 <?php
+/**
+ * @file Defines the DrupalSiteStandardBuildPlugin class.
+ */
 
+/**
+ * Config key for the git repository server name.
+ * 
+ * This should include everything up until the git repo name.
+ * 
+ * @ingroup config
+ */
+define('CONFIG_GIT_REPO_ROOT', 'git-repository-root');
+
+/**
+ * Config key for the git repository that contains a drush make file.
+ * 
+ * This should include everything after CONFIG_GIT_REPO_ROOT.
+ * 
+ * @ingroup config
+ */
+define('CONFIG_DRUSH_MAKE_REPO', 'drush-make-repository');
+
+/**
+ * Config key for the name of the drush make file within CONFIG_DRUSH_MAKE_REPO.
+ * 
+ * @ingroup config
+ */
+define('CONFIG_DRUSH_MAKE_FILE', 'drush-make-file');
+
+/**
+ * Config key for an array of options to pass to the drush make command.
+ * 
+ * Any flag option can be specified, without its leading two hyphens (eg 
+ * working-copy, no-gitinfofile, etc).
+ * 
+ * @ingroup config
+ */
+define('CONFIG_DRUSH_MAKE_OPTIONS', 'drush-make-options');
+
+/**
+ * Config key for the default branch to use if one is not passed via
+ * OPTION_BRANCH.
+ * 
+ * Defaults to master.
+ * 
+ * @ingroup config
+ */
+define('CONFIG_DEFAULT_BRANCH', 'default-branch');
+
+/**
+ * Config key for a list of acceptable branch names. Use this to prevent
+ * accidently using certain branches.
+ * 
+ * Defaults to no restrictions.
+ * 
+ * @ingroup config
+ */
+define('CONFIG_BRANCH_WHITELIST', 'branch-whitelist');
+
+/**
+ * Option name to specify the branch name.
+ * 
+ * @ingroup args
+ */
+define('OPTION_BRANCH', 'branch');
+
+/**
+ * String token for the error message if no branch is specified.
+ * 
+ * @ingroup strings
+ */
+define('STRING_SITE_NO_BRANCH', 'standard_build.error.no-branch');
+
+/**
+ * String token for the error message if this plugin is not paired with one
+ * that supplies SITE_CODEBASE_DIR.
+ * 
+ * @ingroup strings
+ */
+define('STRING_SITE_INVALID_CODEBASE', 'standard_build.error.no-codebase');
+
+/**
+ * String token for the error message if the clone fails.
+ * 
+ * @ingroup strings
+ */
+define('STRING_SITE_NO_CLONE', 'standard_build.error.clone-failure');
+
+/**
+ * String token for the error message if the make fails.
+ * 
+ * @ingroup strings
+ */
+define('STRING_SITE_NO_MAKE', 'standard_build.error.make-failure');
+
+/**
+ * String token for if the process to create a current symlink fails.
+ * 
+ * @ingroup strings
+ */
+define('STRING_SITE_NO_CURRENT', 'standard_build.error.current-symlink-failure');
+
+/**
+ * Site setting that contains the name of the branch cloned in this step.
+ * 
+ * @ingroup site_settings
+ */
+define('SITE_SETTING_CLONED_BRANCH', 'cloned-branch');
+
+/**
+ * Site setting that contains the path to the current codebase that we just
+ * made.
+ * 
+ * @ingroup site_settings
+ */
+define('SITE_SETTING_CURRENT_BUILD', 'build-current-codebase-dir');
+
+/**
+ * Fired after this plugin is done so other modules can extend the build.
+ * 
+ * @ingroup events
+ */
+define('EVENT_CONTINUE_STANDARD_BUILD', 'standard-build-continue');
+
+
+/**
+ * Responsible for building a new codebase on demand.
+ * 
+ * For this standard plugin, this includes:
+ * - Clone a git repo into the codebases directory
+ * - Run a drush make on a make file from that git repo
+ * - Update a link to the current codebase
+ */
 class DrupalSiteStandardBuildPlugin extends GenericPlugin implements EventListener {
   
   public function initialize() {
-    $this->events()->registerListener(array('site-build-build'), $this);
+    $this->events()->registerListener(array(
+      EVENT_SITE_BUILD_CODEBASE,
+    ), $this);
     $this->config()->extendDefaultConfiguration(array(
-      'git-repository-root' => '',
-      'drush-make-repository' => '',
-      'drush-make-file' => '',
-      'drush-make-options' => array(),
-      'default-branch' => '',
-      'branch-whitelist' => array(),
+      CONFIG_GIT_REPO_ROOT => '',
+      CONFIG_DRUSH_MAKE_REPO => '',
+      CONFIG_DRUSH_MAKE_FILE => '',
+      CONFIG_DRUSH_MAKE_OPTIONS => array(),
+      CONFIG_DEFAULT_BRANCH => '',
+      CONFIG_BRANCH_WHITELIST => array(),
     ));
   }
   
@@ -20,63 +154,66 @@ class DrupalSiteStandardBuildPlugin extends GenericPlugin implements EventListen
   
   public function captureEvent(&$context, $type) {
     switch ($type) {
-      case 'site-build-build':
+      case EVENT_SITE_BUILD_CODEBASE:
         $context->success = $this->buildSite($context->site, $context->build_id);
         $context->stopPropagation = TRUE;
         break;
     }
   }
   
+  /**
+   * Responsible for building the site's codebase.
+   * 
+   * @param DrupalSite $site
+   *   The site to build.
+   * @param string $buildID
+   *   The build ID.
+   * 
+   * @return boolean
+   *   TRUE if the build was successful, otherwise FALSE.
+   */
   private function buildSite(DrupalSite $site, $buildID) {
-    $repoServer = $this->config()->getConfig('git-repository-root');
-    if (empty($repoServer)) { 
-      $this->error('Missing configuration [git-repository-root]');
-      return FALSE; 
-    }
-    $gitRepo = $this->config()->getConfig('drush-make-repository');
-    if (empty($gitRepo)) { 
-      $this->error('Missing configuration [drush-make-repository]');
-      return FALSE; 
-    }
-    $makeFile = $this->config()->getConfig('drush-make-file');
-    if (empty($makeFile)) { 
-      $this->error('Missing configuration [drush-make-file]');
-      return FALSE; 
-    }
-    $options = $this->config()->getConfig('drush-make-options');
-    if (empty($options)) { $options = array(); }
+    $config = $this->getConfig(array(
+      CONFIG_REPO_ROOT,
+      CONFIG_DRUSH_MAKE_REPO,
+      CONFIG_DRUSH_MAKE_FILE,
+    ), array(
+      CONFIG_DRUSH_MAKE_OPTIONS,
+    ));
     $branch = $this->getBranch();
     if (empty($branch)) { 
-      $this->error('You must provide a branch name.');
+      $this->error(STRING_SITE_NO_BRANCH);
       return FALSE;
     }
-    $cbDir = $site->getSetting('structure_codebases_dir');
+    $cbDir = $site->getSetting(SITE_CODEBASE_DIR);
     if (empty($cbDir)) { 
-      $this->error('Missing site configuration setting [structure_codebases_dir].');
+      $this->error(STRING_SITE_MISSING_SETTING, array(
+        '!key' => SITE_CODEBASE_DIR,
+      ));
       return FALSE; 
     }
     $newCodebase = assemble_path($site->getBuildFolder(), $cbDir, $buildID);
     if (!is_writable(dirname($newCodebase))) {
-      $this->error('Cannot write to codebases directory');
+      $this->error(STRING_SITE_INVALID_CODEBASE);
       return FALSE;
     }
-    if (!git_clone($repoServer, $gitRepo, $newCodebase, $branch)) {
-      $this->error('Cannot clone the Drush make file.');
+    if (!git_clone($config[CONFIG_REPO_ROOT], $config[CONFIG_DRUSH_MAKE_REPO], $newCodebase, $branch)) {
+      $this->error(STRING_SITE_NO_CLONE);
       return FALSE;
     }
-    $site->setSetting('cloned_branch', $branch);
-    if (!drush_make(assemble_path($newCodebase, $makeFile), $options)) {
-      $this->error('An error occured while running the Drush make.');
+    $site->setSetting(SITE_SETTING_CLONED_BRANCH, $branch);
+    if (!drush_make(assemble_path($newCodebase, $config[CONFIG_DRUSH_MAKE_FILE]), $config[CONFIG_DRUSH_MAKE_OPTIONS])) {
+      $this->error(STRING_SITE_NO_MAKE);
       return FALSE;
     }
-    $site->setSetting('build_current_codebase_dir', $newCodebase);
+    $site->setSetting(SITE_SETTING_CURRENT_BUILD, $newCodebase);
     $currentLink = assemble_path($site->getBuildFolder(), 'current');
     
     if (is_link($currentLink)) {
       unlink($currentLink);
     }
     if (!symlink($newCodebase, $currentLink)) {
-      $this->error('Could not create the current site symlink');
+      $this->error(STRING_SITE_NO_CURRENT);
       return FALSE;
     }
     
@@ -85,20 +222,26 @@ class DrupalSiteStandardBuildPlugin extends GenericPlugin implements EventListen
       'site' => $site,
     );
     
-    $this->events()->fireEvent('standard-build-continue', $context);
+    $this->events()->fireEvent(EVENT_CONTINUE_STANDARD_BUILD, $context);
     
     return $context->success;
   }
   
+  /**
+   * Retrieves the current branch.
+   * 
+   * @return string
+   *   The branch name or NULL if none was found.
+   */
   private function getBranch() {
-    $branch = $this->args()->getOption('branch');
+    $branch = $this->args()->getOption(OPTION_BRANCH);
     if (empty($branch)) {
-      $branch = $this->config()->getConfig('branch-default');
+      $branch = $this->config()->getConfig(CONFIG_DEFAULT_BRANCH);
     }
     if (empty($branch)) {
       return NULL;
     }
-    $branchWhitelist = $this->config()->getConfig('branch-whitelist');
+    $branchWhitelist = $this->config()->getConfig(CONFIG_BRANCH_WHITELIST);
     if (!empty($branchWhitelist) && is_array($branchWhitelist)) {
       if (!in_array($branch, $branchWhitelist)) {
         return NULL;

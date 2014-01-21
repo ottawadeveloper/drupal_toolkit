@@ -30,6 +30,7 @@ drupal_site.error.no-site = 'Could not build a site object.'
 drupal_site.error.old-site = 'This site is too old to use with this command, update it first.'
 drupal_site.error.missing-site = 'No site with the given name exists.'
 drupal_site.error.site-exists = 'A site with the given name already exists.'
+drupal_site.error.no-setting = 'This plugin requires the site setting [!key].'
 
 drupal_site_build.error.no-save = 'Unable to save configuration details.'
 drupal_site_build.error.no-more-config = 'An error occured during additional configuration steps.'
@@ -59,3 +60,9 @@ permissions.error.no-access =  'Unable to find suitable permissions.'
 permission.error.application = 'Unable to completely apply permissions, [!failures] failures reported.'
 
 server_interaction.error.could-not-init = 'Could not connect to remote server [!key]'
+
+standard_build.error.no-branch = 'This plugin requires that a branch be specified.'
+standard_build.error.no-codebase = 'Cannot write to codebases directory.'
+standard_build.error.clone-failure = 'Could not clone the drush make repository.'
+standard_build.error.make-failure = 'Could not successfully run the Drush make command.'
+standard_build.error.current-symlink-failure = 'Could not successfully create the current site symlink.'
