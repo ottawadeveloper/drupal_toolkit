@@ -66,6 +66,13 @@ define('SERVER_SETTING_DRUSH_FILE_TEMPLATE', 'drush-file-template');
 define('SERVER_SETTING_DRUSH_CONFIG_TEMPLATE', 'drush-config-template-file');
 
 /**
+ * String token for if the drush alias file could not be written.
+ * 
+ * @ingroup strings
+ */
+define('STRING_COULD_NOT_WRITE_DRUSH_ALIAS', 'drush_config.error.no-alias-file');
+
+/**
  * Takes responsibility for setting up the drush alias.
  */
 class DrushConfigurationPlugin extends GenericPlugin implements EventListener {
@@ -155,11 +162,13 @@ class DrushConfigurationPlugin extends GenericPlugin implements EventListener {
     $config = $site->replaceTokens($config);
     $fullPath = assemble_path($dir, $file);
     if (!$server->writeFile($fullPath, $config)) {
-      $this->error('Unable to write drush alias.');
+      $this->error(STRING_COULD_NOT_WRITE_DRUSH_ALIAS);
       return FALSE;
     }
     return TRUE;
   }
+  
+  
   
   /**
    * Retrieves the default drush template.
