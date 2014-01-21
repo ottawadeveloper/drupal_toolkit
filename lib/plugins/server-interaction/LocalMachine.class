@@ -1,5 +1,11 @@
 <?php
+/**
+ * @file Defines the LocalMachine class.
+ */
 
+/**
+ * Represents the local machine.
+ */
 class LocalMachine extends GenericMachine {
   
   public function executeCommand($command, $args = array(), &$out = array(), &$exit = 0) {

@@ -1,9 +1,28 @@
 <?php
+/**
+ * @file Defines the GenericMachine class.
+ */
 
+/**
+ * Abstract implementation of PhysicalServerInterface that takes on 
+ * responsibility for many common functionalities between local and remote 
+ * machines.
+ */
 abstract class GenericMachine implements PhysicalServerInterface {
   
+  /**
+   * A list of settings.
+   * 
+   * @var array
+   */
   private $vars;
   
+  /**
+   * Constructor.
+   * 
+   * @param array $vars
+   *   A list of settings
+   */
   public function __construct(array $vars = array()) {
     $this->vars = $vars;
   }

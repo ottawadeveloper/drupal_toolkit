@@ -82,6 +82,13 @@ define('CONFIG_HTTP_DEFAULT_FILENAME_TEMPLATE', 'http-config-filename-template')
 define('SERVER_TYPE_HTTP', 'http');
 
 /**
+ * Set to TRUE to prevent the local server from being used as an HTTP server.
+ * 
+ * @ingroup config
+ */
+define('CONFIG_DISABLE_LOCAL_HTTP', 'si-disable-local-http');
+
+/**
  * HTTP server type for apache2 servers.
  * 
  * @ingroup http_types

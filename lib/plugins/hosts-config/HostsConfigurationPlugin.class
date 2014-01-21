@@ -36,6 +36,14 @@ define('CONFIG_MANAGED_HOSTS_TARGET_IP_ADDRESS', 'managed-host-ip-address');
 define('SERVER_TYPE_MANAGED_HOST', 'managed-host');
 
 /**
+ * Set to TRUE to prevent the local server from being used as a managed host
+ * server.
+ * 
+ * @ingroup config
+ */
+define('CONFIG_DISABLE_LOCAL_HTTP', 'si-disable-local-managed-host');
+
+/**
  * Fired when a managed host needs to be cast into a HostFileManagerInterface
  * object.
  * 

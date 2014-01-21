@@ -1,21 +1,54 @@
 <?php
 /**
- * @file Defines the ServerInteractionPlugin
+ * @file Defines the ServerInteractionPlugin class.
  * 
  * @defgroup server_settings "Server Settings"
  * Settings that can be define for server definitions.
  * 
  * @defgroup server_types "Server Types"
  * The different types of servers that can be defined underneath the si-servers
- * key.
+ * key. Each class of server is an array of @ref server_settings "server settings"
+ * that define how the server is handled.
+ * 
+ * @defgroup server_connection_types "Remote Connection Types"
+ * Different types of remote connections that can be made.
  */
 
+/**
+ * Fired when a list of servers are needed.
+ * 
+ * @ingroup events
+ */
 define('EVENT_FIND_SERVERS', 'find-servers');
 
+/**
+ * Config key for the list of servers.
+ * 
+ * This key must be defined via YAML and be a list of @ref server_types 
+ * "server types". 
+ * 
+ * @ingroup config
+ */
 define('CONFIG_SERVER_LIST', 'si-servers');
 
+/**
+ * String token for when there is an error connecting to the server.
+ * 
+ * @ingroup strings
+ */
+define('STRING_SERVER_INTERACTION_NO_SERVER', 'server_interaction.error.could-not-init');
+
+/**
+ * Manages the list of the different types of servers that can be used by
+ * various plugins.
+ */
 class ServerInteractionPlugin extends GenericPlugin implements EventListener {
     
+  /**
+   * An array of servers, keyed by type.
+   * 
+   * @var array
+   */
   private $servers = array();
   
   public function initialize() {
@@ -29,21 +62,41 @@ class ServerInteractionPlugin extends GenericPlugin implements EventListener {
     foreach ($files as $file) {
       require assemble_path($root, $file);
     }
+    $this->events()->registerListener(array(
+      EVENT_FIND_SERVERS,
+    ), $this);
+    $this->config()->extendDefaultConfiguration(array(
+      CONFIG_SERVER_LIST => array(),
+    ));
   }
   
+  /**
+   * Retrieves a list of servers of the given type. 
+   * 
+   * @param string $type
+   *   One of the @ref server_types "server types".
+   * @param boolean $noLocal
+   *   If set to TRUE, the local system will not be considered one of the
+   *   servers.
+   * 
+   * @return array
+   *   An array of PhysicalServerInterface objects.
+   */
   private function loadServersOfType($type, $noLocal = FALSE) {
     if (empty($this->servers[$type])) {
       $servers = array();
-      $allServers = $this->config()->getConfig('si-servers');
+      $allServers = $this->config()->getConfig(CONFIG_SERVER_LIST);
       if (!empty($allServers)) {
         if (isset($allServers[$type])) {
           foreach ($allServers[$type] as $key => $serverConfiguration) {
             $machine = new RemoteMachine($serverConfiguration);
             if ($machine->initialize()) {
-              $servers[] = $machine;
+              $servers[$key] = $machine;
             }
             else {
-              $this->out()->log('Unable to connect to remote server [' . $key . ']', CLOG_WARNING);
+              $this->error(STRING_SERVER_INTERACTION_NO_SERVER, array(
+                '!key' => $key,
+              ));
             }
           }
         }
@@ -58,7 +111,7 @@ class ServerInteractionPlugin extends GenericPlugin implements EventListener {
   
   public function captureEvent(&$context, $type) {
     switch ($type) {
-      case 'find-servers':
+      case EVENT_FIND_SERVERS:
         $context->servers = array_merge($context->servers, $this->loadServersOfType($context->serverType, isset($context->skipLocal) ? $context->skipLocal : TRUE));
         break;
     }

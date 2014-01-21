@@ -57,3 +57,5 @@ permissions.error.no-user = 'Unable to find a suitable user.'
 permissions.error.no-group = 'Unable to find a suitable group.'
 permissions.error.no-access =  'Unable to find suitable permissions.'
 permission.error.application = 'Unable to completely apply permissions, [!failures] failures reported.'
+
+server_interaction.error.could-not-init = 'Could not connect to remote server [!key]'

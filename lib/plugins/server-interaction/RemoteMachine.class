@@ -1,30 +1,118 @@
 <?php
+/**
+ * @file Defines the RemoteMachine class.
+ */
 
+/**
+ * Server setting to disable the server.
+ * 
+ * @ingroup server_settings
+ */
+define('SERVER_SETTING_DISABLED', 'disabled');
+
+/**
+ * Server setting for the remote host.
+ * 
+ * @ingroup server_settings
+ */
+define('SERVER_SETTING_HOST', 'host');
+
+/**
+ * Server setting for the remote port for SSH.
+ * 
+ * @ingroup server_settings
+ */
+define('SERVER_SETTING_PORT', 'port');
+
+/**
+ * Server setting for the fingerprint.
+ * 
+ * @ingroup server_settings
+ */
+define('SERVER_SETTING_FINGERPRINT', 'fingerprint');
+
+/**
+ * Server setting for the connection type.
+ * 
+ * @see @ref server_connection_types "Server Connection Types"
+ * @ingroup server_settings
+ */
+define('SERVER_SETTING_CONNECTION_TYPE', 'connection');
+
+/**
+ * Server setting for the user name.
+ * 
+ * @ingroup server_settings
+ */
+define('SERVER_SETTING_USER', 'user');
+
+/**
+ * Server setting for the public key file.
+ * 
+ * @ingroup server_settings
+ */
+define('SERVER_SETTING_PUBKEY', 'pubkey');
+
+/**
+ * Server setting for the private key file.
+ * 
+ * @ingroup server_settings
+ */
+define('SERVER_SETTING_PRIVKEY', 'privkey');
+
+/**
+ * Server setting for the passphrase.
+ * 
+ * @ingroup server_settings
+ */
+define('SERVER_SETTING_PASSPHRASE', 'passphrase');
+
+/**
+ * Connection type to use public-private key authentication.
+ * 
+ * @ingroup server_connection_types
+ */
+define('SERVER_CONNECTION_PUBKEY', 'pubkey');
+
+/**
+ * Implements PhysicalServerInterface for a remote machine that is connected
+ * to using the ssh2 family of functions.
+ * 
+ * For getting/putting files, this class uses the temp directory to store the 
+ * files on their way up/down.
+ * 
+ * @see ssh2_connect()
+ */
 class RemoteMachine extends GenericMachine {
   
+  /**
+   * Resource for the SSH2 connection to the remote machine.
+   * 
+   * @var resource
+   */
   private $handle;
   
   public function initialize() {
-    if (!extra_empty($this->getSetting('disabled'))) {
+    if (!extra_empty($this->getSetting(SERVER_SETTING_DISABLED))) {
       return FALSE;
     }
-    $this->handle = ssh2_connect($this->getSetting('host'), $this->getSetting('port', 22));
+    $this->handle = ssh2_connect($this->getSetting(SERVER_SETTING_HOST), $this->getSetting(SERVER_SETTING_PORT, 22));
     if (empty($this->handle)) {
       $this->handle = NULL;
       return FALSE;
     }
     $fingerprint = ssh2_fingerprint($this->handle, SSH2_FINGERPRINT_MD5 | SSH2_FINGERPRINT_HEX);
-    if (strcmp($fingerprint, $this->getSetting('fingerprint')) !== 0) {
+    if (strcmp($fingerprint, $this->getSetting(SERVER_SETTING_FINGERPRINT)) !== 0) {
       $this->handle = NULL;
       return FALSE;
     }
-    switch ($this->getSetting('connection')) {
-      case 'pubkey':
+    switch ($this->getSetting(SERVER_SETTING_CONNECTION_TYPE)) {
+      case SERVER_CONNECTION_PUBKEY:
         if (!ssh2_auth_pubkey_file($this->handle, 
-            $this->getSetting('user'), 
-            $this->getSetting('pubkey'), 
-            $this->getSetting('privkey'), 
-            $this->getSetting('passphrase'))) {
+            $this->getSetting(SERVER_SETTING_USER), 
+            $this->getSetting(SERVER_SETTING_PUBKEY), 
+            $this->getSetting(SERVER_SETTING_PRIVKEY), 
+            $this->getSetting(SERVER_SETTING_PASSPHRASE))) {
           $this->handle = NULL;
           return FALSE;
         }

@@ -1,11 +1,85 @@
 <?php
+/**
+ * @file Defines the PhysicalServerInterface interface.
+ */
 
+/**
+ * Represents a generic machine. 
+ * 
+ * This allows us to treat different ways of interacting with a physical
+ * machine (eg ssh commands or local file system calls) as the same thing
+ * for other plugins.
+ */
 interface PhysicalServerInterface {
   
+  /**
+   * Executes a command on the given system.
+   * 
+   * @param string $command
+   *   The command name to execute. Can have placeholder strings. As a whole,
+   *   the command is run through escapeshellcommand().
+   * @param array $args
+   *   Arguments for the command name. The keys are the placeholder strings
+   *   in $command, the values are the value of the argument. Will be run
+   *   through escapeshellarg().
+   * @param array $out
+   *   If provided, will be filled with an array of the lines of output
+   *   provided by the command.
+   * @param int $exit
+   *   If provided, will be filled with the exit code.
+   * 
+   * @return string
+   *   The last line of output.
+   */
   function executeCommand($command, $args, &$out = array(), &$exit = 0);
+  
+  /**
+   * Writes a file to the server.
+   * 
+   * @param string $destination
+   *   The file to write to.
+   * @param string $contents
+   *   The contents to write to the file.
+   * 
+   * @return boolean
+   *   TRUE if the file was written successfully, otherwise FALSE.
+   */
   function writeFile($destination, $contents);
+  
+  /**
+   * Reads a file from the server.
+   * 
+   * @param string $file
+   *   The file to read.
+   * 
+   * @return string
+   *   The contents of the file, or FALSE if the file could not be retrieved.
+   */
   function readFile($file);
+  
+  /**
+   * Initializes the server interface.
+   * 
+   * @return boolean
+   *   TRUE if the server is available, otherwise FALSE.
+   */
   function initialize();
-  function getSetting($key);
+  
+  /**
+   * Retrieves a server setting.
+   * 
+   * Server settings are used to provide additional configuration.
+   * 
+   * @param string $key
+   *   The key to return
+   * @param mixed $default
+   *   The default value to return if not found.
+   * 
+   * @return mixed
+   *   The value of $key.
+   * 
+   * @see @ref server_settings "Server Settings"
+   */
+  function getSetting($key, $default = NULL);
   
 }
