@@ -1,4 +1,7 @@
 <?php
+/**
+ * @file Defines the DrupalSiteStandardConfigPlugin class.
+ */
 
 /**
  * Config setting to specify a prefix for all created URLs.
@@ -30,10 +33,17 @@ define('ARG_SITE_URLS', 'site-extra-urls');
  * @ingroup args
  */
 define('ARG_SITE_URL', 'site-url');
+
+/**
+ * Responsible for some basic configuratino settings that everyone is likely
+ * to need with this tool.
+ */
 class DrupalSiteStandardConfigPlugin extends GenericPlugin implements EventListener {
   
   public function initialize() {
-    
+    $this->events()->registerListener(array(
+      EVENT_SITE_CONFIGURE,
+    ), $this);
   }
   
   public function captureEvent(&$context, $type) {
@@ -45,7 +55,6 @@ class DrupalSiteStandardConfigPlugin extends GenericPlugin implements EventListe
         break;
     }
   } 
-  
   
   /**
    * Retrieves a list of extra URLs.
@@ -99,7 +108,15 @@ class DrupalSiteStandardConfigPlugin extends GenericPlugin implements EventListe
     return NULL;
   }
   
-  
+  /**
+   * Responsible for configuring the site object on load.
+   * 
+   * @param DrupalSite $site
+   *   The site object to configure.
+   * 
+   * @return boolean
+   *   TRUE if the site was configured correctly, otherwise FALSE.
+   */
   private function configureSite(DrupalSite $site) {
     $primary = trim($this->getSiteURL($site));
     $site->setPrimaryURL($primary);
@@ -126,6 +143,7 @@ class DrupalSiteStandardConfigPlugin extends GenericPlugin implements EventListe
     $site->setToken(SITE_TOKEN_PRIMARY_URL, $primary);
     $extras = $site->getAllURLs();
     $site->setToken(SITE_TOKEN_ALL_URLS, implode(', ', $extras));
+    return TRUE;
   }
   
 }
