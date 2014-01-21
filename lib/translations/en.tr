@@ -42,3 +42,6 @@ drupal_site_build.error.no-config = 'Unable to configure site.'
 drupal_site_build.error.no-build-name = 'This command requires a build name to be provided.'
 
 flog.error.no-log-file = 'Unable to open [!path] for logging, file logging skipped.'
+
+gateway.error.bad-write = 'Unable to write configuration to server.'
+gateway.error.no-template = 'Unable to read template file.'

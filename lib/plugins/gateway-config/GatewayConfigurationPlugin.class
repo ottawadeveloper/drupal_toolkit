@@ -67,6 +67,20 @@ define('SERVER_SETTING_GATEWAY_CONFIG_TEMPLATE', 'gateway-template-file');
 define('SERVER_SETTING_GATEWAY_TYPE', 'gateway-type');
 
 /**
+ * String token for when there is no gateway template file defined.
+ * 
+ * @ingroup strings
+ */
+define('STRING_MISSING_GATEWAY_TEMPLATE', 'gateway.error.no-template');
+
+/**
+ * String token for when a write could not be performed to a gateway server.
+ * 
+ * @ingroup strings
+ */
+define('STRING_GATEWAY_BAD_WRITE', 'gateway.error.bad-write');
+
+/**
  * Responsible for configuring any gateway servers that have been defined.
  */
 class GatewayConfigurationPlugin extends GenericPlugin implements EventListener {
@@ -120,7 +134,7 @@ class GatewayConfigurationPlugin extends GenericPlugin implements EventListener 
     ));
     if (empty($c)) { return FALSE; }
     if (!is_readable($c['template'])) {
-      $this->error('Unable to read template file');
+      $this->error(STRING_MISSING_GATEWAY_TEMPLATE);
       return FALSE;
     }
     $defaultConfig = file_get_contents($c['template']);
@@ -142,7 +156,7 @@ class GatewayConfigurationPlugin extends GenericPlugin implements EventListener 
         }
         $file = $site->replaceTokens($file);
         if (!$gatewayServer->writeConfig($file, $config)) {
-          $this->error('Unable to write configuration to server');
+          $this->error(STRING_GATEWAY_BAD_WRITE);
           return FALSE;
         }
         $gatewayServer->doReboot();
@@ -203,7 +217,7 @@ class GatewayConfigurationPlugin extends GenericPlugin implements EventListener 
         if (empty($type)) {
           $type = $config['server_type'];
         }
-        $httpServer = $this->getCastedServer($server, $config['server_type']);
+        $httpServer = $this->getCastedServer($server, $type);
         if (!empty($httpServer)) {
           $gatewayServers[] = $httpServer;
         }
