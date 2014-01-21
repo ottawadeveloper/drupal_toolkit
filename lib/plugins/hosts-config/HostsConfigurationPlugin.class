@@ -66,6 +66,13 @@ define('SERVER_SETTING_ENVIRONMENT', 'managed-host-type');
 define('MANAGED_HOST_TYPE_LINUX', 'linux');
 
 /**
+ * String token for when there was an error writing out the hosts file.
+ * 
+ * @ingroup strings
+ */
+define('STRING_HOSTS_FILE_BAD_WRITE', 'hosts_config.error.bad_write');
+
+/**
  * Plugin to manage the hosts file configuration of one or more servers.
  */
 class HostsConfigurationPlugin extends GenericPlugin implements EventListener {
@@ -145,7 +152,7 @@ class HostsConfigurationPlugin extends GenericPlugin implements EventListener {
     foreach ($context->servers as $server) {
       if ($server instanceof HostFileManagerInterface) {
         if (!$server->addHostFileEntries($map)) {
-          $this->error('Unable to write host files to server.');
+          $this->error(STRING_HOSTS_FILE_BAD_WRITE);
           return FALSE;
         }
       }

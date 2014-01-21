@@ -45,3 +45,5 @@ flog.error.no-log-file = 'Unable to open [!path] for logging, file logging skipp
 
 gateway.error.bad-write = 'Unable to write configuration to server.'
 gateway.error.no-template = 'Unable to read template file.'
+
+hosts_config.error.bad_write = 'Unable to write host files to server.'
