@@ -4,6 +4,69 @@
  */
 
 /**
+ * String token for if there is no build name.
+ * 
+ * @ingroup strings
+ */
+define('STRING_MISSING_BUILD_NAME', 'drupal_site_build.error.no-build-name');
+
+/**
+ * String token for if the site configuration could not be done successfully.
+ * 
+ * @ingroup strings
+ */
+define('STRING_COULD_NOT_CONFIGURE_SITE', 'drupal_site_build.error.no-config');
+
+/**
+ * String token for if the site's internal structure could not be established.
+ * 
+ * @ingroup strings
+ */
+define('STRING_COULD_NOT_BUILD_STRUCTURE', 'drupal_site_build.error.no-structure');
+
+/**
+ * String token for if the site's codebase could not be built.
+ * 
+ * @ingroup strings
+ */
+define('STRING_COULD_NOT_CREATE_BUILD', 'drupal_site_build.error.no-build');
+
+/**
+ * String token for if the sites could not be setup properly.
+ * 
+ * @ingroup strings
+ */
+define('STRING_COULD_NOT_SETUP_SITES', 'drupal_site_build.error.no-sites');
+
+/**
+ * String token for if the server structure could not be established.
+ * 
+ * @ingroup strings
+ */
+define('STRING_COULD_NOT_STRUCTURE_SERVER', 'drupal_site_build.error.no-server-structure');
+
+/**
+ * String token for if the server configuration could not be established.
+ * 
+ * @ingroup strings
+ */
+define('STRING_COULD_NOT_CONFIGURE_SERVER', 'drupal_site_build.error.no-server-config');
+
+/**
+ * String token for if there was an error during an additional configuration step.
+ * 
+ * @ingroup strings
+ */
+define('STRING_ADDITIONAL_CONFIG_ERROR', 'drupal_site_build.error.no-more-config');
+
+/**
+ * String token for if the site's configuration file could not be saved.
+ * 
+ * @ingroup strings
+ */
+define('STRING_COULD_NOT_SAVE_SITE', 'drupal_site_build.error.no-save');
+
+/**
  * Manages the creation of a new site. Plugins that want to do something should
  * capture one of the events and possibly disable some core plugins if you want
  * to override some of the one-step processes.
@@ -13,7 +76,7 @@ class SiteBuildCommand extends GenericSiteCommand {
   public function verifyArguments() {
     $buildName = $this->getBuildName();
     if (empty($buildName)) {
-      $this->out()->log('This command requires a build name to be provided.', CLOG_ERROR);
+      $this->error(STRING_MISSING_BUILD_NAME);
       return FALSE;
     }
     if (!$this->isLocal()) {
@@ -65,7 +128,7 @@ class SiteBuildCommand extends GenericSiteCommand {
     );
     $this->events()->fireEvent(EVENT_SITE_CONFIGURE, $context);
     if (!$context->success) {
-      $this->out()->log('Unable to configure site');
+      $this->error(STRING_COULD_NOT_CONFIGURE_SITE);
       return FALSE;
     }
     return TRUE;
@@ -84,7 +147,7 @@ class SiteBuildCommand extends GenericSiteCommand {
   private function fireBuildSiteStructure(DrupalSite $site) {
     // Fire structure hook
     if (!$this->thirdPartyBuildStep($site, EVENT_SITE_BUILD_STRUCTURE)) {
-      $this->out()->log('Unable to initialize build structure', CLOG_ERROR);
+      $this->error(STRING_COULD_NOT_BUILD_STRUCTURE);
       return FALSE;
     }
     return TRUE;
@@ -106,7 +169,7 @@ class SiteBuildCommand extends GenericSiteCommand {
     if (!$this->thirdPartyBuildStep($site, EVENT_SITE_BUILD_CODEBASE, array(
       'build_id' => $buildID,
     ))) {
-      $this->out()->log('Unable to create a new build', CLOG_ERROR);
+      $this->error(STRING_COULD_NOT_CREATE_BUILD);
       return FALSE;
     }
     // Make sure the site remembers the build ID
@@ -126,7 +189,7 @@ class SiteBuildCommand extends GenericSiteCommand {
    */
   private function fireBuildSiteSites(DrupalSite $site) {
     if (!$this->thirdPartyBuildStep($site, EVENT_SITE_BUILD_SITES)) {
-      $this->out()->log('Unable to setup the sites structure', CLOG_ERROR);
+      $this->error(STRING_COULD_NOT_SETUP_SITES);
       return FALSE;
     }
     return TRUE;
@@ -144,7 +207,7 @@ class SiteBuildCommand extends GenericSiteCommand {
    */
   private function buildServerStructure(DrupalSite $site) {
     if (!$this->thirdPartyBuildStep($site, EVENT_SITE_BUILD_SERVER_STRUCTURE)) {
-      $this->out()->log('Unable to initialize the server structure', CLOG_ERROR);
+      $this->error(STRING_COULD_NOT_STRUCTURE_SERVER);
       return FALSE;
     }
     return TRUE;
@@ -163,7 +226,7 @@ class SiteBuildCommand extends GenericSiteCommand {
    */
   private function buildServerConfiguration(DrupalSite $site) {
     if (!$this->thirdPartyBuildStep($site, EVENT_SITE_BUILD_CONFIGURE_SERVER)) {
-      $this->out()->log('Unable to configure the server', CLOG_ERROR);
+      $this->error(STRING_COULD_NOT_CONFIGURE_SERVER);
       return FALSE;
     }
     $configContext = (object) array(
@@ -172,7 +235,7 @@ class SiteBuildCommand extends GenericSiteCommand {
     );
     $this->events()->fireEvent(EVENT_SITE_BUILD_MORE_CONFIG, $configContext);
     if (!$configContext->success) {
-      $this->out()->log('An error occured during additional configuration steps', CLOG_ERROR);
+      $this->error(STRING_ADDITIONAL_CONFIG_ERROR);
       return FALSE;
     }
     return TRUE;
@@ -218,7 +281,7 @@ class SiteBuildCommand extends GenericSiteCommand {
       exit(1);
     }
     if (!$site->saveConfiguration()) {
-      $this->out()->log('Unable to save configuration details.');
+      $this->out()->log(STRING_COULD_NOT_SAVE_SITE);
       if ($cleanup) { $this->cleanup($site); }
       exit(1);
     }

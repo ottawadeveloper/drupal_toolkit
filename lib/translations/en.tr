@@ -23,3 +23,20 @@ types.log.info = 'Info'
 types.log.debug = 'Debug'
 
 plugin.error.missing-config = 'Plugin requires configuration setting [!key].'
+
+db_config.error.cannot-create-db = Unable to create database.
+
+drupal_site.error.no-site = 'Could not build a site object.'
+drupal_site.error.old-site = 'This site is too old to use with this command, update it first.'
+drupal_site.error.missing-site = 'No site with the given name exists.'
+drupal_site.error.site-exists = 'A site with the given name already exists.'
+
+drupal_site_build.error.no-save = 'Unable to save configuration details.'
+drupal_site_build.error.no-more-config = 'An error occured during additional configuration steps.'
+drupal_site_build.error.no-server-config = 'Unable to configure the server.'
+drupal_site_build.error.no-server-structure = 'Unable to initialize the server structure.'
+drupal_site_build.error.no-sites = 'Unable to setup the sites structure.'
+drupal_site_build.error.no-build = 'Unable to create a new build.'
+drupal_site_build.error.no-structure = 'Unable to initialize build structure.'
+drupal_site_build.error.no-config = 'Unable to configure site.'
+drupal_site_build.error.no-build-name = 'This command requires a build name to be provided.'

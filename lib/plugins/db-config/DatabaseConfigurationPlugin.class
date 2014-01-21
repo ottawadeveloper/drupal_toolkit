@@ -175,6 +175,13 @@ define('DB_HOST_USER', 'user');
 define('DB_HOST_PASSWORD', 'password');
 
 /**
+ * String token for when the database could not be created.
+ * 
+ * @ingroup strings
+ */
+define('STRING_CANNOT_CREATE_DB', 'db_config.error.cannot-create-db');
+  
+/**
  * This plugin manages the database for a Drupal site.
  * 
  * @ingroup plugins
@@ -268,7 +275,7 @@ class DatabaseConfigurationPlugin extends GenericPlugin implements EventListener
     foreach ($context->servers as $server) {
       if ($server instanceof DatabaseManagerInterface) {
         if (!$server->createDatabase($dbname, $username, $dbpass, $host)) {
-          $this->error('Unable to create database.');
+          $this->error(STRING_CANNOT_CREATE_DB);
           return FALSE;
         }
       }
@@ -335,7 +342,7 @@ class DatabaseConfigurationPlugin extends GenericPlugin implements EventListener
       'settings' => $settings,
       'dbServer' => NULL,
     );
-    $this->events()->fire('cast-db-server', $context);
+    $this->events()->fire(EVENT_CAST_DB_SERVER, $context);
     return $context->dbServer;
   }
   

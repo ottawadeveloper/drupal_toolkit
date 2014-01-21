@@ -4,6 +4,34 @@
  */
 
 /**
+ * String token for when the site object could not be built.
+ * 
+ * @ingroup strings
+ */  
+define('STRING_ERROR_NO_SITE', 'drupal_site.error.no-site');
+
+/**
+ * String token for when the site object is out of date.
+ * 
+ * @ingroup strings
+ */
+define('STRING_ERROR_OLD_SITE', 'drupal_site.error.old-site');
+
+/**
+ * String token for when a site does not exist (and one is required).
+ * 
+ * @ingroup strings
+ */
+define('STRING_ERROR_MISSING_SITE', 'drupal_site.error.missing-site');
+
+/**
+ * String token for when a site exists (and we don't want to overwrite it).
+ * 
+ * @ingroup strings
+ */
+define('STRING_ERROR_ALREADY_SITE', 'drupal_site.error.site-exists');
+
+/**
  * Provides a base for commands that need to work with sites.
  */
 abstract class GenericSiteCommand extends GenericCommand {
@@ -53,15 +81,15 @@ abstract class GenericSiteCommand extends GenericCommand {
   protected function requireSite($name = NULL) {
     $site = $this->getSite($name);
     if (empty($site)) {
-      $this->out()->log('Could not build a site object.', CLOG_ERROR);
+      $this->error(STRING_ERROR_NO_SITE);
       return FALSE;
     }
     if ($site->existsBackwards()) {
-      $this->out()->log('This site is too old to use with this command, update it first', CLOG_ERROR);
+      $this->error(STRING_ERROR_OLD_SITE);
       return FALSE;
     }
     if (!$site->exists()) {
-      $this->out()->log('No site with the given name exists.', CLOG_ERROR);
+      $this->error(STRING_ERROR_MISSING_SITE);
       return FALSE;
     }
     return TRUE;
@@ -79,11 +107,11 @@ abstract class GenericSiteCommand extends GenericCommand {
   protected function requireNoSite($name = NULL) {
     $site = $this->getSite($name);
     if (empty($site)) {
-      $this->out()->log('Could not build a site object.', CLOG_ERROR);
+      $this->error(STRING_ERROR_NO_SITE);
       return FALSE;
     }
     if ($site->exists() || $site->existsBackwards()) {
-      $this->out()->log('A site with the given name already exists.', CLOG_ERROR);
+      $this->error(STRING_ERROR_ALREADY_SITE);
       return FALSE;
     }
     return TRUE;
