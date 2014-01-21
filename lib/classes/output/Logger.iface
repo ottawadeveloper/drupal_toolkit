@@ -50,7 +50,7 @@ define('CLOG_DEBUG', 30);
 /**
  * Tags a class that can log messages.
  */
-interface Logger extends OutputHandler {
+interface Logger extends OutputHandler, StringDependency {
   
   /**
    * Create a log entry.

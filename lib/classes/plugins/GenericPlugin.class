@@ -4,6 +4,13 @@
  */
 
 /**
+ * String token for when a plugin is missing configuration.
+ * 
+ * @ingroup strings
+ */
+define('STRING_PLUGIN_NO_CONFIG', 'plugin.error.missing-config');
+
+/**
  * Provides a generic plugin that can be easily extended as needed.
  */
 abstract class GenericPlugin implements PluginInterface {
@@ -99,53 +106,53 @@ abstract class GenericPlugin implements PluginInterface {
   /**
    * Facade method to show an error to the user.
    * 
-   * @param string $message
+   * @param string $messageKey
    *   The error message.
    * @param int $level
    *   One of the @ref log_levels "log level constants".
    */
-  protected function error($message, $level = CLOG_ERROR) {
-    $this->out()->log($message, $level);
+  protected function error($messageKey, array $args = array(), $level = CLOG_ERROR) {
+    $this->out()->log($this->strings()->getString($messageKey, $args), $level);
   }
   
   /**
    * Facade method to show a warning to the user.
    * 
-   * @param string $message
+   * @param string $messageKey
    *   The warning message.
    */
-  protected function warn($message) {
-    $this->out()->log($message, CLOG_WARNING);
+  protected function warn($messageKey, array $args = array()) {
+    $this->out()->log($this->strings()->getString($messageKey, $args), CLOG_WARNING);
   }
   
   /**
    * Shows a working message to the user.
    * 
-   * @param string $message
+   * @param string $messageKey
    *   The message.
    */
-  protected function showWork($message) {
-    $this->out()->message($message, MESSAGE_WORKING);
+  protected function showWork($messageKey, array $args = array()) {
+    $this->out()->log($this->strings()->getString($messageKey, $args), MESSAGE_WORKING);
   }
   
   /**
    * Shows a success message to the user.
    * 
-   * @param string $message
+   * @param string $messageKey
    *   The message.
    */
-  protected function showSuccess($message) {
-    $this->out()->message($message, MESSAGE_WORKING);
+  protected function showSuccess($messageKey, array $args = array()) {
+    $this->out()->log($this->strings()->getString($messageKey, $args), MESSAGE_SUCCESS);
   }
   
   /**
    * Shows a failure message to the user.
    * 
-   * @param string $message
+   * @param string $messageKey
    *   The message.
    */
-  protected function showFailure($message) {
-    $this->out()->message($message, MESSAGE_FAILURE);
+  protected function showFailure($messageKey, array $args = array()) {
+    $this->out()->log($this->strings()->getString($messageKey, $args), MESSAGE_FAILURE);
   }
   
   /**
@@ -175,7 +182,9 @@ abstract class GenericPlugin implements PluginInterface {
       }
       $c = $this->config()->getConfig($key);
       if (extra_empty($c)) {
-        $this->error('Plugin requires configuration setting ['.$key.']');
+        $this->error(STRING_PLUGIN_NO_CONFIG, array(
+          '!key' => $key,
+        ));
         return FALSE;
       }
       $results[$newKey] = $c;

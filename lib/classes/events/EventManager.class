@@ -4,9 +4,17 @@
  */
 
 /**
+ * String token for when an event is fired.
+ * 
+ * @ingroup strings
+ */
+define('STRING_EVENT_FIRING', 'events.message.firing');
+
+/**
  * Implements the EventManagerInterface.
  */
-class EventManager implements EventManagerInterface {
+class EventManager implements EventManagerInterface,
+        StringDependency {
   
   /**
    * An array of event listeners keyed by event type.
@@ -22,11 +30,26 @@ class EventManager implements EventManagerInterface {
    */
   private $out;
   
+  /**
+   * The string manager.
+   * 
+   * @var StringManager
+   */
+  private $sm;
+  
   public function __construct() {
   }
   
   public function setOutput(OutputManagerInterface $out) {
     $this->out = $out;
+  }
+  
+  public function setStringManager(StringManagerInterface $sm) {
+    $this->sm = $sm;
+  }
+  
+  public function strings() {
+    return $this->sm;
   }
   
   public function out() {
@@ -47,7 +70,8 @@ class EventManager implements EventManagerInterface {
   }
   
   public function fireEvent($type, &$context = NULL) {
-    $this->out->debug('Firing event ['.$type.']');
+    $message = 'Firing event [' . $type . '].';
+    $this->out->debug($message);
     if (empty($context)) {
       $context = (object) array();
     }

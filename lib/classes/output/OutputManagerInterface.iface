@@ -9,7 +9,7 @@
  * Has its own handler system so that other types of output can be registered
  * as needed.
  */
-interface OutputManagerInterface {
+interface OutputManagerInterface extends DependencyManagerDependency {
   
   /**
    * Registers an output listener.

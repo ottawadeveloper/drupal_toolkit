@@ -37,7 +37,7 @@ class Router implements RouterInterface {
   }
   
   public function dm() {
-    return $this->dm();
+    return $this->dm;
   }
   
   public function addCommand($commandName, RouterCommand $command, $aliases = array()) {

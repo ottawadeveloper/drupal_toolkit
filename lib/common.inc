@@ -110,7 +110,6 @@ define('CONFIG_PLUGIN_REGISTRY', 'plugin-registry');
  */
 define('CONFIG_DISABLED_CORE_PLUGINS', 'core-disabled-plugins');
 
-
 /**
  * Config setting to enable debug mode.
  * 
@@ -241,6 +240,31 @@ define('EVENT_COMMAND_POST_EXECUTION', 'command-postexecute');
 define('EVENT_GET_STRING', 'get-string');
 
 /**
+ * String token for when the toolkit is initialized.
+ * 
+ * @ingroup strings
+ */
+define('STRING_CORE_INITIALIZED', 'core.message.initialized');
+
+/**
+ * String token for when the toolkit is not provided with a suitable command.
+ * 
+ * @ingroup strings
+ */
+define('STRING_CORE_MISSING_SUBCOMMAND', 'core.error.missing-subcommand');
+
+/**
+ * String token for when there is no command found to match the command.
+ * 
+ * Replacement strings:
+ * - \c !command: The name of the command as supplied by the user.
+ * 
+ * @ingroup strings
+ */
+define('STRING_ERROR_NO_COMMAND', 'core.error.no-command-found');
+
+
+/**
  * A list of files, relative to TOOLKIT_COMMON_DIR, that must be
  * included for everything to work properly.
  */
@@ -256,6 +280,8 @@ $files = array(
   'classes/config/ConfigurationManagerInterface.iface',
   'classes/config/Configuration.class',
   'classes/config/ConfigurationDependency.iface',
+  'classes/string/StringManagerInterface.iface',
+  'classes/string/StringDependency.iface',
   'classes/output/OutputHandler.iface',
   'classes/output/Writer.iface',
   'classes/output/Logger.iface',
@@ -267,13 +293,11 @@ $files = array(
   'classes/events/EventListener.iface',
   'classes/events/EventManager.class',
   'classes/events/EventDependency.iface',
+  'classes/string/StringManager.class',
   'classes/router/RouterInterface.iface',
   'classes/router/RouterDependency.iface',
   'classes/router/RouterCommand.iface',
   'classes/router/Router.class',
-  'classes/string/StringManagerInterface.iface',
-  'classes/string/StringManager.class',
-  'classes/string/StringDependency.iface',
   'classes/plugins/PluginInterface.iface',
   'classes/plugins/GenericPlugin.class',
   'classes/commands/GenericCommand.class',
@@ -369,8 +393,5 @@ if (is_dir('/etc')) {
 // Just to keep this file clean, setup is moved to another file.
 include "setup.php";
 
-$out->message($sm->getString('test_string'));
-die();
-
 // We're done.
-$out->message('Toolkit initialized', MESSAGE_SUCCESS);
+$out->message($sm->getString(STRING_CORE_INITIALIZED), MESSAGE_SUCCESS);

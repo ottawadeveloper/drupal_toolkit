@@ -1,3 +1,4 @@
+#!/usr/bin/php
 <?php
 
 /**
@@ -10,17 +11,13 @@ include "lib/common.inc";
 $commandName = $args->getArg(0);
 
 if (empty($commandName)) {
-  $out->log('You must specify a subcommand to use this toolkit', CLOG_WARNING);
+  $out->log($sm->getString(STRING_CORE_MISSING_SUBCOMMAND), CLOG_WARNING);
   $commandName = 'help';
 }
 
 $command = $router->findCommand($commandName);
 
 if ($command instanceof RouterCommand) {
-  $command->setArguments($args);
-  $command->setConfiguration($settings);
-  $command->setOutput($out);
-  $command->setEventManager($events);
   $context = array(
     'args' => $args,
     'commandName' => $commandName,
@@ -38,6 +35,8 @@ if ($command instanceof RouterCommand) {
   $events->fireEvent(EVENT_COMMAND_POST_EXECUTION, $context);
 }
 else {
-  $out->log('Could not find command ['.$commandName.']', CLOG_CRITICAL);
+  $out->log($sm->getString(STRING_ERROR_NO_COMMAND, array(
+    '!command' => $commandName,
+  )), CLOG_CRITICAL);
   exit(1);
 }

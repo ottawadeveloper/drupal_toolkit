@@ -11,7 +11,9 @@
 class HelpCommand extends GenericCommand {
     
   public function executeCommand() {
-    $this->out()->log('The [help] command is not available.', CLOG_ERROR);
+    $this->error(STRING_ROUTER_NO_IMPLEMENTATION, array(
+      '!command' => 'help',
+    ));
   }
   
 }

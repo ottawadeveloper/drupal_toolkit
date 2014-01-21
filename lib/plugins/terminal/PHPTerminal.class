@@ -11,6 +11,15 @@ class PHPTerminal implements Writer, Logger, Messenger {
   private $debugLevel = CLOG_NOTICE;
   private $writeNonCriticalMessages = TRUE;  
   
+  private $sm;
+  
+  public function setStringManager(StringManagerInterface $sm) {
+    $this->sm = $sm;
+  }
+  
+  public function strings() {
+    return $this->sm;
+  }
   
   public function __construct() {
     

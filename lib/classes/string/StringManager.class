@@ -30,11 +30,12 @@ class StringManager implements StringManagerInterface, EventDependency {
     return $this->events;
   }
   
-  public function getString($key, $default = NULL) {
+  public function getString($key, array $args = array(), $default = NULL) {
     if (!isset($this->stringCache[$key])) {
       $this->stringCache[$key] = $this->findString($key, $default);
     }
-    return $this->stringCache[$key];
+    $str = $this->stringCache[$key];
+    return str_replace_all($str, $args);
   }
   
   /**

@@ -4,6 +4,42 @@
  */
 
 /**
+ * String token for when a system command is missing.
+ * 
+ * @ingroup strings
+ */
+define('STRING_ROUTER_NO_COMMAND', 'router.error.missing-command');
+
+/**
+ * String token for when not enough arguments were provided.
+ * 
+ * @ingroup strings
+ */
+define('STRING_ROUTER_NO_ARGUMENT', 'router.error.missing-argument');
+
+/**
+ * String token for when a configuration setting is missing.
+ * 
+ * @ingroup strings
+ */
+define('STRING_ROUTER_NO_CONFIG', 'router.error.missing-config');
+
+/**
+ * String token for when a PHP function is missing.
+ * 
+ * @ingroup strings
+ */
+define('STRING_ROUTER_NO_FUNCTION', 'router.error.missing-function');
+
+/**
+ * String token for when a command is not implemented.
+ * 
+ * @ingroup strings
+ */
+define('STRING_ROUTER_NO_IMPLEMENTATION', 'router.error.command-not-implemented');
+
+
+/**
  * Provides a basic implementation for commands, supporting most of the 
  * basic dependency injection functionality.
  */
@@ -17,8 +53,14 @@ abstract class GenericCommand implements RouterCommand {
   
   private $events = NULL;
   
+  private $sm = NULL;
+  
   public function __construct() {
     
+  }
+  
+  public function setStringManager(StringManagerInterface $sm) {
+    $this->sm = $sm;
   }
   
   public function setEventManager(EventManagerInterface $event) {
@@ -61,6 +103,27 @@ abstract class GenericCommand implements RouterCommand {
     return $this->events;
   }
   
+  public function strings() {
+    return $this->sm;
+  }
+  
+  /**
+   * Logs an error.
+   * 
+   * @param string $key
+   *   A key for the string lookup.
+   * @param array $args
+   *   An array of keys for the string lookup.
+   * @param int $level
+   *   The log level (defaults to CLOG_ERROR).
+   * @param string $default
+   *   Fallback message should one not be found.
+   */
+  protected function error($key, $args = array(), $level = CLOG_ERROR, $default = NULL) {
+    $message = $this->strings()->getString($key, $args, $default);
+    $this->out()->log($message, $level);
+  }
+  
   /**
    * Requires that the shell command be available.
    * 
@@ -72,7 +135,9 @@ abstract class GenericCommand implements RouterCommand {
    */
   protected function requireCommand($commandName) {
     if (!shell_command_available($commandName)) {
-      $this->out()->log('This command requires the [' . $commandName . '] tool to run.', CLOG_ERROR);
+      $this->error(STRING_ROUTER_NO_COMMAND, array(
+        '!command' => $commandName,
+      ));
       return FALSE;
     }
     return TRUE;
@@ -90,7 +155,9 @@ abstract class GenericCommand implements RouterCommand {
    */
   protected function requireArgument($pos) {
     if (!$this->args()->hasArg($pos)) {
-      $this->out()->log('This command requires at least ' . $pos . ' extra arguments.', CLOG_ERROR);
+      $this->error(STRING_ROUTER_NO_ARGUMENT, array(
+        '!count' => $pos,
+      ));
       return FALSE;
     }
     return TRUE;
@@ -108,7 +175,9 @@ abstract class GenericCommand implements RouterCommand {
   protected function requireConfig($key) {
     $config = $this->config()->getConfig($key);
     if (empty($config)) {
-      $this->out()->log('This command requires the [' . $key . '] configuration variable.', CLOG_ERROR);
+      $this->error(STRING_ROUTER_NO_CONFIG, array(
+        '!key' => $key,
+      ));
       return FALSE;
     }
     return TRUE;
@@ -125,14 +194,12 @@ abstract class GenericCommand implements RouterCommand {
    */
   protected function requireFunction($func_name) {
     if (!php_function_available($func_name)) {
-      $this->out()->log('This  command requires the [' . $func_name . '] PHP function.', CLOG_ERROR);
+      $this->error(STRING_ROUTER_NO_FUNCTION, array(
+        '!function' => $func_name,
+      ));
       return FALSE;
     }
     return TRUE;
   }
-  
-  
-  
-  
   
 }

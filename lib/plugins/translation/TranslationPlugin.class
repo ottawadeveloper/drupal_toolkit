@@ -35,7 +35,7 @@ class TranslationPlugin extends GenericPlugin implements EventListener {
       ),
     ));
     $this->events()->registerListener(array(
-      
+      EVENT_GET_STRING
     ), $this);
   }
   
@@ -49,7 +49,7 @@ class TranslationPlugin extends GenericPlugin implements EventListener {
     }
   }
   
-  private function getTranslation($string) {
+  private function getTranslation($string) {  
     if (!$this->loaded) {
       $this->loadTranslations();
     }
@@ -62,7 +62,7 @@ class TranslationPlugin extends GenericPlugin implements EventListener {
   private function loadTranslations() {
     $config = $this->getConfig(array(
       CONFIG_LANGUAGE_SELECT,
-      CONFIG_LANGUAGE_DIR,
+      CONFIG_LANGUAGE_FILE,
     ));
     if (!empty($config)) {
       foreach ($config[CONFIG_LANGUAGE_FILE] as $file) {

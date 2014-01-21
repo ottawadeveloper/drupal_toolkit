@@ -32,4 +32,8 @@
  * @defgroup message_types Message Types
  * Different message types.
  * 
+ * @defgroup strings String Placeholders
+ * These placeholders are used to get strings from the translation matrix.
+ * @see StringManagerInterface
+ * @see TranslationPlugin
  */

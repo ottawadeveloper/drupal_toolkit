@@ -1,1 +1,25 @@
-test_string = "Hello World!"
+
+core.message.initialized = 'DTK initialized'
+core.error.missing-subcommand = 'You must specify a subcommand to use this toolkit.'
+core.error.no-command-found = 'No command matching [!command] was found.'
+
+router.error.missing-command  = 'The requested command requires the shell command [!command] to execute.'
+router.error.missing-argument = 'The requested command requires at least [!count] arguments to execute.'
+router.error.missing-config = 'The requested command requires the config setting [!config] to execute.' 
+router.error.missing-function = 'The requested command requires the PHP function [!function] to execute.'
+router.error.command-not-implemented = 'The requested command [!command] is not yet implemented.'
+
+events.message.firing = 'Firing event [!event].'
+
+types.message.working = 'Working'
+types.message.success = 'Success'
+types.message.failure = 'Failure'
+
+types.log.critical = 'Critical'
+types.log.error = 'Error'
+types.log.warning = 'Warning'
+types.log.notice = 'Notice'
+types.log.info = 'Info'
+types.log.debug = 'Debug'
+
+plugin.error.missing-config = 'Plugin requires configuration setting [!key].'

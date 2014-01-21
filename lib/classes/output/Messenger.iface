@@ -27,7 +27,7 @@ define('MESSAGE_FAILURE', 'f');
 /**
  * Tags classes that can message the user of what's happening in the system.
  */
-interface Messenger extends OutputHandler {
+interface Messenger extends OutputHandler, StringDependency {
   
   /**
    * Send a message to the user.

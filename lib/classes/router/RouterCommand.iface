@@ -10,7 +10,8 @@ interface RouterCommand
     extends ArgsDependency, 
             ConfigurationDependency, 
             OutputDependency,
-            EventDependency {
+            EventDependency,
+            StringDependency {
   
   /**
    * Called when the command is being executed.

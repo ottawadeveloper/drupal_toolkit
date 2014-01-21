@@ -19,6 +19,6 @@ interface StringManagerInterface {
    * @return string
    *   User-friendly string.
    */
-  function getString($key, $default = NULL);
+  function getString($key, array $args = array(), $default = NULL);
   
 }

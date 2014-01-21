@@ -25,8 +25,20 @@ DependencyManager::setObject('config', $settings);
 // Additional configuration work
 include "setup/config.php";
 
+// Figure out the debug level
+$debugLevel = DEBUG_LEVEL_NORMAL;
+if (!extra_empty($settings->getConfig(CONFIG_SILENT))) {
+  $debugLevel = DEBUG_LEVEL_SILENT;
+}
+if (!extra_empty($settings->getConfig(CONFIG_VERBOSE))) {
+  $debugLevel = DEBUG_LEVEL_VERBOSE;
+}
+if (!extra_empty($settings->getConfig(CONFIG_DEBUG))) {
+  $debugLevel = DEBUG_LEVEL_DEBUG;
+}
+
 // Initialize the output object.
-$out = new OutputManager();
+$out = new OutputManager($debugLevel >= DEBUG_LEVEL_VERBOSE);
 DependencyManager::inject($out);
 DependencyManager::register('OutputDependency', 'setOutput', 'output', 'OutputManagerInterface');
 DependencyManager::setObject('output', $out);
@@ -54,18 +66,6 @@ $plugins = array();
 
 // Verifies and initializes all plugins
 include "setup/plugins.php";
-
-// Figure out the debug level
-$debugLevel = DEBUG_LEVEL_NORMAL;
-if (!extra_empty($settings->getConfig(CONFIG_SILENT))) {
-  $debugLevel = DEBUG_LEVEL_SILENT;
-}
-if (!extra_empty($settings->getConfig(CONFIG_VERBOSE))) {
-  $debugLevel = DEBUG_LEVEL_VERBOSE;
-}
-if (!extra_empty($settings->getConfig(CONFIG_DEBUG))) {
-  $debugLevel = DEBUG_LEVEL_DEBUG;
-}
 
 // Notify everyone so that output listeners can be added now.
 $context = (object) array(

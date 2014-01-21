@@ -4,6 +4,69 @@
  */
 
 /**
+ * String token for a working message.
+ * 
+ * @ingroup strings
+ */
+define('STRING_MESSAGE_WORKING', 'types.message.working');
+
+/**
+ * String token for a success message.
+ * 
+ * @ingroup strings
+ */
+define('STRING_MESSAGE_SUCCESS', 'types.message.success');
+
+/**
+ * String token for a failure message.
+ * 
+ * @ingroup strings
+ */
+define('STRING_MESSAGE_FAILURE', 'types.message.failure');
+
+/**
+ * String token for a critical error.
+ * 
+ * @ingroup strings
+ */
+define('STRING_LOG_CRITICAL', 'types.log.critical');
+
+/**
+ * String token for an error.
+ * 
+ * @ingroup strings
+ */
+define('STRING_LOG_ERROR', 'types.log.error');
+
+/**
+ * String token for a warning.
+ * 
+ * @ingroup strings
+ */
+define('STRING_LOG_WARNING', 'types.log.warning');
+
+/**
+ * String token for a notice.
+ * 
+ * @ingroup strings
+ */
+define('STRING_LOG_NOTICE', 'types.log.notice');
+
+/**
+ * String token for information message.
+ * 
+ * @ingroup strings
+ */
+define('STRING_LOG_INFO', 'types.log.info');
+
+/**
+ * String token for debug message.
+ * 
+ * @ingroup strings
+ */
+define('STRING_LOG_DEBUG', 'types.log.debug');
+
+/**
  * Implementation of OutputManagerInterface.
  */
 class OutputManager implements OutputManagerInterface {
@@ -16,14 +79,21 @@ class OutputManager implements OutputManagerInterface {
   private $handlers = array();
   
   /**
+   * Stores the dependency manager.
+   * 
+   * @var DependencyManagerInterface
+   */
+  private $dm;
+  
+  /**
    * Stores the user-friendly names for the message types.
    * 
    * @var array
    */
   public static $messageTypeNames = array(
-    MESSAGE_WORKING => 'Working',
-    MESSAGE_SUCCESS => 'Success',
-    MESSAGE_FAILURE => 'Failure',
+    MESSAGE_WORKING => STRING_MESSAGE_WORKING,
+    MESSAGE_SUCCESS => STRING_MESSAGE_SUCCESS,
+    MESSAGE_FAILURE => STRING_MESSAGE_FAILURE,
   );
   
   /**
@@ -32,26 +102,43 @@ class OutputManager implements OutputManagerInterface {
    * @var array
    */
   public static $logLevelNames = array(
-    CLOG_CRITICAL => 'Critical',
-    CLOG_ERROR => 'Error',
-    CLOG_WARNING => 'Warning',
-    CLOG_NOTICE => 'Notice',
-    CLOG_INFO => 'Info',
-    CLOG_DEBUG => 'Debug',
+    CLOG_CRITICAL => STRING_LOG_CRITICAL,
+    CLOG_ERROR => STRING_LOG_ERROR,
+    CLOG_WARNING => STRING_LOG_WARNING,
+    CLOG_NOTICE => STRING_LOG_NOTICE,
+    CLOG_INFO => STRING_LOG_INFO,
+    CLOG_DEBUG => STRING_LOG_DEBUG,
   );
   
-  public function __construct() {
+  private $defaultOutput = FALSE;
+  
+  public function __construct($defaultOutput = FALSE) {
+    $this->defaultOutput = $defaultOutput;
+  }
+  
+  public function setDependencyManager(DependencyManagerInterface $dm) {
+    $this->dm = $dm;
+  }
+  
+  public function dm() {
+    return $this->dm;
   }
   
   public function registerListener(OutputHandler $handler) {
+    $this->dm->setDependencies($handler);
     $this->handlers[] = $handler;
   }
   
   public function write($line) {
+    $handled = FALSE;
     foreach ($this->handlers as $handler) {
       if ($handler instanceof Writer) {
         $handler->write($line);
+        $handled = TRUE;
       }
+    }
+    if ($this->defaultOutput && !$handled) {
+      echo $line . PHP_EOL;
     }
   }
   
@@ -60,18 +147,28 @@ class OutputManager implements OutputManagerInterface {
   }
   
   public function message($message, $type = MESSAGE_WORKING) {
+    $handled = FALSE;
     foreach ($this->handlers as $handler) {
       if ($handler instanceof Messenger) {
         $handler->message($message, $type);
+        $handled = TRUE;
       }
+    }
+    if ($this->defaultOutput && !$handled) {
+      echo $message . PHP_EOL;
     }
   }
   
   public function log($log, $level = CLOG_NOTICE) {
+    $handled = FALSE;
     foreach ($this->handlers as $handler) {
       if ($handler instanceof Logger) {
         $handler->log($log, $level);
+        $handled = TRUE;
       }
+    }
+    if ($this->defaultOutput && !$handled) {
+      echo $log . PHP_EOL;
     }
   }
   
