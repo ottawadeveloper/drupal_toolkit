@@ -15,6 +15,20 @@
 define('SERVER_SETTING_HTTP_CONFIG_DIR', 'http-config-dir');
 
 /**
+ * Server setting to override the location of the HTTP configuration template.
+ * 
+ * @ingroup server_settings
+ */
+define('SERVER_SETTING_HTTP_CONFIG_TEMPLATE', 'http-config-template');
+
+/**
+ * Server setting to override the location of the HTTP file template.
+ * 
+ * @ingroup server_settings
+ */
+define('SERVER_SETTING_HTTP_FILE_TEMPLATE', 'http-file-template');
+
+/**
  * Fired when a list of HTTP servers is needed.
  * 
  * @ingroup events
@@ -96,6 +110,27 @@ define('HTTP_TYPE_HTTPD', 'httpd');
 define('SERVER_SETTING_HTTP_TYPE', 'http-type');
 
 /**
+ * String token for when there is no template file defined.
+ * 
+ * @ingroup strings
+ */
+define('STRING_HTTP_MISSING_TEMPLATE', 'http_config.error.no-template');
+
+/**
+ * String token for when there is no configuration.
+ * 
+ * @ingroup strings
+ */
+define('STRING_HTTP_NO_CONFIG', 'http_config.error.no-config');
+
+/**
+ * String token for when the configuration could not be written to the server.
+ * 
+ * @ingroup strings
+ */
+define('STRING_HTTP_BAD_WRITE', 'http_config.error.bad-write');
+
+/**
  * Plugin to manage configuring the HTTP server for the Drupal install.
  */
 class HttpConfigurationPlugin extends GenericPlugin implements EventListener {
@@ -152,38 +187,49 @@ class HttpConfigurationPlugin extends GenericPlugin implements EventListener {
    * @return boolean
    */
   private function publishConfig(DrupalSite $site) {
-    $c = $this->getConfig(array(
+    $c = $this->getConfig(array(), array(
       'template' => CONFIG_HTTP_DEFAULT_CONFIG_TEMPLATE,
       'fn_template' => CONFIG_HTTP_DEFAULT_FILENAME_TEMPLATE,
     ));
     if (!is_readable($c['template'])) {
-      $this->error('Unable to read template file');
-      return FALSE;
+      $c['template'] = NULL;
     }
-    $fullConfig = $site->replaceTokens(file_get_contents($c['template']));
-    if (empty($fullConfig)) {
-      $this->error('No configuration was loaded.');
-      return FALSE;
-    }
-    $filename = $site->replaceTokens($c['fn_template']);
     $context = (object) array(
       'servers' => array(),
     );
     $this->events()->fireEvent(EVENT_FIND_HTTP_SERVERS, $context);
     foreach ($context->servers as $httpServer) {
       if ($httpServer instanceof GenericHttpServer) {
-        if (!$httpServer->writeConfig($filename, $fullConfig)) {
-          $this->error('Unable to write configuration to server');
+        $configFile = $httpServer->machine()->getSetting(SERVER_SETTING_HTTP_CONFIG_TEMPLATE);
+        if (empty($configFile)) {
+          $configFile = $c['template'];
+        }
+        if (!is_readable($configFile)) {
+          $this->error(STRING_HTTP_NO_CONFIG);
+          return FALSE;
+        }
+        $filename = $httpServer->machine()->getSetting(SERVER_SETTING_HTTP_FILE_TEMPLATE);
+        if (empty($filename)) {
+          $filename = $c['fn_template'];
+          if (empty($filename)) {
+            $this->reror(STRING_HTTP_MISSING_TEMPLATE);
+            return FALSE;
+          }
+        }
+        $filename = $site->replaceTokens($filename);
+        $configFile = $site->replaceTokens(file_get_contents($configFile));
+        if (empty($configFile)) {
+          $this->error(STRING_HTTP_NO_CONFIG);
+          return FALSE;
+        }
+        if (!$httpServer->writeConfig($filename, $configFile)) {
+          $this->error(STRING_HTTP_BAD_WRITE);
           return FALSE;
         }
         $httpServer->doReboot();
       }
     }
-    $context = (object) array(
-      'site' => $site,
-      'success' => TRUE,
-    );
-    return $context->success;
+    return TRUE;
   }
   
   /**
