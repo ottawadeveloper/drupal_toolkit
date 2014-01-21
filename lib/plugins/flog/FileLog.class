@@ -15,6 +15,11 @@ class FileLog implements Logger, Messenger {
    */
   private $filepath = '';
   
+  /**
+   * Dependency injection for StringManagerInterface.
+   * 
+   * @var StringManagerInterface
+   */
   private $sm;
   
   public function setStringManager(StringManagerInterface $sm) {
@@ -52,11 +57,11 @@ class FileLog implements Logger, Messenger {
   }
   
   public function message($message, $type = MESSAGE_WORKING) {
-    $this->output($message, OutputManager::$messageTypeNames[$type]);
+    $this->output($message, $this->strings()->getString(OutputManager::$messageTypeNames[$type]));
   }
   
   public function log($entry, $level = CLOG_NOTICE) {
-    $this->output($entry, OutputManager::$logLevelNames[$level]);
+    $this->output($entry, $this->strings()->getString(OutputManager::$logLevelNames[$level]));
   }
   
   /**

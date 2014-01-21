@@ -40,3 +40,5 @@ drupal_site_build.error.no-build = 'Unable to create a new build.'
 drupal_site_build.error.no-structure = 'Unable to initialize build structure.'
 drupal_site_build.error.no-config = 'Unable to configure site.'
 drupal_site_build.error.no-build-name = 'This command requires a build name to be provided.'
+
+flog.error.no-log-file = 'Unable to open [!path] for logging, file logging skipped.'

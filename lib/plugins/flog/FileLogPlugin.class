@@ -12,6 +12,8 @@
  */
 define('CONFIG_LOG_FILE', 'log-file');
 
+define('STRING_MISSING_LOG_FILE', 'flog.error.no-log-file');
+
 /**
  * Responsible for setting up file logging if requested.
  */
@@ -48,7 +50,9 @@ class FileLogPlugin extends GenericPlugin implements EventListener {
         $this->out()->registerListener($flog);
       }
       else {
-        $this->out()->log('Unable to open ['.$path.'] for logging, file logging skipped');
+        $this->error(STRING_MISSING_LOG_FILE, array(
+          '!path' => $path,
+        ));
       }
     }
   }
