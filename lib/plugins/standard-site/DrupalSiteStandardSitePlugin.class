@@ -229,7 +229,7 @@ class DrupalSiteStandardSitePlugin extends GenericPlugin implements EventListene
    */
   private function symlinkAllSites(DrupalSite $site) {    
     $staticSites = assemble_path($site->getBuildFolder(), $site->getSetting(SITE_SITES_DIR));
-    $h = opendir();
+    $h = opendir($staticSites);
     if (empty($h)) {
       $this->error(STRING_COULD_NOT_READ_SITES_DIR);
       return FALSE;
