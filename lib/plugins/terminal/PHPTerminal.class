@@ -1,17 +1,76 @@
 <?php
+/**
+ * @file Defines the PHPTerminal class.
+ */
 
+/**
+ * Responsible for logging messages to the console.
+ * 
+ * This is essentially a more useful wrapper around echo. Echo should still
+ * be used in cases before this plugin might have been loaded.
+ */
 class PHPTerminal implements Writer, Logger, Messenger {
   
+  /**
+   * Whether or not to display the timestamp.
+   * 
+   * @var boolean
+   */
   private $timestamp = TRUE;
+  
+  /**
+   * Format of the timestamp.
+   * 
+   * @see date()
+   * @var string
+   */
   private $timestampFormat = '[H:i:s] ';
+  
+  /**
+   * Whether or not to display the message type (success/failure/debug/etc)
+   * 
+   * @var boolean
+   */
   private $showTypes = TRUE;
+  
+  /**
+   * Default padding for the message.
+   * 
+   * @var int
+   */
   private $typePadding = 16;
+  
+  /**
+   * Setting this to TRUE means that, if a type is used that is longer than
+   * $typePadding, $typePadding will be increased to its length plus one.
+   * 
+   * @var boolean
+   */
   private $autoFlexPadding = TRUE;
   
+  /**
+   * Minimum error level to display log information.
+   * 
+   * @var int
+   */
   private $debugLevel = CLOG_NOTICE;
+  
+  /**
+   * If set to FALSE, working messages will be hidden.
+   * 
+   * @var boolean
+   */
   private $writeNonCriticalMessages = TRUE;  
   
+  /**
+   * Dependency injection for StringManagerInterface.
+   * 
+   * @var StringManagerInterface
+   */
   private $sm;
+  
+  
+  public function __construct() {}
   
   public function setStringManager(StringManagerInterface $sm) {
     $this->sm = $sm;
@@ -21,34 +80,87 @@ class PHPTerminal implements Writer, Logger, Messenger {
     return $this->sm;
   }
   
-  public function __construct() {
-    
-  }
-  
+  /**
+   * Sets whether or not to write out non-critical messages.
+   * 
+   * @param boolean $writeNonCrit
+   *   Whether or not to write out non-critical messages.
+   */
   public function setWriteNonCriticalMessages($writeNonCrit) {
     $this->writeNonCriticalMessages = !extra_empty($writeNonCrit);
   }
   
+  /**
+   * Sets whether or not to display the timestamp on all messages.
+   * 
+   * @param boolean $useTimestamp
+   *   Whether or not to display the timestamp on all messages.
+   */
   public function setUseTimestamp($useTimestamp) {
     $this->timestamp = !extra_empty($useTimestamp);
   }
   
+  /**
+   * Sets the timestamp format.
+   * 
+   * There is no validation on this, so make sure to consult the PHP date()
+   * function for reference.
+   * 
+   * @param string $timestampFormat
+   *   A timestamp format for date().
+   */
   public function setTimestampFormat($timestampFormat) {
-    $this->timestmapFormat = $timestampFormat;
+    $this->timestampFormat = $timestampFormat;
   }
   
+  /**
+   * Sets whether or not types should be shown.
+   * 
+   * @param type $showTypes
+   *   Whether or not types should be shown.
+   */
   public function setShowTypes($showTypes) {
     $this->showTypes = !extra_empty($showTypes);
   }
   
+  /**
+   * Sets the space padding to use after a type.
+   * 
+   * @param int $typePadding
+   *   The number of characters to pad the type to.
+   */
   public function setTypePadding($typePadding) {
     $this->typePadding = filter_var($typePadding, FILTER_SANITIZE_NUMBER_INT);
   }
   
+  /**
+   * Sets whether or not padding should automatically adjust itself to 
+   * larger sizes as needed.
+   * 
+   * eg:
+   * set to TRUE and typePadding=9:
+   * [short]  message information
+   * [extra-long] message information
+   * [short]      message information
+   * 
+   * set to FALSE and typePadding=9:
+   * [short]  message information
+   * [extra-long] message information
+   * [short]  message information
+   * 
+   * @param boolean $autoFlexPadding
+   *   Whether or not padding auto-flex is enabled.
+   */
   public function setAutoFlexPadding($autoFlexPadding) {
     $this->autoFlexPadding = !extra_empty($autoFlexPadding);
   }
   
+  /**
+   * Sets the minimum required error level to display.
+   * 
+   * @param int $debugLevel
+   *   The minimum debug level to show.
+   */
   public function setMinimumDebugLevel($debugLevel) {
     $this->debugLevel = $debugLevel;
   }
@@ -70,6 +182,14 @@ class PHPTerminal implements Writer, Logger, Messenger {
     }
   }
   
+  /**
+   * Writes a message with timestamp and type.
+   * 
+   * @param string $status
+   *   The message to display.
+   * @param string $type
+   *   The message type.
+   */
   private function writeStatusMessage($status, $type) {
     $message = '';
     if ($this->timestamp) {

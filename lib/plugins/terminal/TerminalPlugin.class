@@ -1,23 +1,96 @@
 <?php
+/**
+ * @file Defines the TerminalPlugin class.
+ */
 
+/**
+ * Config key for whether or not to show timestamps on the command-line
+ * output.
+ * 
+ * @ingroup config
+ */
+define('CONFIG_CLI_USE_TIMESTAMP', 'cli-use-timestamp');
+
+/**
+ * Config key for whether or not to show types on the command-line
+ * output.
+ * 
+ * @ingroup config
+ */
+define('CONFIG_CLI_SHOW_TYPES', 'cli-show-types');
+
+/**
+ * Config key for whether or not to use auto-flex padding
+ * 
+ * @ingroup config
+ */
+define('CONFIG_CLI_AUTO_FLEX', 'cli-auto-flex-padding');
+
+/**
+ * Config key for how much padding to have around the type.
+ * 
+ * @ingroup config
+ */
+define('CONFIG_CLI_TYPE_PADDING', 'cli-type-padding');
+
+/**
+ * Config key for the timestamp format.
+ * 
+ * @see date()
+ * @ingroup config
+ */
+define('CONFIG_CLI_TIMESTAMP_FORMAT', 'cli-timestamp-format');
+
+/**
+ * Config key for whether or not to write out non-critical messages.
+ * 
+ * @ingroup config
+ */
+define('CONFIG_CLI_NON_CRITICAL', 'cli-write-non-critical-messages');
+
+/**
+ * Responsible for registering the terminal as an output device.
+ */
 class TerminalPlugin extends GenericPlugin implements EventListener {
+  
+  public function initialize() {
+    $root = dirname(__FILE__);
+    require assemble_path($root, 'PHPTerminal.class');
+    $this->events()->registerListener(array(
+      EVENT_CORE_REGISTER_OUTPUTS,
+    ), $this);
+    $this->config()->extendDefaultConfiguration(array(
+      CONFIG_CLI_USE_TIMESTAMP => TRUE,
+      CONFIG_CLI_SHOW_TYPES => TRUE,
+      CONFIG_CLI_AUTO_FLEX => TRUE,
+      CONFIG_CLI_TYPE_PADDING => 16,
+      CONFIG_CLI_TIMESTAMP_FORMAT => '[H:i:s]',
+      CONFIG_CLI_NON_CRITICAL => TRUE,
+    ));
+  }
   
   public function captureEvent(&$context, $type) {
     switch($type) {
-      case 'core-register-outputs':
+      case EVENT_CORE_REGISTER_OUTPUTS:
         $this->registerTerminalHandler($context->debugLevel);
         break;
     }
   }
   
+  /**
+   * Responsible for registering the terminal handler.
+   * 
+   * @param int $debugLevel
+   *   The debug level.
+   */
   private function registerTerminalHandler($debugLevel) {
     $cli = new PHPTerminal();
-    $cli->setAutoFlexPadding($this->config()->getConfig('cli-auto-flex-padding'));
-    $cli->setShowTypes($this->config()->getConfig('cli-show-types'));
-    $cli->setTimestampFormat($this->config()->getConfig('cli-timestamp-format'));
-    $cli->setTypePadding($this->config()->getConfig('cli-type-padding'));
-    $cli->setUseTimestamp($this->config()->getConfig('cli-use-timestamp'));
-    $cli->setWriteNonCriticalMessages($this->config()->getConfig('cli-write-non-critical-messages'));
+    $cli->setAutoFlexPadding($this->config()->getConfig(CONFIG_CLI_AUTO_FLEX));
+    $cli->setShowTypes($this->config()->getConfig(CONFIG_CLI_SHOW_TYPES));
+    $cli->setTimestampFormat($this->config()->getConfig(CONFIG_CLI_TIMESTAMP_FORMAT));
+    $cli->setTypePadding($this->config()->getConfig(CONFIG_CLI_TYPE_PADDING));
+    $cli->setUseTimestamp($this->config()->getConfig(CONFIG_CLI_USE_TIMESTAMP));
+    $cli->setWriteNonCriticalMessages($this->config()->getConfig(CONFIG_CLI_NON_CRITICAL));
     switch ($debugLevel) {
       case DEBUG_LEVEL_VERBOSE:
         $cli->setMinimumDebugLevel(CLOG_INFO);
@@ -29,24 +102,10 @@ class TerminalPlugin extends GenericPlugin implements EventListener {
         break;
       case DEBUG_LEVEL_SILENT:
         $cli->setMinimumDebugLevel(CLOG_ERROR);
-        $cli->setWRiteNonCriticalMessages(FALSE);
+        $cli->setWriteNonCriticalMessages(FALSE);
         break;
     }
     $this->out()->registerListener($cli);
-  }
-  
-  public function initialize() {
-    $root = dirname(__FILE__);
-    require assemble_path($root, 'PHPTerminal.class');
-    $this->events()->registerListener('core-register-outputs', $this);
-    $this->config()->extendDefaultConfiguration(array(
-      'cli-use-timestamp' => TRUE,
-      'cli-show-types' => TRUE,
-      'cli-auto-flex-padding' => TRUE,
-      'cli-type-padding' => 16,
-      'cli-timestamp-format' => '[H:i:s]',
-      'cli-write-non-critical-messages' => TRUE,
-    ));
   }
   
 }
