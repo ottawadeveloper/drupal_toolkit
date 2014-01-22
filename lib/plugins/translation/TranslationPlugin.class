@@ -11,9 +11,11 @@
 define('CONFIG_LANGUAGE_SELECT', 'language');
 
 /**
- * Config key for the pattern for language file paths.
+ * Config key for the pattern for language file paths. !language is used to 
+ * represent the language. Note that this is an array value as many different
+ * paths (none of which are required) may be specified.
  * 
- * !language is used to represent the language.
+ * The default is %toolkit_directory/translations/!language.tr
  * 
  * @ingroup config
  */
@@ -49,6 +51,15 @@ class TranslationPlugin extends GenericPlugin implements EventListener {
     }
   }
   
+  /**
+   * Retrieves the translation of a string.
+   * 
+   * @param string $string
+   *   The string to translate
+   * 
+   * @return string
+   *   The translated version of the string or FALSE if none was found.
+   */
   private function getTranslation($string) {  
     if (!$this->loaded) {
       $this->loadTranslations();
@@ -59,6 +70,9 @@ class TranslationPlugin extends GenericPlugin implements EventListener {
     return FALSE;
   }
   
+  /**
+   * Loads the requested translation set into memory.
+   */
   private function loadTranslations() {
     $config = $this->getConfig(array(
       CONFIG_LANGUAGE_SELECT,
