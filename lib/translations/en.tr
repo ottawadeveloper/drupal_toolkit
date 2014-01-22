@@ -69,3 +69,8 @@ standard_build.error.current-symlink-failure = 'Could not successfully create th
 
 standard_server_structure.error.already-exists = 'A site already exists in the required location for the server symlink.'
 standard_server_structure.error.could-not-create = 'Could not create server symlink.'
+
+standard_site.error.no-settings-file = 'Unable to locate settings.php file'
+standard_site.error.symlink-failure = 'Unable to create a site symlink'
+standard_site.error.unable-to-update-settings = 'Unable to update settings.php'
+standard_site.error.unable-to-create-settings-template = 'Unable to create settings.php tempalte file.'

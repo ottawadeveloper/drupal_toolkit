@@ -1,13 +1,43 @@
 <?php
+/**
+ * @file Defines the DrupalSiteStandardSitePlugin class.
+ */
 
+define('CONFIG_SKIP_REDUNDANT_SYMLINKS', 'skip-redundant-symlinks');
+
+define('OPTION_SKIP_REDUNDANT_SYMLINKS', 'skip-redundant-symlinks');
+
+define('STRING_COULD_NOT_FIND_SETTINGS_PHP', 'standard_site.error.no-settings-file');
+define('STRING_COULD_NOT_SYMLINK_SITE', 'standard_site.error.symlink-failure');
+define('STRING_UNABLE_TO_APPEND_SETTINGS', 'standard_site.error.unable-to-update-settings');
+define('STRING_UNABLE_TO_CREATE_SETTINGS_TEMPLATE', 'standard_site.error.unable-to-create-settings-template');
+
+define('EVENT_GET_EXTRA_SETTINGS', 'get-extra-settings');
+define('EVENT_CONTINUE_STANDARD_SITES', 'standard-site-setup-continue');
+
+define('SITE_SETTINGS_FILE', 'settings-file');
+define('SITE_SETTINGS_TEMPLATE', 'settings-template');
+/**
+ * Responsible for managing the basic sites configuration for Drupal sites.
+ * 
+ * This refers mostly to the contents of the Drupal sites folder, except for the
+ * "all" folder (which is managed by the build). These folders are kept in
+ * another location and symlinked to on build.
+ * 
+ * Certain directories are created for the initial site as symlinks of 
+ * 'default'. This behaviour prevents the default site from being overridden
+ * by a subsite.
+ */
 class DrupalSiteStandardSitePlugin extends GenericPlugin implements EventListener {
   
   public function initialize() {
-    $this->events()->registerListener(array('site-build-sites'), $this);
+    $this->events()->registerListener(array(
+      EVENT_SITE_BUILD_SITES,
+    ), $this);
     $this->config()->extendDefaultConfiguration(array(
-      'skip-redundant-symlinks' => FALSE,
+      CONFIG_SKIP_REDUNDANT_SYMLINKS => FALSE,
     ));
-    $this->config()->extendFromOption('skip-redundant-symlinks', TRUE);
+    $this->config()->extendFromOption(CONFIG_SKIP_REDUNDANT_SYMLINKS, OPTION_SKIP_REDUNDANT_SYMLINKS);
   }
   
   public function requiredPlugins() {
@@ -16,22 +46,35 @@ class DrupalSiteStandardSitePlugin extends GenericPlugin implements EventListene
   
   public function captureEvent(&$context, $type) {
     switch ($type) {
-      case 'site-build-sites':
+      case EVENT_SITE_BUILD_SITES:
         $context->success = $this->initializeSites($context->site);
         $context->stopPropagation = TRUE;
         break;
     }
   }
   
+  /**
+   * Responsible for initializing the sites upon build.
+   * 
+   * @param DrupalSite $site
+   *   The site to initialize sites for.
+   * 
+   * @return boolean
+   *   TRUE if they were initialized successfully, otherwise FALSE.
+   */
   private function initializeSites(DrupalSite $site) {
-    $currentBase = $site->getSetting('build_current_codebase_dir');
+    $currentBase = $site->getSetting(SITE_SETTING_CURRENT_BUILD);
     if (empty($currentBase)) { 
-      $this->error('This plugin requires the site setting [build_current_codebase_dir].');
+      $this->error(STRING_SITE_MISSING_SETTING, array(
+        '!key' => SITE_SETTING_CURRENT_BUILD,
+      ));
       return FALSE; 
     }
-    $structureSites = $site->getSetting('structure_sites_dir');
+    $structureSites = $site->getSetting(SITE_SITES_DIR);
     if (empty($structureSites)) { 
-      $this->error('This plugin requires the site setting [structure_sites_dir]');
+      $this->error(STRING_SITE_MISSING_SETTING, array(
+        '!key' => SITE_SITES_DIR,
+      ));
       return FALSE;
     }
     
@@ -42,21 +85,23 @@ class DrupalSiteStandardSitePlugin extends GenericPlugin implements EventListene
     $defaultSettingsFile = assemble_path($realDefault, 'default.settings.php');
     
     if (!file_exists($defaultSettingsFile)) {
-      $this->error('Unable to find the default.settings.php file for the default site.');
+      $this->error(STRING_COULD_NOT_FIND_SETTINGS_PHP);
       return FALSE;
     }
     
     // Make symlinks out of all the URLs if desired
-    $makeSymlinks = !extra_empty($this->config()->getConfig('skip-redundant-symlinks'));
+    $makeSymlinks = !extra_empty($this->config()->getConfig(CONFIG_SKIP_REDUNDANT_SYMLINKS));
     if ($makeSymlinks) {
       $urls = $site->getAllURLs();
       foreach ($urls as $url) {
         $name = DrupalSite::convertURLToSiteName($url);
-        $site->appendSettingValue('existing_sites', $name);
+        $site->appendSettingValue(SITE_EXISTING_SITES, $name);
         $link = assemble_path($structureSites, $name);
         symlink($realDefault, $link);
         if (!is_link($link)) {
-          $this->error('Unable to create a symlink for site ['.$name.']');
+          $this->error(STRING_COULD_NOT_SYMLINK_SITE, array(
+            '!name' => $name,
+          ));
           return FALSE;
         }
       }
@@ -66,10 +111,10 @@ class DrupalSiteStandardSitePlugin extends GenericPlugin implements EventListene
     $context = (object) array(
       'extra_settings' => '',
     );
-    $this->events()->fireEvent('get-extra-settings', $context);
+    $this->events()->fireEvent(EVENT_GET_EXTRA_SETTINGS, $context);
     if (!empty($context->extra_settings)) {
       if (!file_append_contents($defaultSettingsFile, $context->extra_settings)) {
-        $this->error('Unable to write extra settings to settings.php');
+        $this->error(STRING_UNABLE_TO_APPEND_SETTINGS);
         return FALSE;
       }
     }
@@ -78,11 +123,11 @@ class DrupalSiteStandardSitePlugin extends GenericPlugin implements EventListene
     $settingsFile = assemble_path($realDefault, 'settings.php');
     copy($defaultSettingsFile, $settingsFile);
     if (!is_readable($settingsFile)) {
-      $this->error('Unable to create template-settings.php');
+      $this->error(STRING_UNABLE_TO_CREATE_SETTINGS_TEMPLATE);
       return FALSE;
     }
-    $site->setSetting('site_settings_file', $settingsFile);
-    $site->setSetting('site_default_settings', $defaultSettingsFile);
+    $site->setSetting(SITE_SETTINGS_FILE, $settingsFile);
+    $site->setSetting(SITE_SETTINGS_TEMPLATE, $defaultSettingsFile);
     $site->registerServerFile($defaultSettingsFile);
     $site->registerServerFile($settingsFile);
     
@@ -95,7 +140,7 @@ class DrupalSiteStandardSitePlugin extends GenericPlugin implements EventListene
       'site' => $site,
     );
     
-    $this->events()->fireEvent('standard-site-setup-continue', $context);
+    $this->events()->fireEvent(EVENT_CONTINUE_STANDARD_SITES, $context);
     
     return $context->success;
   }
