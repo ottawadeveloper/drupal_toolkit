@@ -32,6 +32,10 @@ class StringManager implements StringManagerInterface, EventDependency {
   
   public function getString($key, array $args = array(), $default = NULL) {
     if (!isset($this->stringCache[$key])) {
+      // This prevents recursion for string lookups - if the event that
+      // is fired requires the strings being looked up already, they'll
+      // fallback to the $default or the $key if $default is empty.
+      $this->stringCache[$key] = empty($default) ? $key : $default;
       $this->stringCache[$key] = $this->findString($key, $default);
     }
     $str = $this->stringCache[$key];
