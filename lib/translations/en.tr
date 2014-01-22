@@ -59,7 +59,7 @@ permissions.error.no-group = 'Unable to find a suitable group.'
 permissions.error.no-access =  'Unable to find suitable permissions.'
 permission.error.application = 'Unable to completely apply permissions, [!failures] failures reported.'
 
-server_interaction.error.could-not-init = 'Could not connect to remote server [!key]'
+server_interaction.error.could-not-init = 'Could not connect to remote server [!key].'
 
 standard_build.error.no-branch = 'This plugin requires that a branch be specified.'
 standard_build.error.no-codebase = 'Cannot write to codebases directory.'
@@ -70,7 +70,9 @@ standard_build.error.current-symlink-failure = 'Could not successfully create th
 standard_server_structure.error.already-exists = 'A site already exists in the required location for the server symlink.'
 standard_server_structure.error.could-not-create = 'Could not create server symlink.'
 
-standard_site.error.no-settings-file = 'Unable to locate settings.php file'
-standard_site.error.symlink-failure = 'Unable to create a site symlink'
-standard_site.error.unable-to-update-settings = 'Unable to update settings.php'
+standard_site.error.no-settings-file = 'Unable to locate settings.php file.'
+standard_site.error.redundant-symlink-failure = 'Unable to create a redundant site symlink.'
+standard_site.error.unable-to-update-settings = 'Unable to update settings.php.'
 standard_site.error.unable-to-create-settings-template = 'Unable to create settings.php tempalte file.'
+standard_site.error.could-not-read-sites-dir = 'Could not open sites dir for reading.'
+standard_site.error.unable-to-symlink = 'Unable to create a static site symlink.'

@@ -3,20 +3,94 @@
  * @file Defines the DrupalSiteStandardSitePlugin class.
  */
 
+/**
+ * Config setting to skip the redundant symlinks.
+ * 
+ * If set, symlinks for the default domains won't be created.
+ * 
+ * @ingroup config
+ */
 define('CONFIG_SKIP_REDUNDANT_SYMLINKS', 'skip-redundant-symlinks');
 
+/**
+ * Option to override CONFIG_SKIP_REDUNDANT_SYMLINKS.
+ * 
+ * @ingroup args
+ */
 define('OPTION_SKIP_REDUNDANT_SYMLINKS', 'skip-redundant-symlinks');
 
+/**
+ * String token for if the settings.php file was not found.
+ * 
+ * @ingroup strings
+ */
 define('STRING_COULD_NOT_FIND_SETTINGS_PHP', 'standard_site.error.no-settings-file');
-define('STRING_COULD_NOT_SYMLINK_SITE', 'standard_site.error.symlink-failure');
+
+/**
+ * String token for if a redundant symlink was not created (these are symlinks
+ * to the default site).
+ * 
+ * @ingroup strings
+ */
+define('STRING_COULD_NOT_SYMLINK_SITE', 'standard_site.error.redundant-symlink-failure');
+
+/**
+ * String token for if there is an error while updating the settings.php file.
+ * 
+ * @ingroup strings
+ */
 define('STRING_UNABLE_TO_APPEND_SETTINGS', 'standard_site.error.unable-to-update-settings');
+
+/**
+ * String token for if there is an error while saying the settings.php template.
+ * 
+ * @ingroup strings
+ */
 define('STRING_UNABLE_TO_CREATE_SETTINGS_TEMPLATE', 'standard_site.error.unable-to-create-settings-template');
 
+/**
+ * String token for if there is an error reading the sites directory.
+ * 
+ * @ingroup strings
+ */
+define('STRING_COULD_NOT_READ_SITES_DIR', 'standard_site.error.could-not-read-sites-dir');
+
+/**
+ * String token for if the site could not be symlinked into the build.
+ * 
+ * @ingroup strings
+ */
+define('STRING_UNABLE_TO_SYMLINK_SITE', 'standard_site.error.unable-to-symlink');
+
+/**
+ * Fired to retrieve extra settings from other plugins.
+ * 
+ * @ingroup events
+ */
 define('EVENT_GET_EXTRA_SETTINGS', 'get-extra-settings');
+
+/**
+ * Fired to allow other plugins to extend this process.
+ * 
+ * @ingroup events
+ */
 define('EVENT_CONTINUE_STANDARD_SITES', 'standard-site-setup-continue');
 
+/**
+ * Site setting for the location of the settings.php file.
+ * 
+ * @ingroup site_settings
+ */
 define('SITE_SETTINGS_FILE', 'settings-file');
+
+/**
+ * Site setting for the location of the settings.php template file.
+ * 
+ * @ingroup site_settings
+ */
 define('SITE_SETTINGS_TEMPLATE', 'settings-template');
+
+
 /**
  * Responsible for managing the basic sites configuration for Drupal sites.
  * 
@@ -145,12 +219,20 @@ class DrupalSiteStandardSitePlugin extends GenericPlugin implements EventListene
     return $context->success;
   }
   
-  
+  /**
+   * Symlinsk all the sites to the current build.
+   * 
+   * @param DrupalSite $site
+   *   The site to use.
+   * 
+   * @return boolean
+   *   TRUE if the sites could be symlinked, otherwise FALSE.
+   */
   private function symlinkAllSites(DrupalSite $site) {    
-    $staticSites = assemble_path($site->getBuildFolder(), $site->getSetting('structure_sites_dir'));
+    $staticSites = assemble_path($site->getBuildFolder(), $site->getSetting(SITE_SITES_DIR));
     $h = opendir();
     if (empty($h)) {
-      $this->error('Unable to open the static sites directory for reading ['.$staticSites.']');
+      $this->error(STRING_COULD_NOT_READ_SITES_DIR);
       return FALSE;
     }
     $targetBase = assemble_path($site->getBuildFolder(), $site->getSetting('build_current_codebase_dir'), 'sites');
@@ -162,7 +244,7 @@ class DrupalSiteStandardSitePlugin extends GenericPlugin implements EventListene
           if (!is_link($linkPath)) {
             symlink($full, $linkPath);
             if (!is_link($linkPath)) {
-              $this->error('Unable to symlink ['.$linkPath.'] to ['.$full.']');
+              $this->error(STRING_UNABLE_TO_SYMLINK_SITE);
               return FALSE;
             }
           }
