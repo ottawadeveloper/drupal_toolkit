@@ -90,7 +90,6 @@ define('SITE_SETTINGS_FILE', 'settings-file');
  */
 define('SITE_SETTINGS_TEMPLATE', 'settings-template');
 
-
 /**
  * Responsible for managing the basic sites configuration for Drupal sites.
  * 

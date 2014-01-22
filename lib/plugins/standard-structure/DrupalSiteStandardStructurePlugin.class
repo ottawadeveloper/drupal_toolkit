@@ -1,48 +1,54 @@
 <?php
+/**
+ * @file Defines the DrupalSiteStandardStructurePlugin class.
+ */
 
+/**
+ * Site setting for the codebase directory.
+ * 
+ * @ingroup site_settings
+ */
 define('SITE_CODEBASE_DIR', 'structure_codebases_dir');
+
+/**
+ * Site setting for the sites directory.
+ * 
+ * @ingroup site_settings
+ */
 define('SITE_SITES_DIR', 'structure_sites_dir');
 
+/**
+ * Fired to allow plugins to extend this process without overridding it.
+ * 
+ * @ingroup events
+ */
+define('EVENT_CONTINUE_STANDARD_STRUCTURE', 'standard-structure-continue');
+
+/**
+ * Fired to allow plugins to register their own directories with the structure.
+ * 
+ * @ingroup events
+ */
+define('EVENT_DISCOVER_STRUCTURE_DIRS', 'discover-structure-dirs');
+
+/**
+ * String token for if there is a failure to create a directory.
+ * 
+ * @ingroup strings
+ */
+define('STRING_STRUCTURE_DIR_FAILURE', 'standard_structure.error-could-not-create-dir');
+
+
+/**
+ * Responsible for setting up the structure of a build.
+ */
 class DrupalSiteStandardStructurePlugin extends GenericPlugin implements EventListener {
   
   public function initialize() {
-    $this->events()->registerListener(array('site-build-structure'), $this);
-  }
-  
-  private function buildSite(DrupalSite $site) {
-    // @todo we should generate these through a hook.
-    $dirs = array(
-      '/',
-      'codebases',
-      'backups',
-      'metrics',
-      'restored',
-      'reverted',
-      'sites',
-      'test-output',
-    );
-    $root = $site->getBuildFolder();
-    foreach ($dirs as $dir) {
-      $full = assemble_path($root, $dir);
-      if (!is_dir($full)) {
-        mkdir($full);
-        if (!is_dir($full)) {
-          $this->error('Unable to create directory ['.$full.']');
-          return FALSE;
-        }
-      }
-    }
-    $site->setSetting('structure_codebases_dir', 'codebases');
-    $site->setSetting('structure_sites_dir', 'sites');
-    
-    $context = (object) array(
-      'success' => TRUE,
-      'site' => $site,
-    );
-    
-    $this->events()->fireEvent('standard-structure-continue', $context);
-    
-    return $context->success;
+    $this->events()->registerListener(array(
+      EVENT_SITE_BUILD_STRUCTURE,
+      EVENT_DISCOVER_STRUCTURE_DIRS,
+    ), $this);
   }
   
   public function requiredPlugins() {
@@ -51,11 +57,74 @@ class DrupalSiteStandardStructurePlugin extends GenericPlugin implements EventLi
   
   public function captureEvent(&$context, $type) {
     switch ($type) {
-      case 'site-build-structure':
+      case EVENT_SITE_BUILD_STRUCTURE:
         $context->success = $this->buildSite($context->site);
         $context->stopPropagation = TRUE;
         break;
+      case EVENT_DISCOVER_STRUCTURE_DIRS:
+        $context->dirs = array_merge($context->dirs, $this->dirDiscovery());
+        break;
     }
+  }
+  
+  /**
+   * Provides a list of default directories for sites.
+   * 
+   * @return array
+   *   An array of folders
+   */
+  private function dirDiscovery() {
+    return array(
+      'backups',
+      'restored',
+      'reverted',
+    );
+  }
+  
+  /**
+   * Responsible for creating the site structure.
+   * 
+   * @param DrupalSite $site
+   *   The site to build.
+   * 
+   * @return boolean
+   *   TRUE if successful, otherwise FALSE.
+   */
+  private function buildSite(DrupalSite $site) {
+    $context = (object) array(
+      'dirs' => array(
+        '/',
+        'codebases',
+        'sites',
+      ),
+      'codebaseDir' => 'codebases',
+      'sitesDir' => 'sites',
+    );
+    $this->events()->fireEvent(EVENT_DISCOVER_STRUCTURE_DIRS, $context);
+    $root = $site->getBuildFolder();
+    foreach ($context->dirs as $dir) {
+      $full = assemble_path($root, $dir);
+      if (!is_dir($full)) {
+        mkdir($full);
+        if (!is_dir($full)) {
+          $this->error(STRING_STRUCTURE_DIR_FAILURE, array(
+            '!dir' => $full,
+          ));
+          return FALSE;
+        }
+      }
+    }
+    $site->setSetting(SITE_CODEBASE_DIR, $context['codebaseDir']);
+    $site->setSetting(SITE_SITES_DIR, $context['sitesDir']);
+    
+    $context = (object) array(
+      'success' => TRUE,
+      'site' => $site,
+    );
+    
+    $this->events()->fireEvent(EVENT_CONTINUE_STANDARD_STRUCTURE, $context);
+    
+    return $context->success;
   }
   
 }

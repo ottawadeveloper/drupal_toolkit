@@ -76,3 +76,5 @@ standard_site.error.unable-to-update-settings = 'Unable to update settings.php.'
 standard_site.error.unable-to-create-settings-template = 'Unable to create settings.php tempalte file.'
 standard_site.error.could-not-read-sites-dir = 'Could not open sites dir for reading.'
 standard_site.error.unable-to-symlink = 'Unable to create a static site symlink.'
+
+standard_structure.error-could-not-create-dir = 'Could not create directory [!dir].'
