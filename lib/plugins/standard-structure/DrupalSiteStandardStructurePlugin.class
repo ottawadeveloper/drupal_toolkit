@@ -114,8 +114,8 @@ class DrupalSiteStandardStructurePlugin extends GenericPlugin implements EventLi
         }
       }
     }
-    $site->setSetting(SITE_CODEBASE_DIR, $context['codebaseDir']);
-    $site->setSetting(SITE_SITES_DIR, $context['sitesDir']);
+    $site->setSetting(SITE_CODEBASE_DIR, $context->codebaseDir);
+    $site->setSetting(SITE_SITES_DIR, $context->sitesDir);
     
     $context = (object) array(
       'success' => TRUE,

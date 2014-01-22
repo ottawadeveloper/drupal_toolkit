@@ -226,7 +226,7 @@ class DrupalSite {
    */
   public function replaceTokens($in) {
     foreach ($this->placeholders as $k => $v) {
-      $in = str_replace('@@' . strtoupper($k), $v);
+      $in = str_replace('@@' . strtoupper($k), $v, $in);
     }
     return $in;
   }

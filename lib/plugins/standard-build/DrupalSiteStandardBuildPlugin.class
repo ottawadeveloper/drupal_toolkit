@@ -174,7 +174,7 @@ class DrupalSiteStandardBuildPlugin extends GenericPlugin implements EventListen
    */
   private function buildSite(DrupalSite $site, $buildID) {
     $config = $this->getConfig(array(
-      CONFIG_REPO_ROOT,
+      CONFIG_GIT_REPO_ROOT,
       CONFIG_DRUSH_MAKE_REPO,
       CONFIG_DRUSH_MAKE_FILE,
     ), array(
@@ -197,7 +197,7 @@ class DrupalSiteStandardBuildPlugin extends GenericPlugin implements EventListen
       $this->error(STRING_SITE_INVALID_CODEBASE);
       return FALSE;
     }
-    if (!git_clone($config[CONFIG_REPO_ROOT], $config[CONFIG_DRUSH_MAKE_REPO], $newCodebase, $branch)) {
+    if (!git_clone($config[CONFIG_GIT_REPO_ROOT], $config[CONFIG_DRUSH_MAKE_REPO], $newCodebase, $branch)) {
       $this->error(STRING_SITE_NO_CLONE);
       return FALSE;
     }
