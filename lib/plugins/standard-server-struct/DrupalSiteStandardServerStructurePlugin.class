@@ -1,47 +1,116 @@
 <?php
+/**
+ * @file Defines the DrupalSiteStandardServerStructurePlugin class.
+ */
 
+/**
+ * Config key for the server sites directory.
+ * 
+ * @ingroup config
+ */
+define('CONFIG_SERVER_SITES_DIR', 'server-sites-dir');
+
+/**
+ * Site token for the document root.
+ * 
+ * @ingroup site_tokens
+ */
+define('SITE_TOKEN_DOCROOT', 'SITE_DOCROOT');
+
+/**
+ * Site setting for the document root.
+ * 
+ * @ingroup site_settings
+ */
+define('SITE_SETTING_DOCROOT', 'server-doc-root');
+
+/**
+ * String token for if the site structure already exists.
+ * 
+ * @ingroup strings
+ */
+define('STRING_SERVER_STRUCTURE_ALREADY_EXISTS', 'standard_server_structure.error.already-exists');
+
+/**
+ * String token for if the site structure could not be created.
+ * 
+ * @ingroup strings
+ */
+define('STRING_SERVER_STRUCTURE_CREATE_FAILURE', 'standard_server_structure.error.could-not-create');
+
+/**
+ * Responsible for setting up some special things for the server.
+ * 
+ * We keep a folder of symlinks to the current builds of each site, for 
+ * convienence. This is usually in the webroot of the server. The builds are
+ * often located in a hidden folder.
+ */
 class DrupalSiteStandardServerStructurePlugin extends GenericPlugin implements EventListener {
   
   public function initialize() {
-    $this->events()->registerListener(array('site-build-server-init-struct'), $this);
+    $this->events()->registerListener(array(
+      EVENT_SITE_BUILD_SERVER_STRUCTURE
+    ), $this);
     $this->config()->extendDefaultConfiguration(array(
-      'server-sites-dir' => '',
+      CONFIG_SERVER_SITES_DIR => '',
     ));
   }
   
+  /**
+   * Handles configuration for local sites.
+   * 
+   * @param DrupalSite $site
+   *   A local Drupal site.
+   * 
+   * @return boolean
+   *   TRUE if the site was configured correctly, otherwise FALSE.
+   */
   private function initializeLocalStructure(DrupalSite $site) {
-    $site->setSetting('server_doc_root', assemble_path($site->getBuildFolder(), 'current'));
-    $site->setToken('SITE_DOCROOT', $site->getSetting('server_doc_root'));
+    $site->setSetting(SITE_SETTING_DOCROOT, assemble_path($site->getBuildFolder(), 'current'));
+    $site->setToken(SITE_TOKEN_DOCROOT, $site->getSetting(SITE_SETTING_DOCROOT));
     return TRUE;
   }
   
+  /**
+   * Handles configuration for sites.
+   * 
+   * Local sites are delegated to initializeLocalStructure().
+   * 
+   * @param DrupalSite $site
+   *   The site to configure.
+   * 
+   * @return boolean
+   *   TRUE if the site was configured correctly, otherwise FALSE.
+   */
   private function initializeServerStructure(DrupalSite $site) {
-    if ($site->getSetting('is_local')) {
+    if ($site->getSetting(SITE_IS_LOCAL)) {
       return $this->initializeLocalStructure($site);
     }
-    $serverDir = $this->config()->getConfig('server-sites-dir');
-    if (empty($serverDir)) {
-      $this->error('Plugin requires the configuration option [server-sites-dir]');
+    $config = $this->getConfig(array(
+      CONFIG_SERVER_SITES_DIR
+    ));
+    if (empty($config)) {
       return FALSE;
     }
+    $serverDir = $config[CONFIG_SERVER_SITES_DIR];
     $link = assemble_path($serverDir, $site->getBuildName());
     if (is_link($link)) {
-      $this->error('A link for a site already exists at ['.$link.']');
+      $this->error(STRING_SERVER_STRUCTURE_ALREADY_EXISTS);
       return FALSE;
     }
     symlink(assemble_path($site->getBuildFolder(), 'current'), $link);
     if (!is_link($link)) {
-      $this->error('Unable to create symlink for site');
+      $this->error(STRING_SERVER_STRUCTURE_CREATE_FAILURE);
       return FALSE;
     }
-    $site->setSetting('server_doc_root', $link);
-    $site->setToken('SITE_DOCROOT', $site->getSetting('server_doc_root'));
+    $site->setSetting(SITE_SETTING_DOCROOT, $link);
+    $site->setToken(SITE_TOKEN_DOCROOT, $site->getSetting(SITE_SETTING_DOCROOT));
     return TRUE;
   }
   
   public function captureEvent(&$context, $type) {
     switch ($type) {
-      case 'site-build-server-init-struct':
+      case EVENT_SITE_BUILD_SERVER_STRUCTURE:
         $context->success = $this->initializeServerStructure($context->site);
         $context->stopPropagation(TRUE);
         break;
