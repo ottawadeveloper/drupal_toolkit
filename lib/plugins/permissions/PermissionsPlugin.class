@@ -209,7 +209,7 @@ class PermissionsPlugin extends GenericPlugin implements EventListener {
   
   public function initialize() {
     $this->config()->extendDefaultConfiguration(array(
-      CONFIG_PERMISSSIONS_IGNORE_ALL => FALSE,
+      CONFIG_PERMISSIONS_IGNORE_ALL => FALSE,
       CONFIG_PERMISSIONS_DEFAULT_OWNER => NULL,
       CONFIG_PERMISSIONS_DEFAULT_GROUP => NULL,
       CONFIG_PERMISSIONS_DEFAULT_ACCESS => '755',

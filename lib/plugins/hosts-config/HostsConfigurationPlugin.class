@@ -41,7 +41,7 @@ define('SERVER_TYPE_MANAGED_HOST', 'managed-host');
  * 
  * @ingroup config
  */
-define('CONFIG_DISABLE_LOCAL_HTTP', 'si-disable-local-managed-host');
+define('CONFIG_DISABLE_LOCAL_MANAGED_HOST', 'si-disable-local-managed-host');
 
 /**
  * Fired when a managed host needs to be cast into a HostFileManagerInterface
