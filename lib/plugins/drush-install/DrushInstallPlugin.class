@@ -95,14 +95,65 @@ define('OPTION_INSTALL_USER', 'install-user');
  * @ingroup args
  */
 define('OPTION_INSTALL_PASSWORD', 'install-password');
+
+/**
+ * Command line long option to add additional form values to the installer. 
+ * They should be defined separated by commas, without spaces.
+ * 
+ * @ingroup args
+ */
 define('OPTION_INSTALL_SETTINGS', 'install-settings');
+
+/**
+ * Command line long option to specify additional flags to the installer.
+ * They should be defined separated by commas, without spaces and without the
+ * prefixed '--'.
+ * 
+ * @ingroup args
+ */
 define('OPTION_INSTALL_OPTIONS', 'install-options');
+
+/**
+ * Command line long option to override the site email address.
+ * 
+ * @ingroup args
+ */
 define('OPTION_INSTALL_SITE_EMAIL', 'site-email');
+
+/**
+ * Command line long option to override the site name.
+ * 
+ * @ingroup args
+ */
 define('OPTION_INSTALL_SITE_NAME', 'site-name');
+
+/**
+ * Command line long option to specify additional modules to install. Module
+ * names should be separated by commas, without spaces.
+ * 
+ * @ingroup args
+ */
 define('OPTION_INSTALL_MODULES', 'install-modules');
 
+/**
+ * String token for the error message if no local alias was provided.
+ * 
+ * @ingroup strings
+ */
 define('STRING_NO_LOCAL_ALIAS', 'drush_install.error.no-local-alias');
+
+/**
+ * String token for if there was an error while running the Drush install.
+ * 
+ * @ingroup strings
+ */
 define('STRING_COULD_NOT_INSTALL', 'drush_install.error.could-not-install');
+
+/**
+ * String token for if there was an error while installing modules.
+ * 
+ * @ingroup strings
+ */
 define('STRING_COULD_NOT_INSTALL_MODULES', 'drush_install.error.could-not-install-modules');
 
 /**
