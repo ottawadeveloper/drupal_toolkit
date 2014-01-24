@@ -61,7 +61,7 @@ define('SERVER_SETTING_DRUSH_FILE_TEMPLATE', 'drush-file-template');
  * This should be a path to a file that is a template for the configuration.
  * 
  * @see DrupalSite::replaceTokens()
- * @ingroup server_settings.
+ * @ingroup server_settings
  */
 define('SERVER_SETTING_DRUSH_CONFIG_TEMPLATE', 'drush-config-template-file');
 
@@ -71,6 +71,13 @@ define('SERVER_SETTING_DRUSH_CONFIG_TEMPLATE', 'drush-config-template-file');
  * @ingroup strings
  */
 define('STRING_COULD_NOT_WRITE_DRUSH_ALIAS', 'drush_config.error.no-alias-file');
+
+/**
+ * Site setting for the drush alias.
+ * 
+ * @ingroup site_settings
+ */
+define('SITE_DRUSH_ALIAS', 'drush-alias');
 
 /**
  * Takes responsibility for setting up the drush alias.
@@ -114,8 +121,8 @@ class DrushConfigurationPlugin extends GenericPlugin implements EventListener {
     }
     $context = (object) array(
       'servers' => array(),
-      'type' => SERVER_TYPE_DRUSH,
-      'skip-local' => extra_empty($this->config()->getConfig(CONFIG_DRUSH_ALIAS_CREATE_FOR_LOCAL)),
+      'serverType' => SERVER_TYPE_DRUSH,
+      'skipLocal' => extra_empty($this->config()->getConfig(CONFIG_DRUSH_ALIAS_CREATE_FOR_LOCAL)),
     );
     $this->events()->fireEvent(EVENT_FIND_SERVERS, $context);
     $defaultAlias = $this->defaultDrushTemplate();
@@ -125,6 +132,9 @@ class DrushConfigurationPlugin extends GenericPlugin implements EventListener {
           return FALSE;
         }
       }
+    }
+    if (!$context->skipLocal) {
+      $site->setSetting(SITE_DRUSH_ALIAS, $site->getBuildName());
     }
     return TRUE;
   }

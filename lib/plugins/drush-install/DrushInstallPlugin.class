@@ -1,0 +1,250 @@
+<?php
+/**
+ * @file Defines the DrushInstallPlugin class.
+ */
+
+/**
+ * Config key for the default install profile.
+ * 
+ * @ingroup config
+ */
+define('CONFIG_INSTALL_PROFILE', 'install-profile');
+
+/**
+ * Config key for the default user 1 email address.
+ * 
+ * @ingroup config
+ */
+define('CONFIG_INSTALL_DEFAULT_EMAIL', 'install-email');
+
+/**
+ * Config key for the default user 1 user name.
+ * 
+ * @ingroup config
+ */
+define('CONFIG_INSTALL_DEFAULT_USER', 'install-user');
+
+/**
+ * Config key for the default user 1 password.
+ * 
+ * @ingroup config
+ */
+define('CONFIG_INSTALL_DEFAULT_PASSWORD', 'install-password');
+
+/**
+ * Config key for an array of extra settings to be passed to the site-install
+ * command. These can be used for extra form arguments.
+ * 
+ * @ingroup config
+ */
+define('CONFIG_INSTALL_EXTRAS', 'install-settings');
+
+/**
+ * Config key for the site email address.
+ * 
+ * @ingroup config
+ */
+define('CONFIG_INSTALL_SITE_EMAIL', 'install-site-email');
+
+/**
+ * Config key for the site name.
+ * 
+ * @ingroup config
+ */
+define('CONFIG_INSTALL_SITE_NAME', 'install-site-name');
+
+/**
+ * Config key for an array of site options. These are flags passed to the
+ * site-install command and should not be prefixed with "--".
+ * 
+ * @ingroup config
+ */
+define('CONFIG_INSTALL_SITE_OPTIONS', 'install-site-options');
+
+/**
+ * Config key for an array of modules to install.
+ * 
+ * @ingroup config
+ */
+define('CONFIG_INSTALL_MODULES', 'install-modules');
+
+/**
+ * Command line long option to override the install profile.
+ * 
+ * @ingroup args
+ */
+define('OPTION_INSTALL_PROFILE', 'install-profile');
+
+/**
+ * Command line long option to override the user 1 email address.
+ * 
+ * @ingroup args
+ */
+define('OPTION_INSTALL_EMAIL', 'install-email');
+
+/**
+ * Command line long option to override the user 1 user name.
+ * 
+ * @ingroup args
+ */
+define('OPTION_INSTALL_USER', 'install-user');
+
+/**
+ * Command line long option to override the user 1 password.
+ * 
+ * @ingroup args
+ */
+define('OPTION_INSTALL_PASSWORD', 'install-password');
+define('OPTION_INSTALL_SETTINGS', 'install-settings');
+define('OPTION_INSTALL_OPTIONS', 'install-options');
+define('OPTION_INSTALL_SITE_EMAIL', 'site-email');
+define('OPTION_INSTALL_SITE_NAME', 'site-name');
+define('OPTION_INSTALL_MODULES', 'install-modules');
+
+define('STRING_NO_LOCAL_ALIAS', 'drush_install.error.no-local-alias');
+define('STRING_COULD_NOT_INSTALL', 'drush_install.error.could-not-install');
+define('STRING_COULD_NOT_INSTALL_MODULES', 'drush_install.error.could-not-install-modules');
+
+/**
+ * Takes ownership of the install task using drush si.
+ */
+class DrushInstallPlugin extends GenericPlugin implements EventListener {
+  
+  public function initialize() {
+    $this->events()->registerListener(array(
+      EVENT_INSTALL_TASK,
+    ), $this);
+    $this->config()->extendDefaultConfiguration(array(
+      CONFIG_INSTALL_PROFILE => 'standard',
+      CONFIG_INSTALL_DEFAULT_EMAIL => '',
+      CONFIG_INSTALL_DEFAULT_USER => '',
+      CONFIG_INSTALL_DEFAULT_PASSWORD => '',
+      CONFIG_INSTALL_EXTRAS => array(),
+      CONFIG_INSTALL_SITE_NAME => '',
+      CONFIG_INSTALL_SITE_EMAIL => '',
+      CONFIG_INSTALL_SITE_OPTIONS => array(),
+      CONFIG_INSTALL_MODULES => array(),
+    ));
+    $this->config()->extendFromOption(CONFIG_INSTALL_PROFILE, OPTION_INSTALL_PROFILE);
+    $this->config()->extendFromOption(CONFIG_INSTALL_DEFAULT_EMAIL, OPTION_INSTALL_EMAIL);
+    $this->config()->extendFromOption(CONFIG_INSTALL_DEFAULT_USER, OPTION_INSTALL_USER);
+    $this->config()->extendFromOption(CONFIG_INSTALL_DEFAULT_PASSWORD, OPTION_INSTALL_PASSWORD);
+    $this->config()->extendFromOption(CONFIG_INSTALL_EXTRAS, OPTION_INSTALL_SETTINGS, NULL, TRUE);
+    $this->config()->extendFromOption(CONFIG_INSTALL_SITE_EMAIL, OPTION_INSTALL_SITE_EMAIL);
+    $this->config()->extendFromOption(CONFIG_INSTALL_SITE_NAME, OPTION_INSTALL_SITE_NAME);
+    $this->config()->extendFromOption(CONFIG_INSTALL_SITE_OPTIONS, OPTION_INSTALL_OPTIONS, NULL, TRUE);
+    $this->config()->extendFromOption(CONFIG_INSTALL_MODULES, OPTION_INSTALL_MODULES, NULL, TRUE);
+  }
+  
+  public function requiredPlugins() {
+    return array('DrupalSitePlugin', 'DatabaseConfigurationPlugin', 'DrushConfigurationPlugin');
+  }
+  
+  /**
+   * Responsible for the site install command.
+   * 
+   * @param DrupalSite $site
+   *   The site to install.
+   * 
+   * @return boolean
+   *   TRUE if the site was installed successfully, otherwise FALSE.
+   */
+  private function installSite(DrupalSite $site) {
+    $drushAlias = $site->getSetting(SITE_DRUSH_ALIAS);
+    if (empty($drushAlias)) {
+      $this->error(STRING_NO_LOCAL_ALIAS);
+      return FALSE;
+    }
+    if (!$this->installDrupal($drushAlias)) {
+      $this->error(STRING_COULD_NOT_INSTALL);
+      return FALSE;
+    }
+    if (!$this->installModules($drushAlias)) {
+      $this->error(STRING_COULD_NOT_INSTALL_MODULES);
+      return FALSE;
+    }
+    return TRUE;
+  }
+  
+  /**
+   * Installs the modules as defined.
+   * 
+   * @param string $alias
+   *   The alias to install to.
+   * 
+   * @return boolean
+   *   TRUE if the modules were all installed, otherwise FALSE.
+   */
+  private function installModules($alias) {
+    $modules = $this->config()->getConfig(CONFIG_INSTALL_MODULES);
+    if (!extra_empty($modules)) {
+      return drush_install_modules($modules, $alias);
+    }
+    return TRUE;
+  }
+  
+  /**
+   * Installs Drupal.
+   * 
+   * @param string $alias
+   *   The alias to install to.
+   * 
+   * @return boolean
+   *   TRUE if Drupal was installed, otherwise FALSE.
+   */
+  private function installDrupal($alias) {
+    $profile = $this->config()->getConfig(CONFIG_INSTALL_PROFILE);
+    if (empty($profile)) {
+      return FALSE;
+    }
+    $config = $this->getConfig(array(), array(
+      '!admin-email' => CONFIG_INSTALL_DEFAULT_EMAIL,
+      '!admin-user' => CONFIG_INSTALL_DEFAULT_PASSWORD,
+      '!admin-password' => CONFIG_INSTALL_DEFAULT_PASSWORD,
+      '!site-name' => CONFIG_INSTALL_SITE_NAME,
+      '!site-email' => CONFIG_INSTALL_SITE_EMAIL,
+    ));
+    if (empty($config)) {
+      return FALSE;
+    }
+    $extra = array();
+    if (!empty($config['!admin-email'])) {
+      $extra[] = ' --account-mail=!admin-email';
+    }
+    if (!empty($config['!admin-user'])) {
+      $extra[] = ' --account-name=!admin-user';
+    }
+    if (!empty($config['!admin-password'])) {
+      $extra[] = ' --account-pass=!admin-password';
+    }
+    if (!empty($config['!site-name'])) {
+      $extra[] = ' --site-name=!site-name';
+    }
+    if (!empty($config['!site-mail'])) {
+      $extra[] = ' --site-mail=!site-mail';
+    }
+    $options = $this->config()->getConfig(CONFIG_INSTALL_SITE_OPTIONS);
+    foreach ($options as $option) {
+      if (!extra_empty($option)) {
+        $extra[] = ' --' . $option;
+      }
+    }
+    $args = $this->config()->getConfig(CONFIG_INSTALL_EXTRAS);
+    foreach ($args as $arg) {
+      if (!extra_empty($arg)) {
+        $extra[] = ' ' . $arg;
+      }
+    }
+    return drush_site_install($profile, $alias, $extra, $config);
+  }
+  
+  public function captureEvent(&$context, $type) {
+    switch ($type) {
+      case EVENT_INSTALL_TASK:
+        $context->success = $this->installSite($context->site);
+        $context->stopPropagation = TRUE;
+        break;
+    }
+  }
+  
+}

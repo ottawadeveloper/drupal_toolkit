@@ -250,7 +250,7 @@ class DatabaseConfigurationPlugin extends GenericPlugin implements EventListener
     if (empty($host)) {
       $host = NULL;
     }
-    $this->events()->fireEvent(EVENT_FIND_DB_SERVERS);
+    $this->events()->fireEvent(EVENT_FIND_DB_SERVERS, $context);
     $username = $this->args()->getOption(ARG_DB_USER);
     if (empty($username)) {
       $username = $site->replaceTokens($this->config()->getConfig(CONFIG_SITE_DB_USER_PATTERN));

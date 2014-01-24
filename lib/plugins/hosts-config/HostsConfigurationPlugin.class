@@ -148,7 +148,7 @@ class HostsConfigurationPlugin extends GenericPlugin implements EventListener {
     $map = array();
     foreach ($site->getAllURLs() as $url) {
       $pieces = parse_url($url);
-      if (!empty($pieces)) {
+      if (!empty($pieces['host'])) {
         $url = $pieces['host'];
       }
       $map[$url] = $config['ip'];
@@ -177,14 +177,14 @@ class HostsConfigurationPlugin extends GenericPlugin implements EventListener {
   private function findManagedHostServers() {
     $defaultType = $this->config()->getConfig(CONFIG_MANAGED_HOSTS_DEFAULT_TYPE);
     $context = (object) array(
-      'type' => SERVER_TYPE_MANAGED_HOST,
-      'use_local' => TRUE,
+      'serverType' => SERVER_TYPE_MANAGED_HOST,
+      'skipLocal' => FALSE,
       'servers' => array(),
     );
     if (extra_empty($this->config()->getConfig(CONFIG_MANAGED_HOSTS_USE_LOCAL))) {
       $context->use_local = FALSE;
     }
-    $this->events()->fire(EVENT_FIND_SERVERS, $context);    
+    $this->events()->fireEvent(EVENT_FIND_SERVERS, $context);    
     $servers = array();
     foreach ($context->servers as $server) {
       if ($server instanceof PhysicalServerInterface) {
@@ -218,7 +218,7 @@ class HostsConfigurationPlugin extends GenericPlugin implements EventListener {
       'type' => $type,
       'managedHostServer' => NULL,
     );
-    $this->events()->fire(EVENT_CAST_MANAGED_HOST_SERVER, $context);
+    $this->events()->fireEvent(EVENT_CAST_MANAGED_HOST_SERVER, $context);
     return $context->managedHostServer;
   }
   

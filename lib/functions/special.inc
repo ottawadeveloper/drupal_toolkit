@@ -4,38 +4,6 @@
  */
 
 /**
- * Executes a drush make.
- * 
- * @param string $makeFile
- *   The make file to execute.
- * @param array $options
- *   An array of additional arguments. Should be simply the flag name without
- *   the "--" (only works with long-format options). Values should be parameterized
- *   and passed through $args.
- * @param array $args
- *   Parameterized arguments in $options.
- * 
- * @return boolean
- *   TRUE when the drush make is completed (blocks until then), otherwise FALSE.
- */
-function drush_make($makeFile, array $options = array(), array $args = array()) {
-  $makeFile = realpath($makeFile);
-  if (empty($makeFile)) {
-    return FALSE;
-  }
-  chdir(dirname($makeFile));
-  $command = 'drush make -y ';
-  foreach ($options as $option) {
-    $command .= '--' . $option . ' ';
-  }
-  $command .= '!makefile';
-  execute_system_command($command, array(
-    '!makefile' => $makeFile
-  ) + $args);
-  return file_exists(assemble_path(dirname($makeFile), 'index.php'));
-}
-
-/**
  * Clones a git repository.
  * 
  * @param string $server

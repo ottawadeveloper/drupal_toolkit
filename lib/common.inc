@@ -357,6 +357,7 @@ $core_plugins = array(
   'flog' => 'FileLogPlugin',
   'drupal-site' => 'DrupalSitePlugin',
   'drupal-site-build' => 'DrupalSiteBuildPlugin',
+  'drupal-site-install' => 'DrupalSiteInstallPlugin',
   'standard-config' => 'DrupalSiteStandardConfigPlugin',
   'standard-build' => 'DrupalSiteStandardBuildPlugin',
   'standard-structure' => 'DrupalSiteStandardStructurePlugin',
@@ -369,6 +370,7 @@ $core_plugins = array(
   'db-config' => 'DatabaseConfigurationPlugin',
   'drush-config' => 'DrushConfigurationPlugin',
   'permissions' => 'PermissionsPlugin',
+  'drush-install' => 'DrushInstallPlugin',
 );
 
 /*

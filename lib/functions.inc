@@ -55,7 +55,8 @@ function str_replace_all($str, $replacements, $escape_cb = NULL) {
 }
 
 /**
- * Extended empty() check that doesn't require a variable. 
+ * Extended empty() check that doesn't require a variable. Also trims the
+ * extra value and, by default, reports the string value "0" as empty.
  * 
  * @param mixed $val
  *   The variable to check if tis empty.
@@ -66,10 +67,21 @@ function str_replace_all($str, $replacements, $escape_cb = NULL) {
  *   TRUE if the string is empty, otherwise FALSE.
  */
 function extra_empty($val, $no_zero_string = TRUE) {
+  if (is_string($val)) {
+    $val = trim($val);
+  }
   if (empty($val)) {
     return TRUE;
   }
   if ($no_zero_string && $val === "0") {
+    return TRUE;
+  }
+  if (is_array($val)) {
+    foreach ($val as $key => $value) {
+      if (!extra_empty($value)) {
+        return FALSE;
+      }
+    }
     return TRUE;
   }
   return FALSE;
@@ -141,3 +153,4 @@ function array_extend(array &$base, array $extension) {
 // Additional includes.
 require "functions/system.inc";
 require "functions/special.inc";
+require "functions/drush.inc";

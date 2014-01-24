@@ -1,0 +1,89 @@
+<?php
+/**
+ * @file Defines the SiteInstallCommand class.
+ */
+
+/**
+ * Fired before the install process begins.
+ * 
+ * @ingroup events
+ */
+define('EVENT_INSTALL_START', 'drupal-install-start');
+
+/**
+ * Fired after the install process is done.
+ * 
+ * @ingroup events
+ */
+define('EVENT_INSTALL_DONE', 'drupal-install-done');
+
+/**
+ * Fired to install the site, which one plugin must take responsibility for
+ * for the task to succeed.
+ * 
+ * @ingroup events
+ */
+define('EVENT_INSTALL_TASK', 'drupal-install-task');
+
+/**
+ * Fired for extra install tasks.
+ * 
+ * @ingroup events
+ */
+define('EVENT_INSTALL_EXTRAS', 'drupal-install-extras');
+
+/**
+ * String token for the generic error message should the install fail.
+ * 
+ * @ingroup strings
+ */
+define('STRING_INSTALL_ERROR', 'drupal_site_install.error.install-error');
+
+/**
+ * Responsible for installing a Drupal site.
+ */
+class SiteInstallCommand extends GenericSiteCommand {
+  
+  public function verifyRequirements() {
+    if (!$this->requireSite()) {
+      return FALSE;
+    }
+    if (!$this->requireCommand('drush')) {
+      return FALSE;
+    }
+    return parent::verifyRequirements();
+  }
+  
+  public function executeCommand() {
+    $site = $this->getSite();
+    $site->loadSettings();
+    $baseContext = (object) array(
+      'site' => $site,
+    );
+    $this->events()->fireEvent(EVENT_INSTALL_START, $baseContext);
+    
+    $taskContext = (object) array(
+      'site' => $baseContext->site,
+      'success' => FALSE,
+    );
+    
+    $this->events()->fireEvent(EVENT_INSTALL_TASK, $taskContext);
+    if (!$taskContext->success) {
+      $this->error(STRING_INSTALL_ERROR);
+      exit(1);
+    }
+    
+    $extraContext = (object) array(
+      'site' => $baseContext->site,
+      'success' => TRUE,
+    );
+    $this->events()->fireEvent(EVENT_INSTALL_EXTRAS, $extraContext);
+    if (!$extraContext->success) {
+      $this->error(STRING_INSTALL_ERROR);
+      exit(1);
+    }
+    
+    $this->events()->fireEvent(EVENT_INSTALL_DONE, $baseContext);
+  }
+  
+}

@@ -212,7 +212,7 @@ class GatewayConfigurationPlugin extends GenericPlugin implements EventListener 
       return array();
     }
     $context = (object) array(
-      'type' => SERVER_TYPE_GATEWAY,
+      'serverType' => SERVER_TYPE_GATEWAY,
       'skipLocal' => !$context['use_local'],
       'servers' => array(),
     );

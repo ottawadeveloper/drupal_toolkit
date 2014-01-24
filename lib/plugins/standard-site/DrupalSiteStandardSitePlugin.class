@@ -234,7 +234,7 @@ class DrupalSiteStandardSitePlugin extends GenericPlugin implements EventListene
       $this->error(STRING_COULD_NOT_READ_SITES_DIR);
       return FALSE;
     }
-    $targetBase = assemble_path($site->getBuildFolder(), $site->getSetting('build_current_codebase_dir'), 'sites');
+    $targetBase = assemble_path($site->getSetting(SITE_SETTING_CURRENT_BUILD), 'sites');
     while (($dir = readdir($h)) !== FALSE) {
       if ($dir != '.' && $dir != '..') {
         $full = assemble_path($staticSites, $dir);

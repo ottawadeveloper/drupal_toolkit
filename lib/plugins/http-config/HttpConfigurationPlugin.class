@@ -303,8 +303,8 @@ class HttpConfigurationPlugin extends GenericPlugin implements EventListener {
       return array();
     }
     $context = (object) array(
-      'type' => SERVER_TYPE_HTTP,
-      'skipLocal' => !$context['use_local'],
+      'serverType' => SERVER_TYPE_HTTP,
+      'skipLocal' => !$config['use_local'],
       'servers' => array(),
     );
     $this->events()->fireEvent(EVENT_FIND_SERVERS, $context);

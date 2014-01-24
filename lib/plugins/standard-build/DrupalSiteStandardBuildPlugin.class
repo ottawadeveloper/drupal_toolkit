@@ -142,8 +142,10 @@ class DrupalSiteStandardBuildPlugin extends GenericPlugin implements EventListen
       CONFIG_GIT_REPO_ROOT => '',
       CONFIG_DRUSH_MAKE_REPO => '',
       CONFIG_DRUSH_MAKE_FILE => '',
-      CONFIG_DRUSH_MAKE_OPTIONS => array(),
-      CONFIG_DEFAULT_BRANCH => '',
+      CONFIG_DRUSH_MAKE_OPTIONS => array(
+        'prepare-install'
+      ),
+      CONFIG_DEFAULT_BRANCH => 'master',
       CONFIG_BRANCH_WHITELIST => array(),
     ));
   }
