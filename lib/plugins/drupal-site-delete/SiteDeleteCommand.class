@@ -1,0 +1,9 @@
+<?php
+
+class SiteDeleteCommand extends GenericSiteCommand {
+  
+  public function executeCommand() {
+    
+  }
+  
+}

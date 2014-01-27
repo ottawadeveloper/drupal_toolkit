@@ -33,6 +33,8 @@ abstract class GenericDBM implements DatabaseManagerInterface {
    */
   private $charset = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz1234567890_-!.=';
   
+  private $driver = NULL;
+  
   /**
    * Constructor.
    * 
@@ -46,7 +48,7 @@ abstract class GenericDBM implements DatabaseManagerInterface {
    * @param int $passwordMinLength
    *   The minimum length of a random password.
    */
-  public function __construct($connectionData, $charset = NULL, $passwordMaxLength = NULL, $passwordMinLength = NULL) {
+  public function __construct($driver, $connectionData, $charset = NULL, $passwordMaxLength = NULL, $passwordMinLength = NULL) {
     $this->connectionData = $connectionData;
     if (!empty($charset)) {
       $this->charset = $charset;
@@ -57,6 +59,11 @@ abstract class GenericDBM implements DatabaseManagerInterface {
     if (!empty($passwordMaxLength)) {
       $this->passwordMaxLength = $passwordMaxLength;
     }
+    $this->driver = $driver;
+  }
+  
+  public function getDriver() {
+    return $this->driver;
   }
   
   /**
@@ -70,20 +77,27 @@ abstract class GenericDBM implements DatabaseManagerInterface {
     return $this->charset[$rand];
   }
   
-  /**
-   * Retrieves a setting from the connection data.
-   * 
-   * @param string $key
-   *   A setting key to retrieve.
-   * 
-   * @return string
-   *   The setting value or NULL if not defined.
-   */
-  protected function getSetting($key) {
+  public function getSetting($key, $default = NULL) {
     if (isset($this->connectionData[$key])) {
       return $this->connectionData[$key];
     }
-    return NULL;
+    return $default;
+  }
+  
+  public function getHost() {
+    return $this->getSetting(DB_HOST_HOST);
+  }
+  
+  public function getPrefix() {
+    return $this->getSetting(DB_HOST_PREFIX);
+  }
+  
+  public function getDatabaseCategory() {
+    return $this->getSetting(DB_HOST_DRUPAL_CATEGORY, 'default');
+  }
+  
+  public function getDatabaseMode() {
+    return $this->getSetting(DB_HOST_DRUPAL_MODE, 'default');
   }
   
   public function randomPassword() {

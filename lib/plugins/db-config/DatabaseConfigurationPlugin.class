@@ -138,6 +138,20 @@ define('CONFIG_DB_DEFAULT_TYPE', 'db-default-server-type');
 define('CONFIG_DB_DEFAULT_PASSWORD', 'db-default-new-password');
 
 /**
+ * Config key for the default database prefix to use.
+ * 
+ * @ingroup config
+ */
+define('CONFIG_DB_PREFIX', 'db-prefix');
+
+/**
+ * Command line long option to override the database prefix.
+ * 
+ * @ingroup args
+ */
+define('OPTION_DB_PREFIX', 'db-prefix');
+
+/**
  * The list of database servers.
  * 
  * This is used for the default implementation of EVENT_FIND_DB_SERVERS.
@@ -161,6 +175,25 @@ define('DB_HOST_TYPE', 'type');
 define('DB_HOST_HOST', 'host');
 
 /**
+ * The host key for which server category this falls into for Drupal.
+ * 
+ * This is the first key of the $databases array in Drupal's settings.php.
+ * 
+ * @ingroup db_settings
+ */
+define('DB_HOST_DRUPAL_CATEGORY', 'drupal-category');
+
+/**
+ * The host key for which server mode this server plays in its category.
+ * 
+ * This is the second key of the $databases array in Drupal's settings.php. See 
+ * DB_HOST_DRUPAL_CATEGORY for the first key.
+ * 
+ * @ingroup db_settings
+ */
+define('DB_HOST_DRUPAL_MODE', 'drupal-mode');
+
+/**
  * The host key for the user name.
  * 
  * @ingroup db_settings
@@ -181,6 +214,13 @@ define('DB_HOST_PASSWORD', 'password');
  */
 define('STRING_CANNOT_CREATE_DB', 'db_config.error.cannot-create-db');
   
+/**
+ * String token for when the settings.php file cnanot be updated.
+ * 
+ * @ingroup strings
+ */
+define('STRING_CANNOT_WRITE_SETTINGS', 'db_config.error.cannot-write-settings');
+
 /**
  * This plugin manages the database for a Drupal site.
  * 
@@ -205,7 +245,9 @@ class DatabaseConfigurationPlugin extends GenericPlugin implements EventListener
       CONFIG_DB_DEFAULT_TYPE => '',
       CONFIG_DB_DEFAULT_PASSWORD => DB_RANDOM_PASSWORD,
       CONFIG_DB_SERVERS => array(),
+      CONFIG_DB_PREFIX => '',
     ));
+    $this->config()->extendFromOption(CONFIG_DB_PREFIX, OPTION_DB_PREFIX);
   }
   
   public function requiredPlugins() {
@@ -263,13 +305,23 @@ class DatabaseConfigurationPlugin extends GenericPlugin implements EventListener
     if (empty($dbpass)) {
       $dbpass = $this->config()->getConfig(CONFIG_DB_DEFAULT_PASSWORD);
     }
+    $prefix = $this->args()->getOption(CONFIG_DB_PREFIX);
+    $drupalSettings = array();
     foreach ($context->servers as $server) {
       if ($server instanceof DatabaseManagerInterface) {
-        $server->sanitizeDatabaseName($dbname);
-        $server->sanitizeUsername($username);
+        $dbname = $server->sanitizeDatabaseName($dbname);
+        $username = $server->sanitizeUsername($username);
         if ($dbpass == DB_RANDOM_PASSWORD) {
           $dbpass = $server->randomPassword();
         }
+        $drupalSettings[$server->getDatabaseCategory()][$server->getDatabaseMode()] = array(
+          'driver' => $server->getDriver(),
+          'database' => $dbname,
+          'username' => $username,
+          'password' => $dbpass,
+          'host' => $server->getHost(),
+          'prefix' => extra_empty($prefix) ? '' : $prefix,
+        );
       }
     }
     foreach ($context->servers as $server) {
@@ -280,6 +332,70 @@ class DatabaseConfigurationPlugin extends GenericPlugin implements EventListener
         }
       }
     }
+    if (!$this->writeDatabaseSettings($site, $drupalSettings)) {
+      $this->error(STRING_CANNOT_WRITE_SETTINGS);
+      return FALSE;
+    }
+    return TRUE;
+  }
+  
+  /**
+   * Converts the database settings array to a string for output.
+   * 
+   * @param array $settings
+   *   A database settings array.
+   * 
+   * @return string
+   *   A valid PHP statement to recreate the database settings.
+   */
+  private function convertSettingsToString(array $settings) {
+    $str = '';
+    $str = '$databases = array(' . PHP_EOL;
+    foreach ($settings as $dbcat => $dbs) {
+      $str .= '  "' . $dbcat . '" => array(' . PHP_EOL;
+      foreach ($dbs as $dbmode => $db) {
+        $str .= '    "' . $dbmode . '" => array(' . PHP_EOL;
+        foreach ($db as $key => $value) {
+          $str .= '      "' . $key . '" => "' . $value . '",' . PHP_EOL;
+        }
+        $str .= '  ),' . PHP_EOL;
+      }
+      $str .= '),' . PHP_EOL;
+    }
+    $str .= ');';
+    return $str;
+  }
+  
+  /**
+   * Writes the database settings to the settings.php file for the site.
+   * 
+   * @param DrupalSite $site
+   *   The site to write settings for.
+   * @param array $dbSettings
+   *   The database settings to write.
+   * 
+   * @return boolean
+   *   TRUE if successful, otherwise false.
+   * 
+   * @see DatabaseConfigurationPlugin::convertSettingsToString()
+   */
+  private function writeDatabaseSettings(DrupalSite $site, array $dbSettings) {
+    $settingsFile = $site->getSetting(SITE_SETTINGS_FILE);
+    if (empty($settingsFile)) {
+      return FALSE;
+    }
+    if (!is_writable($settingsFile)) {
+      return FALSE;
+    }
+    $h = fopen($settingsFile, 'a');
+    if (empty($h)) {
+      return FALSE;
+    }
+    if (!fwrite($h, $this->convertSettingsToString($dbSettings))) {
+      fclose($h);
+      return FALSE;
+    }
+    fclose($h);
     return TRUE;
   }
   
@@ -342,7 +458,7 @@ class DatabaseConfigurationPlugin extends GenericPlugin implements EventListener
       'settings' => $settings,
       'dbServer' => NULL,
     );
-    $this->events()->fire(EVENT_CAST_DB_SERVER, $context);
+    $this->events()->fireEvent(EVENT_CAST_DB_SERVER, $context);
     return $context->dbServer;
   }
   

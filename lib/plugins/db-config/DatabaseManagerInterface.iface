@@ -64,4 +64,51 @@ interface DatabaseManagerInterface {
    */
   function randomPassword();
   
+  /**
+   * Retrieves a setting from the connection data.
+   * 
+   * @param string $key
+   *   A setting key to retrieve.
+   * @param mixed $default
+   *   The default value to return, defaults to NULL.
+   * 
+   * @return string
+   *   The setting value or $default if not defined.
+   */
+  function getSetting($key, $default = NULL);
+  
+  /**
+   * Retrieves the Drupal DB category. This is the first parameter of the
+   * $databases array in settings.php.
+   * 
+   * @return string
+   *   The Drupal DB category. Defaults to 'default'.
+   */
+  function getDatabaseCategory();
+  
+  /**
+   * Returns the Drupal DB mode. This is the second parameter of the $databases
+   * array in settings.php.
+   * 
+   * @return string
+   *   The Drupal DB mode. Defaults to 'default'.
+   */
+  function getDatabaseMode();
+  
+  /**
+   * Returns the Drupal DB driver.
+   * 
+   * @return string
+   *   The Drupal DB driver name.
+   */
+  function getDriver();
+  
+  /**
+   * Returns the DB host name.
+   * 
+   * @return string
+   *   The DB host name.
+   */
+  function getHost();
+  
 }

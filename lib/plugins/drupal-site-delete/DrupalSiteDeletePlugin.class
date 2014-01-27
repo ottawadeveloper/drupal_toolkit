@@ -1,0 +1,9 @@
+<?php
+
+class DrupalSiteDeletePlugin extends GenericPlugin {
+  
+  public function initialize() {
+    
+  }
+  
+}

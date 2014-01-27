@@ -274,6 +274,7 @@ class DrushInstallPlugin extends GenericPlugin implements EventListener {
     if (!empty($config['!site-mail'])) {
       $extra[] = ' --site-mail=!site-mail';
     }
+    $extra[] = ' -y';
     $options = $this->config()->getConfig(CONFIG_INSTALL_SITE_OPTIONS);
     foreach ($options as $option) {
       if (!extra_empty($option)) {

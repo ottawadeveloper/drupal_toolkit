@@ -127,7 +127,7 @@ class Configuration implements ConfigurationManagerInterface {
     if (empty($config)) {
       return FALSE;
     }
-    $this->extendConfiguration($yamlfile);
+    $this->extendConfiguration($config);
     return TRUE;
   }
   
