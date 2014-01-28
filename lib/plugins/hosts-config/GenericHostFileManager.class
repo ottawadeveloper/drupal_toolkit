@@ -52,6 +52,7 @@ abstract class GenericHostFileManager implements HostFileManagerInterface {
       foreach ($map as $host => $ip) {
         $contents .= PHP_EOL . $ip . "\t" . $host;
       }
+      $this->normalizeHostFile($contents);
       return $this->machine()->writeFile($this->hostfile, $contents);
     }
     return FALSE;
@@ -59,6 +60,45 @@ abstract class GenericHostFileManager implements HostFileManagerInterface {
   
   public function addHostFileEntry($host, $ip) {
     return $this->addHostFileEntries(array($host => $ip));
+  }
+  
+  /**
+   * Normalizes a host file to have nice entries.
+   * 
+   * @todo can we remove some duplicates from here as well maybe?
+   * 
+   * @param string $contents
+   *   The host file contents
+   * 
+   * @return string
+   *   A normalized host file (this normalizes spaces, etc).
+   */
+  private function normalizeHostFile($contents) {
+    $actual = '';
+    $lines = preg_split('`[\\r\\n]`i', $contents);
+    foreach ($lines as $line) {
+      $line = trim($line);
+      if (!extra_empty($line)) {
+        if (substr($line, 0, 1) === '#') {
+          $actual .= PHP_EOL;
+        }
+        $actual .= $line . PHP_EOL;
+      }
+    }
+    return $actual;
+  }
+  
+  public function cleanHostEntries(array $map) {
+    $contents = $this->machine()->readFile($this->hostfile);
+    if (!empty($contents)) {
+      foreach ($map as $host => $ip) {
+        $line = $ip . "\t" . $host;
+        $contents = str_replace($line, "", $contents);
+      }
+      $this->normalizeHostfile($contents);
+      return $this->machine()->writeFile($this->hostfile, $contents);
+    }
+    return FALSE;
   }
   
 }

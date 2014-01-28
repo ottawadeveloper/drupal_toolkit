@@ -39,6 +39,24 @@ define('CONFIG_SERVER_LIST', 'si-servers');
 define('STRING_SERVER_INTERACTION_NO_SERVER', 'server_interaction.error.could-not-init');
 
 /**
+ * Site setting for external files.
+ * 
+ * This is an array of files managed through PhysicalServerInterface objects
+ * that should be tied to this Drupal site (eg deleted).
+ * 
+ * @ingroup site_settings
+ */
+define('SITE_REMOTE_FILES', 'remote-files');
+
+/**
+ * String token for when we are unable to delete a managed remote file.
+ * 
+ * @ingroup strings
+ */
+define('STRING_UNABLE_TO_DELETE_REMOTE_FILE', 'server_interaction.error.could-not-delete-remote-file');
+
+
+/**
  * Manages the list of the different types of servers that can be used by
  * various plugins.
  */
@@ -64,6 +82,7 @@ class ServerInteractionPlugin extends GenericPlugin implements EventListener {
     }
     $this->events()->registerListener(array(
       EVENT_FIND_SERVERS,
+      EVENT_REMOVE_ALL,
     ), $this);
     $this->config()->extendDefaultConfiguration(array(
       CONFIG_SERVER_LIST => array(),
@@ -109,6 +128,37 @@ class ServerInteractionPlugin extends GenericPlugin implements EventListener {
     return $this->servers[$type];
   }
   
+  /**
+   * Deletes all remote files managed by plugins that report their files.
+   * 
+   * @param DrupalSite $site
+   *   The site to delete remote files for.
+   * 
+   * @return boolean
+   *   If all remote files were deleted without a problem.
+   */
+  private function deleteRemoteFiles(DrupalSite $site) {
+    $remoteFiles = $site->getSetting(SITE_REMOTE_FILES);
+    $r = TRUE;
+    foreach ($remoteFiles as $remote) {
+      if ($remote['server'] instanceof PhysicalServerInterface) {
+        if (!$remote['server']->initialize()) {
+          $this->warn(STRING_SERVER_INTERACTION_NO_SERVER);
+          $r = FALSE;
+        }
+        elseif (!$remote['server']->deleteFile($remote['file'])) {
+          $this->warn(STRING_UNABLE_TO_DELETE_REMOTE_FILE);
+          $r = FALSE;
+        }
+      }
+      else {
+        $this->warn(STRING_SERVER_INTERACTION_NO_SERVER);
+        $r = FALSE;
+      }
+    }
+    return $r;
+  }
+  
   public function captureEvent(&$context, $type) {
     switch ($type) {
       case EVENT_FIND_SERVERS:
@@ -116,6 +166,9 @@ class ServerInteractionPlugin extends GenericPlugin implements EventListener {
           debug_print_backtrace();
         }
         $context->servers = array_merge($context->servers, $this->loadServersOfType($context->serverType, isset($context->skipLocal) ? $context->skipLocal : TRUE));
+        break;
+      case EVENT_REMOVE_ALL:
+        $context->success = $this->deleteRemoteFiles($context->site) && $context->success;
         break;
     }
   }

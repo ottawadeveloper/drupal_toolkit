@@ -81,6 +81,22 @@ define('MANAGED_HOST_TYPE_LINUX', 'linux');
 define('STRING_HOSTS_FILE_BAD_WRITE', 'hosts_config.error.bad_write');
 
 /**
+ * Site setting for the list of machines where we need to remove this site
+ * from the hosts file.
+ * 
+ * @ingroup site_settings
+ */
+define('SITE_HOST_FILES', 'host-files');
+
+/**
+ * String token for the message when there was an error cleaning up the hosts 
+ * file.
+ * 
+ * @ingroup strings
+ */
+define('STRING_HOST_REMOVAL_ERROR', 'hosts_config.error.unable-to-clean-host-file');
+
+/**
  * Plugin to manage the hosts file configuration of one or more servers.
  */
 class HostsConfigurationPlugin extends GenericPlugin implements EventListener {
@@ -102,6 +118,7 @@ class HostsConfigurationPlugin extends GenericPlugin implements EventListener {
       EVENT_CAST_MANAGED_HOST_SERVER,
       EVENT_SITE_BUILD_MORE_CONFIG,
       EVENT_FIND_MANAGED_HOST_SERVERS,
+      EVENT_REMOVE_ALL
     ), $this);
   }
   
@@ -126,7 +143,37 @@ class HostsConfigurationPlugin extends GenericPlugin implements EventListener {
           $context->success = $this->updateHostFile($context->site);
         }
         break;
+      case EVENT_REMOVE_ALL:
+        $context->success = $this->cleanHostFiles($context->site) && $context->success;
+        break;
     }
+  }
+  
+  /**
+   * Cleans up the host files.
+   * 
+   * @param DrupalSite $site
+   *   The DrupalSite to cleanup host files for.
+   * 
+   * @return boolean
+   *   TRUE if all the files were cleaned up, otherwise FALSE.
+   */
+  private function cleanHostFiles(DrupalSite $site) {
+    $hosts = $site->getSetting(SITE_HOST_FILES);
+    $r = TRUE;
+    foreach ($hosts['servers'] as $host) {
+      if ($host instanceof HostFileManagerInterface) {
+        if (!$host->cleanHostEntries($hosts['map'])) {
+          $this->warn(STRING_HOST_REMOVAL_ERROR);
+          $r = FALSE;
+        }
+      }
+      else {
+        $this->warn(STRING_HOST_REMOVAL_ERROR);
+        $r = FALSE;
+      }
+    }
+    return $r;
   }
   
   /**
@@ -157,14 +204,20 @@ class HostsConfigurationPlugin extends GenericPlugin implements EventListener {
       'servers' => array(),
     );
     $this->events()->fireEvent(EVENT_FIND_MANAGED_HOST_SERVERS, $context);
+    $registry = array(
+      'servers' => array(),
+      'map' => $map,
+    );
     foreach ($context->servers as $server) {
       if ($server instanceof HostFileManagerInterface) {
         if (!$server->addHostFileEntries($map)) {
           $this->error(STRING_HOSTS_FILE_BAD_WRITE);
           return FALSE;
         }
+        $registry['servers'][] = $server;
       }
     }
+    $site->setSetting(SITE_HOST_FILES, $registry);
     return TRUE;
   }
   

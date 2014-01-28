@@ -149,6 +149,7 @@ class GatewayConfigurationPlugin extends GenericPlugin implements EventListener 
       'servers' => array(),
     );
     $this->events()->fireEvent(EVENT_FIND_GATEWAY_SERVERS, $context);
+    $gatewayRegistry = array();
     foreach ($context->servers as $gatewayServer) {
       if ($gatewayServer instanceof GenericHttpServer) {
         $config = $defaultConfig;
@@ -167,8 +168,13 @@ class GatewayConfigurationPlugin extends GenericPlugin implements EventListener 
           return FALSE;
         }
         $gatewayServer->doReboot();
+        $gatewayRegistry[] = array(
+          'server' => $gatewayServer->machine(),
+          'file' => $gatewayServer->getConfigFilePath($file),
+        );
       }
     }
+    $site->appendSettingValue(SITE_REMOTE_FILES, $gatewayRegistry);
     return TRUE;
   }
   

@@ -80,27 +80,6 @@ define('STRING_COULD_NOT_WRITE_DRUSH_ALIAS', 'drush_config.error.no-alias-file')
 define('SITE_DRUSH_ALIAS', 'drush-alias');
 
 /**
- * Site setting for the drush alias files, for later deletion purposes.
- * 
- * @ingroup site_settings
- */
-define('SITE_ALIAS_FILES', 'drush-alias-files');
-
-/**
- * String token if the server could not be reconnected.
- * 
- * @ingroup strings
- */
-define('STRING_DRUSH_COULD_NOT_FIND_SERVER', 'drush_config.error.bad-server');
-
-/**
- * String token if the alias file could not be deleted.
- * 
- * @ingroup strings
- */
-define('STRING_DRUSH_COULD_NOT_DELETE_FILE', 'drush_config.error.no-delete');
-
-/**
  * Takes responsibility for setting up the drush alias.
  */
 class DrushConfigurationPlugin extends GenericPlugin implements EventListener {
@@ -131,41 +110,7 @@ class DrushConfigurationPlugin extends GenericPlugin implements EventListener {
           $context->success = $this->createAliases($context->site);
         }
         break;
-      case EVENT_REMOVE_ALL:
-        $context->success = $this->deleteAliases($context->site) && $context->success;
-        break;
     }
-  }
-  
-  /**
-   * Deletes all the alias files associated with this site.
-   * 
-   * @param DrupalSite $site
-   *   The DrupalSite to delete aliases for.
-   * 
-   * @return boolean
-   *   TRUE if all the aliases were deleted, otherwise FALSE.
-   */
-  private function deleteAliases(DrupalSite $site) {
-    $aliases = $site->getSetting(SITE_ALIAS_FILES);
-    $r = TRUE;
-    foreach ($aliases as $alias) {
-      $server = $alias['server'];
-      if ($server instanceof PhysicalServerInterface) {
-        if (!$server->initialize()) {
-          $this->warn(STRING_DRUSH_COULD_NOT_FIND_SERVER);
-          $r = FALSE;
-        } elseif (!$server->deleteFile($alias['aliasFile'])) {
-          $this->warn(STRING_DRUSH_COULD_NOT_DELETE_FILE);
-          $r = FALSE;
-        }
-      }
-      else {
-        $this->warn(STRING_DRUSH_COULD_NOT_FIND_SERVER);
-        $r = FALSE;
-      }
-    }
-    return $r;
   }
   
   /**
@@ -203,7 +148,7 @@ class DrushConfigurationPlugin extends GenericPlugin implements EventListener {
     if (!$context->skipLocal) {
       $site->setSetting(SITE_DRUSH_ALIAS, $site->getBuildName());
     }
-    $site->setSetting(SITE_ALIAS_FILES, $aliasList);
+    $site->appendSettingValue(SITE_REMOTE_FILES, $aliasList);
     return TRUE;
   }
   
@@ -247,7 +192,7 @@ class DrushConfigurationPlugin extends GenericPlugin implements EventListener {
     }
     $aliasList[] = array(
       'server' => $server,
-      'aliasFile' => $fullPath,
+      'file' => $fullPath,
     );
     return TRUE;
   }

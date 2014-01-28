@@ -53,6 +53,7 @@ gateway.error.bad-write = 'Unable to write configuration to server.'
 gateway.error.no-template = 'Unable to read template file.'
 
 hosts_config.error.bad_write = 'Unable to write host files to server.'
+hosts_config.error.unable-to-clean-host-file = 'Unable to clean-up the hosts file.'
 
 http_config.error.bad-write = 'Unable to write configuration to server.'
 http_config.error.no-config = 'No configuration was loaded.'
@@ -94,3 +95,7 @@ drupal_site_delete.error.unable-to-remove = 'Unable to fully remove all site res
 
 db_config.error.cannot-delete-db = 'Could not delete database [!name]'
 db_config.error.cannot-delete-user = 'Could not delete user [!user]'
+
+server_interaction.error.could-not-delete-remote-file = 'Unable to delete server config file.'
+
+

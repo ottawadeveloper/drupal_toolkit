@@ -344,7 +344,12 @@ class DrupalSite {
     elseif (!is_array($this->settings[$key])) {
       $this->settings[$key] = array($this->settings[$key]);
     }
-    $this->settings[$key][] = $value;
+    if (is_array($value)) {
+      array_extend($this->settings[$key], $value);
+    }
+    else {
+      $this->settings[$key][] = $value;
+    }
   }
   
   /**

@@ -59,4 +59,8 @@ abstract class GenericMachine implements PhysicalServerInterface {
     return $this->vars;
   }
   
+  public function getEOL() {
+    return "\n";
+  }
+  
 }

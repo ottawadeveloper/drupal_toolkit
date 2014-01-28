@@ -82,9 +82,12 @@ abstract class GenericHttpServer {
     return $this->available();
   }
   
+  public function getConfigFilePath($configFile) {
+    return assemble_path($this->configDirectory, $configFile);
+  }
+  
   public function writeConfig($configFile, $config) {
-    $path = assemble_path($this->configDirectory, $configFile);
-    if (!$this->machine()->writefile($path, $config)) {
+    if (!$this->machine()->writefile($this->getConfigFilePath($configFile), $config)) {
       return FALSE;
     }
     return TRUE;

@@ -108,4 +108,6 @@ interface PhysicalServerInterface extends Serializable {
    */
   function getSettings();
   
+  function getEOL();
+  
 }

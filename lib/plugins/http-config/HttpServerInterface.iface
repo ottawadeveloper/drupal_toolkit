@@ -50,5 +50,13 @@ interface HttpServerInterface {
    * @return PhysicalInterfaceMachine
    */
   function machine();
+  
+  /**
+   * Retrieves the path to the configuration file.
+   * 
+   * @return string
+   *   The complete path to the configuration file.
+   */
+  function getConfigFilePath();
 
 }

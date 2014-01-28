@@ -33,4 +33,6 @@ interface HostFileManagerInterface {
    */
   function addHostFileEntries(array $map);
   
+  function cleanHostEntries(array $map);
+  
 }

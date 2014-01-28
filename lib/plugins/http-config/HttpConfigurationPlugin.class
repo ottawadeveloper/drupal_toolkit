@@ -205,6 +205,7 @@ class HttpConfigurationPlugin extends GenericPlugin implements EventListener {
       'servers' => array(),
     );
     $this->events()->fireEvent(EVENT_FIND_HTTP_SERVERS, $context);
+    $httpRegistry = array();
     foreach ($context->servers as $httpServer) {
       if ($httpServer instanceof GenericHttpServer) {
         $configFile = $httpServer->machine()->getSetting(SERVER_SETTING_HTTP_CONFIG_TEMPLATE);
@@ -234,8 +235,13 @@ class HttpConfigurationPlugin extends GenericPlugin implements EventListener {
           return FALSE;
         }
         $httpServer->doReboot();
+        $httpRegistry[] = array(
+          'file' => $httpServer->getConfigFilePath($filename),
+          'server' => $httpServer->machine(),
+        );
       }
     }
+    $site->appendSettingValue(SITE_REMOTE_FILES, $httpRegistry);
     return TRUE;
   }
   
