@@ -44,6 +44,9 @@ drupal_site_build.error.no-structure = 'Unable to initialize build structure.'
 drupal_site_build.error.no-config = 'Unable to configure site.'
 drupal_site_build.error.no-build-name = 'This command requires a build name to be provided.'
 
+drush_config.error.bad-server = 'Unable to reconnect to server.'
+drush_config.error.no-delete = 'Could not delete drush alias file.'
+
 flog.error.no-log-file = 'Unable to open [!path] for logging, file logging skipped.'
 
 gateway.error.bad-write = 'Unable to write configuration to server.'

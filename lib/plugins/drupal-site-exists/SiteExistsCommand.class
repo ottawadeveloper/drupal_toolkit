@@ -1,0 +1,34 @@
+<?php
+/**
+ * @file Defines the SiteExistsCommand class.
+ */
+
+/**
+ * Responsible for handling the site-exists command.
+ */
+class SiteExistsCommand extends GenericSiteCommand {
+ 
+  public function verifyRequirements() {
+    $site = $this->getSite();
+    if (empty($site)) {
+      $this->error(STRING_ERROR_MISSING_SITE);
+      return FALSE;
+    }
+    return parent::verifyRequirements();
+  }
+  
+  public function executeCommand() {
+    $site = $this->getSite();
+    if ($site->existsBackwards()) {
+      $this->out()->writeLine('Site is outdated!');
+      exit(2);
+    }
+    if (!$site->exists()) {
+      $this->out()->writeLine('Site does not exist');
+      exit(1);
+    }
+    $this->out()->writeLine('Site exists');
+    exit(0);
+  }
+  
+}

@@ -24,4 +24,8 @@ class LocalMachine extends GenericMachine {
     return file_get_contents($file);
   }
   
+  public function deleteFile($file) {
+    return unlink($file);
+  }
+  
 }

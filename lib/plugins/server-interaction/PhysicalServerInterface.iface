@@ -10,7 +10,7 @@
  * machine (eg ssh commands or local file system calls) as the same thing
  * for other plugins.
  */
-interface PhysicalServerInterface {
+interface PhysicalServerInterface extends Serializable {
   
   /**
    * Executes a command on the given system.
@@ -58,12 +58,28 @@ interface PhysicalServerInterface {
   function readFile($file);
   
   /**
+   * Deletes a file from the server.
+   * 
+   * @param string $file
+   *   The file to delete.
+   * 
+   * @return boolean
+   *   TRUE if the file was deleted, otherwise FALSE.
+   */
+  function deleteFile($file);
+  
+  /**
    * Initializes the server interface.
    * 
    * @return boolean
    *   TRUE if the server is available, otherwise FALSE.
    */
   function initialize();
+  
+  /**
+   * Called before serialization.
+   */
+  function sleep();
   
   /**
    * Retrieves a server setting.

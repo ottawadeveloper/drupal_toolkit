@@ -93,6 +93,9 @@ class RemoteMachine extends GenericMachine {
   private $handle;
   
   public function initialize() {
+    if (is_resource($this->handle)) {
+      return TRUE;
+    }
     if (!extra_empty($this->getSetting(SERVER_SETTING_DISABLED))) {
       return FALSE;
     }
@@ -121,6 +124,17 @@ class RemoteMachine extends GenericMachine {
         return FALSE;
     }
     return TRUE;
+  }
+  
+  public function sleep() {
+    if (is_resource($this->handle)) {
+      ssh2_exec($this->handle, 'exit');
+      unset($this->handle);
+    }
+  }
+  
+  public function __destruct() {
+    $this->sleep();
   }
   
   public function executeCommand($command, $args, &$out = array(), &$exit = 0) {
@@ -152,6 +166,17 @@ class RemoteMachine extends GenericMachine {
     }
     unlink($temp);
     return $contents;
+  }
+  
+  public function deleteFile($file) {
+    // Prevent deletion of the system root.
+    if (extra_empty(trim($file, '/\\'))) {
+      return FALSE;
+    }
+    $this->executeCommand('rm -rf !file', array(
+      '!file' => $file,
+    ), $out, $exit);
+    return extra_empty($exit);
   }
   
 }

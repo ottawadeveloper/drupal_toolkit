@@ -359,6 +359,7 @@ $core_plugins = array(
   'drupal-site-build' => 'DrupalSiteBuildPlugin',
   'drupal-site-install' => 'DrupalSiteInstallPlugin',
   'drupal-site-delete' => 'DrupalSiteDeletePlugin',
+  'drupal-site-exists' => 'DrupalSiteExistsPlugin',
   'standard-config' => 'DrupalSiteStandardConfigPlugin',
   'standard-build' => 'DrupalSiteStandardBuildPlugin',
   'standard-structure' => 'DrupalSiteStandardStructurePlugin',
