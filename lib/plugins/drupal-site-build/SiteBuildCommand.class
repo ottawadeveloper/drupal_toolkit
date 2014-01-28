@@ -248,7 +248,12 @@ class SiteBuildCommand extends GenericSiteCommand {
    *   The site to cleanup.
    */
   private function cleanup(DrupalSite $site) {
-    
+    $context = (object) array(
+      'site' => $site,
+      'fromBuild' => TRUE,
+      'success' => TRUE,
+    );
+    $this->events()->fireEvent(EVENT_REMOVE_ALL, $context);
   }
   
   public function executeCommand() {

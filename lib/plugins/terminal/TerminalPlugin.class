@@ -63,8 +63,8 @@ class TerminalPlugin extends GenericPlugin implements EventListener {
       CONFIG_CLI_USE_TIMESTAMP => TRUE,
       CONFIG_CLI_SHOW_TYPES => TRUE,
       CONFIG_CLI_AUTO_FLEX => TRUE,
-      CONFIG_CLI_TYPE_PADDING => 16,
-      CONFIG_CLI_TIMESTAMP_FORMAT => '[H:i:s]',
+      CONFIG_CLI_TYPE_PADDING => 20,
+      CONFIG_CLI_TIMESTAMP_FORMAT => 'H:i',
       CONFIG_CLI_NON_CRITICAL => TRUE,
     ));
   }

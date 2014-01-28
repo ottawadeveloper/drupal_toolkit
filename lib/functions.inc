@@ -44,7 +44,10 @@ function str_replace_all($str, $replacements, $escape_cb = NULL) {
     $escape_cb = NULL;
   }
   foreach ($replacements as $k => $v) {
-    if (!empty($escape_cb)) {
+    if (substr($k, 0, 1) == '%') {
+      $str = str_replace($k, $v, $str);
+    }
+    elseif (!empty($escape_cb)) {
       $str = str_replace($k, call_user_func($escape_cb, $v), $str);
     }
     else {

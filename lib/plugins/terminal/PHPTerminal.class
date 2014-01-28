@@ -24,7 +24,7 @@ class PHPTerminal implements Writer, Logger, Messenger {
    * @see date()
    * @var string
    */
-  private $timestampFormat = '[H:i:s] ';
+  private $timestampFormat = 'H:i';
   
   /**
    * Whether or not to display the message type (success/failure/debug/etc)

@@ -12,6 +12,13 @@
  */
 
 /**
+ * Fired to remove everything that belongs with a site.
+ * 
+ * @ingroup events
+ */
+define('EVENT_REMOVE_ALL', 'remove-all');
+
+/**
  * Whether or not the site is local.
  * 
  * @ingroup site_settings

@@ -163,13 +163,13 @@ class DrupalSiteStandardSitePlugin extends GenericPlugin implements EventListene
     }
     
     // Make symlinks out of all the URLs if desired
-    $makeSymlinks = !extra_empty($this->config()->getConfig(CONFIG_SKIP_REDUNDANT_SYMLINKS));
+    $makeSymlinks = extra_empty($this->config()->getConfig(CONFIG_SKIP_REDUNDANT_SYMLINKS));
     if ($makeSymlinks) {
       $urls = $site->getAllURLs();
       foreach ($urls as $url) {
         $name = DrupalSite::convertURLToSiteName($url);
         $site->appendSettingValue(SITE_EXISTING_SITES, $name);
-        $link = assemble_path($structureSites, $name);
+        $link = assemble_path($site->getBuildFolder(), $structureSites, $name);
         symlink($realDefault, $link);
         if (!is_link($link)) {
           $this->error(STRING_COULD_NOT_SYMLINK_SITE, array(

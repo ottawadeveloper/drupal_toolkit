@@ -1,9 +1,43 @@
 <?php
+/**
+ * @file Defines the SiteDeleteCommand class.
+ */
 
+/**
+ * String token for when we are unable to remove the site entirely.
+ * 
+ * @ingroup strings
+ */
+define('STRING_UNABLE_TO_REMOVE', 'drupal_site_delete.error.unable-to-remove');
+
+/**
+ * Responsible for handling the site-delete command.
+ */
 class SiteDeleteCommand extends GenericSiteCommand {
   
+  public function verifyRequirements() {
+    if (!$this->requireSite()) {
+      return FALSE;
+    }
+    return parent::verifyRequirements();
+  }
+  
+  /**
+   * 
+   */
   public function executeCommand() {
-    
+    $site = $this->getSite();
+    $site->loadSettings();
+    $context = (object) array(
+      'site' => $site,
+      'success' => TRUE,
+      'fromBuild' => FALSE,
+    );
+    $this->events()->fireEvent(EVENT_REMOVE_ALL, $context);
+    if (!$context->success) {
+      $this->error(STRING_UNABLE_TO_REMOVE);
+      exit(1);
+    }
   }
   
 }

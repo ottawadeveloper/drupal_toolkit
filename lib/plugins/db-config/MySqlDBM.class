@@ -48,12 +48,12 @@ class MySqlDBM extends GenericDBM {
     if (!extra_empty($this->getSetting('password'))) {
       $cmd .= ' --password=!password';
     }
-    $cmd .= ' -e !query';
+    $cmd .= ' -e "%query"';
     execute_system_command($cmd, array(
       '!host' => $this->getSetting(DB_HOST_HOST),
       '!user' => $this->getSetting(DB_HOST_USER),
       '!password' => $this->getSetting(DB_HOST_PASSWORD),
-      '!query' => $query,
+      '%query' => $query,
     ), $out, $exit);
     return empty($exit);
   }
@@ -75,18 +75,16 @@ class MySqlDBM extends GenericDBM {
   }
   
   public function createDatabase($database, $username = NULL, $password = NULL, $host = NULL) {
-    if (empty($host)) {
-      $host = '%';
-    }
     $q = "CREATE DATABASE IF NOT EXISTS !DB;";
     if (!empty($username)) {
-      $q .= " GRANT ALL ON !DB.* TO '!USER'@'!HOST'";
+      $q .= " GRANT ALL ON !DB.* TO '!USER'";
+      if (!empty($host)) {
+        $q .= "@'!HOST'";
+      }
       if (!empty($password)) {
-        $q .= " IDENTIFIED BY '!PASSWORD';";
+        $q .= " IDENTIFIED BY '!PASSWORD'";
       }
-      else {
-        $q .= ";";
-      }
+      $q .= ";";
     }
     $q .= ' FLUSH PRIVILEGES;';
     $q = str_replace_all($q, array(

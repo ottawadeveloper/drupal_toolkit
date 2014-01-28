@@ -167,6 +167,8 @@ function drush_site_install($profile = NULL, $alias = NULL, array $extra = array
  *   TRUE if the key:value pair was found, otherwise false.
  */
 function drush_info_has_key_value(array &$info, $key, $value) {
+  $key = trim($key);
+  $value = trim($value);
   foreach ($info as $line) {
     $pieces = explode(':', $line, 2);
     if (count($pieces) > 1) {
@@ -234,7 +236,8 @@ function drush_command($subcommand, $alias = NULL, array $args = array(), array 
     $cmd .= '@' . $alias . ' ';
   }
   $cmd .= $subcommand;
-  return execute_system_command($cmd, $args, $out, $exit);
+  $ret = execute_system_command($cmd, $args, $out, $exit);
+  return $ret;
 }
 
 /**

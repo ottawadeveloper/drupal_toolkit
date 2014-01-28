@@ -85,3 +85,5 @@ drupal_site_install.error.install-error = 'Could not install the site.'
 drush_install.error.no-local-alias = 'No local alias was defined for the site.'
 drush_install.error.could-not-install = 'Could not install Drupal.'
 drush_install.error.could-not-install-modules = 'Could not install all modules.'
+
+drupal_site_delete.error.unable-to-remove = 'Unable to fully remove all site resources.'
