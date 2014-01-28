@@ -33,6 +33,12 @@ class Apache2Server extends GenericHttpServer {
     return empty($exit);
   }
   
+  public function extraFiles($configFile) {
+    return array(
+      assemble_path('/etc/apache2/sites-enabled', $configFile),
+    );
+  }
+  
   public function writeConfig($configFile, $config) {
     // Override so we can call a2ensite for Apache2 installs
     if (parent::writeConfig($configFile, $config)) {

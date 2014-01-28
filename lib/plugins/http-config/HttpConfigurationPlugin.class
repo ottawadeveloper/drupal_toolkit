@@ -239,6 +239,14 @@ class HttpConfigurationPlugin extends GenericPlugin implements EventListener {
           'file' => $httpServer->getConfigFilePath($filename),
           'server' => $httpServer->machine(),
         );
+        // In support of apache2's sites-enabled directory.
+        $extra = $httpServer->extraFiles();
+        foreach ($extra as $x) {
+          $httpRegistry[] = array(
+            'file' => $x,
+            'server' => $httpServer->machine(),
+          );
+        }
       }
     }
     $site->appendSettingValue(SITE_REMOTE_FILES, $httpRegistry);

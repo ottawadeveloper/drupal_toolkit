@@ -58,5 +58,13 @@ interface HttpServerInterface {
    *   The complete path to the configuration file.
    */
   function getConfigFilePath();
+  
+  /**
+   * Retrieves any extra files that need to be deleted.
+   * 
+   * @return array
+   *   An array of extra files.
+   */
+  function extraFiles();
 
 }

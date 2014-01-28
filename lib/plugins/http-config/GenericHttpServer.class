@@ -93,4 +93,8 @@ abstract class GenericHttpServer {
     return TRUE;
   }
   
+  public function extraFiles() {
+    return array();
+  }
+  
 }
