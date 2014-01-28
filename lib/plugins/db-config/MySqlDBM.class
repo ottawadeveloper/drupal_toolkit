@@ -74,6 +74,26 @@ class MySqlDBM extends GenericDBM {
     return $username;
   }
   
+  public function deleteUser($username, $host = NULL) {
+    $query = 'DROP USER \'!USER\'';
+    if (!empty($host)) {
+      $query .= '@\'!HOST\'';
+    }
+    $q = str_replace_all($query, array(
+      '!USER' => $username,
+      '!HOST' => $host,
+    ));
+    return $this->mysqlCommand($q);
+  }
+  
+  public function deleteDatabase($dbname) {
+    $query = 'DROP DATABASE IF EXISTS !db_name;';
+    $q = str_replace_all($query, array(
+      '!db_name' => $dbname,
+    ));
+    return $this->mysqlCommand($q);
+  }
+  
   public function createDatabase($database, $username = NULL, $password = NULL, $host = NULL) {
     $q = "CREATE DATABASE IF NOT EXISTS !DB;";
     if (!empty($username)) {

@@ -201,6 +201,13 @@ define('DB_HOST_DRUPAL_MODE', 'drupal-mode');
 define('DB_HOST_USER', 'user');
 
 /**
+ * Site setting for the list of databases that were created for it.
+ * 
+ * @ingroup site_settings
+ */
+define('SITE_DATABASE_LIST', 'db-list');
+
+/**
  * The host key for the password.
  * 
  * @ingroup db_settings
@@ -222,6 +229,27 @@ define('STRING_CANNOT_CREATE_DB', 'db_config.error.cannot-create-db');
 define('STRING_CANNOT_WRITE_SETTINGS', 'db_config.error.cannot-write-settings');
 
 /**
+ * String token for when support for a DB type already used is removed.
+ * 
+ * @ingroup strings
+ */
+define('STRING_UNABLE_TO_USE_DB', 'db_config.error.cannot-cast-db');
+
+/**
+ * String token for when the database could not be deleted.
+ * 
+ * @ingroup strings
+ */
+define('STRING_UNABLE_TO_DELETE_DB', 'db_config.error.cannot-delete-db');
+
+/**
+ * String token for when the user could not be deleted.
+ * 
+ * @ingroup strings
+ */
+define('STRING_UNABLE_TO_DELETE_USER', 'db_config.error.cannot-delete-user');
+
+/**
  * This plugin manages the database for a Drupal site.
  * 
  * @ingroup plugins
@@ -237,6 +265,7 @@ class DatabaseConfigurationPlugin extends GenericPlugin implements EventListener
       EVENT_SITE_BUILD_MORE_CONFIG,
       EVENT_CAST_DB_SERVER,
       EVENT_FIND_DB_SERVERS,
+      EVENT_REMOVE_ALL,
     ), $this);
     $this->config()->extendDefaultConfiguration(array(
       CONFIG_SITE_DB_USER_PATTERN => '@@BUILD_NAME',
@@ -271,7 +300,50 @@ class DatabaseConfigurationPlugin extends GenericPlugin implements EventListener
       case EVENT_FIND_DB_SERVERS:
         $context->servers = array_merge($context->servers, $this->getDatabaseServers());
         break;
+      case EVENT_REMOVE_ALL:
+        $context->success = $this->deleteDatabases($context->site) && $context->success;
+        break;
     }
+  }
+  
+  /**
+   * Responsible for deleting all the databases and users created for this
+   * site.
+   * 
+   * @param DrupalSite $site
+   *   The site to delete databases for.
+   * 
+   * @return boolean
+   *   TRUE if all the databases/users were deleted, or FALSE if even one had
+   *   an error.
+   */
+  private function deleteDatabases(DrupalSite $site) {
+    $servers = $site->getSetting(SITE_DATABASE_LIST);
+    $ret = TRUE;
+    foreach ($servers as $serverData) {
+      $server = $this->castDatabaseServer($serverData['dbSettings'], $serverData['type']);
+      if ($server instanceof DatabaseManagerInterface) {
+        if (!$server->deleteDatabase($serverData['database'])) {
+          $this->warn(STRING_UNABLE_TO_DELETE_DB, array(
+            '!name' => $serverData['database'],
+          ));
+          $ret = FALSE;
+        }
+        if (!$server->deleteUser($serverData['username'], $serverData['host'])) {
+          $this->warn(STRING_UNABLE_TO_DELETE_USER, array(
+            '!name' => $serverData['username'],
+          ));
+          $ret = FALSE;
+        }
+      }
+      else {
+        $this->warn(STRING_UNABLE_TO_USE_DB, array(
+          '!type' => $serverData['type'],
+        ));
+        $ret = FALSE;
+      }
+    }
+    return $ret;
   }
   
   /**
@@ -307,6 +379,7 @@ class DatabaseConfigurationPlugin extends GenericPlugin implements EventListener
     }
     $prefix = $this->args()->getOption(CONFIG_DB_PREFIX);
     $drupalSettings = array();
+    $dbStorage = array();
     foreach ($context->servers as $server) {
       if ($server instanceof DatabaseManagerInterface) {
         $dbname = $server->sanitizeDatabaseName($dbname);
@@ -314,6 +387,13 @@ class DatabaseConfigurationPlugin extends GenericPlugin implements EventListener
         if ($dbpass == DB_RANDOM_PASSWORD) {
           $dbpass = $server->randomPassword();
         }
+        $dbStorage[] = array(
+          'type' => $server->getSetting(DB_HOST_TYPE),
+          'dbSettings' => $server->getSettings(),
+          'username' => $username,
+          'database' => $dbname,
+          'host' => $host,
+        );
         $drupalSettings[$server->getDatabaseCategory()][$server->getDatabaseMode()] = array(
           'driver' => $server->getDriver(),
           'database' => $dbname,
@@ -336,6 +416,7 @@ class DatabaseConfigurationPlugin extends GenericPlugin implements EventListener
       $this->error(STRING_CANNOT_WRITE_SETTINGS);
       return FALSE;
     }
+    $site->setSetting(SITE_DATABASE_LIST, $dbStorage);
     return TRUE;
   }
   
@@ -430,6 +511,7 @@ class DatabaseConfigurationPlugin extends GenericPlugin implements EventListener
     $dbServers = array();
     foreach ($servers as $server) {
       $type = isset($server[DB_HOST_TYPE]) ? $server[DB_HOST_TYPE] : $defaultType;
+      $server[DB_HOST_TYPE] = $type;
       $dbServer = $this->getCastedDBServer($server, $type);
       if ($dbServer instanceof DatabaseManagerInterface) {
         if ($dbServer->available()) {

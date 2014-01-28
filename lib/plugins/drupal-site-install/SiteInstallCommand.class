@@ -57,6 +57,7 @@ class SiteInstallCommand extends GenericSiteCommand {
   public function executeCommand() {
     $site = $this->getSite();
     $site->loadSettings();
+    var_dump(SITE_DRUSH_ALIAS);
     $baseContext = (object) array(
       'site' => $site,
     );

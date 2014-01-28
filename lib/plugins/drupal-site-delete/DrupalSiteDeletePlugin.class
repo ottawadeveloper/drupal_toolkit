@@ -7,7 +7,7 @@
  * Responsible for registering the SiteDeleteCommand object and its
  * configuration, etc.
  */
-class DrupalSiteDeletePlugin extends GenericPlugin {
+class DrupalSiteDeletePlugin extends GenericPlugin implements EventListener {
   
   public function initialize() {
     $base = dirname(__FILE__);

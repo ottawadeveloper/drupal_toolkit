@@ -78,6 +78,36 @@ interface DatabaseManagerInterface {
   function getSetting($key, $default = NULL);
   
   /**
+   * Deletes a database.
+   * 
+   * @param string $dbname
+   *   The database to delete.
+   * 
+   * @return boolean
+   *   TRUE if it was deleted properly, otherwise FALSE.
+   */
+  function deleteDatabase($dbname);
+  
+  /**
+   * Deletes a user.
+   * 
+   * @param string $username
+   *   The username to drop.
+   * 
+   * @return boolean
+   *   TRUE if the user was delete properly, otherwise FALSE.
+   */
+  function deleteUser($username);
+  
+  /**
+   * Retrieves an array of settings.
+   * 
+   * @return array
+   *   An array of settings.
+   */
+  function getSettings();
+  
+  /**
    * Retrieves the Drupal DB category. This is the first parameter of the
    * $databases array in settings.php.
    * 

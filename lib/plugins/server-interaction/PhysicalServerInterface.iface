@@ -82,4 +82,14 @@ interface PhysicalServerInterface {
    */
   function getSetting($key, $default = NULL);
   
+  /**
+   * Retrieves all settings.
+   * 
+   * @return array
+   *   An array of settings.
+   * 
+   * @see @ref server_settings "Server Settings"
+   */
+  function getSettings();
+  
 }

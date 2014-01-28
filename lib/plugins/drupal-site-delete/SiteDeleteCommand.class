@@ -22,9 +22,6 @@ class SiteDeleteCommand extends GenericSiteCommand {
     return parent::verifyRequirements();
   }
   
-  /**
-   * 
-   */
   public function executeCommand() {
     $site = $this->getSite();
     $site->loadSettings();

@@ -84,6 +84,10 @@ abstract class GenericDBM implements DatabaseManagerInterface {
     return $default;
   }
   
+  public function getSettings() {
+    return $this->connectionData;
+  }
+  
   public function getHost() {
     return $this->getSetting(DB_HOST_HOST);
   }

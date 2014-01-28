@@ -187,23 +187,11 @@ class DrupalSite {
    *   TRUE if the file was saved, otherwise FALSE.
    */
   public function saveConfiguration() {
-    $export = '';
-    $export .= '[settings]' . PHP_EOL;
-    foreach ($this->settings as $k => $v) {
-      if (is_array($v)) {
-        foreach ($v as $value) {
-          $export .= $k . '="' . $value . '"' . PHP_EOL;
-        }
-      }
-      else {
-        $export .= $k . '="' . $v . '"' . PHP_EOL;
-      }
-    }
-    $export .= PHP_EOL . PHP_EOL . '[tokens]' . PHP_EOL;
-    foreach ($this->placeholders as $k => $v) {
-      $export .= $k . '="' . $v . '"' . PHP_EOL;
-    }
-    return file_put_contents(assemble_path($this->getBuildFolder(), 'webcms.scf'), $export);
+    $export = array(
+      'settings' => $this->settings,
+      'placeholders' => $this->placeholders,
+    );
+    return file_put_contents(assemble_path($this->getBuildFolder(), 'webcms.scf'), serialize($export));
   }
   
   /**
@@ -457,7 +445,9 @@ class DrupalSite {
    */
   public function loadSettings() {
     if ($this->exists()) {
-      array_extend($this->settings, parse_ini_file(assemble_path($this->getBuildFolder(), 'webcms.scf')));
+      $contents = unserialize(file_get_contents(assemble_path($this->getBuildFolder(), 'webcms.scf')));
+      array_extend($this->settings, $contents['settings']);
+      array_extend($this->placeholders, $contents['placeholders']);
       return TRUE;
     }
     return FALSE;
