@@ -137,6 +137,7 @@ class DrupalSiteStandardBuildPlugin extends GenericPlugin implements EventListen
   public function initialize() {
     $this->events()->registerListener(array(
       EVENT_SITE_BUILD_CODEBASE,
+      EVENT_UPDATE_CODEBASE,
     ), $this);
     $this->config()->extendDefaultConfiguration(array(
       CONFIG_GIT_REPO_ROOT => '',
@@ -157,6 +158,7 @@ class DrupalSiteStandardBuildPlugin extends GenericPlugin implements EventListen
   public function captureEvent(&$context, $type) {
     switch ($type) {
       case EVENT_SITE_BUILD_CODEBASE:
+      case EVENT_UPDATE_CODEBASE:
         $context->success = $this->buildSite($context->site, $context->build_id);
         $context->stopPropagation = TRUE;
         break;
@@ -182,7 +184,7 @@ class DrupalSiteStandardBuildPlugin extends GenericPlugin implements EventListen
     ), array(
       CONFIG_DRUSH_MAKE_OPTIONS,
     ));
-    $branch = $this->getBranch();
+    $branch = $this->getBranch($site);
     if (empty($branch)) { 
       $this->error(STRING_SITE_NO_BRANCH);
       return FALSE;
@@ -235,8 +237,11 @@ class DrupalSiteStandardBuildPlugin extends GenericPlugin implements EventListen
    * @return string
    *   The branch name or NULL if none was found.
    */
-  private function getBranch() {
+  private function getBranch(DrupalSite $site) {
     $branch = $this->args()->getOption(OPTION_BRANCH);
+    if (empty($branch)) {
+      $branch = $site->getSetting(SITE_SETTING_CLONED_BRANCH);
+    }
     if (empty($branch)) {
       $branch = $this->config()->getConfig(CONFIG_DEFAULT_BRANCH);
     }

@@ -105,7 +105,7 @@ define('STRING_UPDATE_GENERIC_ERROR', 'drupal_site_update.error');
 /**
  * Responsible for updating a Drupal site.
  */
-class SiteInstallCommand extends GenericSiteCommand {
+class SiteUpdateCommand extends GenericSiteCommand {
   
   public function verifyRequirements() {
     if (!$this->requireSite()) {
@@ -118,7 +118,9 @@ class SiteInstallCommand extends GenericSiteCommand {
     $context->success = $optional;
     $this->events()->fireEvent($stepEvent, $context);
     if (empty($context->success)) {
-      $this->error($stepError);
+      $this->error(STRING_UPDATE_GENERIC_ERROR, array(
+        '!step' => $stepEvent,
+      ));
       exit(1);
     }
     return TRUE;
