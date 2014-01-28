@@ -240,7 +240,7 @@ class HttpConfigurationPlugin extends GenericPlugin implements EventListener {
           'server' => $httpServer->machine(),
         );
         // In support of apache2's sites-enabled directory.
-        $extra = $httpServer->extraFiles();
+        $extra = $httpServer->extraFiles($configFile);
         foreach ($extra as $x) {
           $httpRegistry[] = array(
             'file' => $x,

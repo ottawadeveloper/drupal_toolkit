@@ -110,7 +110,20 @@ class DrupalSiteStandardServerStructurePlugin extends GenericPlugin implements E
     return TRUE;
   }
   
-  public function deleteServerStructure(DrupalSite $site) {
+  /**
+   * Responsible for deleting the server structure.
+   * 
+   * @param DrupalSite $site
+   *   The server structure.
+   * 
+   * @return boolean
+   *   TRUE if the server docroot was removed successfully, otherwise FALSE.
+   */
+  private function deleteServerStructure(DrupalSite $site) {
+    // We don't handle local sites.
+    if ($site->getSetting(SITE_IS_LOCAL)) {
+      return TRUE;
+    }
     $path = $site->getSetting(SITE_SETTING_DOCROOT);
     if (!empty($path)) {
       unlink($path);

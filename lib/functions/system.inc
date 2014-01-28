@@ -25,6 +25,42 @@ function get_system_username() {
 }
 
 /**
+ * Recursively deletes an entire directory.
+ * 
+ * Includes security check to not delete the root directory.
+ * 
+ * @param string $directory
+ *   Directory to recursively delete.
+ * 
+ * @return boolean
+ *   TRUE if the directory was deleted successfully, otherwise FALSE.
+ */
+function remove_directory($directory) {
+  if (extra_empty(trim($directory, '/\\'))) {
+    return FALSE;
+  }
+  if (!is_dir($directory)) {
+    return unlink($directory);
+  }
+  elseif (is_link($directory)) {
+    return unlink($directory);
+  }
+  $h = opendir($directory);
+  if (empty($h)) {
+    return FALSE;
+  }
+  while(($file = readdir($h)) !== FALSE) {
+    if ($file !== '.' && $file !== '..') {
+      if (!remove_directory(assemble_path($directory, $file))) {
+        return FALSE;
+      }
+    }
+  }
+  closedir($h);
+  return rmdir($directory);
+}
+
+/**
  * Expands a path in ways that realpath() doesn't and without necessarily
  * ensuring the file exists.
  * 
