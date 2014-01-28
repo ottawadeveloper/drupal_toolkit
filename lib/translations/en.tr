@@ -99,4 +99,4 @@ db_config.error.cannot-delete-user = 'Could not delete user [!user]'
 
 server_interaction.error.could-not-delete-remote-file = 'Unable to delete server config file.'
 
-
+drupal_site_update.error = 'Unable to update site!'

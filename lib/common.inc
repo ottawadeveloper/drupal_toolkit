@@ -360,6 +360,7 @@ $core_plugins = array(
   'drupal-site-install' => 'DrupalSiteInstallPlugin',
   'drupal-site-delete' => 'DrupalSiteDeletePlugin',
   'drupal-site-exists' => 'DrupalSiteExistsPlugin',
+  'drupal-site-update' => 'DrupalSiteUpdatePlugin',
   'standard-config' => 'DrupalSiteStandardConfigPlugin',
   'standard-build' => 'DrupalSiteStandardBuildPlugin',
   'standard-structure' => 'DrupalSiteStandardStructurePlugin',

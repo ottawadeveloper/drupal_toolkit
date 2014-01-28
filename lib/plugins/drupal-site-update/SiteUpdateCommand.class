@@ -1,0 +1,151 @@
+<?php
+/**
+ * @file Defines the SiteUpdateCommand class.
+ */
+
+/**
+ * Fired before the update process begins.
+ * 
+ * @ingroup events
+ */
+define('EVENT_UPDATE_START', 'begin-update');
+
+/**
+ * Fired to build the new codebase.
+ * 
+ * @ingroup events
+ */
+define('EVENT_UPDATE_CODEBASE', 'update-codebase');
+
+/**
+ * Fired to migrate in the site definitions.
+ * 
+ * @ingroup events
+ */
+define('EVENT_UPDATE_SITES', 'update-sites');
+
+/**
+ * Fired when the codebase work is complete, but before we take a backup.
+ * 
+ * @ingroup events
+ */
+define('EVENT_UPDATE_CODEBASE_COMPLETE', 'update-codebase-complete');
+
+/**
+ * Fired to get a backup done.
+ * 
+ * @ingroup events
+ */
+define('EVENT_UPDATE_TAKE_BACKUP', 'update-backup');
+
+/**
+ * Fired to prepare the site for the update (eg engage maintenance mode).
+ * 
+ * @ingroup events
+ */
+define('EVENT_UPDATE_PREPARE_FOR_UPDATE', 'update-prepare');
+
+/**
+ * Fired to prepare the server for the update (eg update config files).
+ * 
+ * @ingroup events
+ */
+define('EVENT_UPDATE_PREPARE_SERVER', 'update-server-prep');
+
+/**
+ * Fired to allow plugins to provide actions that must take place on the
+ * site.
+ * 
+ * @ingroup events
+ */
+define('EVENT_UPDATE_ACTIONS', 'update-core');
+
+/**
+ * Fired to allow plugins to provide actions after the actions are complete.
+ * 
+ * @ingroup events
+ */
+define('EVENT_UPDATE_COMPLETE', 'update-complete');
+
+/**
+ * Fired to prepare the site for a complete cache wipe.
+ * 
+ * @ingroup events
+ */
+define('EVENT_UPDATE_PREPARE_FOR_REFRESH', 'update-refresh-prep');
+
+/**
+ * Fired to wipe all the caches and make the site live again.
+ * 
+ * @ingroup events
+ */
+define('EVENT_UPDATE_REFRESH', 'update-refresh');
+
+/**
+ * Fired to cleanup anything we need to last-minute.
+ * 
+ * @ingroup events
+ */
+define('EVENT_UPDATE_CLEANUP', 'update-cleanup');
+
+/**
+ * Fired when the update is completely done.
+ * 
+ * @ingroup events
+ */
+define('EVENT_UPDATE_FINISH', 'finish-update');
+
+/**
+ * String token for when the site fails to update.
+ * 
+ * @ingroup strings
+ */
+define('STRING_UPDATE_GENERIC_ERROR', 'drupal_site_update.error');
+
+/**
+ * Responsible for updating a Drupal site.
+ */
+class SiteInstallCommand extends GenericSiteCommand {
+  
+  public function verifyRequirements() {
+    if (!$this->requireSite()) {
+      return FALSE;
+    }
+    return parent::verifyRequirements();
+  }
+  
+  private function executeStep($stepEvent, &$context, $optional = FALSE) {
+    $context->success = $optional;
+    $this->events()->fireEvent($stepEvent, $context);
+    if (empty($context->success)) {
+      $this->error($stepError);
+      exit(1);
+    }
+    return TRUE;
+  }
+  
+  public function executeCommand() {
+    $site = $this->getSite();
+    $site->loadSettings();
+    $buildID = date('Ymd-His');
+    $baseContext = (object) array(
+      'site' => $site,
+      'build_id' => $buildID,
+    );
+    $this->events()->fireEvent(EVENT_UPDATE_START, $baseContext);
+    $this->executeStep(EVENT_UPDATE_CODEBASE, $baseContext);
+    $site->registerNewBuildID($buildID);
+    $this->executeStep(EVENT_UPDATE_SITES, $baseContext);
+    $this->executeStep(EVENT_UPDATE_CODEBASE_COMPLETE, $baseContext, TRUE);
+    $this->executeStep(EVENT_UPDATE_TAKE_BACKUP, $baseContext);
+    $this->executeStep(EVENT_UPDATE_PREPARE_FOR_UPDATE, $baseContext);
+    $this->executeStep(EVENT_UPDATE_PREPARE_SERVER, $baseContext, TRUE);
+    $this->executeStep(EVENT_UPDATE_ACTIONS, $baseContext);
+    $this->executeStep(EVENT_UPDATE_COMPLETE, $baseContext, TRUE);
+    $this->executeStep(EVENT_UPDATE_PREPARE_FOR_REFRESH, $baseContext, TRUE);
+    $this->executeStep(EVENT_UPDATE_REFRESH, $baseContext);
+    $this->executeStep(EVENT_UPDATE_CLEANUP, $baseContext, TRUE);
+    $this->events()->fireEvent(EVENT_UPDATE_FINISH, $baseContext);
+  }
+  
+}
