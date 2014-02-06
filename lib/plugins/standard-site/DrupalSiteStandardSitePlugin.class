@@ -91,6 +91,13 @@ define('SITE_SETTINGS_FILE', 'settings-file');
 define('SITE_SETTINGS_TEMPLATE', 'settings-template');
 
 /**
+ * String token for if we cannot delete the default directory.
+ * 
+ * @ingroup strings
+ */
+define('STRING_UNABLE_TO_DELETE_DEFAULT', 'standard_site.error.unable-to-delete-default');
+
+/**
  * Responsible for managing the basic sites configuration for Drupal sites.
  * 
  * This refers mostly to the contents of the Drupal sites folder, except for the
@@ -106,6 +113,7 @@ class DrupalSiteStandardSitePlugin extends GenericPlugin implements EventListene
   public function initialize() {
     $this->events()->registerListener(array(
       EVENT_SITE_BUILD_SITES,
+      EVENT_UPDATE_SITES,
     ), $this);
     $this->config()->extendDefaultConfiguration(array(
       CONFIG_SKIP_REDUNDANT_SYMLINKS => FALSE,
@@ -123,7 +131,37 @@ class DrupalSiteStandardSitePlugin extends GenericPlugin implements EventListene
         $context->success = $this->initializeSites($context->site);
         $context->stopPropagation = TRUE;
         break;
+      case EVENT_UPDATE_SITES:
+        $context->success = $this->updateSites($context->site);
+        $context->stopPropagation = TRUE;
+        break;
     }
+  }
+  
+  /**
+   * Responsible for updating all the site symlinks
+   * 
+   * @param DrupalSite $site
+   *   The site to update symlinks for.
+   * 
+   * @return boolean
+   *   TRUE if all the sites were updated successfully, otherwise FALSE.
+   */
+  private function updateSites(DrupalSite $site) {
+    $defaultSite = assemble_path($site->getSetting(SITE_SETTING_CURRENT_BUILD));
+    if (empty($defaultSite)) {
+      $this->error(STRING_SITE_MISSING_SETTING, array(
+        '!key' => SITE_SETTING_CURRENT_BUILD,
+      ));
+      return FALSE;
+    }
+    $defaultDirectory = assemble_path($currentBase, 'sites', 'default');
+    remove_directory($defaultDirectory);
+    if (is_dir($defaultDirectory)) {
+      $this->error(STRING_UNABLE_TO_DELETE_DEFAULT);
+      return FALSE;
+    }
+    return $this->symlinkAllSites($site);
   }
   
   /**
