@@ -12,6 +12,13 @@
  */
 
 /**
+ * Contains the previous build ID.
+ * 
+ * @ingroup site_settings
+ */
+define('SITE_LAST_BUILD_ID', 'last-build-id');
+
+/**
  * Fired to remove everything that belongs with a site.
  * 
  * @ingroup events
@@ -426,6 +433,7 @@ class DrupalSite {
    *   The build ID.
    */
   public function registerNewBuildID($buildID) {
+    $this->settings[SITE_LAST_BUILD_ID] = $this->settings[SITE_LATEST_BUILD_ID];
     $this->settings[SITE_LATEST_BUILD_ID] = $buildID;
     $this->settings[SITE_BUILD_IDS][] = $buildID;
   }

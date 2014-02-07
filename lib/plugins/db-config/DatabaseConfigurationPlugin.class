@@ -250,6 +250,13 @@ define('STRING_UNABLE_TO_DELETE_DB', 'db_config.error.cannot-delete-db');
 define('STRING_UNABLE_TO_DELETE_USER', 'db_config.error.cannot-delete-user');
 
 /**
+ * Site setting for all the Drupal DB connection keys.
+ * 
+ * @ingroup site_settings
+ */
+define('SITE_DB_CONNECTION_KEYS', 'db-connection-keys');
+
+/**
  * This plugin manages the database for a Drupal site.
  * 
  * @ingroup plugins
@@ -380,6 +387,7 @@ class DatabaseConfigurationPlugin extends GenericPlugin implements EventListener
     $prefix = $this->args()->getOption(CONFIG_DB_PREFIX);
     $drupalSettings = array();
     $dbStorage = array();
+    $connectionKeys = array();
     foreach ($context->servers as $server) {
       if ($server instanceof DatabaseManagerInterface) {
         $dbname = $server->sanitizeDatabaseName($dbname);
@@ -394,6 +402,7 @@ class DatabaseConfigurationPlugin extends GenericPlugin implements EventListener
           'database' => $dbname,
           'host' => $host,
         );
+        $connectionKeys[$server->getDatabaseCategory()] = $server->getDatabaseCategory();
         $drupalSettings[$server->getDatabaseCategory()][$server->getDatabaseMode()] = array(
           'driver' => $server->getDriver(),
           'database' => $dbname,
@@ -416,6 +425,7 @@ class DatabaseConfigurationPlugin extends GenericPlugin implements EventListener
       $this->error(STRING_CANNOT_WRITE_SETTINGS);
       return FALSE;
     }
+    $site->setSetting(SITE_DB_CONNECTION_KEYS, $connectionKeys);
     $site->setSetting(SITE_DATABASE_LIST, $dbStorage);
     return TRUE;
   }

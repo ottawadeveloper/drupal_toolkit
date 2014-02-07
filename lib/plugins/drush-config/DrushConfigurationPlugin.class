@@ -80,6 +80,13 @@ define('STRING_COULD_NOT_WRITE_DRUSH_ALIAS', 'drush_config.error.no-alias-file')
 define('SITE_DRUSH_ALIAS', 'drush-alias');
 
 /**
+ * Site setting for all the drush aliases.
+ * 
+ * @ingroup site_settings
+ */
+define('SITE_DRUSH_ALIASES', 'drush-aliases');
+
+/**
  * Takes responsibility for setting up the drush alias.
  */
 class DrushConfigurationPlugin extends GenericPlugin implements EventListener {
@@ -147,6 +154,7 @@ class DrushConfigurationPlugin extends GenericPlugin implements EventListener {
     }
     if (!$context->skipLocal) {
       $site->setSetting(SITE_DRUSH_ALIAS, $site->getBuildName());
+      $site->appendSettingValue(SITE_DRUSH_ALIASES, $site->getBuildName());
     }
     $site->appendSettingValue(SITE_REMOTE_FILES, $aliasList);
     return TRUE;

@@ -241,6 +241,73 @@ function drush_command($subcommand, $alias = NULL, array $args = array(), array 
 }
 
 /**
+ * Dumps out the database to a specific location.
+ * 
+ * @param string $alias
+ *   The alias of the Drupal site to dump. If empty, PHP's cwd must be a 
+ *   sensible location to run this command.
+ * @param string $destination
+ *   The destination for the dump file.
+ * @param array $options
+ *   An array of additional options for the command:
+ *   - data-only: Set to TRUE to skip schema creation commands.
+ *   - database: Pass a specific DB connection key to use.
+ *   - db-url: Pass to specify a specific DB connection.
+ *   - gzip: Set to TRUE to gzip the dump.
+ *   - ordered-dump: Set to TRUE to order by PK and add line breaks.
+ *   - result-file: Same as $destination (overrides $destination).
+ *   - skip-tables-key: ??
+ *   - structure-tables-key: ??
+ *   - tables-key: ??
+ *   - tables-list: A list of tables to dump.
+ * 
+ * @return boolean
+ *   TRUE if the dump was successful.
+ * 
+ * @see http://drush.ws/#sql-dump
+ */
+function drush_db_dump($alias = NULL, $destination = NULL, $options = array()) {
+  array_extend($options, array(
+    'data-only' => FALSE,
+    'database' => NULL,
+    'db-url' => NULL,
+    'gzip' => FALSE,
+    'ordered-dump' => FALSE,
+    'result-file' => $destination,
+    'skip-tables-key' => NULL,
+    'structure-tables-key' => NULL,
+    'tables-key' => NULL,
+    'tables-list' => array(),
+  ));
+  $cmd = 'sql-dump';
+  $args = array();
+  foreach ($options as $key => $value) {
+    if (!empty($value)) {
+      if ($value === TRUE) {
+        $cmd .= ' --' . $key;
+      }
+      else {
+        $cmd .= ' --' . $key . '=!' . $key;
+        if (is_array($value)) {
+          $args['!' . $key] = implode(',' , $value);
+        }
+        else {
+          $args['!' . $key] = $value;
+        }
+      }
+    }
+  }
+  drush_command($cmd, $alias, $args, $out, $exit);
+  if (!extra_empty($exit)) {
+    return FALSE;
+  }
+  if (!empty($destination)) {
+    return file_exists($destination);
+  }
+  return TRUE;
+}
+
+/**
  * Executes a drush make.
  * 
  * Note that this doesn't use the drush_command() function as there's almost

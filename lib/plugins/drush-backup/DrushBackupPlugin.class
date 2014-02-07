@@ -1,0 +1,63 @@
+<?php
+/**
+ * @file Defines the DrushBackupPlugin class.
+ */
+
+/**
+ * String token for when we are unable to backup the database.
+ * 
+ * @ingroup strings
+ */
+define('STRING_COULD_NOT_BACKUP_DB', 'drush_backup.error.no-db-backup');
+
+/**
+ * Responsible for database backups using drush.
+ */
+class DrushBackupPlugin extends GenericPlugin implements EventListener {
+  
+  public function initialize() {
+    $this->events()->registerListener(array(
+      EVENT_UPDATE_TAKE_BACKUP,
+    ), $this);
+  }
+  
+  public function captureEvent(&$context, $eventType) {
+    switch ($eventType) {
+      case EVENT_UPDATE_TAKE_BACKUP:
+        $context->success = $this->drushBackup($context->site);
+        $context->stopPropagation = TRUE;
+        break;
+    }
+  }
+  
+  public function requiredPlugins() {
+    return array('DrupalSite', 'DrushConfigurationPlugin', 'DatabaseConfigurationPlugin');
+  }
+  
+  /**
+   * Takes a backup of a site's database using Drush.
+   * 
+   * @param DrupalSite $site
+   *   The site to take a backup of.
+   * 
+   * @return boolean
+   *   Whether or not the backup was successful.
+   */
+  private function drushBackup(DrupalSite $site) {
+    $drushAlias = $site->getSetting(SITE_DRUSH_ALIAS);
+    $keys = array(
+      'default' => 'default',
+    ) + $site->getSetting(SITE_DB_CONNECTION_KEYS);
+    foreach ($keys as $dbkey) {
+      $file = assemble_path($site->getBuildFolder(), 'backups', $site->getSetting(SITE_LAST_BUILD_ID), '.' . $dbkey . '.sql');
+      if (!drush_db_dump($drushAlias, $file, array(
+        'database' => $dbkey,
+      ))) {
+        $this->error(STRING_COULD_NOT_BACKUP_DB);
+        return FALSE;
+      }
+    }
+    return TRUE;
+  }  
+  
+}

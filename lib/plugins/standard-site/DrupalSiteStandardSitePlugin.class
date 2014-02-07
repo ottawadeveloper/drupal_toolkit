@@ -155,7 +155,7 @@ class DrupalSiteStandardSitePlugin extends GenericPlugin implements EventListene
       ));
       return FALSE;
     }
-    $defaultDirectory = assemble_path($currentBase, 'sites', 'default');
+    $defaultDirectory = assemble_path($defaultSite, 'sites', 'default');
     remove_directory($defaultDirectory);
     if (is_dir($defaultDirectory)) {
       $this->error(STRING_UNABLE_TO_DELETE_DEFAULT);
