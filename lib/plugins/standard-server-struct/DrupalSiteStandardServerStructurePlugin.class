@@ -51,10 +51,15 @@ class DrupalSiteStandardServerStructurePlugin extends GenericPlugin implements E
     $this->events()->registerListener(array(
       EVENT_SITE_BUILD_SERVER_STRUCTURE,
       EVENT_REMOVE_ALL,
+      EVENT_UPDATE_PREPARE_SERVER,
     ), $this);
     $this->config()->extendDefaultConfiguration(array(
       CONFIG_SERVER_SITES_DIR => '',
     ));
+  }
+  
+  private function updateActiveLink(DrupalSite $site) {
+    
   }
   
   /**

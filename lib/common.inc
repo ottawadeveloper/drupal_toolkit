@@ -374,6 +374,7 @@ $core_plugins = array(
   'drush-config' => 'DrushConfigurationPlugin',
   'drush-install' => 'DrushInstallPlugin',
   'drush-backup' => 'DrushBackupPlugin',
+  'drush-maintenance' => 'DrushMaintenancePlugin',
   'permissions' => 'PermissionsPlugin',
 );
 
