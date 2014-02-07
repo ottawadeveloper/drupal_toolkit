@@ -1,0 +1,60 @@
+<?php
+/**
+ * @file Defines the DrushUpdatePlugin class.
+ */
+
+/**
+ * String token for when the updb command fails.
+ * 
+ * @ingroup strings
+ */
+define('STRING_COULD_NOT_UPDATE_DB', 'drush_update.error.no-updb');
+
+/**
+ * Responsible for updating a Drupal site via drush.
+ */
+class DrushUpdatePlugin extends GenericPlugin implements EventListener {
+  
+  public function initialize() {
+    $this->events()->registerListener(array(
+      EVENT_UPDATE_ACTIONS,
+    ), $this);
+  }
+  
+  public function captureEvent(&$context, $eventType) {
+    switch ($eventType) {
+      case EVENT_UPDATE_ACTIONS:
+        if (empty($context->handled) || $context->success) {
+          $context->success = $this->drushUpdate($context->site);
+          $context->handled = TRUE;
+        }
+        break;
+    }
+  }
+  
+  /**
+   * Responsible for updating the database.
+   * 
+   * @param DrupalSite $site
+   *   The drupal site to update.
+   * 
+   * @return boolean
+   *   TRUE if the site was updated successfully, otherwise FALSE.
+   */
+  private function drushUpdate(DrupalSite $site) {
+    $aliases = $site->getSetting(SITE_DRUSH_ALIASES);
+    if (empty($aliases)) {
+      $this->error(STRING_SITE_MISSING_SETTING, array(
+        '!key' => SITE_DRUSH_ALIASES,
+      ));
+      return FALSE;
+    }
+    foreach ($aliases as $alias) {
+      if (!drush_updb($alias)) {
+        return FALSE;
+      }
+    }
+    return TRUE;
+  }
+  
+}

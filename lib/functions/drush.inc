@@ -195,6 +195,22 @@ function drush_check_maintenance_mode($alias = NULL) {
 }
 
 /**
+ * Updates the database via drush.
+ * 
+ * @param string $alias
+ *   The alias for the site. Defaults to NULL which allows drush to determine
+ *   the site to use.
+ * 
+ * @return boolean
+ *   TRUE if the update was successful, otherwise FALSE.
+ */
+function drush_updb($alias = NULL) {  
+  $cmd = 'updb -y';
+  drush_command($cmd, $alias, array(), $out, $exit);
+  return extra_empty($exit);
+}
+
+/**
  * Checks a drush info array (either from drush status or pm-info) for a
  * particular key:value pairing.
  * 

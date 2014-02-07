@@ -105,3 +105,5 @@ drupal_site_update.error = 'Unable to update site, failure on step [!step]!'
 drush_backup.error.no-db-backup = 'Unable to backup the database.'
 
 drush_maintenance.error.maintenance-mode-failure = 'Unable to set maintenance mode to !state.'
+
+drush_update.error.no-updb = 'Unable to update the database.'
