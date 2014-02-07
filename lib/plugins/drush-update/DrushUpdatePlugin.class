@@ -18,6 +18,7 @@ class DrushUpdatePlugin extends GenericPlugin implements EventListener {
   public function initialize() {
     $this->events()->registerListener(array(
       EVENT_UPDATE_ACTIONS,
+      EVENT_UPDATE_REFRESH,
     ), $this);
   }
   
@@ -29,7 +30,38 @@ class DrushUpdatePlugin extends GenericPlugin implements EventListener {
           $context->handled = TRUE;
         }
         break;
+      case EVENT_UPDATE_REFRESH:
+        if (empty($context->handled) || $context->success) {
+          $context->success = $this->drushCacheWipe($context->site);
+          $context->handled = TRUE;
+        }
+        break;
     }
+  }
+  
+  /**
+   * Wipes all Drupal caches via Drush.
+   * 
+   * @param DrupalSite $site
+   *   The site to wipe caches for.
+   *
+   * @return boolean
+   *   TRUE if all the caches were wiped successfully, otherwise FALSE.
+   */
+  private function drushCacheWipe(DrupalSite $site) {
+    $aliases = $site->getSetting(SITE_DRUSH_ALIASES);
+    if (empty($aliases)) {
+      $this->error(STRING_SITE_MISSING_SETTING, array(
+        '!key' => SITE_DRUSH_ALIASES,
+      ));
+      return FALSE;
+    }
+    foreach ($aliases as $alias) {
+      if (!drush_cache_clear($alias)) {
+        return FALSE;
+      }
+    }
+    return TRUE;
   }
   
   /**
