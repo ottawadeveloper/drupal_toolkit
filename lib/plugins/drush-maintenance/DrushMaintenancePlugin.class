@@ -1,0 +1,60 @@
+<?php
+/**
+ * @file Defines the DrushMaintenancePlugin class.
+ */
+
+/**
+ * String token for when maintenance mode fails to engage.
+ * 
+ * @ingroup string
+ */
+define('STRING_MAINTENANCE_MODE_FAILURE', 'drush_maintenance.error.maintenance-mode-failure');
+
+/**
+ * Responsible for various functions relating to the update process.
+ */
+class DrushMaintenancePlugin extends GenericPlugin implements EventListener {
+  
+  public function initialize() {
+    $this->events()->registerListener(array(
+      EVENT_UPDATE_PREPARE_FOR_UPDATE,
+    ), $this);
+  }
+  
+  public function captureEvent(&$context, $eventType) {
+    switch ($eventType) {
+      case EVENT_UPDATE_PREPARE_FOR_UPDATE:
+        if (empty($context->handled) || $context->success) {
+          $context->success = $this->setMaintenanceMode($context->site, TRUE);
+          $context->handled = TRUE;
+        }
+        break;
+    }
+  }
+  
+  /**
+   * Manages the maintenance mode for a site.
+   * 
+   * @param DrupalSite $site
+   *   The DrupalSite to change the maintenance mode on.
+   * @param boolean $on
+   *   TRUE to engage maintenance mode, FALSE to disengage it.
+   * 
+   * @return boolean
+   *   TRUE if the maintenance mode was correctly set on all aliases, otherwise
+   *   FALSE.
+   */
+  private function setMaintenanceMode(DrupalSite $site, $on = TRUE) {
+    $aliases = $site->getSetting(SITE_DRUSH_ALIASES);
+    foreach ($aliases as $alias) {
+      if (!drush_maintenance_mode(!!$on, $alias)) {
+        $this->error(STRING_MAINTENANCE_MODE_FAILURE, array(
+          '!state' => $on ? 1 : 0,
+        ));
+        return FALSE;
+      }
+    }
+    return TRUE;
+  }
+  
+}

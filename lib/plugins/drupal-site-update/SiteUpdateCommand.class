@@ -116,6 +116,7 @@ class SiteUpdateCommand extends GenericSiteCommand {
   
   private function executeStep($stepEvent, &$context, $optional = FALSE) {
     $context->success = $optional;
+    $context->handled = FALSE;
     $this->events()->fireEvent($stepEvent, $context);
     if (empty($context->success)) {
       $this->error(STRING_UPDATE_GENERIC_ERROR, array(

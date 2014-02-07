@@ -153,6 +153,48 @@ function drush_site_install($profile = NULL, $alias = NULL, array $extra = array
 }
 
 /**
+ * Enables or disables maintenance mode on a Drupal site.
+ * 
+ * @param boolean $setTo
+ *   Whether to enable (TRUE) or disable (FALSE) maintenance mode. Defaults to
+ *   TRUE.
+ * @param string $alias
+ *   The alias for the site. Defaults to NULL which allows drush to determine
+ *   the site to use.
+ * 
+ * @return boolean
+ *   TRUE if the site is now in or out of maintenance mode as determine by
+ *   $setTo.
+ */
+function drush_maintenance_mode($setTo = TRUE, $alias = NULL) {
+  $subcommand = 'vset maintenance_mode ' . ($setTo ? "1" : "0");
+  drush_command($subcommand, $alias, array(), $out, $exit);
+  if (!extra_empty($exit)) {
+    return FALSE;
+  }
+  return drush_check_maintenance_mode($alias) == $setTo;
+}
+
+/**
+ * Checks if maintenance mode is enabled.
+ * 
+ * @param string $alias
+ *   The alias for the site. Defaults to NULL which allows drush to determine
+ *   the site to use.
+ * 
+ * @return boolean
+ *   TRUE if maintenance mode is enabled, otherwise FALSE.
+ */
+function drush_check_maintenance_mode($alias = NULL) {
+  $cmd = 'vget maintenance_mode';
+  drush_command($cmd, $alias, array(), $out, $exit);
+  if (!extra_empty($exit)) {
+    return FALSE;
+  }
+  return drush_info_has_key_value($out, 'maintenance_mode', '1');
+}
+
+/**
  * Checks a drush info array (either from drush status or pm-info) for a
  * particular key:value pairing.
  * 

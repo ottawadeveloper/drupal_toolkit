@@ -372,8 +372,9 @@ $core_plugins = array(
   'gateway-config' => 'GatewayConfigurationPlugin',
   'db-config' => 'DatabaseConfigurationPlugin',
   'drush-config' => 'DrushConfigurationPlugin',
-  'permissions' => 'PermissionsPlugin',
   'drush-install' => 'DrushInstallPlugin',
+  'drush-backup' => 'DrushBackupPlugin',
+  'permissions' => 'PermissionsPlugin',
 );
 
 /*
