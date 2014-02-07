@@ -187,6 +187,17 @@ class HttpConfigurationPlugin extends GenericPlugin implements EventListener {
     return array('ServerInteractionPlugin', 'DrupalSitePlugin');
   }
   
+  private function restartAll() {
+    $this->events()->fireEvent(EVENT_FIND_HTTP_SERVERS, $context);
+    $httpRegistry = array();
+    foreach ($context->servers as $httpServer) {
+      if ($httpServer instanceof GenericHttpServer) {
+        $httpServer->doReboot();
+      }
+    }
+    return TRUE;
+  }
+  
   /**
    * Publishes the HTTP server configuration where its needed.
    * 

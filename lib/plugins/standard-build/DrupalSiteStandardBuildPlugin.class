@@ -138,6 +138,7 @@ class DrupalSiteStandardBuildPlugin extends GenericPlugin implements EventListen
     $this->events()->registerListener(array(
       EVENT_SITE_BUILD_CODEBASE,
       EVENT_UPDATE_CODEBASE,
+      EVENT_UPDATE_PREPARE_FOR_UPDATE,
     ), $this);
     $this->config()->extendDefaultConfiguration(array(
       CONFIG_GIT_REPO_ROOT => '',
@@ -163,7 +164,7 @@ class DrupalSiteStandardBuildPlugin extends GenericPlugin implements EventListen
           $context->handled = TRUE;
         }
         break;
-      case EVENT_UPDATE_PREPARE_SERVER:
+      case EVENT_UPDATE_PREPARE_FOR_UPDATE:
         if (empty($context->handled) || $context->success) {
           $context->success = $this->updateCurrentLink($context->site);
           $context->handled = TRUE;

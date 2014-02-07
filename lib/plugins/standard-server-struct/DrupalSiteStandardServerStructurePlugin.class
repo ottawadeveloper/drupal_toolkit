@@ -58,10 +58,6 @@ class DrupalSiteStandardServerStructurePlugin extends GenericPlugin implements E
     ));
   }
   
-  private function updateActiveLink(DrupalSite $site) {
-    
-  }
-  
   /**
    * Handles configuration for local sites.
    * 
