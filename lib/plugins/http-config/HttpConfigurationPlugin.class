@@ -152,6 +152,7 @@ class HttpConfigurationPlugin extends GenericPlugin implements EventListener {
       EVENT_FIND_HTTP_SERVERS,
       EVENT_CAST_HTTP_SERVER,
       EVENT_SITE_BUILD_CONFIGURE_SERVER,
+      EVENT_UPDATE_PREPARE_SERVER,
     ), $this);
     $this->config()->extendDefaultConfiguration(array(
       CONFIG_HTTP_USE_LOCAL => TRUE,
@@ -166,6 +167,11 @@ class HttpConfigurationPlugin extends GenericPlugin implements EventListener {
   
   public function captureEvent(&$context, $eventType) {
     switch ($eventType) {
+      case EVENT_UPDATE_PREPARE_SERVER:
+        if (empty($context->handled) || $context->success) {
+          $context->success = $this->restartAll();
+        }
+        break;
       case EVENT_FIND_HTTP_SERVERS:
         $context->servers = array_merge($context->servers, $this->getHttpServers());
         break;
