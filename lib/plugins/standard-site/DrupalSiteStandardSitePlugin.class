@@ -148,7 +148,7 @@ class DrupalSiteStandardSitePlugin extends GenericPlugin implements EventListene
    *   TRUE if all the sites were updated successfully, otherwise FALSE.
    */
   private function updateSites(DrupalSite $site) {
-    $defaultSite = assemble_path($site->getSetting(SITE_SETTING_CURRENT_BUILD));
+    $defaultSite = $site->getSetting(SITE_SETTING_CURRENT_BUILD);
     if (empty($defaultSite)) {
       $this->error(STRING_SITE_MISSING_SETTING, array(
         '!key' => SITE_SETTING_CURRENT_BUILD,

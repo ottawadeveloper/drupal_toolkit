@@ -250,7 +250,8 @@ function drush_cache_clear($alias = NULL, $cache = NULL) {
   if (empty($cache)) {
     $cache = 'all';
   }
-  drush_command('cc ' . $cache, $alias);
+  drush_command('cc ' . $cache, $alias, array(), $out, $exit);
+  return extra_empty($exit);
 }
 
 /**
@@ -288,7 +289,7 @@ function drush_status($alias = NULL) {
  * @return string
  *   The last line of the command executed.
  */
-function drush_command($subcommand, $alias = NULL, array $args = array(), array &$out = array(), &$exit = NULL) {
+function drush_command($subcommand, $alias = NULL, array $args = array(), &$out = array(), &$exit = NULL) {
   $cmd = 'drush ';
   if (!empty($alias)) {
     $cmd .= '@' . $alias . ' ';

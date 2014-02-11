@@ -11,6 +11,13 @@
 define('STRING_COULD_NOT_UPDATE_DB', 'drush_update.error.no-updb');
 
 /**
+ * String token for when the cc command fails.
+ * 
+ * @ingroup strings
+ */
+define('STRING_COULD_NOT_CLEAR_DRUPAL_CACHE', 'drush_update.error.cache-failure');
+
+/**
  * Responsible for updating a Drupal site via drush.
  */
 class DrushUpdatePlugin extends GenericPlugin implements EventListener {
@@ -58,6 +65,7 @@ class DrushUpdatePlugin extends GenericPlugin implements EventListener {
     }
     foreach ($aliases as $alias) {
       if (!drush_cache_clear($alias)) {
+        $this->error(STRING_COULD_NOT_CLEAR_DRUPAL_CACHE);
         return FALSE;
       }
     }

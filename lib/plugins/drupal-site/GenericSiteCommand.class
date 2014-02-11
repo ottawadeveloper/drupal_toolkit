@@ -32,6 +32,13 @@ define('STRING_ERROR_MISSING_SITE', 'drupal_site.error.missing-site');
 define('STRING_ERROR_ALREADY_SITE', 'drupal_site.error.site-exists');
 
 /**
+ * String token for if the site's configuration file could not be saved.
+ * 
+ * @ingroup strings
+ */
+define('STRING_COULD_NOT_SAVE_SITE', 'drupal_site.error.no-save');
+
+/**
  * Provides a base for commands that need to work with sites.
  */
 abstract class GenericSiteCommand extends GenericCommand {

@@ -194,6 +194,9 @@ class HttpConfigurationPlugin extends GenericPlugin implements EventListener {
   }
   
   private function restartAll() {
+    $context = (object) array(
+      'servers' => array(),
+    );
     $this->events()->fireEvent(EVENT_FIND_HTTP_SERVERS, $context);
     $httpRegistry = array();
     foreach ($context->servers as $httpServer) {

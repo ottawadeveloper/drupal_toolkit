@@ -149,6 +149,10 @@ class SiteUpdateCommand extends GenericSiteCommand {
     $this->executeStep(EVENT_UPDATE_REFRESH, $baseContext);
     $this->executeStep(EVENT_UPDATE_CLEANUP, $baseContext, TRUE);
     $this->events()->fireEvent(EVENT_UPDATE_FINISH, $baseContext);
+    if (!$site->saveConfiguration()) {
+      $this->error(STRING_COULD_NOT_SAVE_SITE);
+      die();
+    }
   }
   
 }

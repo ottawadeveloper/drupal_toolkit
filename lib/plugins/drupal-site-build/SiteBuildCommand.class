@@ -60,13 +60,6 @@ define('STRING_COULD_NOT_CONFIGURE_SERVER', 'drupal_site_build.error.no-server-c
 define('STRING_ADDITIONAL_CONFIG_ERROR', 'drupal_site_build.error.no-more-config');
 
 /**
- * String token for if the site's configuration file could not be saved.
- * 
- * @ingroup strings
- */
-define('STRING_COULD_NOT_SAVE_SITE', 'drupal_site_build.error.no-save');
-
-/**
  * Manages the creation of a new site. Plugins that want to do something should
  * capture one of the events and possibly disable some core plugins if you want
  * to override some of the one-step processes.

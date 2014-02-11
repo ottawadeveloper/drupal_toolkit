@@ -79,6 +79,18 @@ while ($changed) {
   }
 }
 
+if (!empty($pluginStubs)) {
+  foreach ($pluginStubs as $key => $stub) {
+    $requirements = $stub->requiredPlugins();
+    foreach ($requirements as $requirement) {
+      if (!in_array($requirement, $addedPluginClasses)) {
+        $out->log('Unable to load plugin [' . $key . '], missing plugin [' . $requirement . ']', CLOG_ERROR);
+      }
+    }
+  }
+  die();
+}
+
 $context = (object) array(
   'plugins' => $plugins,
 );

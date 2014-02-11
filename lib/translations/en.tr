@@ -33,8 +33,8 @@ drupal_site.error.old-site = 'This site is too old to use with this command, upd
 drupal_site.error.missing-site = 'No site with the given name exists.'
 drupal_site.error.site-exists = 'A site with the given name already exists.'
 drupal_site.error.no-setting = 'This plugin requires the site setting [!key].'
-
-drupal_site_build.error.no-save = 'Unable to save configuration details.'
+drupal_site.error.no-save = 'Unable to save configuration details.
+'
 drupal_site_build.error.no-more-config = 'An error occured during additional configuration steps.'
 drupal_site_build.error.no-server-config = 'Unable to configure the server.'
 drupal_site_build.error.no-server-structure = 'Unable to initialize the server structure.'
@@ -107,3 +107,4 @@ drush_backup.error.no-db-backup = 'Unable to backup the database.'
 drush_maintenance.error.maintenance-mode-failure = 'Unable to set maintenance mode to !state.'
 
 drush_update.error.no-updb = 'Unable to update the database.'
+drush_update.error.cache-failure = 'Unable to clear drupal cache.'

@@ -31,7 +31,7 @@ class DrushBackupPlugin extends GenericPlugin implements EventListener {
   }
   
   public function requiredPlugins() {
-    return array('DrupalSite', 'DrushConfigurationPlugin', 'DatabaseConfigurationPlugin');
+    return array('DrupalSitePlugin', 'DrushConfigurationPlugin', 'DatabaseConfigurationPlugin');
   }
   
   /**
@@ -45,11 +45,21 @@ class DrushBackupPlugin extends GenericPlugin implements EventListener {
    */
   private function drushBackup(DrupalSite $site) {
     $drushAlias = $site->getSetting(SITE_DRUSH_ALIAS);
+    if (empty($drushAlias)) {
+      $this->error(STRING_SITE_MISSING_SETTING, array(
+        '!key' => SITE_DRUSH_ALIAS,
+      ));
+      return FALSE;
+    }
     $keys = array(
       'default' => 'default',
     ) + $site->getSetting(SITE_DB_CONNECTION_KEYS);
+    $backupDirectory = assemble_path($site->getBuildFolder(), 'backups', $site->getSetting(SITE_LAST_BUILD_ID));
+    if (!is_dir($backupDirectory)) {
+      mkdir($backupDirectory);
+    }
     foreach ($keys as $dbkey) {
-      $file = assemble_path($site->getBuildFolder(), 'backups', $site->getSetting(SITE_LAST_BUILD_ID), '.' . $dbkey . '.sql');
+      $file = assemble_path($backupDirectory, 'default.' . $dbkey . '.sql');
       if (!drush_db_dump($drushAlias, $file, array(
         'database' => $dbkey,
       ))) {
