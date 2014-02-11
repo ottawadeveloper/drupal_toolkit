@@ -186,6 +186,7 @@ class DrupalSiteStandardBuildPlugin extends GenericPlugin implements EventListen
           $context->success = $this->deleteBuild($context->site, $context->buildID);
           $context->handled = TRUE;
         }
+        break;
     }
   }
   
@@ -209,7 +210,9 @@ class DrupalSiteStandardBuildPlugin extends GenericPlugin implements EventListen
       return FALSE; 
     }
     $deleteCodebase = assemble_path($site->getBuildFolder(), $cbDir, $buildID);
-    remove_directory($deleteCodebase);
+    if (is_dir($deleteCodebase)) {
+      remove_directory($deleteCodebase);
+    }
     if (is_dir($deleteCodebase)) {
       $this->error(STRING_ERROR_UNABLE_TO_DELETE_CODEBASE);
       return FALSE;

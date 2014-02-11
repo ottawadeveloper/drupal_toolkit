@@ -147,7 +147,7 @@ class DrupalSitePlugin extends GenericPlugin implements EventListener {
         $newbuilds[] = $buildID;
       }
     }
-    $site->setSetting(SITE_BUILD_IDS, $builds);
+    $site->setSetting(SITE_BUILD_IDS, $newbuilds);
     return $ret;
   }
   

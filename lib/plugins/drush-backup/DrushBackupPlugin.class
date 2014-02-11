@@ -25,6 +25,7 @@ class DrushBackupPlugin extends GenericPlugin implements EventListener {
   public function initialize() {
     $this->events()->registerListener(array(
       EVENT_UPDATE_TAKE_BACKUP,
+      EVENT_DELETE_BUILD,
     ), $this);
   }
   
@@ -60,7 +61,9 @@ class DrushBackupPlugin extends GenericPlugin implements EventListener {
    */
   private function deleteBackup(DrupalSite $site, $buildID) {
     $backupDirectory = assemble_path($site->getBuildFolder(), 'backups', $buildID);
-    remove_directory($backupDirectory);
+    if (is_dir($backupDirectory)) {
+      remove_directory($backupDirectory);
+    }
     if (is_dir($backupDirectory)) {
       $this->error(STRING_ERROR_COULD_NOT_DELETE_BACKUP);
       return FALSE;
