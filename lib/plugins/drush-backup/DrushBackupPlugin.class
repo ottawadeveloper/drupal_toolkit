@@ -47,6 +47,17 @@ class DrushBackupPlugin extends GenericPlugin implements EventListener {
     return array('DrupalSitePlugin', 'DrushConfigurationPlugin', 'DatabaseConfigurationPlugin');
   }
   
+  /**
+   * Deletes all backups related to a given build ID.
+   * 
+   * @param DrupalSite $site
+   *   Drupal site to delete backups from.
+   * @param string $buildID
+   *   Build ID to remove backups from.
+   * 
+   * @return boolean
+   *   TRUE if all the backups were deleted, otherwise FALSE.
+   */
   private function deleteBackup(DrupalSite $site, $buildID) {
     $backupDirectory = assemble_path($site->getBuildFolder(), 'backups', $buildID);
     remove_directory($backupDirectory);
