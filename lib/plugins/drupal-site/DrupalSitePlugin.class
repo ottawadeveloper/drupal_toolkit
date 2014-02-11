@@ -58,13 +58,34 @@ define('ARG_IS_LOCAL', 'local');
 define('STRING_SITE_MISSING_SETTING', 'drupal_site.error.no-setting');
 
 /**
+ * Config key for the maximum number of builds to keep.
+ * 
+ * @ingroup config
+ */
+define('CONFIG_MAX_BUILDS', 'max-builds');
+
+/**
+ * Fired to cleanup old builds.
+ * 
+ * @ingroup events
+ */
+define('EVENT_CLEANUP_BUILD', 'drupal-build-cleanup');
+
+/**
+ * Fired to delete a specific build from a site.
+ * 
+ * @ingroup events
+ */
+define('EVENT_DELETE_BUILD', 'drupal-delete-build');
+
+/**
  * Basic plugin that provides some useful classes and configuration settings
  * for working with Drupal sites. Most plugins that rely on the DrupalSite 
  * object will need to require this one.
  * 
  * @ingroup plugins
  */
-class DrupalSitePlugin extends GenericPlugin {
+class DrupalSitePlugin extends GenericPlugin implements EventListener {
   
   public function initialize() {
     $root = dirname(__FILE__);
@@ -73,7 +94,80 @@ class DrupalSitePlugin extends GenericPlugin {
     $this->config()->extendDefaultConfiguration(array(
       CONFIG_ALLOW_LOCAL_SITES => LOCAL_SITES_ALLOW,
       CONFIG_BUILD_DIRECTORY => '',
+      CONFIG_MAX_BUILDS => 0,
     ));
+    $events = array();
+    $this->events()->registerListener(array(
+      EVENT_CLEANUP_BUILD,
+    ), $this);
+  }
+  
+  public function captureEvent(&$context, $eventType) {
+    switch ($eventType) {
+      case EVENT_CLEANUP_BUILD:
+        if (empty($context->handled) || $context->success) {
+          $context->success = $this->cleanupOldBuilds($context->site);
+        }
+        break;
+    }
+  }
+  
+  /**
+   * Cleans up old builds.
+   * 
+   * @param DrupalSite $site
+   *   Site to cleanup old builds.
+   * 
+   * @return boolean
+   *   TRUE if the builds were cleaned up, otherwise FALSE.
+   */
+  private function cleanupOldBuilds(DrupalSite $site) {
+    $max = $this->config()->getConfig(CONFIG_MAX_BUILDS);
+    if (extra_empty($max)) {
+      return TRUE;
+    }
+    $builds = $site->getSetting(SITE_BUILD_IDS);
+    if (count($builds) <= $max) {
+      return TRUE;
+    }
+    $del = count($builds) - $max;
+    $newbuilds = array();
+    $ret = TRUE;
+    foreach ($builds as $buildID) {
+      if ($del > 0) {
+        if (!$this->deleteBuild($site, $buildID)) {
+          $ret = FALSE;
+        }
+        $del--;
+      }
+      else {
+        $newbuilds[] = $buildID;
+      }
+    }
+    $site->setSetting(SITE_BUILD_IDS, $builds);
+    return $ret;
+  }
+  
+  /**
+   * Triggers the deletion of a specific build.
+   * 
+   * @param DrupalSite $site
+   *   The site to delete a build from.
+   * @param string $buildID
+   *   The ID of the build to delete.
+   * 
+   * @return boolean
+   *   TRUE if the build was deleted, otherwise FALSE.
+   */
+  private function deleteBuild(DrupalSite $site, $buildID) {
+    $context = (object) array(
+      'site' => $site,
+      'buildID' => $buildID,
+      'handled' => FALSE,
+      'success' => FALSE,
+    );
+    $this->events()->fireEvent(EVENT_DELETE_BUILD, $context);
+    return $context->success;
   }
   
 }
