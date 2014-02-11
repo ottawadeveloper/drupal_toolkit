@@ -131,6 +131,13 @@ define('EVENT_CONTINUE_STANDARD_BUILD', 'standard-build-continue');
 define('STRING_ERROR_UNABLE_TO_DELETE_CODEBASE', 'standard_build.error.delete-codebase');
 
 /**
+ * Config key for an array of files to remove from each build.
+ * 
+ * @ingroup config
+ */
+define('CONFIG_REMOVE_BUILD_FILES', 'remove-build-files');
+
+/**
  * Responsible for building a new codebase on demand.
  * 
  * For this standard plugin, this includes:
@@ -156,6 +163,7 @@ class DrupalSiteStandardBuildPlugin extends GenericPlugin implements EventListen
       ),
       CONFIG_DEFAULT_BRANCH => 'master',
       CONFIG_BRANCH_WHITELIST => array(),
+      CONFIG_REMOVE_BUILD_FILES => array(),
     ));
   }
   
@@ -188,6 +196,41 @@ class DrupalSiteStandardBuildPlugin extends GenericPlugin implements EventListen
         }
         break;
     }
+  }
+  
+  /**
+   * Removes all extra files from the build directory.
+   * 
+   * @param string $buildDirectory
+   *   Path to a codebase.
+   * 
+   * @return boolean
+   *   TRUE, if the files were deleted, otherwise FALSE.
+   */
+  private function removeExtraFiles($buildDirectory) {
+    if (!is_dir($buildDirectory)) {
+      return TRUE;
+    }
+    $extraFiles = $this->config()->getConfig(CONFIG_REMOVE_BUILD_FILES);
+    if (empty($extraFiles)) {
+      return TRUE;
+    }
+    $ret = TRUE;
+    foreach ($extraFiles as $file) {
+      $path = assemble_path($buildDirectory, $file);
+      if (file_exists($path)) {
+        if (is_dir($path)) {
+          remove_directory($path);
+        }
+        else {
+          unlink($path);
+        }
+        if (file_exists($path)) {
+          $ret = FALSE;
+        }
+      }
+    }
+    return $ret;
   }
   
   /**
@@ -294,6 +337,7 @@ class DrupalSiteStandardBuildPlugin extends GenericPlugin implements EventListen
       $this->error(STRING_SITE_NO_MAKE);
       return FALSE;
     }
+    $this->removeExtraFiles($newCodebase);
     $site->setSetting(SITE_SETTING_CURRENT_BUILD, $newCodebase);
     if (!$update) {
       if (!$this->updateCurrentLink($site)) {
