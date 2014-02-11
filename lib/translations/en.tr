@@ -104,6 +104,7 @@ server_interaction.error.could-not-delete-remote-file = 'Unable to delete server
 drupal_site_update.error = 'Unable to update site, failure on step [!step]!'
 
 drush_backup.error.no-db-backup = 'Unable to backup the database.'
+drush_backup.error.delete-backup = 'Unable to delete the database backup.'
 
 drush_maintenance.error.maintenance-mode-failure = 'Unable to set maintenance mode to !state.'
 

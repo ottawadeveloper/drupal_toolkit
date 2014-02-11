@@ -11,6 +11,13 @@
 define('STRING_COULD_NOT_BACKUP_DB', 'drush_backup.error.no-db-backup');
 
 /**
+ * String token for when we are unable to delete the DB backup.
+ * 
+ * @ingroup strings
+ */
+define('STRING_ERROR_COULD_NOT_DELETE_BACKUP', 'drush_backup.error.delete-backup');
+
+/**
  * Responsible for database backups using drush.
  */
 class DrushBackupPlugin extends GenericPlugin implements EventListener {
@@ -27,11 +34,27 @@ class DrushBackupPlugin extends GenericPlugin implements EventListener {
         $context->success = $this->drushBackup($context->site);
         $context->stopPropagation = TRUE;
         break;
+      case EVENT_DELETE_BUILD:
+        if (empty($context->handled) || $context->success) {
+          $context->success = $this->deleteBackup($context->site, $context->buildID);
+          $context->handled = TRUE;
+        }
+        break;
     }
   }
   
   public function requiredPlugins() {
     return array('DrupalSitePlugin', 'DrushConfigurationPlugin', 'DatabaseConfigurationPlugin');
+  }
+  
+  private function deleteBackup(DrupalSite $site, $buildID) {
+    $backupDirectory = assemble_path($site->getBuildFolder(), 'backups', $buildID);
+    remove_directory($backupDirectory);
+    if (is_dir($backupDirectory)) {
+      $this->error(STRING_ERROR_COULD_NOT_DELETE_BACKUP);
+      return FALSE;
+    }
+    return TRUE;
   }
   
   /**
