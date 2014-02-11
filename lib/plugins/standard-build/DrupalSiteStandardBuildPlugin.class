@@ -123,6 +123,12 @@ define('SITE_SETTING_CURRENT_BUILD', 'build-current-codebase-dir');
  */
 define('EVENT_CONTINUE_STANDARD_BUILD', 'standard-build-continue');
 
+/**
+ * String token for if a build directory could not be deleted.
+ * 
+ * @ingroup strings
+ */
+define('STRING_ERROR_UNABLE_TO_DELETE_CODEBASE', 'standard_build.error.delete-codebase');
 
 /**
  * Responsible for building a new codebase on demand.
@@ -138,6 +144,7 @@ class DrupalSiteStandardBuildPlugin extends GenericPlugin implements EventListen
     $this->events()->registerListener(array(
       EVENT_SITE_BUILD_CODEBASE,
       EVENT_UPDATE_CODEBASE,
+      EVENT_DELETE_BUILD,
       EVENT_UPDATE_PREPARE_FOR_UPDATE,
     ), $this);
     $this->config()->extendDefaultConfiguration(array(
@@ -174,9 +181,40 @@ class DrupalSiteStandardBuildPlugin extends GenericPlugin implements EventListen
         $context->success = $this->buildSite($context->site, $context->build_id);
         $context->stopPropagation = TRUE;
         break;
+      case EVENT_DELETE_BUILD:
+        if (empty($context->handled) || $context->success) {
+          $context->success = $this->deleteBuild($context->site, $context->buildID);
+          $context->handled = TRUE;
+        }
     }
   }
   
+  private function deleteBuild(DrupalSite $site, $buildID) {
+    $cbDir = $site->getSetting(SITE_CODEBASE_DIR);
+    if (empty($cbDir)) { 
+      $this->error(STRING_SITE_MISSING_SETTING, array(
+        '!key' => SITE_CODEBASE_DIR,
+      ));
+      return FALSE; 
+    }
+    $deleteCodebase = assemble_path($site->getBuildFolder(), $cbDir, $buildID);
+    remove_directory($deleteCodebase);
+    if (is_dir($deleteCodebase)) {
+      $this->error(STRING_ERROR_UNABLE_TO_DELETE_CODEBASE);
+      return FALSE;
+    }
+    return TRUE;
+  }
+  
+  /**
+   * Updates the current link to point to the most current build.
+   * 
+   * @param DrupalSite $site
+   *   The site to update.
+   * 
+   * @return boolean
+   *   TRUE if successful, otherwise FALSE.
+   */
   private function updateCurrentLink(DrupalSite $site) {
     $latestCodebase = $site->getSetting(SITE_SETTING_CURRENT_BUILD);
     if (empty($latestCodebase)) {

@@ -72,6 +72,7 @@ standard_build.error.no-codebase = 'Cannot write to codebases directory.'
 standard_build.error.clone-failure = 'Could not clone the drush make repository.'
 standard_build.error.make-failure = 'Could not successfully run the Drush make command.'
 standard_build.error.current-symlink-failure = 'Could not successfully create the current site symlink.'
+standard_build.error.delete-codebase = 'Cannot delete codebase directory.'
 
 standard_server_structure.error.already-exists = 'A site already exists in the required location for the server symlink.'
 standard_server_structure.error.could-not-create = 'Could not create server symlink.'

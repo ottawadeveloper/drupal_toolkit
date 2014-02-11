@@ -60,6 +60,9 @@ define('STRING_SITE_MISSING_SETTING', 'drupal_site.error.no-setting');
 /**
  * Config key for the maximum number of builds to keep.
  * 
+ * This value can be set as low as 2. Values of 1 or below will be treated like
+ * FALSE. If set to FALSE, there is no maximum number of builds.
+ * 
  * @ingroup config
  */
 define('CONFIG_MAX_BUILDS', 'max-builds');
@@ -107,6 +110,7 @@ class DrupalSitePlugin extends GenericPlugin implements EventListener {
       case EVENT_CLEANUP_BUILD:
         if (empty($context->handled) || $context->success) {
           $context->success = $this->cleanupOldBuilds($context->site);
+          $context->handled = TRUE;
         }
         break;
     }
@@ -123,7 +127,7 @@ class DrupalSitePlugin extends GenericPlugin implements EventListener {
    */
   private function cleanupOldBuilds(DrupalSite $site) {
     $max = $this->config()->getConfig(CONFIG_MAX_BUILDS);
-    if (extra_empty($max)) {
+    if (extra_empty($max) || $max < 2) {
       return TRUE;
     }
     $builds = $site->getSetting(SITE_BUILD_IDS);
