@@ -187,11 +187,13 @@ class HttpConfigurationPlugin extends GenericPlugin implements EventListener {
       case EVENT_UPDATE_REFRESH_SERVER_CONFIG:
         if (empty($context->handled) || $context->success) {
           $context->success = $this->updateAll($context->site);
+          $context->handled = TRUE;
         }
         break;
       case EVENT_UPDATE_PREPARE_SERVER:
         if (empty($context->handled) || $context->success) {
           $context->success = $this->restartAll();
+          $context->handled = TRUE;
         }
         break;
       case EVENT_FIND_HTTP_SERVERS:

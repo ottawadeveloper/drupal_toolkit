@@ -28,6 +28,14 @@ define('CONFIG_MANAGED_HOSTS_DEFAULT_TYPE', 'managed-host-default-type');
 define('CONFIG_MANAGED_HOSTS_TARGET_IP_ADDRESS', 'managed-host-ip-address');
 
 /**
+ * Config key to prevent the hosts files from being updated during the site
+ * update process.
+ * 
+ * @ingroup config
+ */
+define('CONFIG_MANAGED_HOSTS_STATIC', 'managed-host-static');
+
+/**
  * Server type for servers that want to have their host files managed by
  * the toolkit.
  * 
@@ -65,6 +73,24 @@ define('EVENT_FIND_MANAGED_HOST_SERVERS', 'find-managed-host-servers');
  * @see @ref managed_host_types "Managed Host Types"
  */
 define('SERVER_SETTING_ENVIRONMENT', 'managed-host-type');
+
+/**
+ * Server setting to prevent the hosts file from being updated during the 
+ * update process.
+ * 
+ * @ingroup server_settings
+ */
+define('SERVER_SETTING_STATIC_HOSTS', 'managed-host-static');
+
+/**
+ * Config key to compact the hosts files.
+ * 
+ * If set to TRUE, all hosts files will be compacted preserving comments. See
+ * hosts_file_compact() for the impact of this.
+ * 
+ * @ingroup config
+ */
+define('CONFIG_MANAGED_HOSTS_COMPACT', 'compact-hosts-file');
 
 /**
  * Indicates that the host is a Linux machine.
@@ -107,6 +133,7 @@ class HostsConfigurationPlugin extends GenericPlugin implements EventListener {
     require assemble_path($base, 'GenericHostFileManager.class');
     require assemble_path($base, 'LinuxHostFileManager.class');
     $this->config()->extendDefaultConfiguration(array(
+      CONFIG_MANAGED_HOSTS_COMPACT => FALSE,
       CONFIG_MANAGED_HOSTS_USE_LOCAL => TRUE,
       CONFIG_MANAGED_HOSTS_DEFAULT_TYPE => 'linux',
       CONFIG_MANAGED_HOSTS_TARGET_IP_ADDRESS => '127.0.0.1',
@@ -128,6 +155,12 @@ class HostsConfigurationPlugin extends GenericPlugin implements EventListener {
   
   public function captureEvent(&$context, $eventType) {
     switch ($eventType) {
+      case EVENT_UPDATE_REFRESH_SERVER_CONFIG:
+        if ((!$context->handled) || $context->success) {
+          $context->success = $this->
+          $context->handled = TRUE;
+        }
+        break;
       case EVENT_FIND_MANAGED_HOST_SERVERS:
         $context->servers = array_merge($context->servers, $this->findManagedHostServers());
         break;
@@ -146,6 +179,24 @@ class HostsConfigurationPlugin extends GenericPlugin implements EventListener {
       case EVENT_REMOVE_ALL:
         $context->success = $this->cleanHostFiles($context->site) && $context->success;
         break;
+    }
+  }
+  
+  /**
+   * Refreshes the hosts file configuration.
+   * 
+   * @param DrupalSite $site
+   *   Site to refresh.
+   * 
+   * @return boolean
+   *   TRUE if successful, otherwise FALSE.
+   */
+  private function refreshHostFiles(DrupalSite $site) {
+    if (extra_empty($this->config()->getConfig(CONFIG_MANAGED_HOSTS_STATIC))) {
+      return $this->updateHostFile($site, TRUE);
+    }
+    else {
+      return TRUE;
     }
   }
   
@@ -181,11 +232,13 @@ class HostsConfigurationPlugin extends GenericPlugin implements EventListener {
    * 
    * @param DrupalSite $site
    *   The site we're creating host file entries for.
+   * @param boolean $update
+   *   Whether or not this is an update process.
    * 
    * @return boolean
    *   TRUE if all the hosts files were updated successfully, otherwise FALSE.
    */
-  private function updateHostFile(DrupalSite $site) {
+  private function updateHostFile(DrupalSite $site, $update = FALSE) {
     $config = $this->getConfig(array(
       'ip' => CONFIG_MANAGED_HOSTS_TARGET_IP_ADDRESS,
     ));
@@ -210,6 +263,11 @@ class HostsConfigurationPlugin extends GenericPlugin implements EventListener {
     );
     foreach ($context->servers as $server) {
       if ($server instanceof HostFileManagerInterface) {
+        if ($update) {
+          if (!extra_empty($server->machine()->getSetting(SERVER_SETTING_STATIC_HOSTS))) {
+            continue;
+          }
+        }
         if (!$server->addHostFileEntries($map)) {
           $this->error(STRING_HOSTS_FILE_BAD_WRITE);
           return FALSE;
@@ -271,7 +329,14 @@ class HostsConfigurationPlugin extends GenericPlugin implements EventListener {
       'type' => $type,
       'managedHostServer' => NULL,
     );
+    $compacted = FALSE;
+    if (!extra_empty($this->config()->getConfig(CONFIG_MANAGED_HOSTS_COMPACT))) {
+      $compacted = TRUE;
+    }
     $this->events()->fireEvent(EVENT_CAST_MANAGED_HOST_SERVER, $context);
+    if (!empty($context->managedHostServer) && ($context->managedHostServer instanceof HostFileManagerInterface)) {
+      $context->managedHostServer->setCompactHostFile($compacted);
+    }
     return $context->managedHostServer;
   }
   

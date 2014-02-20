@@ -133,6 +133,7 @@ class GatewayConfigurationPlugin extends GenericPlugin implements EventListener 
       case EVENT_UPDATE_REFRESH_SERVER_CONFIG:
         if (empty($context->handled) || $context->success) {
           $context->success = $this->updateAll($context->site);
+          $context->handled = TRUE;
         }
       case EVENT_FIND_GATEWAY_SERVERS:
         $context->servers = array_merge($context->servers, $this->findGatewayServers());

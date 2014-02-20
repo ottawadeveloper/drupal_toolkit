@@ -22,6 +22,14 @@ interface HostFileManagerInterface {
   function addHostFileEntry($host, $ip);
   
   /**
+   * Sets whether or not the host file should be compacted before being written.
+   * 
+   * @param boolean $compact
+   *   TRUE to compact the host file, otherwise FALSE.
+   */
+  function setCompactHostFile($compact);
+  
+  /**
    * Adds multiple lines to the host file.
    * 
    * @param array $map
@@ -33,6 +41,23 @@ interface HostFileManagerInterface {
    */
   function addHostFileEntries(array $map);
   
+  /**
+   * The underlying machine.
+   * 
+   * @return PhysicalServerInterface
+   */
+  function machine();
+  
+  /**
+   * Removes multiple lines from the host file.
+   * 
+   * @param array $map
+   *   An array where keys are host name strings and the values are IP 
+   *   addresses.
+   * 
+   * @return boolean
+   *   TRUE if the host file entries are removed successfully, otherwise FALSE.
+   */
   function cleanHostEntries(array $map);
   
 }

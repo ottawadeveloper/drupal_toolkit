@@ -23,6 +23,20 @@ abstract class GenericHostFileManager implements HostFileManagerInterface {
   private $machine = NULL;
   
   /**
+   * Whether or not host files should be compacted.
+   * 
+   * @var boolean
+   */
+  private $compact = FALSE;
+  
+  /**
+   * Line ending to use.
+   * 
+   * @var string
+   */
+  private $lineEnding = PHP_EOL;
+  
+  /**
    * Constructor.
    * 
    * @param PhysicalServerInterface $server
@@ -30,75 +44,56 @@ abstract class GenericHostFileManager implements HostFileManagerInterface {
    * @param string $hostfile
    *   The location of the host file for this machine.
    */
-  public function __construct(PhysicalServerInterface $server, $hostfile) {
+  public function __construct(PhysicalServerInterface $server, $hostfile, $lineEnding = PHP_EOL) {
     $this->hostfile = $hostfile;
     $this->machine = $server;
+    $this->lineEnding = $lineEnding;
   }
   
-  /**
-   * Retrieves the physical machine.
-   * 
-   * @return PhysicalServerInterface
-   *   The physical machine being managed by this class.
-   */
-  protected function machine() {
+  public function setCompactHostFile($compact) {
+    $this->compact = $compact;
+  }
+  
+  public function machine() {
     return $this->machine;
   }
   
   public function addHostFileEntries(array $map) {
     $contents = $this->machine()->readFile($this->hostfile);
-    if (!empty($contents)) {
-      $contents = trim($contents);
-      foreach ($map as $host => $ip) {
-        $contents .= PHP_EOL . $ip . "\t" . $host;
+    $defs = hosts_file_parse($contents);
+    $remap = array();
+    foreach ($map as $host => $ip) {
+      $currentIP = hosts_file_ip_lookup($host);
+      if (!$ip === $currentIP) {
+        if (!isset($remap[$ip])) {
+          $remap[$ip] = array();
+        }
+        $remap[$ip][] = $host;
       }
-      $this->normalizeHostFile($contents);
-      return $this->machine()->writeFile($this->hostfile, $contents);
     }
-    return FALSE;
+    foreach ($remap as $ip => $hosts) {
+      hosts_file_add($defs, $ip, $hosts);
+    }
+    if ($this->compact) {
+      hosts_file_compact($defs, TRUE);
+    }
+    return $this->machine()->writeFile($this->hostfile, hosts_file_build($defs, "\t", " ", $this->lineEnding));
   }
   
   public function addHostFileEntry($host, $ip) {
     return $this->addHostFileEntries(array($host => $ip));
   }
   
-  /**
-   * Normalizes a host file to have nice entries.
-   * 
-   * @todo can we remove some duplicates from here as well maybe?
-   * 
-   * @param string $contents
-   *   The host file contents
-   * 
-   * @return string
-   *   A normalized host file (this normalizes spaces, etc).
-   */
-  private function normalizeHostFile($contents) {
-    $actual = '';
-    $lines = preg_split('`[\\r\\n]`i', $contents);
-    foreach ($lines as $line) {
-      $line = trim($line);
-      if (!extra_empty($line)) {
-        if (substr($line, 0, 1) === '#') {
-          $actual .= PHP_EOL;
-        }
-        $actual .= $line . PHP_EOL;
-      }
-    }
-    return $actual;
-  }
-  
   public function cleanHostEntries(array $map) {
     $contents = $this->machine()->readFile($this->hostfile);
-    if (!empty($contents)) {
-      foreach ($map as $host => $ip) {
-        $line = $ip . "\t" . $host;
-        $contents = str_replace($line, "", $contents);
-      }
-      $this->normalizeHostfile($contents);
-      return $this->machine()->writeFile($this->hostfile, $contents);
+    $defs = hosts_file_parse($contents);
+    foreach ($map as $host => $ip) {
+      hosts_file_remove_hosts($defs, $host, $ip);
     }
-    return FALSE;
+    if ($this->compact) {
+      hosts_file_compact($defs, TRUE);
+    }
+    return $this->machine()->writeFile($this->hostfile, hosts_file_build($defs, "\t", " ", $this->lineEnding));
   }
   
 }

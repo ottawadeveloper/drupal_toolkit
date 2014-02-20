@@ -184,3 +184,4 @@ function array_unique_numeric($array) {
 require "functions/system.inc";
 require "functions/special.inc";
 require "functions/drush.inc";
+require "functions/hosts.inc";

@@ -16,7 +16,7 @@ class LinuxHostFileManager extends GenericHostFileManager {
    *   The server we're working with.
    */
   public function __construct(PhysicalServerInterface $server) {
-    parent::__construct($server, '/etc/hosts');
+    parent::__construct($server, '/etc/hosts', "\n");
   }
   
 }
