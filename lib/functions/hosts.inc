@@ -56,7 +56,7 @@ function hosts_file_parse($contents) {
    *   The compacted host definition array, in the same format as 
    *   hosts_file_parse().
    */
-  function hosts_file_compact(&$host_defs, $preserveComments = FALSE) {
+  function hosts_file_compact(array &$host_defs, $preserveComments = FALSE) {
     $compacted = array();
     $hosts = array();
     $defs = array_reverse($host_defs);
@@ -107,7 +107,7 @@ function hosts_file_parse($contents) {
    * @return string
    *   A string suitable to be written to a hosts file.
    */
-  function hosts_file_build(&$host_defs, $ip_separator = "\t", $host_separator = " ", $line_break = PHP_EOL, $extra_comment_break = TRUE) {
+  function hosts_file_build(array &$host_defs, $ip_separator = "\t", $host_separator = " ", $line_break = PHP_EOL, $extra_comment_break = TRUE) {
     $entries = array();
     foreach ($host_defs as $def) {
       if (!empty($def['comments'])) {
@@ -140,10 +140,10 @@ function hosts_file_parse($contents) {
    *   The last IP address defined in the hosts file for the given IP. No
    *   distinction is made between IPv4 and IPv6 addresses.
    */
-  function hosts_file_ip_lookup(&$defs, $host) {
+  function hosts_file_ip_lookup(array &$defs, $host) {
     $ip = NULL;
     foreach ($defs as $def) {
-      if (in_array($def['hosts'], $host)) {
+      if (in_array($host, $def['hosts'])) {
         $ip = $def['ip'];
       }
     }
@@ -161,7 +161,7 @@ function hosts_file_parse($contents) {
    * @return array
    *   An array of host names that will resolve to the given IP address.
    */
-  function hosts_file_hosts_lookup(&$defs, $ip) {
+  function hosts_file_hosts_lookup(array &$defs, $ip) {
     $hosts = array();
     foreach ($defs as $def) {
       if ($def['ip'] === $ip) {
@@ -183,7 +183,7 @@ function hosts_file_parse($contents) {
    * @param array $comments
    *   Optional. If defined, will place comments before the hosts entry.
    */
-  function hosts_file_add(&$defs, $ip, $hosts, array $comments = array()) {
+  function hosts_file_add(array &$defs, $ip, $hosts, array $comments = array()) {
     if (!is_array($hosts)) {
       $hosts = array($hosts);
     }
@@ -217,7 +217,7 @@ function hosts_file_parse($contents) {
    *   Limit removals to only the given IP address. Defaults to NULL (no 
    *   limits).
    */
-  function hosts_file_remove_hosts(&$defs, $hosts, $ip = NULL) {
+  function hosts_file_remove_hosts(array &$defs, $hosts, $ip = NULL) {
     if (!is_array($hosts)) {
       $hosts = array($hosts);
     }
