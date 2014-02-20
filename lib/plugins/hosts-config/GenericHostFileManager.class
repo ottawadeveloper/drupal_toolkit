@@ -63,7 +63,7 @@ abstract class GenericHostFileManager implements HostFileManagerInterface {
     $defs = hosts_file_parse($contents);
     $remap = array();
     foreach ($map as $host => $ip) {
-      $currentIP = hosts_file_ip_lookup($host);
+      $currentIP = hosts_file_ip_lookup($defs, $host);
       if (!$ip === $currentIP) {
         if (!isset($remap[$ip])) {
           $remap[$ip] = array();
