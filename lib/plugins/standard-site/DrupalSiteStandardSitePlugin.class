@@ -241,6 +241,7 @@ class DrupalSiteStandardSitePlugin extends GenericPlugin implements EventListene
     $site->setSetting(SITE_SETTINGS_TEMPLATE, $defaultSettingsFile);
     $site->registerServerFile($defaultSettingsFile);
     $site->registerServerFile($settingsFile);
+    $site->registerServerFile(assemble_path($realDefault, 'files'));
     
     if (!$this->symlinkAllSites($site)) {
       return FALSE;

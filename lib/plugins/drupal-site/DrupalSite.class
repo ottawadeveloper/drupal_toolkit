@@ -260,7 +260,7 @@ class DrupalSite {
    *   The path to a server file.
    */
   public function registerServerFile($file) {
-    $this->serverFiles = $file;
+    $this->serverFiles[] = $file;
   }
   
   /**
