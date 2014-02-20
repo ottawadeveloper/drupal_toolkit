@@ -111,6 +111,7 @@ class GatewayConfigurationPlugin extends GenericPlugin implements EventListener 
     $this->events()->registerListener(array(
       EVENT_FIND_GATEWAY_SERVERS,
       EVENT_SITE_BUILD_MORE_CONFIG,
+      EVENT_UPDATE_REFRESH_SERVER_CONFIG,
     ), $this);
     $this->config()->extendDefaultConfiguration(array(
       CONFIG_GATEWAY_STATIC_CONFIG => FALSE,

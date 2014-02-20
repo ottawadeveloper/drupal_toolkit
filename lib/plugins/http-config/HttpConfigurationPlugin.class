@@ -165,6 +165,7 @@ class HttpConfigurationPlugin extends GenericPlugin implements EventListener {
     require assemble_path($self, 'HttpdServer.class');
     require assemble_path($self, 'NginxServer.class');
     $this->events()->registerListener(array(
+      EVENT_UPDATE_REFRESH_SERVER_CONFIG,
       EVENT_FIND_HTTP_SERVERS,
       EVENT_CAST_HTTP_SERVER,
       EVENT_SITE_BUILD_CONFIGURE_SERVER,
