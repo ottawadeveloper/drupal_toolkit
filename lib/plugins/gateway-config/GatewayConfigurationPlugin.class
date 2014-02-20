@@ -39,6 +39,13 @@ define('CONFIG_GATEWAY_CONFIG_TEMPLATE', 'gateway-config-template');
 define('CONFIG_GATEWAY_FILENAME_TEMPLATE', 'gateway-config-filename-template');
 
 /**
+ * Config key to prevent config files from being updated.
+ * 
+ * @ingroup config
+ */
+define('CONFIG_GATEWAY_STATIC_CONFIG', 'gateway-config-static');
+
+/**
  * Config key underneath the servers away for gateway servers
  * 
  * @ingroup server_types
@@ -65,6 +72,14 @@ define('SERVER_SETTING_GATEWAY_FILENAME_TMEPLATE', 'gateway-filename-template');
  * @ingroup server_settings
  */
 define('SERVER_SETTING_GATEWAY_CONFIG_TEMPLATE', 'gateway-template-file');
+
+/**
+ * Server setting to prevent the server's gateway config from being overridden
+ * on update.
+ * 
+ * @ingroup server_settings
+ */
+define('SERVER_SETTING_GATEWAY_STATIC_CONFIG', 'gateway-static-config');
 
 /**
  * Server setting to override the default gateway type.
@@ -98,6 +113,7 @@ class GatewayConfigurationPlugin extends GenericPlugin implements EventListener 
       EVENT_SITE_BUILD_MORE_CONFIG,
     ), $this);
     $this->config()->extendDefaultConfiguration(array(
+      CONFIG_GATEWAY_STATIC_CONFIG => FALSE,
       CONFIG_GATEWAY_USE_LOCAL => FALSE,
       CONFIG_GATEWAY_TYPE => '',
       CONFIG_GATEWAY_CONFIG_TEMPLATE => '',
@@ -114,6 +130,10 @@ class GatewayConfigurationPlugin extends GenericPlugin implements EventListener 
   
   public function captureEvent(&$context, $type) {
     switch ($type) {
+      case EVENT_UPDATE_REFRESH_SERVER_CONFIG:
+        if (empty($context->handled) || $context->success) {
+          $context->success = $this->updateAll($context->site);
+        }
       case EVENT_FIND_GATEWAY_SERVERS:
         $context->servers = array_merge($context->servers, $this->findGatewayServers());
         break;
@@ -126,15 +146,31 @@ class GatewayConfigurationPlugin extends GenericPlugin implements EventListener 
   }
   
   /**
+   * Updates all the gateway configuration files as needed.
+   * 
+   * @param DrupalSite $site
+   */
+  private function updateAll(DrupalSite $site) {
+    if (extra_empty($this->config()->getConfig(CONFIG_GATEWAY_STATIC_CONFIG))) {
+      return $this->publishGatewayconfig($site, TRUE);
+    }
+    else {
+      return TRUE;
+    }
+  }
+  
+  /**
    * Publishes the gateway configuration settings to all the gateway servers.
    * 
    * @param DrupalSite $site
    *   The site to publish configuration for.
+   * @param boolean $update
+   *   Whether or not this is an update operation.
    * 
    * @return boolean
    *   TRUE if the configuration was published successfully, otherwise FALSE.
    */
-  private function publishGatewayConfig(DrupalSite $site) {
+  private function publishGatewayConfig(DrupalSite $site, $update = FALSE) {
     $c = $this->getConfig(array(
       'template' => CONFIG_GATEWAY_CONFIG_TEMPLATE,
       'fn_template' => CONFIG_GATEWAY_FILENAME_TEMPLATE,
@@ -152,6 +188,11 @@ class GatewayConfigurationPlugin extends GenericPlugin implements EventListener 
     $gatewayRegistry = array();
     foreach ($context->servers as $gatewayServer) {
       if ($gatewayServer instanceof GenericHttpServer) {
+        if ($update) {
+          if (!extra_empty($gatewayServer->machine()->getSetting(SERVER_SETTING_GATEWAY_STATIC_CONFIG))) {
+            continue;
+          }
+        }
         $config = $defaultConfig;
         $configFile = $gatewayServer->machine()->getSetting(SERVER_SETTING_GATEWAY_CONFIG_TEMPLATE);
         if (is_readable($configFile)) {

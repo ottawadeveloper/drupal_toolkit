@@ -153,6 +153,33 @@ function array_extend(array &$base, array $extension) {
   }
 }
 
+/**
+ * Removes duplicates from numeric keys only.
+ * 
+ * @param array $array
+ *   An array to remove duplicates from (for numeric keys only).
+ * 
+ * @return array
+ *   The sanitized array.
+ */
+function array_unique_numeric($array) {
+  $newArray = array();
+  $check = array();
+  foreach ($array as $k => $v) {
+    if (is_int($k)) {
+      $h = hash('sha256', serialize($v));
+      if (!in_array($h, $check)) {
+        $newArray[] = $v;
+        $check[] = $h;
+      }
+    }
+    else {
+      $newArray[$k] = $v;
+    }
+  }
+  return $newArray;
+}
+
 // Additional includes.
 require "functions/system.inc";
 require "functions/special.inc";

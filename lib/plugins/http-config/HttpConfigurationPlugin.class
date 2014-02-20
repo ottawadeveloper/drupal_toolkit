@@ -59,6 +59,15 @@ define('CONFIG_HTTP_USE_LOCAL', 'http-local');
 define('CONFIG_HTTP_DEFAULT_SERVER_TYPE', 'http-server-type');
 
 /**
+ * Config key for whether or not the configuration should be treated as static.
+ * If set to TRUE, no HTTP server will have its configuration updated on
+ * update.
+ * 
+ * @ingroup config
+ */
+define('CONFIG_HTTP_STATIC_CONFIG', 'http-static-config');
+
+/**
  * Config key for the default config template file.
  * 
  * @ingroup config
@@ -117,6 +126,13 @@ define('HTTP_TYPE_HTTPD', 'httpd');
 define('SERVER_SETTING_HTTP_TYPE', 'http-type');
 
 /**
+ * Server setting to prevent updating the configuration files.
+ * 
+ * @ingroup server_settings
+ */
+define('SERVER_SETTING_HTTP_STATIC', 'http-no-refresh');
+
+/**
  * String token for when there is no template file defined.
  * 
  * @ingroup strings
@@ -155,6 +171,7 @@ class HttpConfigurationPlugin extends GenericPlugin implements EventListener {
       EVENT_UPDATE_PREPARE_SERVER,
     ), $this);
     $this->config()->extendDefaultConfiguration(array(
+      CONFIG_HTTP_STATIC_CONFIG => FALSE,
       CONFIG_HTTP_USE_LOCAL => TRUE,
       CONFIG_HTTP_DEFAULT_SERVER_TYPE => '',
       CONFIG_HTTP_DEFAULT_CONFIG_TEMPLATE => '',
@@ -167,6 +184,11 @@ class HttpConfigurationPlugin extends GenericPlugin implements EventListener {
   
   public function captureEvent(&$context, $eventType) {
     switch ($eventType) {
+      case EVENT_UPDATE_REFRESH_SERVER_CONFIG:
+        if (empty($context->handled) || $context->success) {
+          $context->success = $this->updateAll($context->site);
+        }
+        break;
       case EVENT_UPDATE_PREPARE_SERVER:
         if (empty($context->handled) || $context->success) {
           $context->success = $this->restartAll();
@@ -193,12 +215,37 @@ class HttpConfigurationPlugin extends GenericPlugin implements EventListener {
     return array('ServerInteractionPlugin', 'DrupalSitePlugin');
   }
   
+  /**
+   * Updates all the configuration files.
+   * 
+   * @param DrupalSite $site
+   *   The site to update configuration files for.
+   * 
+   * @return boolean
+   *   TRUE if all the files were updated successfully, otherwise FALSE.
+   */
+  private function updateAll(DrupalSite $site) {
+    if (extra_empty($this->config()->getConfig(CONFIG_HTTP_STATIC_CONFIG))) {
+      return $this->publishConfig($site, TRUE);
+    }
+    else {
+      // TRUE indicates that we successfully did nothing in this case.
+      return TRUE;
+    }
+  }
+  
+  /**
+   * Restarts all the servers.
+   * 
+   * @return boolean
+   *   TRUE. Will eventually return FALSE if there is an error rebooting
+   *   a server.
+   */
   private function restartAll() {
     $context = (object) array(
       'servers' => array(),
     );
     $this->events()->fireEvent(EVENT_FIND_HTTP_SERVERS, $context);
-    $httpRegistry = array();
     foreach ($context->servers as $httpServer) {
       if ($httpServer instanceof GenericHttpServer) {
         $httpServer->doReboot();
@@ -211,9 +258,15 @@ class HttpConfigurationPlugin extends GenericPlugin implements EventListener {
    * Publishes the HTTP server configuration where its needed.
    * 
    * @param DrupalSite $site
+   *   The site to publish configuration for.
+   * @param boolean $update
+   *   Whether or not this is an update operation.
+   * 
    * @return boolean
+   *   TRUE if the configuration was all updated successfully, otherwise
+   *   FALSE.
    */
-  private function publishConfig(DrupalSite $site) {
+  private function publishConfig(DrupalSite $site, $update = FALSE) {
     $c = $this->getConfig(array(), array(
       'template' => CONFIG_HTTP_DEFAULT_CONFIG_TEMPLATE,
       'fn_template' => CONFIG_HTTP_DEFAULT_FILENAME_TEMPLATE,
@@ -228,6 +281,12 @@ class HttpConfigurationPlugin extends GenericPlugin implements EventListener {
     $httpRegistry = array();
     foreach ($context->servers as $httpServer) {
       if ($httpServer instanceof GenericHttpServer) {
+        if ($update) {
+          // Check if we should be updating the config files.
+          if (!extra_empty($httpServer->machine()->getSetting(SERVER_SETTING_HTTP_STATIC))) {
+            continue;
+          }
+        }
         $configFile = $httpServer->machine()->getSetting(SERVER_SETTING_HTTP_CONFIG_TEMPLATE);
         if (empty($configFile)) {
           $configFile = $c['template'];

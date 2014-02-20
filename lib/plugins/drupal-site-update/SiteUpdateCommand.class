@@ -96,6 +96,13 @@ define('EVENT_UPDATE_CLEANUP', 'update-cleanup');
 define('EVENT_UPDATE_FINISH', 'finish-update');
 
 /**
+ * Fired to trigger an update of the server configuration.
+ * 
+ * @ingroup events
+ */
+define('EVENT_UPDATE_REFRESH_SERVER_CONFIG', 'update-refresh-server');
+
+/**
  * String token for when the site fails to update.
  * 
  * @ingroup strings
@@ -145,6 +152,7 @@ class SiteUpdateCommand extends GenericSiteCommand {
     $this->executeStep(EVENT_UPDATE_PREPARE_SERVER, $baseContext, TRUE);
     $this->executeStep(EVENT_UPDATE_ACTIONS, $baseContext);
     $this->executeStep(EVENT_UPDATE_COMPLETE, $baseContext, TRUE);
+    $this->executeStep(EVENT_UPDATE_REFRESH_SERVER_CONFIG, $baseContext, TRUE);
     $this->executeStep(EVENT_UPDATE_PREPARE_FOR_REFRESH, $baseContext, TRUE);
     $this->executeStep(EVENT_UPDATE_REFRESH, $baseContext);
     $this->executeStep(EVENT_UPDATE_CLEANUP, $baseContext, TRUE);
