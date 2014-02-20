@@ -33,6 +33,22 @@ define('CONFIG_DRUSH_ALIAS_DIR', 'drush-alias-default-dir');
 define('CONFIG_DRUSH_ALIAS_CREATE_FOR_LOCAL', 'drush-alias-local');
 
 /**
+ * Config key for preventing the update of any drush alias file during site
+ * update.
+ * 
+ * @ingroup config
+ */
+define('CONFIG_DRUSH_ALIAS_STATIC', 'drush-alias-static');
+
+/**
+ * Site setting for preventing the update of the drush alias file during site
+ * update.
+ * 
+ * @ingroup server_settings
+ */
+define('SERVER_SETTING_STATIC_ALIAS', 'drush-alias-static');
+
+/**
  * Server type key indicating support for drush aliases.
  * 
  * @ingroup server_types
@@ -93,6 +109,7 @@ class DrushConfigurationPlugin extends GenericPlugin implements EventListener {
   
   public function initialize() {
     $this->config()->extendDefaultConfiguration(array(
+      CONFIG_DRUSH_ALIAS_STATIC => FALSE,
       CONFIG_DRUSH_ALIAS_TEMPLATE => '@@BUILD_NAME.alias.drushrc.php',
       CONFIG_DRUSH_ALIAS_DIR => '/etc/drush',
       CONFIG_DRUSH_ALIAS_CREATE_FOR_LOCAL => TRUE,
@@ -101,6 +118,7 @@ class DrushConfigurationPlugin extends GenericPlugin implements EventListener {
       )
     ));
     $this->events()->registerListener(array(
+      EVENT_UPDATE_REFRESH_SERVER_CONFIG,
       EVENT_SITE_BUILD_MORE_CONFIG,
       EVENT_REMOVE_ALL
     ), $this);
@@ -112,6 +130,11 @@ class DrushConfigurationPlugin extends GenericPlugin implements EventListener {
   
   public function captureEvent(&$context, $eventType) {
     switch ($eventType) {
+      case EVENT_UPDATE_REFRESH_SERVER_CONFIG:
+        if (empty($context->handled) || $context->success) {
+          $context->handled = TRUE;
+          $context->success = $this->updateAliases($context->site);
+        }
       case EVENT_SITE_BUILD_MORE_CONFIG:
         if ($context->success) {
           $context->success = $this->createAliases($context->site);
@@ -121,15 +144,35 @@ class DrushConfigurationPlugin extends GenericPlugin implements EventListener {
   }
   
   /**
+   * Updates the drush aliases, if applicable.
+   * 
+   * @param DrupalSite $site
+   *   Site to update aliases for.
+   * 
+   * @return boolean
+   *   TRUE if successful, otherwise FALSE.
+   */
+  private function updateAliases(DrupalSite $site) {
+    if (extra_empty($this->config()->getConfig(CONFIG_DRUSH_ALIAS_STATIC))) {
+      return $this->createAliases($site, TRUE);
+    }
+    else {
+      return TRUE;
+    }
+  }
+  
+  /**
    * Responsible for creating the drush alias files.
    * 
    * @param DrupalSite $site
    *   The site to create an alias for.
+   * @param boolean $update
+   *   Whether or not this is part of the update process.
    * 
    * @return boolean
    *   TRUE if the alias was created, otherwise FALSE.
    */
-  private function createAliases(DrupalSite $site) {
+  private function createAliases(DrupalSite $site, $update = FALSE) {
     $config = $this->getConfig(array(
       'template' => CONFIG_DRUSH_ALIAS_TEMPLATE,
       'default-dir' => CONFIG_DRUSH_ALIAS_DIR,
@@ -147,6 +190,11 @@ class DrushConfigurationPlugin extends GenericPlugin implements EventListener {
     $aliasList = array();
     foreach ($context->servers as $server) {
       if ($server instanceof PhysicalServerInterface) {
+        if ($update) {
+          if (!extra_empty($server->getSetting(SERVER_SETTING_STATIC_ALIAS))) {
+            continue;
+          }
+        }
         if (!$this->writeTemplate($aliasList, $site, $server, $config['default-dir'], $config['template'], $defaultAlias)) {
           return FALSE;
         }
