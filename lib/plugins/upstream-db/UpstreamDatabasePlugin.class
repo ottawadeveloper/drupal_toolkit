@@ -7,7 +7,35 @@ define('CONFIG_IGNORE_UPSTREAM', 'upstream-db-ignore');
 
 define('CONFIG_UPSTREAM_GZIP_SUPPORT', 'upstream-gzip');
 
+define('CONFIG_PRESERVE_VARIABLES', 'preserve-local-variables');
+
 define('SERVER_TYPE_UPSTREAM_SERVER', 'upstream');
+
+define('STRING_UPSTREAM_UNABLE_TO_DOWNLOAD_DUMP', 'upstream_db.error.unable-to-download');
+
+define('STRING_UPSTREAM_UNABLE_TO_CREATE_LOCAL_DUMP', 'upstream_db.error.unable-to-create-local-dump');
+
+define('STRING_UPSTREAM_UNABLE_TO_PRESERVE_STATE', 'upstream_db.error.unable-to-preserve-state');
+
+define('STRING_UPSTREAM_UNABLE_TO_RESTORE_STATE', 'upstream_db.error.unable-to-restore-state');
+
+define('STRING_UPSTREAM_UNABLE_TO_BACKUP_DATABASE', 'upstream_db.error.unable-to-backup-database');
+
+define('STRING_UPSTREAM_UNABLE_TO_RESTORE_DATABASE', 'upstream_db.warning.unable-to-restore-database');
+
+define('STRING_UPSTREAM_UNABLE_TO_DROP_CURRENT_DB', 'upstream_db.error.unable-to-drop-current-db');
+
+define('STRING_UPSTREAM_UNABLE_TO_IMPORT_UPSTREAM_DB', 'upstream_db.error.unable-to-import-upstream');
+
+define('STRING_UPSTREAM_UNABLE_TO_IMPORT_LOCAL_DB', 'upstream_db.error.unable-to-import-local');
+
+define('STRING_UPSTREAM_UNABLE_TO_RESTORE_VARIABLE', 'upstream_db.error.unable-to-restore-variable');
+
+define('STRING_MISSING_UPSTREAM_SERVER', 'upstream_db.error.missing-upstream-server');
+
+define('EVENT_UPSTREAM_DATABASE_PRESERVE_STATE', 'upstream-db-preserve-state');
+
+define('EVENT_UPSTREAM_DATABASE_RESTORE_STATE', 'upstream-db-restore-state');
 
 class UpstreamDatabasePlugin extends GenericPlugin implements EventListener {
   
@@ -16,15 +44,36 @@ class UpstreamDatabasePlugin extends GenericPlugin implements EventListener {
       CONFIG_UPSTREAM_IGNORE_UPSTREAM_TABLES_KEY => NULL,
       CONFIG_UPSTREAM_LOCAL_TABLES_KEY => NULL,
       CONFIG_IGNORE_UPSTREAM => TRUE,
-      CONFIG_UPSTREAM_GZIP_SUPPORT = FALSE,
+      CONFIG_UPSTREAM_GZIP_SUPPORT => FALSE,
+      CONFIG_PRESERVE_VARIABLES => array(
+        'cron_key',
+        'drupal_private_key',
+        'file_temporary_path',
+        'background_process_token',
+        'background_process_derived_default_host',
+      ),
     ));
     $this->events()->registerListener(array(
       EVENT_UPDATE_PRIOR_ACTIONS,
+      EVENT_UPSTREAM_DATABASE_PRESERVE_STATE,
+      EVENT_UPSTREAM_DATABASE_RESTORE_STATE,
     ), $this);
   }
   
   public function captureEvent(&$context, $eventType) {
     switch ($eventType) {
+      case EVENT_UPSTREAM_DATABASE_PRESERVE_STATE:
+        if (empty($context->handled) || $context->success) {
+          $context->handled = TRUE;
+          $context->success = $this->preserveVariablesTable($context->alias, $context->state);
+        }
+        break;
+      case EVENT_UPSTREAM_DATABASE_RESTORE_STATE:
+        if (empty($context->handled) || $context->success) {
+          $context->handled = TRUE;
+          $context->success = $this->restoreVariablesTable($context->alias, $context->state);
+        }
+        break;
       case EVENT_UPDATE_PRIOR_ACTIONS:
         if (empty($context->handled) || $context->success) {
           $context->handled = TRUE;
@@ -34,7 +83,64 @@ class UpstreamDatabasePlugin extends GenericPlugin implements EventListener {
     }
   }
   
-    private function getUpstreamServer() {
+  /**
+   * Retrieves the set of variables to be preserved during the update.
+   * 
+   * @param string $alias
+   *   The drush alias of the site.
+   * @param array $state
+   *   The state array from the preserve state event.
+   * 
+   * @return boolean
+   *   TRUE if the variables were all saved, otherwise FALSE.
+   */
+  private function preserveVariablesTable($alias, &$state) {
+    $variables = $this->config()->getConfig(CONFIG_PRESERVE_VARIABLES);
+    if (!extra_empty($variables)) {
+      $vars = array();
+      foreach ($variables as $variable) {
+        $vars[$variable] = drush_get_variable($variable, $alias);
+      }
+      $state['variables'] = $vars;
+    }
+    return TRUE;
+  }
+  
+  /**
+   * Restores the set of variables that should be preserved during the update.
+   * 
+   * @param string $alias
+   *   The drush alias of the site.
+   * @param array $state
+   *   The state array from the restore state event.
+   * 
+   * @return boolean
+   *   TRUE if all the variables were set properly, otherwise FALSE.
+   */
+  private function restoreVariablesTable($alias, &$state) {
+    if (!empty($state['variables'])) {
+      foreach ($state['variables'] as $name => $value) {
+        if ($value !== NULL) {
+          if (!drush_set_variable($name, $value, $alias)) {
+            $this->error(STRING_UPSTREAM_UNABLE_TO_RESTORE_VARIABLE, array(
+              '!name' => $name,
+              '!value' => $value,
+            ));
+            return FALSE;
+          }
+        }
+      }
+    }
+    return TRUE;
+  }
+  
+  /**
+   * Retrieves the upstream server that is in use.
+   * 
+   * @return PhysicalServerInterface
+   *   The upstream server that is in use, or NULL if there is not one.
+   */
+  private function getUpstreamServer() {
     $context = (object) array(
       'serverType' => SERVER_TYPE_UPSTREAM_SERVER,
       'skipLocal' => TRUE,
@@ -50,6 +156,52 @@ class UpstreamDatabasePlugin extends GenericPlugin implements EventListener {
     return $server;
   }
   
+  /**
+   * Creates a backup of the original database.
+   * 
+   * @param string $drushAlias
+   *   Alias of a Drupal site.
+   * @param string $database
+   *   The database key to backup.
+   * 
+   * @return string
+   *   The path to the backup file, or FALSE if the backup failed.
+   */
+  private function backupOriginalDatabase($drushAlias, $database) {
+    return drush_db_dump($drushAlias, TRUE, array(
+      'database' => $database,
+    ));
+  }
+  
+  /**
+   * Restores the backup originally taken of the database.
+   * 
+   * @param string $drushAlias
+   *   Alias of a Drupal site.
+   * @param string $database
+   *   Database key to restore to.
+   * @param string $file
+   *   The file to restore from as returned by backupOriginalDatabase().
+   * 
+   * @return boolean
+   *   TRUe if the DB was restored, otherwise FALSe.
+   */
+  private function restoreOriginalDatabase($drushAlias, $database, $file) {
+    drush_drop_db($alias, $database);
+    return drush_restore_db($file, $drushAlias, $database);
+  }
+  
+  /**
+   * Synchronizes this database with the upstream database.
+   * 
+   * This can include preserving some of the local data as well.
+   * 
+   * @param DrupalSite $site
+   *   The site to sync.
+   * 
+   * @return boolean
+   *   TRUE if the sync was successful, otherwise FALSE.
+   */
   private function syncUpstreamDatabases(DrupalSite $site) {
     if (!extra_empty($this->config()->getConfig(CONFIG_IGNORE_UPSTREAM))) {
       return TRUE;
@@ -57,6 +209,7 @@ class UpstreamDatabasePlugin extends GenericPlugin implements EventListener {
     $server = $this->getUpstreamServer();
     // Bail on the process if there is no upstream server defined.
     if (empty($server)) {
+      $this->error(STRING_MISSING_UPSTREAM_SERVER);
       return FALSE;
     }
     $drushAlias = $site->getSetting(SITE_DRUSH_ALIAS);
@@ -70,17 +223,142 @@ class UpstreamDatabasePlugin extends GenericPlugin implements EventListener {
       'default' => 'default',
     ) + $site->getSetting(SITE_DB_CONNECTION_KEYS);
     foreach ($keys as $key) {
+      $backup = $this->backupOriginalDatabase($drushAlias, $key);
+      if (empty($backup)) {
+        $this->error(STRING_UPSTREAM_UNABLE_TO_BACKUP_DATABASE);
+        return FALSE;
+      }
       if (!$this->syncUpstreamDatabase($server, $drushAlias, $key)) {
+        if (!$this->restoreOriginalDatabase($drushAlias, $key, $backup)) {
+          $this->warn(STRING_UPSTREAM_UNABLE_TO_RESTORE_DATABASE);
+        }
+        unlink($backup);
         return FALSE;
       }
     }
+    unlink($backup);
     return TRUE;
   }
   
+  /**
+   * Synchronizes a specific database from the upstream server.
+   * 
+   * @param PhysicalServerInterface $server
+   *   The upstream server.
+   * @param string $localAlias
+   *   Drush alias. Must be the same on both sites.
+   * @param string $localDBKey
+   *   Database key. Must be the same on both sites.
+   * 
+   * @return boolean
+   *   TRUE if the database was synched properly, otherwise FALSE.
+   */
   private function syncUpstreamDatabase(PhysicalServerInterface $server, $localAlias, $localDBKey) {
+    $upstreamDumpFile = $this->downloadUpstreamDatabase($server, $localAlias, $localDBKey);
+    if (empty($upstreamDumpFile)) {
+      $this->error(STRING_UPSTREAM_UNABLE_TO_DOWNLOAD_DUMP);
+      return FALSE;
+    }
+    $localDumpFile = $this->generateLocalDatabaseDump($localAlias, $localDBKey);
+    if ($localDumpFile === FALSE) {
+      $this->error(STRING_UPSTREAM_UNABLE_TO_CREATE_LOCAL_DUMP);
+      unlink($upstreamDumpFile);
+      return FALSE;
+    }
+    $context = (object) array(
+      'alias' => $localAlias,
+      'database' => $localDBKey,
+      'remoteServer' => $server,
+      'state' => array(),
+      'handled' => FALSE,
+      'success' => TRUE,
+    );
+    $this->events()->fireEvent(EVENT_UPSTREAM_DATABASE_PRESERVE_STATE, $context);
+    if (empty($context->success)) {
+      $this->error(STRING_UPSTREAM_UNABLE_TO_PRESERVE_STATE);
+      unlink($upstreamDumpFile);
+      unlink($localDumpFile);
+      return FALSE;
+    }
     
+    if (!drush_drop_db($localAlias, $localDBKey)) {
+      $this->error(STRING_UPSTREAM_UNABLE_TO_DROP_CURRENT_DB);
+      unlink($upstreamDumpFile);
+      unlink($localDumpFile);
+      return FALSE;
+    }
+    
+    if (!drush_restore_db($upstreamDumpFile, $localAlias, $localDBKey)) {
+      $this->error(STRING_UPSTREAM_UNABLE_TO_IMPORT_UPSTREAM_DB);
+      unlink($upstreamDumpFile);
+      unlink($localDumpFile);
+      return FALSE;
+    }
+    
+    if (!empty($localDumpFile)) {
+      if (!drush_restore_db($localDumpFile, $localAlias, $localDBKey)) {
+        $this->error(STRING_UPSTREAM_UNABLE_TO_IMPORT_LOCAL_DB);
+        unlink($upstreamDumpFile);
+        unlink($localDumpFile);
+        return FALSE;
+      }
+    }
+    
+    $context->handled = FALSE;
+    $context->success = TRUE;
+    $this->events()->fireEvent(EVENT_UPSTREAM_DATABASE_RESTORE_STATE, $context);
+    if (empty($context->success)) {
+      $this->error(STRING_UPSTREAM_UNABLE_TO_RESTORE_STATE);
+      unlink($upstreamDumpFile);
+      unlink($localDumpFile);
+      return FALSE;
+    }
+    
+    unlink($upstreamDumpFile);
+    unlink($localDumpFile);
+    return TRUE;
   }
   
+  /**
+   * Generates the local database dump.
+   * 
+   * @param string $alias
+   *   Alias of a drupal site.
+   * @param string $localDBKey
+   *   Database connection key to use.
+   * 
+   * @return string
+   *   Name of the local dump file. Could be FALSE if there was an error in
+   *   creating the file. May also be NULL if there is no database dump 
+   *   specified.
+   */
+  private function generateLocalDatabaseDump($alias, $localDBKey) {
+    $tableKey = $this->config()->getConfig(CONFIG_UPSTREAM_LOCAL_TABLES_KEY);
+    if (empty($tableKey)) {
+      // Null indicates that we don't any relevant tables in the DB to dump.
+      return NULL;
+    }
+    $file = drush_db_dump($alias, TRUE, array(
+      'database' => $localDBKey,
+      'tables-key' => $tableKey,
+    ));
+    return $file;
+  }
+  
+  /**
+   * Downloads a dump of a remote database.
+   * 
+   * @param PhysicalServerInterface $server
+   *   The server to dump from.
+   * @param string $alias
+   *   The drush alias to dump from.
+   * @param string $localDBKey
+   *   Database connection key to dump.
+   * 
+   * @return string
+   *   Name of the upstream dump file on the local system or FALSE if there was
+   *   an error generating the file.
+   */
   private function downloadUpstreamDatabase(PhysicalServerInterface $server, $alias, $localDBKey) {
     $ignoreKey = $this->config()->getConfig(CONFIG_UPSTREAM_IGNORE_UPSTREAM_TABLES_KEY);
     $command = 'drush @' . $alias . ' sql-dump --result-file --database=!db';
@@ -96,7 +374,7 @@ class UpstreamDatabasePlugin extends GenericPlugin implements EventListener {
     }
     $out = array();
     $server->executeCommand($command, $args, $out);
-    $file = NULL;
+    $file = FALSE;
     foreach ($out as $line) {
       $matches = array();
       if (preg_match('`Database dump saved to (.*)`i', $line, $matches)) {

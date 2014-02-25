@@ -167,12 +167,56 @@ function drush_site_install($profile = NULL, $alias = NULL, array $extra = array
  *   $setTo.
  */
 function drush_maintenance_mode($setTo = TRUE, $alias = NULL) {
-  $subcommand = 'vset maintenance_mode ' . ($setTo ? "1" : "0");
-  drush_command($subcommand, $alias, array(), $out, $exit);
+  return drush_set_variable('maintenance_mode', $setTo ? "1" : "0", $alias);
+}
+
+/**
+ * Retrieves the value of a given variable.
+ * 
+ * @param string $variable
+ *   The variable name to retrieve
+ * @param string $alias
+ *   The alias of the site to retrieve the variable from.
+ * 
+ * @return string
+ *   The value of the variable.
+ */
+function drush_get_variable($variable, $alias = NULL) {
+  $cmd = 'vget !variable';
+  $args = array(
+    '!variable' => $variable,
+  );
+  drush_command($cmd, $alias, $args, $out, $exit);
+  if (!extra_empty($exit)) {
+    return NULL;
+  }
+  return drush_info_get_key_value($out, $variable);
+}
+
+/**
+ * Sets the value of a given variable.
+ * 
+ * @param string $variable
+ *   The variable name to set.
+ * @param string $value
+ *   The value to set it to.
+ * @param string $alias
+ *   The alias of the site to set the variable on.
+ * 
+ * @return boolean
+ *   TRUE if the variable was updated, otherwise FALSE.
+ */
+function drush_set_variable($variable, $value, $alias = NULL) {
+  $cmd = 'vset !variable !value';
+  $args = array(
+    '!variable' => $variable,
+    '!value' => $value,
+  );
+  drush_command($cmd, $alias, $args, $out, $exit);
   if (!extra_empty($exit)) {
     return FALSE;
   }
-  return drush_check_maintenance_mode($alias) == $setTo;
+  return drush_get_variable($variable, $alias) == $value;
 }
 
 /**
@@ -186,12 +230,7 @@ function drush_maintenance_mode($setTo = TRUE, $alias = NULL) {
  *   TRUE if maintenance mode is enabled, otherwise FALSE.
  */
 function drush_check_maintenance_mode($alias = NULL) {
-  $cmd = 'vget maintenance_mode';
-  drush_command($cmd, $alias, array(), $out, $exit);
-  if (!extra_empty($exit)) {
-    return FALSE;
-  }
-  return drush_info_has_key_value($out, 'maintenance_mode', '1');
+  return drush_get_variable('maintenance_mode', $alias) == "1";
 }
 
 /**
@@ -225,13 +264,28 @@ function drush_updb($alias = NULL) {
  *   TRUE if the key:value pair was found, otherwise false.
  */
 function drush_info_has_key_value(array &$info, $key, $value) {
+  return drush_info_get_key_value($info, $key) === trim($value);
+}
+
+/**
+ * Checks a drush info array (either from drush status or pm-info) for a
+ * particular key:value pairing.
+ * 
+ * @param array $info
+ *   Info array to check in.
+ * @param string $key
+ *   Left side of : of lines in $info should be this.
+ * 
+ * @return string
+ *   The value of a given array key.
+ */
+function drush_info_get_key_value(array $info, $key) {
   $key = trim($key);
-  $value = trim($value);
   foreach ($info as $line) {
     $pieces = explode(':', $line, 2);
     if (count($pieces) > 1) {
-      if ($key == trim($pieces[0])) {
-        return $value == trim($pieces[1]);
+      if ($key === trim($pieces[0])) {
+        return $trim($pieces[1]);
       }
     }
   }
@@ -410,10 +464,28 @@ function drush_db_dump($alias = NULL, $destination = NULL, $options = array()) {
   if (!extra_empty($exit)) {
     return FALSE;
   }
-  if (!empty($destination)) {
-    return file_exists($destination);
+  if ($destination === TRUE) {
+    $file = FALSE;
+    foreach ($out as $line) {
+      $matches = array();
+      if (preg_match('`Database dump saved to (.*)`i', $line, $matches)) {
+        $file = reset($matches[1]);
+        if (!file_exists($file)) {
+          $file = FALSE;
+        }
+      }
+    }
+    return $file;
   }
-  return TRUE;
+  elseif (!empty($destination)) {
+    if (file_exists($destination)) {
+      return $destination;
+    }
+    return FALSE;
+  }
+  else {
+    return implode(PHP_EOL, $out);
+  }
 }
 
 /**
