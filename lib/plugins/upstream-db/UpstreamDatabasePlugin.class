@@ -377,7 +377,7 @@ class UpstreamDatabasePlugin extends GenericPlugin implements EventListener {
       }
       if (!$this->syncUpstreamDatabase($server, $drushAlias, $key)) {
         if (!$this->restoreOriginalDatabase($drushAlias, $key, $backup)) {
-          $this->warn(STRING_UPSTREAM_UNABLE_TO_RESTORE_DATABASE);
+          $this->error(STRING_UPSTREAM_UNABLE_TO_RESTORE_DATABASE, array(), CLOG_CRITICAL);
         }
         unlink($backup);
         return FALSE;
