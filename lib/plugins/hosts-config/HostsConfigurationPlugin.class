@@ -158,7 +158,7 @@ class HostsConfigurationPlugin extends GenericPlugin implements EventListener {
     switch ($eventType) {
       case EVENT_UPDATE_REFRESH_SERVER_CONFIG:
         if ((!$context->handled) || $context->success) {
-          $context->success = $this->
+          $context->success = $this->refreshHostFiles($context->site);
           $context->handled = TRUE;
         }
         break;
