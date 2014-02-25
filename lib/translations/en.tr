@@ -110,3 +110,15 @@ drush_maintenance.error.maintenance-mode-failure = 'Unable to set maintenance mo
 
 drush_update.error.no-updb = 'Unable to update the database.'
 drush_update.error.cache-failure = 'Unable to clear drupal cache.'
+
+upstream_db.error.unable-to-download = "Unable to retrieve the remote database."
+upstream_db.error.unable-to-create-local-dump = "Unable to export the local database."
+upstream_db.error.unable-to-preserve-state = "An error occurred while preserving the state of the local installation."
+upstream_db.error.unable-to-restore-state = "An error occurred while restoring the state of the local installation."
+upstream_db.error.unable-to-backup-database = "Unable to create a backup of the current database."
+upstream_db.warning.unable-to-restore-database = "Unable to restore your current database. THE DATABASE MAY BE CORRUPT, PLEASE VERIFY IT."
+upstream_db.error.unable-to-drop-current-db = "Unable to drop the current database."
+upstream_db.error.unable-to-import-upstream = "Unable to import the remote database into the local database."
+upstream_db.error.unable-to-import-local = "Unable to import the exported tables from the local database."
+upstream_db.error.unable-to-restore-variable = "Unable to restore variable !name to value [!value]"
+upstream_db.error.missing-upstream-server = "No upstream server is declared."
