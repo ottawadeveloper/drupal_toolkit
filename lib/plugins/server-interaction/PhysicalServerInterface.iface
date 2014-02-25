@@ -58,6 +58,23 @@ interface PhysicalServerInterface extends Serializable {
   function readFile($file);
   
   /**
+   * Downloads a file to the local server, using a temporary file path if none
+   * is specified.
+   * 
+   * On local systems, this should simply return the path to the file.
+   * 
+   * @param string $file
+   *   Remote file path.
+   * 
+   * @param string $destination
+   *   Location to copy the file to, if relevant.
+   * 
+   * @return string
+   *   The new path to the file, or FALSE if the file could not be downloaded.
+   */
+  function downloadFile($file, $destination = NULL);
+  
+  /**
    * Deletes a file from the server.
    * 
    * @param string $file

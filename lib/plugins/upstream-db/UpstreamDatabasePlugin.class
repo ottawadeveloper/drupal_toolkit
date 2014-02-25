@@ -1,8 +1,23 @@
 <?php
 
-class RemoteDatabasePlugin extends GenericPlugin implements EventListener {
+define('CONFIG_UPSTREAM_IGNORE_UPSTREAM_TABLES_KEY', 'upstream-ignore-upstream-tables-key');
+define('CONFIG_UPSTREAM_LOCAL_TABLES_KEY', 'upstream-local-tables-key');
+
+define('CONFIG_IGNORE_UPSTREAM', 'upstream-db-ignore');
+
+define('CONFIG_UPSTREAM_GZIP_SUPPORT', 'upstream-gzip');
+
+define('SERVER_TYPE_UPSTREAM_SERVER', 'upstream');
+
+class UpstreamDatabasePlugin extends GenericPlugin implements EventListener {
   
   public function initialize() {
+    $this->config()->extendDefaultConfiguration(array(
+      CONFIG_UPSTREAM_IGNORE_UPSTREAM_TABLES_KEY => NULL,
+      CONFIG_UPSTREAM_LOCAL_TABLES_KEY => NULL,
+      CONFIG_IGNORE_UPSTREAM => TRUE,
+      CONFIG_UPSTREAM_GZIP_SUPPORT = FALSE,
+    ));
     $this->events()->registerListener(array(
       EVENT_UPDATE_PRIOR_ACTIONS,
     ), $this);
@@ -13,14 +28,83 @@ class RemoteDatabasePlugin extends GenericPlugin implements EventListener {
       case EVENT_UPDATE_PRIOR_ACTIONS:
         if (empty($context->handled) || $context->success) {
           $context->handled = TRUE;
-          $context->success = $this->syncRemoteDatabase($context->site);
+          $context->success = $this->syncUpstreamDatabases($context->site);
         }
         break;
     }
   }
   
-  private function syncRemoteDatabase(DrupalSite $site) {
+    private function getUpstreamServer() {
+    $context = (object) array(
+      'serverType' => SERVER_TYPE_UPSTREAM_SERVER,
+      'skipLocal' => TRUE,
+      'servers' => array(),
+    );
+    $this->events()->fireEvent(EVENT_FIND_SERVERS, $context);
+    $server = NULL;
+    foreach ($context->servers as $srv) {
+      if ($srv instanceof PhysicalServerInterface) {
+        $server = $srv;
+      }
+    }
+    return $server;
+  }
+  
+  private function syncUpstreamDatabases(DrupalSite $site) {
+    if (!extra_empty($this->config()->getConfig(CONFIG_IGNORE_UPSTREAM))) {
+      return TRUE;
+    }
+    $server = $this->getUpstreamServer();
+    // Bail on the process if there is no upstream server defined.
+    if (empty($server)) {
+      return FALSE;
+    }
+    $drushAlias = $site->getSetting(SITE_DRUSH_ALIAS);
+    if (empty($drushAlias)) {
+      $this->error(STRING_SITE_MISSING_SETTING, array(
+        '!key' => SITE_DRUSH_ALIAS,
+      ));
+      return FALSE;
+    }
+    $keys = array(
+      'default' => 'default',
+    ) + $site->getSetting(SITE_DB_CONNECTION_KEYS);
+    foreach ($keys as $key) {
+      if (!$this->syncUpstreamDatabase($server, $drushAlias, $key)) {
+        return FALSE;
+      }
+    }
+    return TRUE;
+  }
+  
+  private function syncUpstreamDatabase(PhysicalServerInterface $server, $localAlias, $localDBKey) {
     
+  }
+  
+  private function downloadUpstreamDatabase(PhysicalServerInterface $server, $alias, $localDBKey) {
+    $ignoreKey = $this->config()->getConfig(CONFIG_UPSTREAM_IGNORE_UPSTREAM_TABLES_KEY);
+    $command = 'drush @' . $alias . ' sql-dump --result-file --database=!db';
+    $args = array(
+      '!db' => $localDBKey,
+      '!ignoreKey' => $ignoreKey,
+    );
+    if (!extra_empty($this->config()->getConfig(CONFIG_UPSTREAM_GZIP_SUPPORT))) {
+      $command .= ' --gzip';
+    }
+    if (!extra_empty($ignoreKey)) {
+      $command .= ' --skip-tables-key=!ignoreKey';
+    }
+    $out = array();
+    $server->executeCommand($command, $args, $out);
+    $file = NULL;
+    foreach ($out as $line) {
+      $matches = array();
+      if (preg_match('`Database dump saved to (.*)`i', $line, $matches)) {
+        $file = reset($matches[1]);
+      }
+    }
+    $path = $server->downloadFile($file);
+    return $path;
   }
   
 }

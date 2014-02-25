@@ -300,6 +300,56 @@ function drush_command($subcommand, $alias = NULL, array $args = array(), &$out 
 }
 
 /**
+ * Drops all tables within the given database.
+ * 
+ * @param string $alias
+ *   The alias of the site to drop tables from.
+ * @param string $database
+ *   A database connection key to drop tables for.
+ * 
+ * @return boolean
+ *   TRUE if successful, otherwise FALSE.
+ */
+function drush_drop_db($alias = NULL, $database = NULL) {
+  $sub = 'sql-drop --yes';
+  $args = array(
+    '!db' => $database,
+  );
+  if (!empty($database)) {
+    $sub .= ' --database=!db';
+  }
+  return extra_empty(drush_command($sub, $alias, $args));
+}
+
+/**
+ * Restores data from a database dump.
+ * 
+ * @param string $sqlFile
+ *   File path to a database dump.
+ * @param string $alias
+ *   Alias for a Drupal site to restore the database to.
+ * @param string $database
+ *   Database key to restore data to.
+ * 
+ * @return boolean
+ *   TRUE if successful, otherwise FALSE.
+ */
+function drush_restore_db($sqlFile, $alias = NULL, $database = NULL) {
+  if (!is_readable($sqlFile)) {
+    return FALSE;
+  }
+  $sub = 'sql-query --file=!file';
+  $args = array(
+    '!file' => $sqlFile,
+    '!db' => $database,
+  );
+  if (!empty($database)) {
+    $sub .= ' --database=!db';
+  }
+  return extra_empty(drush_command($sub, $alias, $args));
+}
+
+/**
  * Dumps out the database to a specific location.
  * 
  * @param string $alias

@@ -158,14 +158,24 @@ class RemoteMachine extends GenericMachine {
   }
   
   public function readFile($file) {
-    $temp = tempnam(sys_get_temp_dir(), 'dtk-down-');
-    $result = ssh2_scp_recv($this->handle, $file, $temp);
-    $contents = FALSE;
-    if ($result) {
-      $contents = file_get_contents($temp);
+    $temp = $this->downloadFile($file);
+    if (empty($temp)) {
+      return FALSE;
     }
+    $contents = file_get_contents($temp);
     unlink($temp);
     return $contents;
+  }
+  
+  public function downloadFile($file, $destination = NULL) {
+    if (empty($destination)) {
+      $destination = tempnam(sys_get_temp_dir(), 'dtk-down-');
+    }
+    $result = ssh2_scp_recv($this->handle, $file, $destination);
+    if ($result) {
+      return $destination;
+    }
+    return FALSE;
   }
   
   public function deleteFile($file) {

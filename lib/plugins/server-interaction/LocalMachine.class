@@ -28,4 +28,15 @@ class LocalMachine extends GenericMachine {
     return unlink($file);
   }
   
+  public function downloadFile($file, $destination = NULL) {
+    if (!is_readable($file)) {
+      return FALSE;
+    }
+    if (!empty($destination)) {
+      copy($file, $destination);
+      return $destination;
+    }
+    return $file;
+  }
+  
 }
