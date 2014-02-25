@@ -1,0 +1,26 @@
+<?php
+
+class RemoteDatabasePlugin extends GenericPlugin implements EventListener {
+  
+  public function initialize() {
+    $this->events()->registerListener(array(
+      EVENT_UPDATE_PRIOR_ACTIONS,
+    ), $this);
+  }
+  
+  public function captureEvent(&$context, $eventType) {
+    switch ($eventType) {
+      case EVENT_UPDATE_PRIOR_ACTIONS:
+        if (empty($context->handled) || $context->success) {
+          $context->handled = TRUE;
+          $context->success = $this->syncRemoteDatabase($context->site);
+        }
+        break;
+    }
+  }
+  
+  private function syncRemoteDatabase(DrupalSite $site) {
+    
+  }
+  
+}

@@ -53,6 +53,14 @@ define('EVENT_UPDATE_PREPARE_FOR_UPDATE', 'update-prepare');
 define('EVENT_UPDATE_PREPARE_SERVER', 'update-server-prep');
 
 /**
+ * Fired as a last-minute hook for plugins to do something immediately before
+ * the core update actions.
+ * 
+ * @ingroup events
+ */
+define('EVENT_UPDATE_PRIOR_ACTIONS', 'update-prior-actions');
+
+/**
  * Fired to allow plugins to provide actions that must take place on the
  * site.
  * 
@@ -150,6 +158,7 @@ class SiteUpdateCommand extends GenericSiteCommand {
     $this->executeStep(EVENT_UPDATE_TAKE_BACKUP, $baseContext);
     $this->executeStep(EVENT_UPDATE_PREPARE_FOR_UPDATE, $baseContext);
     $this->executeStep(EVENT_UPDATE_PREPARE_SERVER, $baseContext, TRUE);
+    $this->executeStep(EVENT_UPDATE_PRIOR_ACTIONS, $baseContext, TRUE);
     $this->executeStep(EVENT_UPDATE_ACTIONS, $baseContext);
     $this->executeStep(EVENT_UPDATE_COMPLETE, $baseContext, TRUE);
     $this->executeStep(EVENT_UPDATE_REFRESH_SERVER_CONFIG, $baseContext, TRUE);
