@@ -86,6 +86,43 @@ function expand_path($path) {
 }
 
 /**
+ * Copies all files in a directory.
+ * 
+ * @param string $origin
+ *   The directory to copy.
+ * @param string $destination
+ *   The target directory to copy to.
+ * @param boolean $recuse
+ *   If TRUE, this function will recurse into all subdirectories.
+ * 
+ * @return boolean
+ *   TRUE if successful, otherwise FALSE.
+ */
+function copy_all($origin, $destination, $recurse = TRUE) {
+  if (!is_dir($origin)) {
+    return FALSE;
+  }
+  $h = opendir($origin);
+  if (empty($h)) {
+    return FALSE;
+  }
+  $success = TRUE;
+  while (($file = readdir($h)) !== FALSE) {
+    if ($file !== '.' && $file !== '..') {
+      $full = assemble_path($origin, $file);
+      $dest = assemble_path($destination, $file);
+      if ($recurse && is_dir($full)) {
+        $success = copy_all($full, $dest) && $success;
+      }
+      else {
+        $success = copy($full, $dest) && $success;
+      }
+    }
+  }
+  return $success;
+}
+
+/**
  * Attempts to determine the user's primary group (usually the one that
  * is the same as the username, but not necessarily that one).
  * 

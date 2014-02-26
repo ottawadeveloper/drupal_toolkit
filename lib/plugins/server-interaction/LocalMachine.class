@@ -40,7 +40,10 @@ class LocalMachine extends GenericMachine {
   }
   
   public function copyDirectory($dir, $destination) {
-    
+    if ($dir !== $destination) {
+      return copy_all($dir, $destination);
+    }
+    return TRUE;
   }
   
 }

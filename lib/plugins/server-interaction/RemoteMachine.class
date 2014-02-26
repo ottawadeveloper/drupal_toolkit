@@ -189,8 +189,68 @@ class RemoteMachine extends GenericMachine {
     return extra_empty($exit);
   }
   
-  public function copyDirectory($dir, $destination) {
-    
+  public function listFiles($dir) {
+    $dir = trim($dir);
+    $cmd = 'find !dir -type f';
+    $args = array(
+      '!dir' => $dir,
+    );
+    $this->executeCommand($cmd, $args, $out, $exit);
+    if (!extra_empty($exit)) {
+      return FALSE;
+    }
+    return $out;
+  }
+  
+  public function listDirectories($dir) {
+    $dir = trim($dir, " /\\\r\n");
+    $cmd = 'find !dir -type d';
+    $args = array(
+      '!dir' => $dir,
+    );
+    $this->executeCommand($cmd, $args, $out, $exit);
+    if (!extra_empty($exit)) {
+      return FALSE;
+    }
+    $dirs = array();
+    foreach ($out as $rdir) {
+      $rdir = trim($rdir, " /\\\r\n");
+      if (!empty($rdir)) {
+        if ($rdir !== $dir) {
+          $dirs[] = $rdir;
+        }
+      }
+    }
+    return $dirs;
+  }
+  
+  public function copyDirectory($dir, $destination, $recurse = TRUE) {
+    if (empty(trim($dir, " /\\\r\n"))) {
+      return FALSE;
+    }
+    if (empty(trim($destination, " /\\\r\n"))) {
+      return FALSE;
+    }
+    $files = $this->listFiles($dir);
+    if (empty($files)) {
+      return FALSE;
+    }
+    $success = TRUE;
+    foreach ($files as $file) {
+      $dest = assemble_path($destination, basename($file));
+      if (!$this->downloadFile($file, $dest)) {
+        $success = FALSE;
+      }
+    }
+    if ($recurse) {
+      $dirs = $this->listDirectories($dir);
+      if (!empty($dirs)) {
+        foreach ($dirs as $subdir) {
+          $success = $this->copyDirectory($subdir, assemble_path($destination, basename($subdir)), TRUE) && $success;
+        }
+      }
+    }
+    return $success;
   }
   
 }
