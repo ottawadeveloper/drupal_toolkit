@@ -4,29 +4,100 @@
  */
 
 /**
+ * String token for when a remote file directory cannot be determined.
+ * 
+ * @ingroup strings
+ */
+define('STRING_UPSTREAM_NO_REMOTE_FILES', 'upstream_files.error.no-remote-files');
+
+/**
+ * String token for when a local file directory cannot be determined.
+ * 
+ * @ingroup strings
+ */
+define('STRING_UPSTREAM_NO_LOCAL_FILES', 'upstream_files.error.no-local-files');
+
+/**
+ * String token for when there is a failure to copy the directories.
+ * 
+ * @ingroup strings
+ */
+define('STRING_UPSTREAM_FAILURE_TO_COPY', 'upstream_files.error.cannot-copy');
+
+/**
  * Responsible for synchronizing all the files from an upstream Drupal site.
  */
 class UpstreamFilesPlugin extends GenericPlugin implements EventListener {
   
   public function initialize() {
     $this->events()->registerListener(array(
-      EVENT_UPDATE_PRIOR_ACTIONS
+      EVENT_UPSTREAM_PULL
     ), $this);
+  }
+  
+  public function requiredPlugins() {
+    return array('UpstreamPlugin');
   }
   
   public function captureEvent(&$context, $eventType) {
     switch ($eventType) {
-      case EVENT_UPDATE_PRIOR_ACTIONS:
+      case EVENT_UPSTREAM_PULL:
         if (empty($context->handled) || $context->success) {
           $context->handled = TRUE;
-          $context->sucess = $this->downloadFiles($context->site);
+          $context->sucess = $this->downloadFiles($context->site, $context->alias, $context->upstreamServer);
         }
         break;
     }
   }
   
-  private function downloadFile(DrupalSite $site) {
-    
+  /**
+   * Downloads all remote files to the local system.
+   * 
+   * @param DrupalSite $site
+   *   The drupal site.
+   * @param string $alias
+   *   The drupal site alias.
+   * @param PhysicalServerInterface $server
+   *   The upstream server.
+   * 
+   * @return boolean
+   *   TRUE if successful, otherwise FALSE.
+   */
+  private function downloadFiles(DrupalSite $site, $alias, PhysicalServerInterface $server) {
+    $remotePath = $this->getRemoteFilePath($server, $alias);
+    if (empty($remotePath)) {
+      $this->error(STRING_UPSTREAM_NO_REMOTE_FILES);
+      return FALSE;
+    }
+    $localPath = drush_directory($alias, DRUSH_DIRECTORY_FILES);
+    if (empty($localPath)) {
+      $this->error(STRING_UPSTREAM_NO_LOCAL_FILES);
+      return FALSE;
+    }
+    if (!$server->copyDirectory($remotePath, $localPath)) {
+      $this->error(STRING_UPSTREAM_FAILURE_TO_COPY);
+      return FALSE;
+    }
+    return TRUE;
+  }
+  
+  /**
+   * Retrieves the remote file path.
+   * 
+   * @param PhysicalServerInterface $server
+   *   The remote server.
+   * @param string $alias
+   *   The drupal alias.
+   * 
+   * @return string
+   *    The path to the files directory on the remote server.
+   */
+  private function getRemoteFilePath(PhysicalServerInterface $server, $alias) {
+    $cmd = 'drush @' . $alias . ' drupal-directory !type';
+    $args = array(
+      '!type' => DRUSH_DIRECTORY_FILES,
+    );
+    return $server->executeCommand($cmd, $args);
   }
   
 }
