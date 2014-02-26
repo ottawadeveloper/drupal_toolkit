@@ -39,4 +39,8 @@ class LocalMachine extends GenericMachine {
     return $file;
   }
   
+  public function copyDirectory($dir, $destination) {
+    
+  }
+  
 }

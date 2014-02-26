@@ -4,6 +4,12 @@
  * 
  * @defgroup drush_watchdog_codes "Drush Watchdog Codes"
  * These codes are used to retrieve information about watchdog log messages.
+ * 
+ * @defgroup drush_dir_codes "Drush Directories"
+ * These codes are used to get information about different directories within
+ * Drupal.
+ * 
+ * Any place a code is used, a project name can also be specified.
  */
 
 /**
@@ -86,6 +92,50 @@ function drush_install_modules(array $modules, $alias = NULL) {
     }
   }
   return TRUE;
+}
+
+/**
+ * The Drupal root directory.
+ * 
+ * @ingroup drush_dir_codes
+ */
+define('DRUSH_DIRECTORY_ROOT', 'root');
+
+/**
+ * The Drupal files directory.
+ * 
+ * @ingroup drush_dir_codes
+ */
+define('DRUSH_DIRECTORY_FILES', 'files');
+
+/**
+ * The Drupal private files directory.
+ * 
+ * @ingroup drush_dir_codes
+ */
+define('DRUSH_DIRECTORY_PRIVATE', 'private');
+
+/**
+ * Finds the path to the given directory.
+ * 
+ * @param string $alias
+ *   Drupal site alias.
+ * @param string $type
+ *   The type of file - can be one of:
+ *   - DRUSH_DIRECTORY_ROOT: The root directory
+ *   - DRUSH_DIRECTORY_FILES: The files directory
+ *   - DRUSH_DIRECTORY_PRIVATE: The private files directory
+ *   - The name of a specific project (module or theme).
+ */
+function drush_directory($alias = NULL, $type = NULL) {
+  $sub = 'drupal-directory';
+  $args = array(
+    '!type' => $type,
+  );
+  if (!empty($type)) {
+    $sub .= ' !type';
+  }
+  return drush_command($sub, $alias, $args);
 }
 
 /**

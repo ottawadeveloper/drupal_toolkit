@@ -173,6 +173,4 @@ class ServerInteractionPlugin extends GenericPlugin implements EventListener {
     }
   }
   
-  
-  
 }

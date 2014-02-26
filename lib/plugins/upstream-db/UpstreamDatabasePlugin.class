@@ -27,14 +27,6 @@ define('CONFIG_UPSTREAM_IGNORE_UPSTREAM_TABLES_KEY', 'upstream-ignore-upstream-t
 define('CONFIG_UPSTREAM_LOCAL_TABLES_KEY', 'upstream-local-tables-key');
 
 /**
- * Set this config key to 1 in order to prevent any syncing with an upstream
- * server.
- * 
- * @ingroup config
- */
-define('CONFIG_IGNORE_UPSTREAM', 'upstream-db-ignore');
-
-/**
  * Set this config key to 1 in order to use gzip when downloading data.
  * 
  * Currently not supported.
@@ -64,17 +56,6 @@ define('CONFIG_UPSTREAM_GZIP_SUPPORT', 'upstream-gzip');
  * @ingroup config
  */
 define('CONFIG_PRESERVE_VARIABLES', 'preserve-local-variables');
-
-/**
- * Specifies a server type for the upstream server. Used by the server-interaction
- * plugin to load a server definition.
- * 
- * Unlike other server types, only a single server (the last one defined) is used
- * by this server type.
- * 
- * @ingroup server_types
- */
-define('SERVER_TYPE_UPSTREAM_SERVER', 'upstream');
 
 /**
  * String token for when the upstream database cannot be downloaded.
@@ -148,13 +129,6 @@ define('STRING_UPSTREAM_UNABLE_TO_IMPORT_LOCAL_DB', 'upstream_db.error.unable-to
 define('STRING_UPSTREAM_UNABLE_TO_RESTORE_VARIABLE', 'upstream_db.error.unable-to-restore-variable');
 
 /**
- * String token for when there is no upstream server available.
- * 
- * @ingroup strings
- */
-define('STRING_MISSING_UPSTREAM_SERVER', 'upstream_db.error.missing-upstream-server');
-
-/**
  * This event is fired in order for plugins to obtain any information they need
  * to preserve from the Drupal site before the database is wiped out and replaced
  * by the upstream one. 
@@ -190,7 +164,6 @@ class UpstreamDatabasePlugin extends GenericPlugin implements EventListener {
     $this->config()->extendDefaultConfiguration(array(
       CONFIG_UPSTREAM_IGNORE_UPSTREAM_TABLES_KEY => NULL,
       CONFIG_UPSTREAM_LOCAL_TABLES_KEY => NULL,
-      CONFIG_IGNORE_UPSTREAM => TRUE,
       CONFIG_UPSTREAM_GZIP_SUPPORT => FALSE,
       CONFIG_PRESERVE_VARIABLES => array(
         'cron_key',
@@ -201,10 +174,14 @@ class UpstreamDatabasePlugin extends GenericPlugin implements EventListener {
       ),
     ));
     $this->events()->registerListener(array(
-      EVENT_UPDATE_PRIOR_ACTIONS,
       EVENT_UPSTREAM_DATABASE_PRESERVE_STATE,
       EVENT_UPSTREAM_DATABASE_RESTORE_STATE,
+      EVENT_UPSTREAM_PULL,
     ), $this);
+  }
+  
+  public function requiredPlugins() {
+    return array('UpstreamPlugin');
   }
   
   public function captureEvent(&$context, $eventType) {
@@ -221,10 +198,10 @@ class UpstreamDatabasePlugin extends GenericPlugin implements EventListener {
           $context->success = $this->restoreVariablesTable($context->alias, $context->state);
         }
         break;
-      case EVENT_UPDATE_PRIOR_ACTIONS:
+      case EVENT_UPSTREAM_PULL:
         if (empty($context->handled) || $context->success) {
           $context->handled = TRUE;
-          $context->success = $this->syncUpstreamDatabases($context->site);
+          $context->success = $this->syncUpstreamDatabases($context->site, $context->alias, $context->upstreamServer);
         }
         break;
     }
@@ -282,28 +259,6 @@ class UpstreamDatabasePlugin extends GenericPlugin implements EventListener {
   }
   
   /**
-   * Retrieves the upstream server that is in use.
-   * 
-   * @return PhysicalServerInterface
-   *   The upstream server that is in use, or NULL if there is not one.
-   */
-  private function getUpstreamServer() {
-    $context = (object) array(
-      'serverType' => SERVER_TYPE_UPSTREAM_SERVER,
-      'skipLocal' => TRUE,
-      'servers' => array(),
-    );
-    $this->events()->fireEvent(EVENT_FIND_SERVERS, $context);
-    $server = NULL;
-    foreach ($context->servers as $srv) {
-      if ($srv instanceof PhysicalServerInterface) {
-        $server = $srv;
-      }
-    }
-    return $server;
-  }
-  
-  /**
    * Creates a backup of the original database.
    * 
    * @param string $drushAlias
@@ -349,23 +304,7 @@ class UpstreamDatabasePlugin extends GenericPlugin implements EventListener {
    * @return boolean
    *   TRUE if the sync was successful, otherwise FALSE.
    */
-  private function syncUpstreamDatabases(DrupalSite $site) {
-    if (!extra_empty($this->config()->getConfig(CONFIG_IGNORE_UPSTREAM))) {
-      return TRUE;
-    }
-    $server = $this->getUpstreamServer();
-    // Bail on the process if there is no upstream server defined.
-    if (empty($server)) {
-      $this->error(STRING_MISSING_UPSTREAM_SERVER);
-      return FALSE;
-    }
-    $drushAlias = $site->getSetting(SITE_DRUSH_ALIAS);
-    if (empty($drushAlias)) {
-      $this->error(STRING_SITE_MISSING_SETTING, array(
-        '!key' => SITE_DRUSH_ALIAS,
-      ));
-      return FALSE;
-    }
+  private function syncUpstreamDatabases(DrupalSite $site, $drushAlias, PhysicalServerInterface $server) {
     $keys = array(
       'default' => 'default',
     ) + $site->getSetting(SITE_DB_CONNECTION_KEYS);
@@ -382,8 +321,8 @@ class UpstreamDatabasePlugin extends GenericPlugin implements EventListener {
         unlink($backup);
         return FALSE;
       }
+      unlink($backup);
     }
-    unlink($backup);
     return TRUE;
   }
   

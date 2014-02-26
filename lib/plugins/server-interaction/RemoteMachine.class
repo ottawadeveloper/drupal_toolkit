@@ -189,4 +189,8 @@ class RemoteMachine extends GenericMachine {
     return extra_empty($exit);
   }
   
+  public function copyDirectory($dir, $destination) {
+    
+  }
+  
 }

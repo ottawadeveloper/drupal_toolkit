@@ -378,6 +378,8 @@ $core_plugins = array(
   'drush-update' => 'DrushUpdatePlugin',
   'drush-backup' => 'DrushBackupPlugin',
   'permissions' => 'PermissionsPlugin',
+  'upstream-db' => 'UpstreamDatabasePlugin',
+  'upstream-files' => 'UpstreamFilesPlugin',
 );
 
 /*

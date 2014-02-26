@@ -1,0 +1,123 @@
+<?php
+/**
+ * @file Defines the UpstreamPlugin class.
+ */
+
+/**
+ * Set this config key to 1 in order to prevent any syncing with an upstream
+ * server.
+ * 
+ * @ingroup config
+ */
+define('CONFIG_IGNORE_UPSTREAM', 'upstream-db-ignore');
+
+/**
+ * Specifies a server type for the upstream server. Used by the server-interaction
+ * plugin to load a server definition.
+ * 
+ * Unlike other server types, only a single server (the last one defined) is used
+ * by this server type.
+ * 
+ * @ingroup server_types
+ */
+define('SERVER_TYPE_UPSTREAM_SERVER', 'upstream');
+
+/**
+ * String token for when there is no upstream server available.
+ * 
+ * @ingroup strings
+ */
+define('STRING_MISSING_UPSTREAM_SERVER', 'upstream_db.error.missing-upstream-server');
+
+/**
+ * Event fired to allow other plugins to bring down upstream data.
+ * 
+ * @ingroup events
+ */
+define('EVENT_UPSTREAM_PULL', 'pull-upstream-data');
+
+/**
+ * Generic plugin that supports the concept of upstream servers.
+ */
+class UpstreamPlugin extends GenericPlugin implements EventListener {
+  
+  public function initialize() {
+    $this->config()->extendDefaultConfiguration(array(
+      CONFIG_IGNORE_UPSTREAM => TRUE,
+    ));
+    $this->events()->registerListener(array(
+      EVENT_UPDATE_PRIOR_ACTIONS,
+    ), $this);
+  }
+  
+  public function captureEvent(&$context, $eventType) {
+    switch ($eventType) {
+      case EVENT_UPDATE_PRIOR_ACTIONS:
+        if (empty($context->handled) || $context->success) {
+          $context->success = $this->triggerUpstreamPull($context->site);
+          $context->handled = TRUE;
+        }
+        break;
+    }
+  }
+  
+  /**
+   * Retrieves the upstream server that is in use.
+   * 
+   * @return PhysicalServerInterface
+   *   The upstream server that is in use, or NULL if there is not one.
+   */
+  private function getUpstreamServer() {
+    $context = (object) array(
+      'serverType' => SERVER_TYPE_UPSTREAM_SERVER,
+      'skipLocal' => TRUE,
+      'servers' => array(),
+    );
+    $this->events()->fireEvent(EVENT_FIND_SERVERS, $context);
+    $server = NULL;
+    foreach ($context->servers as $srv) {
+      if ($srv instanceof PhysicalServerInterface) {
+        $server = $srv;
+      }
+    }
+    return $server;
+  }
+  
+  /**
+   * Fires an event that triggers the upstream pull.
+   * 
+   * @param DrupalSite $site
+   *   The DrupalSite to pull from upstream.
+   * 
+   * @return boolean
+   *   TRUE if upstream pull was successful.
+   */
+  private function triggerUpstreamPull(DrupalSite $site) {
+    if (!extra_empty($this->config()->getConfig(CONFIG_IGNORE_UPSTREAM))) {
+      return TRUE;
+    }
+    $server = $this->getUpstreamServer();
+    // Bail on the process if there is no upstream server defined.
+    if (empty($server)) {
+      $this->error(STRING_MISSING_UPSTREAM_SERVER);
+      return FALSE;
+    }
+    $drushAlias = $site->getSetting(SITE_DRUSH_ALIAS);
+    if (empty($drushAlias)) {
+      $this->error(STRING_SITE_MISSING_SETTING, array(
+        '!key' => SITE_DRUSH_ALIAS,
+      ));
+      return FALSE;
+    }
+    $context = (object) array(
+      'site' => $site,
+      'alias' => $drushAlias,
+      'upstreamServer' => $server,
+      'success' => FALSE,
+      'handled' => FALSE,
+    );
+    $this->events()->fireEvent(EVENT_UPSTREAM_PULL, $context);
+    return $context->success;
+  }
+  
+}

@@ -75,6 +75,19 @@ interface PhysicalServerInterface extends Serializable {
   function downloadFile($file, $destination = NULL);
   
   /**
+   * Copies a directory to the local server.
+   * 
+   * @param string $dir
+   *   The directory location on the remote server.
+   * @param string $destination
+   *   The directory location on the local server.
+   * 
+   * @return boolean
+   *   TRUE if successful, otherwise FALSE.
+   */
+  function copyDirectory($dir, $destination);
+  
+  /**
    * Deletes a file from the server.
    * 
    * @param string $file

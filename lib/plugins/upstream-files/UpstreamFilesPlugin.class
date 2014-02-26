@@ -1,0 +1,32 @@
+<?php
+/**
+ * @file Defines the UpstreamFilesPlugin class.
+ */
+
+/**
+ * Responsible for synchronizing all the files from an upstream Drupal site.
+ */
+class UpstreamFilesPlugin extends GenericPlugin implements EventListener {
+  
+  public function initialize() {
+    $this->events()->registerListener(array(
+      EVENT_UPDATE_PRIOR_ACTIONS
+    ), $this);
+  }
+  
+  public function captureEvent(&$context, $eventType) {
+    switch ($eventType) {
+      case EVENT_UPDATE_PRIOR_ACTIONS:
+        if (empty($context->handled) || $context->success) {
+          $context->handled = TRUE;
+          $context->sucess = $this->downloadFiles($context->site);
+        }
+        break;
+    }
+  }
+  
+  private function downloadFile(DrupalSite $site) {
+    
+  }
+  
+}
