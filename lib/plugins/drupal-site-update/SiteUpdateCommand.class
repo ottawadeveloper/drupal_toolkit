@@ -137,7 +137,6 @@ class SiteUpdateCommand extends GenericSiteCommand {
       $this->error(STRING_UPDATE_GENERIC_ERROR, array(
         '!step' => $stepEvent,
       ));
-      exit(1);
     }
     return TRUE;
   }
