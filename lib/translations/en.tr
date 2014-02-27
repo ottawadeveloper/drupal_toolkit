@@ -122,3 +122,6 @@ upstream_db.error.unable-to-import-upstream = "Unable to import the remote datab
 upstream_db.error.unable-to-import-local = "Unable to import the exported tables from the local database."
 upstream_db.error.unable-to-restore-variable = "Unable to restore variable !name to value [!value]"
 upstream_db.error.missing-upstream-server = "No upstream server is declared."
+
+drupal_site_rollback.error.generic = "An error has occurred during the rollback process."
+drupal_site_rollback.error.two-builds-required = "There must be two builds in order to rollback."

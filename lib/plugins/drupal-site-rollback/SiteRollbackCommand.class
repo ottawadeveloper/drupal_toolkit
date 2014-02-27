@@ -105,9 +105,44 @@ define('EVENT_ROLLBACK_COMPLETE', 'rollback-complete');
  */
 define('STRING_ROLLBACK_STANDARD_ERROR', 'drupal_site_rollback.error.generic');
 
+/**
+ * Error message for if there are two builds missing.
+ * 
+ * @ingroup strings
+ */
+define('STRING_ROLLBACK_REQUIRES_TWO_BUILDS', 'drupal_site_rollback.error.two-builds-required');
+
 class SiteRollbackCommand extends GenericSiteCommand {
   
-  private function executeStep($stepEvent, &$context, $optional = FALSE) {
+  public function verifyRequirements() {
+    if (!$this->requireSite()) {
+      return FALSE;
+    }
+    $site = $this->getSite();
+    $site->loadSettings();
+    if (empty($site->getPreviousBuildID())) {
+      $this->error(STRING_ROLLBACK_REQUIRES_TWO_BUILDS);
+      return FALSE;
+    }
+    return parent::verifyRequirements();
+  }
+  
+  /**
+   * Executes a step.
+   * 
+   * @param string $stepEvent
+   *   The event to fire.
+   * @param stdClass $context
+   *   The context object.
+   * @param boolean $optional
+   *   If TRUE, success is not required.
+   * @param boolean $die
+   *   If TRUE, the script will exit if the step does not succeed.
+   * 
+   * @return boolean
+   *   TRUE if the step did not exit.
+   */
+  private function executeStep($stepEvent, &$context, $optional = FALSE, $die = TRUE) {
     $context->success = $optional;
     $context->handled = FALSE;
     $this->events()->fireEvent($stepEvent, $context);
@@ -115,12 +150,35 @@ class SiteRollbackCommand extends GenericSiteCommand {
       $this->error(STRING_ROLLBACK_STANDARD_ERROR, array(
         '!step' => $stepEvent,
       ));
+      if ($die) {
+        exit(1);
+      }
     }
     return TRUE;
   }
   
   public function executeCommand() {
-    
+    $site = $this->getSite();
+    $site->loadSettings();
+    $baseContext = (object) array(
+      'site' => $site,
+      'revertBuild' => $site->getPreviousBuildID(),
+      'currentBuild' => $site->getBuildID(),
+    );
+    $this->executeStep(EVENT_ROLLBACK_PREPARE, $baseContext, TRUE, TRUE);
+    $this->executeStep(EVENT_ROLLBACK_BACKUP, $baseContext, FALSE, TRUE);
+    $this->executeStep(EVENT_ROLLBACK_START, $baseContext, FALSE, TRUE);
+    $this->executeStep(EVENT_ROLLBACK_PHASE1, $baseContext, TRUE, FALSE);
+    $this->executeStep(EVENT_ROLLBACK_PHASE2, $baseContext, FALSE, FALSE);
+    $this->executeStep(EVENT_ROLLBACK_PHASE3, $baseContext, TRUE, FALSE);
+    $this->executeStep(EVENT_ROLLBACK_FINISH, $baseContext, FALSE, FALSE);
+    $this->executeStep(EVENT_ROLLBACK_CLEAN, $baseContext, TRUE, FALSE);
+    $this->executeStep(EVENT_ROLLBACK_COMPLETE, $baseContext, TRUE, FALSE);
+    $site->deleteBuildID($baseContext->currentBuild);
+    if (!$site->saveConfiguration()) {
+      $this->error(STRING_COULD_NOT_SAVE_SITE);
+      exit(1);
+    }
   }
   
 }

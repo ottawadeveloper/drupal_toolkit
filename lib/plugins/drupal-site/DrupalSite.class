@@ -440,6 +440,48 @@ class DrupalSite {
   }
   
   /**
+   * Deletes a build ID from the list of build IDs and resets the last/latest
+   * build IDs.
+   * 
+   * @param string $buildID
+   *   The build ID to remove.
+   */
+  public function deleteBuildID($buildID) {
+    $ids = $this->settings[SITE_BUILD_IDS];
+    $this->settings[SITE_BUILD_IDS] = array();
+    foreach ($ids as $id) {
+      if ($id !== $buildID) {
+        $this->registerNewBuildID($id);
+      }
+    }
+  }
+  
+  /**
+   * Retrieves the current build ID.
+   * 
+   * @return string
+   *   The current build ID.
+   */
+  public function getBuildID() {
+    return $this->settings[SITE_LATEST_BUILD_ID];
+  }
+  
+  /**
+   * Retrieves the previous build ID.
+   * 
+   * @return string 
+   *   The previous build ID.
+   */
+  public function getPreviousBuildID() {
+    if (isset($this->settings[SITE_LAST_BUILD_ID])) {
+      return $this->settings[SITE_LAST_BUILD_ID];
+    }
+    else {
+      return NULL;
+    }
+  }
+  
+  /**
    * Extends the settings with more settings.
    * 
    * @param array $settings
