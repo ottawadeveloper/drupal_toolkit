@@ -530,6 +530,29 @@ class DrupalSite {
   }
   
   /**
+   * Triggers the deletion of a specific build.
+   * 
+   * @param EventManagerInterface $events
+   *   An event manager to fire events from.
+   * @param string $buildID
+   *   The ID of the build to delete.
+   * 
+   * @return boolean
+   *   TRUE if the build was deleted, otherwise FALSE.
+   */
+  public function deleteBuild(EventManagerInterface $events, $buildID) {
+    $context = (object) array(
+      'site' => $this,
+      'buildID' => $buildID,
+      'handled' => FALSE,
+      'success' => TRUE,
+    );
+    $events->fireEvent(EVENT_DELETE_BUILD, $context);
+    $this->deleteBuildID($buildID);
+    return $context->success;
+  }
+  
+  /**
    * Creates a site object.
    * 
    * @param Configuration $config

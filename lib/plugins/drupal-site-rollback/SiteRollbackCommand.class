@@ -180,7 +180,7 @@ class SiteRollbackCommand extends GenericSiteCommand {
     $this->executeStep(EVENT_ROLLBACK_FINISH, $baseContext, FALSE, FALSE);
     $this->executeStep(EVENT_ROLLBACK_CLEAN, $baseContext, TRUE, FALSE);
     $this->executeStep(EVENT_ROLLBACK_COMPLETE, $baseContext, TRUE, FALSE);
-    $site->deleteBuildID($baseContext->currentBuild);
+    $site->deleteBuild($this->events(), $baseContext->currentBuild);
     if (!$site->saveConfiguration()) {
       $this->error(STRING_COULD_NOT_SAVE_SITE);
       exit(1);

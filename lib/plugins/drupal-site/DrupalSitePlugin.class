@@ -134,43 +134,16 @@ class DrupalSitePlugin extends GenericPlugin implements EventListener {
       return TRUE;
     }
     $del = count($builds) - $max;
-    $newbuilds = array();
     $ret = TRUE;
     foreach ($builds as $buildID) {
       if ($del > 0) {
-        if (!$this->deleteBuild($site, $buildID)) {
+        if (!$site->deleteBuild($this->events(), $buildID)) {
           $ret = FALSE;
         }
         $del--;
       }
-      else {
-        $newbuilds[] = $buildID;
-      }
     }
-    $site->setSetting(SITE_BUILD_IDS, $newbuilds);
     return $ret;
-  }
-  
-  /**
-   * Triggers the deletion of a specific build.
-   * 
-   * @param DrupalSite $site
-   *   The site to delete a build from.
-   * @param string $buildID
-   *   The ID of the build to delete.
-   * 
-   * @return boolean
-   *   TRUE if the build was deleted, otherwise FALSE.
-   */
-  private function deleteBuild(DrupalSite $site, $buildID) {
-    $context = (object) array(
-      'site' => $site,
-      'buildID' => $buildID,
-      'handled' => FALSE,
-      'success' => FALSE,
-    );
-    $this->events()->fireEvent(EVENT_DELETE_BUILD, $context);
-    return $context->success;
   }
   
 }
