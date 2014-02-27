@@ -12,6 +12,11 @@
  * 
  * @defgroup server_connection_types "Remote Connection Types"
  * Different types of remote connections that can be made.
+ * 
+ * @defgroup server_implementation_types "Server Implementation Types"
+ * Different ways of implementing connections to remote machines. Defaults to 
+ * a standard implementation named RemoteMachine. Other plugins can support 
+ * other methods of interacting with this server.
  */
 
 /**
@@ -49,12 +54,39 @@ define('STRING_SERVER_INTERACTION_NO_SERVER', 'server_interaction.error.could-no
 define('SITE_REMOTE_FILES', 'remote-files');
 
 /**
+ * Server setting for the type of remote server object to build.
+ * 
+ * @ingroup server_settings
+ */
+define('SERVER_SETTING_TYPE', 'server-implementation');
+
+/**
+ * Generic server implementation - this is the default.
+ * 
+ * @ingroup server_implementation_types
+ */
+define('SERVER_IMPLEMENTATION_GENERIC', 'generic');
+
+/**
+ * Fired when we need a physical server type.
+ * 
+ * @ingroup events
+ */
+define('EVENT_CAST_PHYSICAL_SERVER', 'cast-physical-server');
+
+/**
  * String token for when we are unable to delete a managed remote file.
  * 
  * @ingroup strings
  */
 define('STRING_UNABLE_TO_DELETE_REMOTE_FILE', 'server_interaction.error.could-not-delete-remote-file');
 
+/**
+ * String token for when the server could not be cast.
+ * 
+ * @ingroup strings
+ */
+define('STRING_UNABLE_TO_CAST_SERVER', 'server_interaction.error.unable-to-cast');
 
 /**
  * Manages the list of the different types of servers that can be used by
@@ -83,6 +115,7 @@ class ServerInteractionPlugin extends GenericPlugin implements EventListener {
     $this->events()->registerListener(array(
       EVENT_FIND_SERVERS,
       EVENT_REMOVE_ALL,
+      EVENT_CAST_PHYSICAL_SERVER,
     ), $this);
     $this->config()->extendDefaultConfiguration(array(
       CONFIG_SERVER_LIST => array(),
@@ -108,9 +141,30 @@ class ServerInteractionPlugin extends GenericPlugin implements EventListener {
       if (!empty($allServers)) {
         if (isset($allServers[$type])) {
           foreach ($allServers[$type] as $key => $serverConfiguration) {
-            $machine = new RemoteMachine($serverConfiguration);
-            if ($machine->initialize()) {
-              $servers[$key] = $machine;
+            $context = (object) array(
+              'settings' => $serverConfiguration,
+              'server' => NULL,
+              'type' => NULL,
+            );
+            if (!empty($serverConfiguration[SERVER_SETTING_TYPE])) {
+              $context->type = $serverConfiguration[SERVER_SETTING_TYPE];
+            }
+            if (empty($context->type)) {
+              // Default for old behaviour
+              $context->server = new RemoteMachine($serverConfiguration);
+            }
+            else {
+              // New support
+              $this->events()->fireEvent(EVENT_CAST_PHYSICAL_SERVER, $context);
+              if (empty($context->server)) {
+                $this->warn(STRING_UNABLE_TO_CAST_SERVER, array(
+                  '!type' => $context->type,
+                ));
+                continue;
+              }
+            }
+            if ($context->server->initialize()) {
+              $servers[$key] = $context->server;
             }
             else {
               $this->error(STRING_SERVER_INTERACTION_NO_SERVER, array(
@@ -159,12 +213,33 @@ class ServerInteractionPlugin extends GenericPlugin implements EventListener {
     return $r;
   }
   
+  /**
+   * Casts remote servers based on their type.
+   * 
+   * @param string $serverSettings
+   *   The server settings array.
+   * @param string $type
+   *   The server type.
+   * 
+   * @return PhysicalServerInterface
+   *   The server object, or NULL if the type is not supported.
+   */
+  private function castRemoteServer($serverSettings, $type) {
+    switch ($type) {
+      case SERVER_IMPLEMENTATION_GENERIC:
+        return new RemoteMachine($serverSettings);
+    }
+    return NULL;
+  }
+  
   public function captureEvent(&$context, $type) {
     switch ($type) {
-      case EVENT_FIND_SERVERS:
-        if (!isset($context->serverType)) {
-          debug_print_backtrace();
+      case EVENT_CAST_PHYSICAL_SERVER:
+        if (empty($context->server)) {
+          $context->server = $this->castRemoteServer($context->settings, $context->type);
         }
+        break;
+      case EVENT_FIND_SERVERS:
         $context->servers = array_merge($context->servers, $this->loadServersOfType($context->serverType, isset($context->skipLocal) ? $context->skipLocal : TRUE));
         break;
       case EVENT_REMOVE_ALL:

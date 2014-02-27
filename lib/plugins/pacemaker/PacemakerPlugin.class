@@ -1,0 +1,63 @@
+<?php
+/**
+ * @file Defines the PacemakerPlugin class.
+ */
+
+/**
+ * Use this to treat the server as an implementation of PacemakerCluster.
+ * 
+ * @ingroup server_implementation_types
+ */
+define('SERVER_IMPLEMENTATION_PACEMAKER', 'pacemaker-cluster');
+
+/**
+ * Responsible for supplying a pacemaker physical server that knows how to
+ * deal with active/standby modes, etc.
+ */
+class PacemakerPlugin extends GenericPlugin implements EventListener {
+  
+  public function initialize() {
+    $base = basename(__FILE__);
+    require assemble_path($base, 'PacemakerCluster.class');
+    $this->events()->registerListener(array(
+      EVENT_CAST_PHYSICAL_SERVER,
+    ), $this);
+  }
+  
+  public function requiredPlugins() {
+    return array('ServerInteractionPlugin');
+  }
+  
+  public function captureEvent(&$context, $eventType) {
+    switch ($eventType) {
+      case EVENT_CAST_PHYSICAL_SERVER:
+        if (empty($context->server)) {
+          $context->server = $this->castPhysicalServer($context->settings, $context->type);
+        }
+        break;
+    }
+  }
+  
+  /**
+   * Casts a physical server into an appropriate object. Adds support for the
+   * PacemakerCluster.
+   * 
+   * @param array $settings
+   *   An array of settings.
+   * @param string $type
+   *   The type of server to cast into.
+   * 
+   * @return PhysicalServerInterface
+   *   The physical server, or NULL if the type is not supported by this 
+   *   plugin.
+   */
+  private function castPhysicalServer($settings, $type) {
+    switch ($type) {
+      case SERVER_IMPLEMENTATION_PACEMAKER:
+        return new PacemakerCluster($settings);
+        break;
+    }
+    return NULL;
+  }
+  
+}

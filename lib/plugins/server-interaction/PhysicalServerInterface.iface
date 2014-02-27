@@ -112,6 +112,30 @@ interface PhysicalServerInterface extends Serializable {
   function sleep();
   
   /**
+   * Retrieves a list of files in the specified directory. Directories 
+   * should not be included.
+   * 
+   * @param string $dir
+   *   The directory to retrieve files from.
+   * 
+   * @return array
+   *   An array of file paths.
+   */
+  function listFiles($dir);
+  
+  /**
+   * Retrieves a list of directories in the specified directory. Files should
+   * not be included.
+   * 
+   * @param string $dir
+   *   The directory to retrieve directories from.
+   * 
+   * @return array
+   *   An array of directory paths.
+   */
+  function listDirectories($dir);
+  
+  /**
    * Retrieves a server setting.
    * 
    * Server settings are used to provide additional configuration.

@@ -46,4 +46,38 @@ class LocalMachine extends GenericMachine {
     return TRUE;
   }
   
+  public function listFiles($dir) {
+    $h = opendir($dir);
+    if (empty($h)) {
+      return FALSE;
+    }
+    $files = array();
+    while (($file = readdir($h)) !== FALSE) {
+      if ($file !== '.' && $file !== '..') {
+        $full = assemble_path($dir, $file);
+        if (!is_dir($full)) {
+          $files[] = $full;
+        }
+      }
+    }
+    return $files;
+  }
+  
+  public function listDirectories($dir) {
+    $h = opendir($dir);
+    if (empty($h)) {
+      return FALSE;
+    }
+    $dirs = array();
+    while (($file = readdir($h)) !== FALSE) {
+      if ($file !== '.' && $file !== '..') {
+        $full = assemble_path($dir, $file);
+        if (is_dir($full)) {
+          $dirs[] = $full;
+        }
+      }
+    }
+    return $dirs;
+  }
+  
 }

@@ -27,7 +27,7 @@ define('SERVER_TYPE_UPSTREAM_SERVER', 'upstream');
  * 
  * @ingroup strings
  */
-define('STRING_MISSING_UPSTREAM_SERVER', 'upstream_db.error.missing-upstream-server');
+define('STRING_MISSING_UPSTREAM_SERVER', 'upstream.error.missing-upstream-server');
 
 /**
  * Event fired to allow other plugins to bring down upstream data.

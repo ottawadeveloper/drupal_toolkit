@@ -25,6 +25,24 @@ function get_system_username() {
 }
 
 /**
+ * Attempts to retrieve the current system's hostname.
+ * 
+ * Relies on the system hostname command.
+ * 
+ * @return string
+ *   The hostname for the current system, or NULL if unable to determine.
+ */
+function get_hostname() {
+  if (shell_command_available('hostname')) {
+    $host = trim(execute_system_command('hostname'));
+    if (!empty($host)) {
+      return $host;
+    }
+  }
+  return NULL;
+}
+
+/**
  * Recursively deletes an entire directory.
  * 
  * Includes security check to not delete the root directory.
