@@ -1,3 +1,37 @@
+## 2014-02-27
+
+This is a status update on the progress of the toolkit.
+
+The following commands now work to some degree:
+- site-build: Downloads a codebase and sets up the necessary structure
+- site-install: Installs Drupal with a set of configured options
+- site-exists: Checks if a site exists
+- site-delete: Deletes a built site
+- site-update: Updates the site to the latest version of the make file
+
+The following features are now supported for various commands above:
+- Setup of the database, supporting MySQL only.
+- Configure a Drush alias for the site.
+- Use Drush to backup the database.
+- Install Drupal via Drush
+- Enter into maintenance mode using Drush.
+- Update the site using Drush's updb command.
+- Configure a gateway server using Apache2 or nginx.
+- Configure hosts files on Linux machines.
+- Configure an HTTP server using Apache2 or nginx.
+- Connect to the local machine or remote machines for many tasks
+- Connect to a Pacemaker cluster for many tasks
+- Configure permissions on all files, server files and root-only system files.
+- Supports the standard build pattern that relies on symlinks which is very
+  flexible and supports rollbacks.
+- Supports downloading an upstream server's database and files before performing
+  an update.
+- Translate text into various languages (English is only language provided now)
+- Log output to the terminal.
+- Log output to a file.
+
+## Original
+
 Work in progress.
 
 Goal is to replace the custom tool currently in use at uOttawa with a better tool that supports more cross-platform functionality (via switching to PHP) and more diverse functionality (via switching to a plugin system instead of static code). Also to improve documentation significantly.
