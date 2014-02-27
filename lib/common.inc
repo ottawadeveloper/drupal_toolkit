@@ -361,6 +361,7 @@ $core_plugins = array(
   'drupal-site-delete' => 'DrupalSiteDeletePlugin',
   'drupal-site-exists' => 'DrupalSiteExistsPlugin',
   'drupal-site-update' => 'DrupalSiteUpdatePlugin',
+  'drupal-site-rollback' => 'DrupalSiteRollbackPlugin',
   'standard-config' => 'DrupalSiteStandardConfigPlugin',
   'standard-build' => 'DrupalSiteStandardBuildPlugin',
   'standard-structure' => 'DrupalSiteStandardStructurePlugin',

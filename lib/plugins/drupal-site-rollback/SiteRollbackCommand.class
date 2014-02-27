@@ -1,0 +1,29 @@
+<?php
+
+/*
+ * 
+- only RB if there is more than one version left
+- setup directory structure for rollback
+- make sure all symlinks are created in the directory
+- backup current DB in /reverted
+- maintenance mode
+- change symlink to point to last build
+- refresh apache server
+- drop DB
+- restore DB from backup
+- bring sites back up
+- store bad codebase in /reverted
+- delete it
+- move DB backup to /restored
+- cleanup permissions
+- save config file
+
+ */
+
+class SiteRollbackCommand extends GenericSiteCommand {
+  
+  public function executeCommand() {
+    
+  }
+  
+}
