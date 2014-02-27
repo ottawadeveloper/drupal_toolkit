@@ -107,6 +107,18 @@ define('STRING_ROLLBACK_STANDARD_ERROR', 'drupal_site_rollback.error.generic');
 
 class SiteRollbackCommand extends GenericSiteCommand {
   
+  private function executeStep($stepEvent, &$context, $optional = FALSE) {
+    $context->success = $optional;
+    $context->handled = FALSE;
+    $this->events()->fireEvent($stepEvent, $context);
+    if (empty($context->success)) {
+      $this->error(STRING_ROLLBACK_STANDARD_ERROR, array(
+        '!step' => $stepEvent,
+      ));
+    }
+    return TRUE;
+  }
+  
   public function executeCommand() {
     
   }

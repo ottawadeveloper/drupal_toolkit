@@ -129,7 +129,7 @@ class SiteUpdateCommand extends GenericSiteCommand {
     return parent::verifyRequirements();
   }
   
-  private function executeStep($stepEvent, &$context, $optional = FALSE) {
+  private function executeStep($stepEvent, &$context, $optional = FALSE, $die = TRUE) {
     $context->success = $optional;
     $context->handled = FALSE;
     $this->events()->fireEvent($stepEvent, $context);
@@ -137,6 +137,9 @@ class SiteUpdateCommand extends GenericSiteCommand {
       $this->error(STRING_UPDATE_GENERIC_ERROR, array(
         '!step' => $stepEvent,
       ));
+      if ($die) {
+        exit(1);
+      }
     }
     return TRUE;
   }
@@ -155,17 +158,17 @@ class SiteUpdateCommand extends GenericSiteCommand {
     $this->executeStep(EVENT_UPDATE_SITES, $baseContext);
     $this->executeStep(EVENT_UPDATE_CODEBASE_COMPLETE, $baseContext, TRUE);
     $this->executeStep(EVENT_UPDATE_TAKE_BACKUP, $baseContext);
-    $this->executeStep(EVENT_UPDATE_PREPARE_FOR_UPDATE, $baseContext);
-    $this->executeStep(EVENT_UPDATE_PREPARE_SERVER, $baseContext, TRUE);
-    $this->executeStep(EVENT_UPDATE_PRIOR_ACTIONS, $baseContext, TRUE);
-    $this->executeStep(EVENT_UPDATE_ACTIONS, $baseContext);
-    $this->executeStep(EVENT_UPDATE_COMPLETE, $baseContext, TRUE);
-    $this->executeStep(EVENT_UPDATE_REFRESH_SERVER_CONFIG, $baseContext, TRUE);
-    $this->executeStep(EVENT_UPDATE_PREPARE_FOR_REFRESH, $baseContext, TRUE);
-    $this->executeStep(EVENT_UPDATE_REFRESH, $baseContext);
-    $this->executeStep(EVENT_UPDATE_CLEANUP, $baseContext, TRUE);
-    $this->executeStep(EVENT_CLEANUP_BUILD, $baseContext);
-    $this->events()->fireEvent(EVENT_UPDATE_FINISH, $baseContext);
+    $this->executeStep(EVENT_UPDATE_PREPARE_FOR_UPDATE, $baseContext, FALSE, FALSE);
+    $this->executeStep(EVENT_UPDATE_PREPARE_SERVER, $baseContext, TRUE, FALSE);
+    $this->executeStep(EVENT_UPDATE_PRIOR_ACTIONS, $baseContext, TRUE, FALSE);
+    $this->executeStep(EVENT_UPDATE_ACTIONS, $baseContext, FALSE, FALSE);
+    $this->executeStep(EVENT_UPDATE_COMPLETE, $baseContext, TRUE, FALSE);
+    $this->executeStep(EVENT_UPDATE_REFRESH_SERVER_CONFIG, $baseContext, TRUE, FALSE);
+    $this->executeStep(EVENT_UPDATE_PREPARE_FOR_REFRESH, $baseContext, TRUE, FALSE);
+    $this->executeStep(EVENT_UPDATE_REFRESH, $baseContext, FALSE, FALSE);
+    $this->executeStep(EVENT_UPDATE_CLEANUP, $baseContext, TRUE, FALSE);
+    $this->executeStep(EVENT_CLEANUP_BUILD, $baseContext, FALSE, FALSE);
+    $this->events()->fireEvent(EVENT_UPDATE_FINISH, $baseContext, FALSE, FALSE);
     if (!$site->saveConfiguration()) {
       $this->error(STRING_COULD_NOT_SAVE_SITE);
       die();
