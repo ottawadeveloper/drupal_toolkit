@@ -31,6 +31,12 @@ class DrushBackupPlugin extends GenericPlugin implements EventListener {
   
   public function captureEvent(&$context, $eventType) {
     switch ($eventType) {
+      case EVENT_ROLLBACK_BACKUP:
+        if (empty($context->handled) || $context->success) {
+          $context->handled = TRUE;
+          $context->success = $this->backupForRollback($context->site, $context->currentBuild);
+        }
+        break;
       case EVENT_UPDATE_TAKE_BACKUP:
         $context->success = $this->drushBackup($context->site);
         $context->stopPropagation = TRUE;
@@ -46,6 +52,21 @@ class DrushBackupPlugin extends GenericPlugin implements EventListener {
   
   public function requiredPlugins() {
     return array('DrupalSitePlugin', 'DrushConfigurationPlugin', 'DatabaseConfigurationPlugin');
+  }
+  
+  /**
+   * Backups up the DB before a rollback.
+   * 
+   * @param DrupalSite $site
+   *   Site to backup.
+   * @param string $buildID
+   *   Build ID to backup.
+   * 
+   * @return boolean
+   *   TRUE if successful, otherwise FALSE.
+   */
+  private function backupForRollback(DrupalSite $site, $buildID) {
+    
   }
   
   /**
