@@ -1,4 +1,7 @@
 <?php
+/**
+ * @file Defines the SiteRollbackCommand class.
+ */
 
 /*
  * 
@@ -112,6 +115,9 @@ define('STRING_ROLLBACK_STANDARD_ERROR', 'drupal_site_rollback.error.generic');
  */
 define('STRING_ROLLBACK_REQUIRES_TWO_BUILDS', 'drupal_site_rollback.error.two-builds-required');
 
+/**
+ * The rollback command undoes what was done in the update command.
+ */
 class SiteRollbackCommand extends GenericSiteCommand {
   
   public function verifyRequirements() {
