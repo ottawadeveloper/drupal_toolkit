@@ -1,25 +1,38 @@
 <?php
+/**
+ * @file Defines the LinuxCrontab class.
+ */
 
+/**
+ * Specific implementation of a cron manager that is aimed at linux. 
+ * Specifically, this uses the /etc/cron.d folder and drops in files for each
+ * task that needs to be created.
+ */
 class LinuxCrontab extends GenericCronManager {
   
-  private static $mins = array(
-    'minute' => 0,
-    'hour' => 0,
-    'day' => 1,
-    'month' => 1,
-    'weekday' => 0,
-  );
-  
-  private static $maxes = array(
-    'minute' => 59,
-    'hour' => 23,
-    'day' => 28,
-    'month' => 12,
-    'weekday' => 6,
-  );
-  
-  public function scheduleTask($task) {
+  public function scheduleTask($identifier, $task) {
     $frequency = $this->getCronFrequency();
+    $line = $frequency . ' ' . $task;
+    return $this->machine()->writeFile($this->normalizeFilename($identifier), $line);
+  }
+  
+  public function deleteScheduledTask($identifier) {
+    return $this->machine()->deleteFile($this->normalizeFilename($identifier));
+  }
+  
+  /**
+   * Converts the identifier into a filename.
+   * 
+   * @param string $identifier
+   *   The unique identifier for a task.
+   * 
+   * @return string
+   *   The path to a file that can be used for the definition.
+   */
+  private function normalizeFilename($identifier) {
+    $s1 = preg_replace('`[^A-Za-z0-9_.-]`', '_', $identifier);
+    $s2 = preg_replace('`_{2,}`', '_', $s1);
+    return assemble_path('/etc/cron.d', trim($s2, '_'));
   }
   
   /**

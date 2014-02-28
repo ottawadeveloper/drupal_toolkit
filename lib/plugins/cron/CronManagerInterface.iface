@@ -1,10 +1,41 @@
 <?php
+/**
+ * @file Defines the CronManagerInterface interface.
+ */
 
+/**
+ * Defines the interface by which the CronPlugin expects to interact with a
+ * server that supports it.
+ */
 interface CronManagerInterface extends ConfigurationDependency {
   
-  function scheduleTask($task);
+  /**
+   * Schedules a task for repeated execution.
+   * 
+   * @param string $identifier
+   *   A unique identifier for this cron task.
+   * @param string $task
+   *   The command to be executed.
+   * 
+   * @return boolean
+   *   TRUE if the scheduled task was created, otherwise FALSE.
+   */
+  function scheduleTask($identifier, $task);
   
   /**
+   * Deletes a scheduled task.
+   * 
+   * @param string $identifier
+   *   The unique identifier as passed to scheduleTask().
+   * 
+   * @return boolean
+   *   TRUE if the scheduled task was deleted, otherwise FALSE.
+   */
+  function deleteScheduledTask($identifier);
+  
+  /**
+   * Returns the physical machine attached to this handler.
+   * 
    * @return PhysicalServerInterface
    */
   function machine();

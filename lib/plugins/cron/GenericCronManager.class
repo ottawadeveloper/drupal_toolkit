@@ -1,15 +1,34 @@
 <?php
+/**
+ * @file Defines the GenericCronManager class.
+ */
 
+/**
+ * Provides some common functionality for cron managers.
+ */
 abstract class GenericCronManager implements CronManagerInterface {
   
-  private $settings = array();
-  
+  /**
+   * The server that we're wrapped around.
+   * 
+   * @var PhysicalServerInterface
+   */
   private $machine = NULL;
   
+  /**
+   * Configuration manager.
+   * 
+   * @var ConfigurationManagerInterface
+   */
   private $config = NULL;
   
-  public function __construct(PhysicalServerInterface $server, array $settings) {
-    $this->settings = $settings;
+  /**
+   * Constructor.
+   * 
+   * @param PhysicalServerInterface $server
+   *   The server that is being wrapped.
+   */
+  public function __construct(PhysicalServerInterface $server) {
     $this->machine = $server;
   }
   
@@ -19,13 +38,6 @@ abstract class GenericCronManager implements CronManagerInterface {
   
   public function config() {
     return $this->config;
-  }
-  
-  public function getSetting($key) {
-    if (isset($this->settings[$key])) {
-      return $this->settings[$key];
-    }
-    return NULL;
   }
   
   public function machine() {
