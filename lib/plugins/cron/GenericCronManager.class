@@ -1,0 +1,35 @@
+<?php
+
+abstract class GenericCronManager implements CronManagerInterface {
+  
+  private $settings = array();
+  
+  private $machine = NULL;
+  
+  private $config = NULL;
+  
+  public function __construct(PhysicalServerInterface $server, array $settings) {
+    $this->settings = $settings;
+    $this->machine = $server;
+  }
+  
+  public function setConfiguration(ConfigurationManagerInterface $config) {
+    $this->config = $config;
+  }
+  
+  public function config() {
+    return $this->config;
+  }
+  
+  public function getSetting($key) {
+    if (isset($this->settings[$key])) {
+      return $this->settings[$key];
+    }
+    return NULL;
+  }
+  
+  public function machine() {
+    return $this->machine;
+  }
+  
+}

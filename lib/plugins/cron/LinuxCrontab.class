@@ -1,0 +1,71 @@
+<?php
+
+class LinuxCrontab extends GenericCronManager {
+  
+  private static $mins = array(
+    'minute' => 0,
+    'hour' => 0,
+    'day' => 1,
+    'month' => 1,
+    'weekday' => 0,
+  );
+  
+  private static $maxes = array(
+    'minute' => 59,
+    'hour' => 23,
+    'day' => 28,
+    'month' => 12,
+    'weekday' => 6,
+  );
+  
+  public function scheduleTask($task) {
+    $frequency = $this->getCronFrequency();
+  }
+  
+  /**
+   * Retrieves the cron frequency.
+   * 
+   * @return string
+   *   The cron frequency.
+   */
+  private function getCronFrequency() {
+    $components = array(
+      'minute' => '*',
+      'hour' => '*',
+      'day' => '*',
+      'month' => '*',
+      'weekday' => '*',
+    );
+    switch ($this->config()->getConfig(CONFIG_CRONTAB_FREQUENCY)) {
+      case '@yearly':
+      case '@annually':
+        $components['month'] = '@';
+        $components['day'] = '@';
+        break;
+      case '@monthly':
+        $components['day'] = '@';
+        break;
+      case '@weekly':
+        $components['weekday'] = '@';
+        break;
+      case '@hourly':
+        $components['hour'] = '@';
+        break;
+      case '@minute':
+        $components['minute'] = '@';
+        break;
+      default:
+        $pieces = explode(' ', $this->config()->getConfig(CONFIG_CRONTAB_FREQUENCY));
+        $keys = array_keys($components);
+        foreach ($pieces as $k => $pattern) {
+          $components[$keys[$k]] = $pattern;
+        }
+        break;
+    }
+    foreach ($components as $element => $pattern) {
+      $components[$element] = crontab_simplify($element, $pattern);
+    }
+    return implode(' ', $components);
+  }
+  
+}

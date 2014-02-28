@@ -1,0 +1,12 @@
+<?php
+
+interface CronManagerInterface extends ConfigurationDependency {
+  
+  function scheduleTask($task);
+  
+  /**
+   * @return PhysicalServerInterface
+   */
+  function machine();
+  
+}

@@ -23,6 +23,84 @@ function get_system_username() {
   }
   return NULL;
 }
+/**
+ * Callback for preg_replace_callback that resolves a randomized function in
+ * a crontab.
+ * 
+ * Randomized crontab functions can appear in one of these forms:
+ * 
+ * @(min-max) is the full expression
+ * @ is an alias for @(min-max)
+ * @(max) is an alias for @(min-max)
+ * @/X is an alias for @(min-XE)/X (eg, it generates a randomized start 
+ * position for the interval but always within less than interval so that an
+ * interval is not missed.
+ * 
+ * max may append the character 'E' onto the end which indicates that the last
+ * value should be excluded. min has a similar feature.
+ * 
+ * @param array $matches
+ *   Matches from the regex. Two capture groups should be specified - the 
+ *   first is the lower bound (min) and the second is the upper bound (max),
+ *   optionally with an E to indicate the value excludes itself.
+ * 
+ * @return int
+ *   A random integer between min and max.
+ */
+function regex_callback_crontab_rand($matches) {
+  return rand($matches[1], $matches[2]);
+}
+
+/**
+ * Regex callback to resolve the @/I pattern.
+ * 
+ * @param array $matches
+ *   An array of matches.
+ * 
+ * @return string
+ *   Replacement pattern
+ */
+function regex_callback_crontab_interval($matches) {
+  return '@(' . ($matches[1] - 1) . ')/' . $matches[1];
+}
+
+/**
+ * Handles some custom crontab characters based on Jenkins and UltimateCron.
+ * 
+ * Supports the following:
+ * - '?' is an alias for '*'
+ * - 'H' is an alias for '@'
+ * - '@' indicates a hashed value as used by Jenkins. @ takes on a randomized
+ *   value that depends on its context.
+ * - '@(min, max)' indicates a hashed value between the min and max. min can be
+ *   omitted, at which point it defaults to the minimum for the field.
+ * - '@/I' is equivalent to '@(min, I - 1)/I', eg the hashed value cannot
+ *   cause there to be less than floor(max / I) executions in the given 
+ *   timeframe.
+ * - Note that the +(offset) is not supported as UltimateCron specifies.
+ *   The offset is normally used to offset an interval (eg * / 15 + @). This can
+ *   be replaced with @/15. Many use cases should be satisfied with this.
+ * 
+ * @param string $type
+ *   One of the  five types of crontab fields: minute, hour, day, month or weekday.
+ * @param string $value
+ *   The value of the crontab field.
+ * 
+ * @return string
+ *   A crontab-compliant field value that has supported all the customizations
+ *   as detailed above.
+ */
+function crontab_simplify($type, $value) {
+  $mins = array('minute' => 0, 'hour' => 0, 'day' => 1, 'month' => 1, 'weekday' => 0);
+  $maxes = array('minute' => 59, 'hour' => 23, 'day' => 28, 'month' => 12, 'weekday' => 6);
+  $value = str_replace('?', '*', $value);
+  $value = str_replace('H', '@', $value);
+  $value = preg_replace_callback('`@/(\d{1,})`i', 'regex_callback_crontab_interval', $value);
+  $value = preg_replace('`@([^\(])`i', '@(' . $mins[$type] . '-' . $maxes[$type] . ')$1', $value);
+  $value = preg_replace('`@(\d{1,})`i', '@(' . $mins[$type] . '-$1)', $value);
+  $value = preg_replace_callback('`@\((\d{1,})-(\d{1,}E{0,1})\)`i', 'regex_callback_crontab_rand', $value);
+  return $value;
+}
 
 /**
  * Attempts to retrieve the current system's hostname.

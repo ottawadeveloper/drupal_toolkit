@@ -1,0 +1,72 @@
+<?php
+
+/**
+ * Configure the setting that will be passed to crontab implementations.
+ * 
+ * This should be five values separated by spaces in the following order:
+ * - minute (0-59)
+ * - hour (0-23)
+ * - day of the month (1-31)
+ * - month (1-12
+ * - day of the week (0-6, 0 is Sunday)
+ * 
+ * Special characters may depend on the exact Linux version in use:
+ * - Spaces separate all five fields
+ * - Commas separate multiple values within fields
+ * - Hyphens separate ranges within fields
+ * - Asterisk is a wildcard indicating all values
+ * - Slashes indicate an interval of values
+ * - At sign (@) indicates a random value between the min and max value 
+ *   inclusive
+ * - Plus symbols will be evaluated after the @ sign.
+ * 
+ * Some special names can also be used instead of the five fields:
+ * - @yearly and @annually indicates yearly execution on Jan 1
+ * - @monthly indicates monthly execution on the first day of the month
+ * - @weekly indicates executing every week on Sunday morning
+ * - @daily indicates executing every day at midnight
+ * - @hourly indicates executing every hour at the hour
+ * - @reboot indicates executing only at boot
+ * 
+ * @ingroup config
+ */
+define('CONFIG_CRONTAB_FREQUENCY', 'crontab-frequency');
+
+define('CONFIG_CRONTAB_IGNORE_RANDOM', 'crontab-ignore-random');
+
+class CronPlugin extends GenericPlugin implements EventListener {
+  
+  public function initialize() {
+    $this->events()->registerListen(array(
+      EVENT_INSTALL_EXTRAS,
+    ), $this);
+    $this->config()->extendDefaultConfiguration(array(
+      CONFIG_CRONTAB_FREQUENCY => '@daily',
+    ));
+  }
+  
+  public function captureEvent(&$context, $eventType) {
+    switch ($eventType) {
+      case EVENT_INSTALL_EXTRAS:
+        if (empty($context->handled) || $context->success) {
+          $context->handled = TRUE;
+          $context->success = $this->installCronJob($context->site);
+        }
+        break;
+    }
+  }
+  
+  /**
+   * Installs a cron job for the site.
+   * 
+   * @param DrupalSite $site
+   *   The site to install cron tasks for.
+   * 
+   * @return boolean
+   *   TRUE if the cron tabs were installed successfully, otherwise FALSE.
+   */
+  private function installCronJob(DrupalSite $site) {
+    
+  }
+  
+}
