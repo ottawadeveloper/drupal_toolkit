@@ -34,14 +34,30 @@
  */
 define('CONFIG_CRONTAB_FREQUENCY', 'crontab-frequency');
 
+define('STRING_ERROR_NO_CRON_URL', 'cron_plugin.error.no-url');
+
+define('STRING_ERROR_COULD_NOT_CREATE_CRON', 'cron_plugin.error.bad-creation');
+
+define('SERVER_TYPE_CRON', 'cron');
+
+define('EVENT_CAST_CRON_SERVER', 'cast-cron-server');
+
+define('SERVER_SETTING_CRON_TYPE', 'cron-type');
+
+define('CONFIG_DEFAULT_CRON_TYPE', 'cron-type-default');
+
+define('CRON_TYPE_CRONTAB', 'crontab');
+
 class CronPlugin extends GenericPlugin implements EventListener {
   
   public function initialize() {
     $this->events()->registerListen(array(
       EVENT_INSTALL_EXTRAS,
+      EVENT_CAST_CRON_SERVER,
     ), $this);
     $this->config()->extendDefaultConfiguration(array(
       CONFIG_CRONTAB_FREQUENCY => '@daily',
+      CONFIG_DEFAULT_CRON_TYPE => CRON_TYPE_CRONTAB,
     ));
   }
   
@@ -53,7 +69,70 @@ class CronPlugin extends GenericPlugin implements EventListener {
           $context->success = $this->installCronJob($context->site);
         }
         break;
+      case EVENT_CAST_CRON_SERVER:
+        if (empty($context->cronServer)) {
+          $context->cronServer = $this->castCronMachine($context->server, $context->cronType);
+        }
     }
+  }
+  
+  /**
+   * Casts a server for cron usage.
+   * 
+   * @param PhysicalServerInterface $server
+   *   The server being cast.
+   * 
+   * @param string $type
+   *   The type string to cast the server based on.
+   * 
+   * @return CronManagerInterface
+   *   A cron manager object, or NULL if $type is not appropriate.
+   */
+  private function castCronMachine(PhysicalServerInterface $server, $type) {
+    switch ($type) {
+      case CRON_TYPE_CRONTAB:
+        return new LinuxCrontab($server);
+    }
+    return NULL;
+  }
+  
+  /**
+   * Fetches a list of machines to use for cron.
+   * 
+   * @return array
+   *   An array of CronManagerInterface objects
+   */
+  private function getCronMachines() {
+    $type = $this->config()->getConfig(CONFIG_DEFAULT_CRON_TYPE);
+    $context = (object) array(
+      'success' => FALSE,
+      'handled' => FALSE,
+      'servers' => array(),
+      'skipLocal' => FALSE,
+      'serverType' => SERVER_TYPE_CRON,
+    );
+    $this->events()->fireEvent(EVENT_FIND_SERVERS, $context);
+    $machines = array();
+    foreach ($context->servers as $k => $server) {
+      if ($server instanceof PhysicalServerInterface) {
+        $stype = $server->getSetting(SERVER_SETTING_CRON_TYPE);
+        if (empty($stype)) {
+          $stype = $type;
+        }
+        $next = (object) array(
+          'success' => FALSE,
+          'handled' => FALSE,
+          'server' => $server,
+          'cronServer' => NULL,
+          'cronType' =>$stype,
+        );
+        $this->events()->fireEvent(EVENT_CAST_CRON_SERVER, $next);
+        if (!empty($next->cronServer)) {
+          $machines[$k] = $server;
+        }
+      }
+    }
+    return $machines;
   }
   
   /**
@@ -66,7 +145,32 @@ class CronPlugin extends GenericPlugin implements EventListener {
    *   TRUE if the cron tabs were installed successfully, otherwise FALSE.
    */
   private function installCronJob(DrupalSite $site) {
-    
+    $alias = $site->getSetting(SITE_DRUSH_ALIAS);
+    if (empty($alias)) {
+      $this->error(STRING_SITE_MISSING_SETTING, array(
+        '!key' => SITE_DRUSH_ALIAS
+      ));
+      return FALSE;
+    }
+    $cron = drush_get_cron_url($alias);
+    if (empty($cron)) {
+      $this->error(STRING_ERROR_NO_CRON_URL);
+      return FALSE;
+    }
+    $command = 'wget ' . escapeshellarg($cron);
+    $machines = $this->getCronMachines();
+    foreach ($machines as $key => $machine) {
+      if ($machine instanceof CronManagerInterface) {
+        if (!$machine->scheduleTask($alias, $command)) {
+          $this->error(STRING_ERROR_COULD_NOT_CREATE_CRON, array(
+            '!server' => $key,
+            '!alias' => $alias,
+          ));
+          return FALSE;
+        }
+      }
+    }
+    return TRUE;
   }
   
 }

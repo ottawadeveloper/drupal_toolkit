@@ -29,7 +29,7 @@ class LinuxCrontab extends GenericCronManager {
    * @return string
    *   The path to a file that can be used for the definition.
    */
-  private function normalizeFilename($identifier) {
+  protected function normalizeFilename($identifier) {
     $s1 = preg_replace('`[^A-Za-z0-9_.-]`', '_', $identifier);
     $s2 = preg_replace('`_{2,}`', '_', $s1);
     return assemble_path('/etc/cron.d', trim($s2, '_'));
@@ -41,7 +41,7 @@ class LinuxCrontab extends GenericCronManager {
    * @return string
    *   The cron frequency.
    */
-  private function getCronFrequency() {
+  protected function getCronFrequency() {
     $components = array(
       'minute' => '*',
       'hour' => '*',
