@@ -383,6 +383,7 @@ $core_plugins = array(
   'upstream' => 'UpstreamPlugin',
   'upstream-db' => 'UpstreamDatabasePlugin',
   'upstream-files' => 'UpstreamFilesPlugin',
+  'cron' => 'CronPlugin',
 );
 
 /*

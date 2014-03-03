@@ -8,6 +8,7 @@ The following commands now work to some degree:
 - site-exists: Checks if a site exists
 - site-delete: Deletes a built site
 - site-update: Updates the site to the latest version of the make file
+- site-rollback: Rollback an update that was done with site-update.
 
 The following features are now supported for various commands above:
 - Setup of the database, supporting MySQL only.
@@ -29,6 +30,7 @@ The following features are now supported for various commands above:
 - Translate text into various languages (English is only language provided now)
 - Log output to the terminal.
 - Log output to a file.
+- Sets up cron tasks via dropping a file in /etc/cron.d
 
 ## Original
 

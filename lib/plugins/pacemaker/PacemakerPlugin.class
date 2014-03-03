@@ -17,7 +17,7 @@ define('SERVER_IMPLEMENTATION_PACEMAKER', 'pacemaker-cluster');
 class PacemakerPlugin extends GenericPlugin implements EventListener {
   
   public function initialize() {
-    $base = basename(__FILE__);
+    $base = dirname(__FILE__);
     require assemble_path($base, 'PacemakerCluster.class');
     $this->events()->registerListener(array(
       EVENT_CAST_PHYSICAL_SERVER,

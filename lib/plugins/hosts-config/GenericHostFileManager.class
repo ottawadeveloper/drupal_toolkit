@@ -64,7 +64,7 @@ abstract class GenericHostFileManager implements HostFileManagerInterface {
     $remap = array();
     foreach ($map as $host => $ip) {
       $currentIP = hosts_file_ip_lookup($defs, $host);
-      if (!$ip === $currentIP) {
+      if (empty($currentIP) || ($ip !== $currentIP)) {
         if (!isset($remap[$ip])) {
           $remap[$ip] = array();
         }
@@ -75,7 +75,7 @@ abstract class GenericHostFileManager implements HostFileManagerInterface {
       hosts_file_add($defs, $ip, $hosts);
     }
     if ($this->compact) {
-      hosts_file_compact($defs, TRUE);
+      $defs = hosts_file_compact($defs, TRUE);
     }
     return $this->machine()->writeFile($this->hostfile, hosts_file_build($defs, "\t", " ", $this->lineEnding));
   }

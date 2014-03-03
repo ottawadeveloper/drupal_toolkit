@@ -132,7 +132,7 @@ define('SERVER_SETTING_STATIC_CRON', 'cron-static-config');
 class CronPlugin extends GenericPlugin implements EventListener {
   
   public function initialize() {
-    $this->events()->registerListen(array(
+    $this->events()->registerListener(array(
       EVENT_INSTALL_EXTRAS,
       EVENT_CAST_CRON_SERVER,
       EVENT_REMOVE_ALL,

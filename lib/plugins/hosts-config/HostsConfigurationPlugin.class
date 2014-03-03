@@ -135,7 +135,7 @@ class HostsConfigurationPlugin extends GenericPlugin implements EventListener {
     $this->config()->extendDefaultConfiguration(array(
       CONFIG_MANAGED_HOSTS_COMPACT => FALSE,
       CONFIG_MANAGED_HOSTS_USE_LOCAL => TRUE,
-      CONFIG_MANAGED_HOSTS_DEFAULT_TYPE => 'linux',
+      CONFIG_MANAGED_HOSTS_DEFAULT_TYPE => MANAGED_HOST_TYPE_LINUX,
       CONFIG_MANAGED_HOSTS_TARGET_IP_ADDRESS => '127.0.0.1',
       CONFIG_SERVER_LIST => array(
         SERVER_TYPE_MANAGED_HOST => array(),
@@ -173,7 +173,8 @@ class HostsConfigurationPlugin extends GenericPlugin implements EventListener {
         }
         break;
       case EVENT_SITE_BUILD_MORE_CONFIG:
-        if ($context->success) {
+        if (empty($context->handled) || $context->success) {
+          $context->handled = TRUE;
           $context->success = $this->updateHostFile($context->site);
         }
         break;

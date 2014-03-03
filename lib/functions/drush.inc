@@ -354,7 +354,7 @@ function drush_info_get_key_value(array $info, $key) {
     $pieces = explode(':', $line, 2);
     if (count($pieces) > 1) {
       if ($key === trim($pieces[0])) {
-        return $trim($pieces[1]);
+        return trim($pieces[1]);
       }
     }
   }

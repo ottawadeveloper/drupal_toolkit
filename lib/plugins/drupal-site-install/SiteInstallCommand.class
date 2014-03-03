@@ -82,8 +82,10 @@ class SiteInstallCommand extends GenericSiteCommand {
       $this->error(STRING_INSTALL_ERROR);
       exit(1);
     }
-    
     $this->events()->fireEvent(EVENT_INSTALL_DONE, $baseContext);
+    if (!$site->saveConfiguration()) {
+      $this->error(STRING_COULD_NOT_SAVE_SITE);
+    }
   }
   
 }
