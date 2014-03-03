@@ -92,7 +92,7 @@ class DrushBackupPlugin extends GenericPlugin implements EventListener {
       'default' => 'default',
     ) + $site->getSetting(SITE_DB_CONNECTION_KEYS);
     $backupDirectory = assemble_path($site->getBuildFolder(), 'backups', $buildID, 'updates');
-    
+    $restoredDirectory = assemble_path($site->getBuildFolder(), 'restored', $buildID, date('Ymd-his'));
     $ret = TRUE;
     foreach ($keys as $dbkey) {
       $file = assemble_path($backupDirectory, $dbkey . '.sql');
@@ -104,6 +104,10 @@ class DrushBackupPlugin extends GenericPlugin implements EventListener {
           '!file' => $file,
         ));
         $ret = FALSE;
+      }
+      else {
+        $target = assemble_path($restoredDirectory, $dbkey . '.sql');
+        rename($file, $target);
       }
     }
     return $ret;

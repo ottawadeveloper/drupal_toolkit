@@ -203,6 +203,12 @@ class DrupalSiteStandardBuildPlugin extends GenericPlugin implements EventListen
           $context->success = $this->refreshSiteVariables($context->site, $context->revertBuild);
         }
         break;
+      case EVENT_ROLLBACK_CLEAN:
+        if (empty($context->handled) || $context->success) {
+          $context->handled = TRUE;
+          $context->success = $this->saveRevertedCodebase($context->site, $context->currentBuild);
+        }
+        break;
       case EVENT_ROLLBACK_PHASE3:
         if (empty($context->handled) || $context->success) {
           $context->handled = TRUE;
@@ -210,6 +216,19 @@ class DrupalSiteStandardBuildPlugin extends GenericPlugin implements EventListen
         }
         break;
     }
+  }
+  
+  private function saveRevertedCodebase(DrupalSite $site, $revertedID) {
+    $cbDir = $site->getSetting(SITE_CODEBASE_DIR);
+    if (empty($cbDir)) { 
+      $this->error(STRING_SITE_MISSING_SETTING, array(
+        '!key' => SITE_CODEBASE_DIR,
+      ));
+      return FALSE; 
+    }
+    $revertedBase = assemble_path($site->getBuildFolder(), $cbDir, $revertedID);
+    $target = assemble_path($site->getBuildFolder(), 'reverted', $revertedID, 'code');
+    return copy_all($revertedBase, $target);
   }
   
   /**
