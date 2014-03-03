@@ -102,6 +102,10 @@ define('STRING_COULD_NOT_DELETE_CRON', 'cron_plugin.error.could-not-delete-task'
 
 define('STRING_COULD_NOT_INIT_SERVER', 'cron_plugin.error.could-not-init-server');
 
+define('CONFIG_STATIC_CRON', 'cron-static-config');
+
+define('SERVER_SETTING_STATIC_CRON', 'cron-static-config');
+
 /**
  * Responsible for installing cron tasks for Drupal.
  */
@@ -115,6 +119,7 @@ class CronPlugin extends GenericPlugin implements EventListener {
     $this->config()->extendDefaultConfiguration(array(
       CONFIG_CRONTAB_FREQUENCY => '@daily',
       CONFIG_DEFAULT_CRON_TYPE => CRON_TYPE_CRONTAB,
+      CONFIG_STATIC_CRON => FALSE,
     ));
   }
   
@@ -135,6 +140,13 @@ class CronPlugin extends GenericPlugin implements EventListener {
           $context->cronServer = $this->castCronMachine($context->server, $context->cronType);
         }
     }
+  }
+  
+  private function updateAll(DrupalSite $site) {
+    if (extra_empty($this->config()->getConfig(CONFIG_STATIC_CRON))) {
+      return $this->installCronJob($site, TRUE);
+    }
+    return TRUE;
   }
   
   private function deleteCronTasks(DrupalSite $site) {
@@ -238,7 +250,7 @@ class CronPlugin extends GenericPlugin implements EventListener {
    * @return boolean
    *   TRUE if the cron tabs were installed successfully, otherwise FALSE.
    */
-  private function installCronJob(DrupalSite $site) {
+  private function installCronJob(DrupalSite $site, $update = FALSE) {
     $alias = $site->getSetting(SITE_DRUSH_ALIAS);
     if (empty($alias)) {
       $this->error(STRING_SITE_MISSING_SETTING, array(
@@ -255,6 +267,11 @@ class CronPlugin extends GenericPlugin implements EventListener {
     $machines = $this->getCronMachines();
     foreach ($machines as $key => $machine) {
       if ($machine instanceof CronManagerInterface) {
+        if ($update) {
+          if (!extra_empty($machine->machine()->getSetting(SERVER_SETTING_STATIC_CRON))) {
+            continue;
+          }
+        }
         if (!$machine->scheduleTask($alias, $command)) {
           $this->error(STRING_ERROR_COULD_NOT_CREATE_CRON, array(
             '!server' => $key,
