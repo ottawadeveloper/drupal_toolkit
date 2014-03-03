@@ -96,7 +96,8 @@ class SiteRollbackCommand extends GenericSiteCommand {
     }
     $site = $this->getSite();
     $site->loadSettings();
-    if (empty($site->getPreviousBuildID())) {
+    $lastBuild = $site->getPreviousBuildID();
+    if (empty($lastBuild)) {
       $this->error(STRING_ROLLBACK_REQUIRES_TWO_BUILDS);
       return FALSE;
     }

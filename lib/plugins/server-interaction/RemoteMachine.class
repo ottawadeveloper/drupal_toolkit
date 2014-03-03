@@ -225,10 +225,10 @@ class RemoteMachine extends GenericMachine {
   }
   
   public function copyDirectory($dir, $destination, $recurse = TRUE) {
-    if (empty(trim($dir, " /\\\r\n"))) {
+    if (extra_empty(trim($dir, " /\\\r\n"))) {
       return FALSE;
     }
-    if (empty(trim($destination, " /\\\r\n"))) {
+    if (extra_empty(trim($destination, " /\\\r\n"))) {
       return FALSE;
     }
     $files = $this->listFiles($dir);
