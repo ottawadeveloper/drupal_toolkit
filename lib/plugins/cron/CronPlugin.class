@@ -16,9 +16,12 @@
  * - Hyphens separate ranges within fields
  * - Asterisk is a wildcard indicating all values
  * - Slashes indicate an interval of values
- * - At sign (@) indicates a random value between the min and max value 
- *   inclusive
- * - Plus symbols will be evaluated after the @ sign.
+ * - At sign (@) or capital H indicates a random value between the min and 
+ *   max value inclusive. Note that using an interval on a random value will
+ *   limit the random value to min-(interval-1). If this is not desired, the
+ *   random range can be explicitly declared as below.
+ * - Random values can have limits, either @(max) or @(min, max). If min is 
+ *   omitted, it defaults to the smallest value for the field.
  * 
  * Some special names can also be used instead of the five fields:
  * - @yearly and @annually indicates yearly execution on Jan 1
@@ -26,13 +29,10 @@
  * - @weekly indicates executing every week on Sunday morning
  * - @daily indicates executing every day at midnight
  * - @hourly indicates executing every hour at the hour
- * - @reboot indicates executing only at boot
  * 
  * @ingroup config
  */
 define('CONFIG_CRONTAB_FREQUENCY', 'crontab-frequency');
-
-define('CONFIG_CRONTAB_IGNORE_RANDOM', 'crontab-ignore-random');
 
 class CronPlugin extends GenericPlugin implements EventListener {
   

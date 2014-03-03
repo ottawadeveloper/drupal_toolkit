@@ -69,6 +69,27 @@ define('DRUSH_WATCHDOG_INFO', 'info');
 define('DRUSH_WATCHDOG_DEBUG', 'debug');
 
 /**
+ * The Drupal root directory.
+ * 
+ * @ingroup drush_dir_codes
+ */
+define('DRUSH_DIRECTORY_ROOT', 'root');
+
+/**
+ * The Drupal files directory.
+ * 
+ * @ingroup drush_dir_codes
+ */
+define('DRUSH_DIRECTORY_FILES', 'files');
+
+/**
+ * The Drupal private files directory.
+ * 
+ * @ingroup drush_dir_codes
+ */
+define('DRUSH_DIRECTORY_PRIVATE', 'private');
+
+/**
  * Installs an array of Drupal modules.
  * 
  * @param array $modules
@@ -95,25 +116,23 @@ function drush_install_modules(array $modules, $alias = NULL) {
 }
 
 /**
- * The Drupal root directory.
+ * Determines the cron URL for a given Drupal installation.
  * 
- * @ingroup drush_dir_codes
- */
-define('DRUSH_DIRECTORY_ROOT', 'root');
-
-/**
- * The Drupal files directory.
+ * @param string $alias
+ *   The alias for the site to get the cron URL for.
  * 
- * @ingroup drush_dir_codes
+ * @return string
+ *   The cron URL or FALSE if there was an error.
  */
-define('DRUSH_DIRECTORY_FILES', 'files');
-
-/**
- * The Drupal private files directory.
- * 
- * @ingroup drush_dir_codes
- */
-define('DRUSH_DIRECTORY_PRIVATE', 'private');
+function drush_get_cron_url($alias = NULL) {
+  $status = drush_status($alias);
+  $base = trim(drush_info_get_key_value($status, 'Site URI'), '/ ');
+  if (empty($base)) {
+    return FALSE;
+  }
+  $base .= '/cron.php?cron_key=' . drush_get_variable('cron_key');
+  return $base;
+}
 
 /**
  * Finds the path to the given directory.
