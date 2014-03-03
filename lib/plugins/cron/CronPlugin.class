@@ -168,6 +168,10 @@ class CronPlugin extends GenericPlugin implements EventListener {
     }
   }
   
+  public function requiredPlugins() {
+    return array('DrupalSitePlugin', 'DrushConfigurationPlugin');
+  }
+  
   /**
    * Updates all the cron tasks associated with a site.
    * 

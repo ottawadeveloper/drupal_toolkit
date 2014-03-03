@@ -18,6 +18,13 @@ define('STRING_COULD_NOT_BACKUP_DB', 'drush_backup.error.no-db-backup');
 define('STRING_ERROR_COULD_NOT_DELETE_BACKUP', 'drush_backup.error.delete-backup');
 
 /**
+ * String token for when the toolkit could not restore from backups.
+ * 
+ * @ingroup strings
+ */
+define('STRING_ERROR_COULD_NOT_RESTORE_BACKUP', 'drush_backup.error.restore-error');
+
+/**
  * Responsible for database backups using drush.
  */
 class DrushBackupPlugin extends GenericPlugin implements EventListener {
@@ -38,6 +45,10 @@ class DrushBackupPlugin extends GenericPlugin implements EventListener {
         }
         break;
       case EVENT_ROLLBACK_PHASE2:
+        if (empty($context->handled) || $context->success) {
+          $context->handled = TRUE;
+          $context->success = $this->restoreFromBackup($context->site, $context->revertBuild);
+        }
         break;
       case EVENT_UPDATE_TAKE_BACKUP:
         $context->success = $this->drushBackup($context->site);
@@ -54,6 +65,46 @@ class DrushBackupPlugin extends GenericPlugin implements EventListener {
   
   public function requiredPlugins() {
     return array('DrupalSitePlugin', 'DrushConfigurationPlugin', 'DatabaseConfigurationPlugin');
+  }
+  
+  /**
+   * Restores all the databases from a backup.
+   * 
+   * @param DrupalSite $site
+   *   The site to restore backups for.
+   * @param string $buildID
+   *   ID to restore from.
+   * 
+   * @return boolean
+   *   TRUE if successful, otherwise FALSE.
+   */
+  public function restoreFromBackup(DrupalSite $site, $buildID) {
+    $drushAlias = $site->getSetting(SITE_DRUSH_ALIAS);
+    if (empty($drushAlias)) {
+      $this->error(STRING_SITE_MISSING_SETTING, array(
+        '!key' => SITE_DRUSH_ALIAS,
+      ));
+      return FALSE;
+    }
+    $keys = array(
+      'default' => 'default',
+    ) + $site->getSetting(SITE_DB_CONNECTION_KEYS);
+    $backupDirectory = assemble_path($site->getBuildFolder(), 'backups', $buildID, 'updates');
+    
+    $ret = TRUE;
+    foreach ($keys as $dbkey) {
+      $file = assemble_path($backupDirectory, $dbkey . '.sql');
+      drush_drop_db($drushAlias, $dbkey);
+      if (!drush_restore_db($file, $drushAlias, $dbkey)) {
+        $this->warn(STRING_ERROR_COULD_NOT_RESTORE_BACKUP, array(
+          '!db' => $dbkey,
+          '!alias' => $drushAlias,
+          '!file' => $file,
+        ));
+        $ret = FALSE;
+      }
+    }
+    return $ret;
   }
   
   /**
