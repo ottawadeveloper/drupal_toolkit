@@ -125,3 +125,8 @@ upstream_db.error.missing-upstream-server = "No upstream server is declared."
 
 drupal_site_rollback.error.generic = "An error has occurred during the rollback process."
 drupal_site_rollback.error.two-builds-required = "There must be two builds in order to rollback."
+
+cron_plugin.error.could-not-init-server = "Could not reinitialize server !key"
+cron_plugin.error.no-url = "Could not find a cron URL"
+cron_plugin.error.bad-creation = "Could not create the cron task"
+cron_plugin.error.could-not-delete-task = "Could not delete the cron task"
