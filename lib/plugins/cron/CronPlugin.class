@@ -98,12 +98,32 @@ define('CRON_TYPE_CRONTAB', 'crontab');
  */
 define('SITE_CRON_MACHINES', 'cron-machines');
 
+/**
+ * String for if a cron task could not be deleted.
+ * 
+ * @ingroup strings
+ */
 define('STRING_COULD_NOT_DELETE_CRON', 'cron_plugin.error.could-not-delete-task');
 
+/**
+ * String for if a server could not be initialized.
+ * 
+ * @ingroup strings
+ */
 define('STRING_COULD_NOT_INIT_SERVER', 'cron_plugin.error.could-not-init-server');
 
+/**
+ * Config setting to prevent cron tasks from being updated.
+ * 
+ * @ingroup config
+ */
 define('CONFIG_STATIC_CRON', 'cron-static-config');
 
+/**
+ * Server setting to prevent the cron task from being updated.
+ * 
+ * @ingroup server_settings
+ */
 define('SERVER_SETTING_STATIC_CRON', 'cron-static-config');
 
 /**
