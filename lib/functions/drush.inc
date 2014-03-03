@@ -130,7 +130,7 @@ function drush_get_cron_url($alias = NULL) {
   if (empty($base)) {
     return FALSE;
   }
-  $base .= '/cron.php?cron_key=' . drush_get_variable('cron_key');
+  $base .= '/cron.php?cron_key=' . drush_get_variable('cron_key', $alias);
   return $base;
 }
 

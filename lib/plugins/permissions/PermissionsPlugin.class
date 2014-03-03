@@ -229,6 +229,7 @@ class PermissionsPlugin extends GenericPlugin implements EventListener {
     $this->events()->registerListener(array(
       EVENT_SITE_BUILT,
       EVENT_UPDATE_FINISH,
+      EVENT_INSTALL_TASK,
     ), $this);
   }
   
@@ -314,6 +315,7 @@ class PermissionsPlugin extends GenericPlugin implements EventListener {
     switch ($type) {
       case EVENT_SITE_BUILT:
       case EVENT_UPDATE_FINISH:
+      case EVENT_INSTALL_TASK:
         $site = $context->site;
         if ($site instanceof DrupalSite) {
           $this->applyPermissions($site->getBuildFolder(), PERMISSION_TYPE_BUILD, TRUE);
