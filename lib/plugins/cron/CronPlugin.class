@@ -135,6 +135,8 @@ class CronPlugin extends GenericPlugin implements EventListener {
     $this->events()->registerListen(array(
       EVENT_INSTALL_EXTRAS,
       EVENT_CAST_CRON_SERVER,
+      EVENT_REMOVE_ALL,
+      EVENT_UPDATE_PRIOR_ACTIONS,
     ), $this);
     $this->config()->extendDefaultConfiguration(array(
       CONFIG_CRONTAB_FREQUENCY => '@daily',

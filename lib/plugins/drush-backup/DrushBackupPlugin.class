@@ -33,6 +33,8 @@ class DrushBackupPlugin extends GenericPlugin implements EventListener {
     $this->events()->registerListener(array(
       EVENT_UPDATE_TAKE_BACKUP,
       EVENT_DELETE_BUILD,
+      EVENT_ROLLBACK_BACKUP,
+      EVENT_ROLLBACK_PHASE2,
     ), $this);
   }
   

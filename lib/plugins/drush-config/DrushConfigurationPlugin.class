@@ -120,7 +120,6 @@ class DrushConfigurationPlugin extends GenericPlugin implements EventListener {
     $this->events()->registerListener(array(
       EVENT_UPDATE_REFRESH_SERVER_CONFIG,
       EVENT_SITE_BUILD_MORE_CONFIG,
-      EVENT_REMOVE_ALL
     ), $this);
   }
   
