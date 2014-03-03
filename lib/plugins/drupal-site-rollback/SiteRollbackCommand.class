@@ -3,36 +3,6 @@
  * @file Defines the SiteRollbackCommand class.
  */
 
-/*
- * 
- * PREP
-- only RB if there is more than one version left
-- setup directory structure for rollback
-- make sure all symlinks are created in the directory
- * BACKUP
-- backup current DB in /reverted
- * DOWN
-- maintenance mode
-- change symlink to point to last build
-- refresh apache server
- * PRE-ACTION
-- restore all server files
-* ACTION
-- drop DB
-- restore DB from backup
-* UP
-- bring sites back up
-* CLEANUP
-- store bad codebase in /reverted
-- delete it
-- move DB backup to /restored
-- cleanup permissions
- * 
-- save config file
-
- */
-
-
 /**
  * Fired so that plugins can prepare the site for rolling back to a previous 
  * update.

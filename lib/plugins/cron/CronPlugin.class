@@ -92,6 +92,17 @@ define('CONFIG_DEFAULT_CRON_TYPE', 'cron-type-default');
 define('CRON_TYPE_CRONTAB', 'crontab');
 
 /**
+ * Stores the list of cron machines.
+ * 
+ * @ingroup site_settings
+ */
+define('SITE_CRON_MACHINES', 'cron-machines');
+
+define('STRING_COULD_NOT_DELETE_CRON', 'cron_plugin.error.could-not-delete-task');
+
+define('STRING_COULD_NOT_INIT_SERVER', 'cron_plugin.error.could-not-init-server');
+
+/**
  * Responsible for installing cron tasks for Drupal.
  */
 class CronPlugin extends GenericPlugin implements EventListener {
@@ -109,6 +120,10 @@ class CronPlugin extends GenericPlugin implements EventListener {
   
   public function captureEvent(&$context, $eventType) {
     switch ($eventType) {
+      case EVENT_REMOVE_ALL:
+        $context->success = $this->deleteCronTasks($context->site) && $success;
+        $context->handled = TRUE;
+        break;
       case EVENT_INSTALL_EXTRAS:
         if (empty($context->handled) || $context->success) {
           $context->handled = TRUE;
@@ -120,6 +135,39 @@ class CronPlugin extends GenericPlugin implements EventListener {
           $context->cronServer = $this->castCronMachine($context->server, $context->cronType);
         }
     }
+  }
+  
+  private function deleteCronTasks(DrupalSite $site) {
+    $alias = $site->getSetting(SITE_DRUSH_ALIAS);
+    if (empty($alias)) {
+      $this->error(STRING_SITE_MISSING_SETTING, array(
+        '!key' => SITE_DRUSH_ALIAS
+      ));
+      return FALSE;
+    }
+    $ret = TRUE;
+    foreach ($site->getSetting(SITE_CRON_MACHINES) as $key => $machine) {
+      $valid = FALSE;
+      if ($machine instanceof CronManagerInterface) {
+        if ($machine->machine()->initialize()) {
+          $valid = TRUE;
+          if (!$machine->deleteScheduledTask($alias)) {
+            $this->warn(STRING_COULD_NOT_DELETE_CRON, array(
+              '!site' => $key,
+              '!alias' => $alias,
+            ));
+            $ret = FALSE;
+          }
+        }
+      }
+      if (!$valid) {
+        $this->warn(STRING_COULD_NOT_INIT_SERVER, array(
+          '!site' => $key,
+        ));
+            $ret = FALSE;
+      }
+    }
+    return $ret;
   }
   
   /**
@@ -216,6 +264,7 @@ class CronPlugin extends GenericPlugin implements EventListener {
         }
       }
     }
+    $site->setSetting(SITE_CRON_MACHINES, $machines);
     return TRUE;
   }
   
