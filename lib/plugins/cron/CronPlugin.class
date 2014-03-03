@@ -125,6 +125,12 @@ class CronPlugin extends GenericPlugin implements EventListener {
   
   public function captureEvent(&$context, $eventType) {
     switch ($eventType) {
+      case EVENT_UPDATE_PRIOR_ACTIONS:
+        if (empty($context->handled) || $context->success) {
+          $context->success = $this->updateAll($context->site);
+          $context->handled = TRUE;
+        }
+        break;
       case EVENT_REMOVE_ALL:
         $context->success = $this->deleteCronTasks($context->site) && $success;
         $context->handled = TRUE;
@@ -142,6 +148,15 @@ class CronPlugin extends GenericPlugin implements EventListener {
     }
   }
   
+  /**
+   * Updates all the cron tasks associated with a site.
+   * 
+   * @param DrupalSite $site
+   *   The site to update cron tasks.
+   * 
+   * @return boolean
+   *   TRUE if successful, otherwise FALSE.
+   */
   private function updateAll(DrupalSite $site) {
     if (extra_empty($this->config()->getConfig(CONFIG_STATIC_CRON))) {
       return $this->installCronJob($site, TRUE);
@@ -149,6 +164,15 @@ class CronPlugin extends GenericPlugin implements EventListener {
     return TRUE;
   }
   
+  /**
+   * Deletes all the cron tasks from a site.
+   * 
+   * @param DrupalSite $site
+   *   The site to delete cron tasks.
+   * 
+   * @return boolean
+   *   TRUE if success, otherwise FALSE.
+   */
   private function deleteCronTasks(DrupalSite $site) {
     $alias = $site->getSetting(SITE_DRUSH_ALIAS);
     if (empty($alias)) {
