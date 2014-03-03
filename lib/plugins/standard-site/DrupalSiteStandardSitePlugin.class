@@ -114,6 +114,7 @@ class DrupalSiteStandardSitePlugin extends GenericPlugin implements EventListene
     $this->events()->registerListener(array(
       EVENT_SITE_BUILD_SITES,
       EVENT_UPDATE_SITES,
+      EVENT_ROLLBACK_PHASE3,
     ), $this);
     $this->config()->extendDefaultConfiguration(array(
       CONFIG_SKIP_REDUNDANT_SYMLINKS => FALSE,
@@ -135,6 +136,11 @@ class DrupalSiteStandardSitePlugin extends GenericPlugin implements EventListene
         $context->success = $this->updateSites($context->site);
         $context->stopPropagation = TRUE;
         break;
+      case EVENT_ROLLBACK_PHASE3:
+        if (empty($context->handled) || $context->success) {
+          $context->handled = TRUE;
+          $context->success = $this->refreshSiteSymlinks($context->site, $context->revertBuild);
+        }
     }
   }
   
@@ -257,8 +263,12 @@ class DrupalSiteStandardSitePlugin extends GenericPlugin implements EventListene
     return $context->success;
   }
   
+  private function refreshSiteSymlinks(DrupalSite $site, $newBuildID) {
+    return $this->symlinkAllSites($site);
+  }
+  
   /**
-   * Symlinsk all the sites to the current build.
+   * Symlinks all the sites to the current build.
    * 
    * @param DrupalSite $site
    *   The site to use.

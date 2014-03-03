@@ -153,6 +153,8 @@ class DrupalSiteStandardBuildPlugin extends GenericPlugin implements EventListen
       EVENT_UPDATE_CODEBASE,
       EVENT_DELETE_BUILD,
       EVENT_UPDATE_PREPARE_FOR_UPDATE,
+      EVENT_ROLLBACK_PHASE1,
+      EVENT_ROLLBACK_PHASE3,
     ), $this);
     $this->config()->extendDefaultConfiguration(array(
       CONFIG_GIT_REPO_ROOT => '',
@@ -193,6 +195,18 @@ class DrupalSiteStandardBuildPlugin extends GenericPlugin implements EventListen
         if (empty($context->handled) || $context->success) {
           $context->success = $this->deleteBuild($context->site, $context->buildID);
           $context->handled = TRUE;
+        }
+        break;
+      case EVENT_ROLLBACK_PHASE1:
+        if (empty($context->handled) || $context->success) {
+          $context->handled = TRUE;
+          $context->success = $this->refreshSiteVariables($context->site, $context->revertBuild);
+        }
+        break;
+      case EVENT_ROLLBACK_PHASE3:
+        if (empty($context->handled) || $context->success) {
+          $context->handled = TRUE;
+          $context->success = $this->updateCurrentLink($context->site);
         }
         break;
     }
@@ -289,6 +303,29 @@ class DrupalSiteStandardBuildPlugin extends GenericPlugin implements EventListen
       $this->error(STRING_SITE_NO_CURRENT);
       return FALSE;
     }
+    return TRUE;
+  }
+  
+  /**
+   * Refreshes the site variables.
+   * 
+   * @param DrupalSite $site
+   *   The site being rolled back.
+   * @param string $oldBuildID
+   *   The old build ID.
+   * @return boolean
+   *   TRUE if successful, otherwise FALSE.
+   */
+  private function refreshSiteVariables(DrupalSite $site, $oldBuildID) {
+    $cbDir = $site->getSetting(SITE_CODEBASE_DIR);
+    if (empty($cbDir)) { 
+      $this->error(STRING_SITE_MISSING_SETTING, array(
+        '!key' => SITE_CODEBASE_DIR,
+      ));
+      return FALSE; 
+    }
+    $buildDir = assemble_path($site->getBuildFolder(), $cbDir, $oldBuildID);
+    $site->setSetting(SITE_SETTING_CURRENT_BUILD, $buildDir);
     return TRUE;
   }
   

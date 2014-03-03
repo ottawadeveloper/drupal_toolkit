@@ -38,6 +38,11 @@ define('EVENT_DISCOVER_STRUCTURE_DIRS', 'discover-structure-dirs');
  */
 define('STRING_STRUCTURE_DIR_FAILURE', 'standard_structure.error-could-not-create-dir');
 
+/**
+ * String token for if we could not remove the build directory.
+ * 
+ * @ingroup strings
+ */
 define('STRING_COULD_NOT_REMOVE_BUILD_DIR', 'standard_structure.error.could-not-remove-build');
 
 /**

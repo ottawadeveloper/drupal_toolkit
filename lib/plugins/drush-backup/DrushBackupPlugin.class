@@ -121,7 +121,7 @@ class DrushBackupPlugin extends GenericPlugin implements EventListener {
    *   TRUE if successful, otherwise FALSE.
    */
   private function backupForRollback(DrupalSite $site, $buildID) {
-    return $this->drushBackup($site, 'rollback', $buildID);
+    return $this->drushBackup($site, 'reverted', $buildID);
   }
   
   /**
