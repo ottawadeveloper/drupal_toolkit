@@ -1,4 +1,10 @@
 <?php
+/**
+ * @file Defines the CronPlugin class.
+ * 
+ * @defgroup cron_types "Cron Types"
+ * The different type of cron jobs that can be installed.
+ */
 
 /**
  * Configure the setting that will be passed to crontab implementations.
@@ -34,20 +40,60 @@
  */
 define('CONFIG_CRONTAB_FREQUENCY', 'crontab-frequency');
 
+/**
+ * String for when a cron URL could not be determined.
+ * 
+ * @ingroup strings
+ */
 define('STRING_ERROR_NO_CRON_URL', 'cron_plugin.error.no-url');
 
+/**
+ * String for when a cron job could not be installed.
+ * 
+ * @ingroup strings
+ */
 define('STRING_ERROR_COULD_NOT_CREATE_CRON', 'cron_plugin.error.bad-creation');
 
+/**
+ * The set of servers that all need a cron job installed on them.
+ * 
+ * @ingroup server_types
+ */
 define('SERVER_TYPE_CRON', 'cron');
 
+/**
+ * Fired to cast a cron server to an instance of CronManagerInterface.
+ * 
+ * @ingroup events
+ */
 define('EVENT_CAST_CRON_SERVER', 'cast-cron-server');
 
+/**
+ * Server setting to override the cron type.
+ * 
+ * @ingroup server_settings
+ */
 define('SERVER_SETTING_CRON_TYPE', 'cron-type');
 
+/**
+ * Fallback value for SERVER_SETTING_CRON_TYPE. Also impacts the localhost
+ * configuration.
+ * 
+ * @ingroup config
+ */
 define('CONFIG_DEFAULT_CRON_TYPE', 'cron-type-default');
 
+/**
+ * Cron type for a Linux crontab implementation that allows config files to be
+ * dropped into /etc/cron.d
+ * 
+ * @ingroup cron_types
+ */
 define('CRON_TYPE_CRONTAB', 'crontab');
 
+/**
+ * Responsible for installing cron tasks for Drupal.
+ */
 class CronPlugin extends GenericPlugin implements EventListener {
   
   public function initialize() {
