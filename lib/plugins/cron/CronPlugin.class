@@ -132,6 +132,10 @@ define('SERVER_SETTING_STATIC_CRON', 'cron-static-config');
 class CronPlugin extends GenericPlugin implements EventListener {
   
   public function initialize() {
+    $base = dirname(__FILE__);
+    require assemble_path($base, 'CronManagerInterface.iface');
+    require assemble_path($base, 'GenericCronManager.class');
+    require assemble_path($base, 'LinuxCrontab.class');
     $this->events()->registerListener(array(
       EVENT_INSTALL_EXTRAS,
       EVENT_CAST_CRON_SERVER,

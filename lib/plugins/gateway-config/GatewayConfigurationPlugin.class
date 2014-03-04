@@ -103,6 +103,13 @@ define('STRING_MISSING_GATEWAY_TEMPLATE', 'gateway.error.no-template');
 define('STRING_GATEWAY_BAD_WRITE', 'gateway.error.bad-write');
 
 /**
+ * Set to TRUE in order to use this plugin.
+ * 
+ * @ingroup config
+ */
+define('CONFIG_HAS_GATEWAY', 'has-gateways');
+
+/**
  * Responsible for configuring any gateway servers that have been defined.
  */
 class GatewayConfigurationPlugin extends GenericPlugin implements EventListener {
@@ -114,6 +121,7 @@ class GatewayConfigurationPlugin extends GenericPlugin implements EventListener 
       EVENT_UPDATE_REFRESH_SERVER_CONFIG,
     ), $this);
     $this->config()->extendDefaultConfiguration(array(
+      CONFIG_HAS_GATEWAY => FALSE,
       CONFIG_GATEWAY_STATIC_CONFIG => FALSE,
       CONFIG_GATEWAY_USE_LOCAL => FALSE,
       CONFIG_GATEWAY_TYPE => '',
@@ -136,12 +144,14 @@ class GatewayConfigurationPlugin extends GenericPlugin implements EventListener 
           $context->success = $this->updateAll($context->site);
           $context->handled = TRUE;
         }
+        break;
       case EVENT_FIND_GATEWAY_SERVERS:
         $context->servers = array_merge($context->servers, $this->findGatewayServers());
         break;
       case EVENT_SITE_BUILD_CONFIGURE_SERVER:
-        if ($context->success) {
+        if (empty($context->handled) || $context->success) {
           $context->success = $this->publishGatewayConfig($context->site);
+          $context->handled = TRUE;
         }
         break;
     }
@@ -173,6 +183,9 @@ class GatewayConfigurationPlugin extends GenericPlugin implements EventListener 
    *   TRUE if the configuration was published successfully, otherwise FALSE.
    */
   private function publishGatewayConfig(DrupalSite $site, $update = FALSE) {
+    if (extra_empty($this->config()->getConfig(CONFIG_HAS_GATEWAY))) {
+      return TRUE;
+    }
     $c = $this->getConfig(array(
       'template' => CONFIG_GATEWAY_CONFIG_TEMPLATE,
       'fn_template' => CONFIG_GATEWAY_FILENAME_TEMPLATE,
@@ -253,11 +266,11 @@ class GatewayConfigurationPlugin extends GenericPlugin implements EventListener 
    */
   private function findGatewayServers() {
     $config = $this->getConfig(array(
-      'server_type' => CONFIG_GATEWAY_TYPE,
     ), array(
       'use_local' => CONFIG_GATEWAY_USE_LOCAL,
+      'server_type' => CONFIG_GATEWAY_TYPE,
     ));
-    if (empty($config)) {
+    if (empty($config['server_type'])) {
       return array();
     }
     $context = (object) array(

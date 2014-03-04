@@ -23,6 +23,20 @@ function get_system_username() {
   }
   return NULL;
 }
+
+/**
+ * Recursively makes directories
+ * 
+ * @param string $dir
+ *   Directory to make
+ */
+function mkdir_all($dir) {
+  if (!is_dir(dirname($dir))) {
+    mkdir_all(dirname($dir));
+  }
+  mkdir($dir);
+}
+
 /**
  * Callback for preg_replace_callback that resolves a randomized function in
  * a crontab.
