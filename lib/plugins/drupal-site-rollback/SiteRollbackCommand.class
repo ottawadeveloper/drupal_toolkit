@@ -144,7 +144,7 @@ class SiteRollbackCommand extends GenericSiteCommand {
     );
     $this->executeStep(EVENT_ROLLBACK_PREPARE, $baseContext, TRUE, TRUE);
     $this->executeStep(EVENT_ROLLBACK_BACKUP, $baseContext, FALSE, TRUE);
-    $this->executeStep(EVENT_ROLLBACK_START, $baseContext, FALSE, TRUE);
+    $this->executeStep(EVENT_ROLLBACK_START, $baseContext, TRUE, TRUE);
     $this->executeStep(EVENT_ROLLBACK_PHASE1, $baseContext, TRUE, FALSE);
     $this->executeStep(EVENT_ROLLBACK_PHASE2, $baseContext, FALSE, FALSE);
     $this->executeStep(EVENT_ROLLBACK_PHASE3, $baseContext, TRUE, FALSE);

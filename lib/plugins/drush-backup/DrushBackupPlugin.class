@@ -93,6 +93,9 @@ class DrushBackupPlugin extends GenericPlugin implements EventListener {
     ) + $site->getSetting(SITE_DB_CONNECTION_KEYS);
     $backupDirectory = assemble_path($site->getBuildFolder(), 'backups', $buildID, 'updates');
     $restoredDirectory = assemble_path($site->getBuildFolder(), 'restored', $buildID, date('Ymd-his'));
+    if (!is_dir($restoredDirectory)) {
+      mkdir_all($restoredDirectory);
+    }
     $ret = TRUE;
     foreach ($keys as $dbkey) {
       $file = assemble_path($backupDirectory, $dbkey . '.sql');
