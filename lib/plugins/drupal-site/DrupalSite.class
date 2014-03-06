@@ -95,7 +95,6 @@ define('SITE_TOKEN_BUILD_NAME', 'BUILD_NAME');
  */
 define('SITE_TOKEN_BUILD_DIR', 'BUILD_DIRECTORY');
 
-
 /**
  * Site token for the Primary URL.
  * 
@@ -127,41 +126,8 @@ define('SITE_TOKEN_ALL_DOMAINS', 'SITE_ALL_DOMAINS');
 /**
  * Stores information about a site installation.
  */
-class DrupalSite {
-  
-  /**
-   * Settings for the site. Plugins may extend these.
-   * @var array
-   */
-  private $settings = array();
-  
-  /**
-   * List of server files. These are key files that only the webserver
-   * should have access to.
-   * 
-   * Only local files should be registered.
-   * 
-   * @var array
-   */
-  private $serverFiles = array();
-  
-  /**
-   * List of system files. These are key files that only the system should
-   * have access to.
-   * 
-   * Only local files should be registered.
-   * 
-   * @var array
-   */
-  private $systemFiles = array();
-  
-  /**
-   * List of replacement strings keyed by their replacement values.
-   * 
-   * @var type 
-   */
-  private $placeholders = array();
-  
+class DrupalSite extends GenericDrupalEntity {
+ 
   /**
    * Constructs an instance of DrupalSite.
    * 
@@ -187,177 +153,31 @@ class DrupalSite {
     $this->setToken(SITE_TOKEN_BUILD_DIR, $folder);
   }
   
-  /**
-   * Saves the configuration file.
-   * 
-   * @return boolean
-   *   TRUE if the file was saved, otherwise FALSE.
-   */
-  public function saveConfiguration() {
-    $export = array(
-      'settings' => $this->settings,
-      'placeholders' => $this->placeholders,
+  protected function getConfigurationPath() {
+    return assemble_path($this->getBuildFolder(), 'webcms.scf');
+  }
+  
+  protected function getOldConfigurationPaths() {
+    return array(
+      assemble_path($this->getBuildFolder(), 'webcms.cfg'),
     );
-    return file_put_contents(assemble_path($this->getBuildFolder(), 'webcms.scf'), serialize($export));
   }
   
   /**
-   * Sets a token for the site.
+   * Retrieves a subsite.
    * 
-   * @param string $token
-   *   The token name to set. See @ref site_tokens "token types".
-   * @param string $value
-   *   The value for the token.
+   * @param string $subsiteID
+   *   A subsite ID.
+   * 
+   * @return DrupalSubSite
+   *   An instance of DrupalSubSite tied to $subsiteID.
    */
-  public function setToken($token, $value) {
-    $this->placeholders[$token] = $value;
+  public function getSubSite($subsiteID) {
+    return new DrupalSubSite($this, $subsiteID);
   }
   
-  /**
-   * Replaces all tokens in $in with their replacement values.
-   * 
-   * Note that all tokens should be upper case!
-   * 
-   * @param string $in
-   *   An input string to replace tokens in.
-   * 
-   * @return string
-   *   $in with all instances of tokens replaced.
-   * 
-   * @see @ref site_tokens "Site token types"
-   */
-  public function replaceTokens($in) {
-    foreach ($this->placeholders as $k => $v) {
-      $in = str_replace('@@' . strtoupper($k), $v, $in);
-    }
-    return $in;
-  }
-  
-  /**
-   * Retrieves a unique ID for this site.
-   * 
-   * @return string
-   *   A unique ID for the site.
-   */
   public function uuid() {
     return $this->getBuildName();
-  }
-
-  /**
-   * Registers a file as a system file.
-   * 
-   * @param string $file
-   *   The path to a system file.
-   */
-  public function registerSystemFile($file) {
-    $this->systemFiles[] = $file;
-  }
-  
-  /**
-   * Registers a file as a server file.
-   * 
-   * @param string $file
-   *   The path to a server file.
-   */
-  public function registerServerFile($file) {
-    $this->serverFiles[] = $file;
-  }
-  
-  /**
-   * Retrieves all server files.
-   * 
-   * @return array
-   *   An array of server files.
-   */
-  public function getServerFiles() {
-    return $this->serverFiles;
-  }
-  
-  /**
-   * Retrieves all system files.
-   * 
-   * @return array
-   *   An array of system files.
-   */
-  public function getSystemFiles() {
-    return $this->systemFiles;
-  }
-  
-  /**
-   * Converts a Drupal URL path (eg example.com/mydrupal) to a Drupal site name
-   * (eg example.com.mydrupal).
-   * 
-   * @param string $url
-   *   The Drupal URL path to convert.
-   * 
-   * @return string
-   *   The Drupal site name equivalent.
-   */
-  public static function convertURLToSiteName($url) {
-    $sitename = $url;
-    // Remove protocol
-    if (($protocol = strpos($sitename, '//')) !== FALSE) {
-      $sitename = substr($sitename, $protocol + 2);
-    }
-    // No question marks
-    if (($query = strpos($sitename, '?')) !== FALSE) {
-      $sitename = substr($sitename, 0, $query);
-    }
-    // No fragments
-    if (($frag = strpos($sitename, '#')) !== FALSE) {
-      $sitename = substr($sitename, 0, $frag);
-    }
-    // No port numbers
-    preg_replace('`:\d{1,}`', '', $sitename);
-    // Convert slashes to dots
-    $sitename = str_replace('/', '.', $sitename);
-    return $sitename;
-  }
-  
-  /**
-   * Retrieves a setting from the site.
-   * 
-   * @param string $key
-   *   The key to retrieve.
-   * @param mixed $default
-   *   A default value to return if not found. Defaults to NULL.
-   * 
-   * @return mixed
-   *   The value of the setting defined by $key or the value of $default if
-   *   $key is not set.
-   */
-  public function getSetting($key, $default = NULL) {
-    if (isset($this->settings[$key])) {
-      return $this->settings[$key];
-    }
-    return $default;
-  }
-  
-  /**
-   * Appends a setting value to the settings array.
-   * 
-   * Use this over setSetting() when you want to create an array of values
-   * that is extensible.
-   * 
-   * @param string $key
-   *   The key to extend.
-   * @param mixed $value
-   *   The value to append to the settings key.
-   */
-  public function appendSettingValue($key, $value) {
-    if (empty($this->settings[$key])) {
-      $this->settings[$key] = array();
-    }
-    elseif (!is_array($this->settings[$key])) {
-      $this->settings[$key] = array($this->settings[$key]);
-    }
-    if (is_array($value)) {
-      array_extend($this->settings[$key], $value);
-    }
-    else {
-      $this->settings[$key][] = $value;
-    }
-    $this->settings[$key] = array_unique_numeric($this->settings[$key]);
   }
   
   /**
@@ -393,18 +213,6 @@ class DrupalSite {
       $urls[] = $p;
     }
     return $urls;
-  }
-  
-  /**
-   * Sets the specified setting to $value.
-   * 
-   * @param string $key
-   *   The setting key.
-   * @param mixed $value
-   *   The setting value.
-   */
-  public function setSetting($key, $value) {
-    $this->settings[$key] = $value;
   }
   
   /**
@@ -482,54 +290,6 @@ class DrupalSite {
   }
   
   /**
-   * Extends the settings with more settings.
-   * 
-   * @param array $settings
-   *   An array of settings
-   * 
-   * @see array_extend()
-   */
-  public function extendSettings(array $settings) {
-    array_extend($this->settings, $settings);
-  }
-  
-  /**
-   * Loads settings from the settings file.
-   * 
-   * @return boolean
-   *   TRUE if the settings file was loaded correctly, otherwise FALSE.
-   */
-  public function loadSettings() {
-    if ($this->exists()) {
-      $contents = unserialize(file_get_contents(assemble_path($this->getBuildFolder(), 'webcms.scf')));
-      array_extend($this->settings, $contents['settings']);
-      array_extend($this->placeholders, $contents['placeholders']);
-      return TRUE;
-    }
-    return FALSE;
-  }
-  
-  /**
-   * Checks to see if the site exists already.
-   * 
-   * @return boolean
-   *   Returns TRUE if the site already exists, otherwise FALSE.
-   */
-  public function exists() {
-    return file_exists(assemble_path($this->getBuildFolder(), 'webcms.scf'));
-  }
-  
-  /**
-   * Checks to see if the site exists in an older format.
-   * 
-   * @return boolean
-   *   Returns TRUE if the site existed from the last builder, otherwise FALSE.
-   */
-  public function existsBackwards() {
-    return file_exists(assemble_path($this->getBuildFolder(), 'webcms.cfg'));
-  }
-  
-  /**
    * Triggers the deletion of a specific build.
    * 
    * @param EventManagerInterface $events
@@ -550,6 +310,39 @@ class DrupalSite {
     $events->fireEvent(EVENT_DELETE_BUILD, $context);
     $this->deleteBuildID($buildID);
     return $context->success;
+  }
+  
+  
+  
+  /**
+   * Converts a Drupal URL path (eg example.com/mydrupal) to a Drupal site name
+   * (eg example.com.mydrupal).
+   * 
+   * @param string $url
+   *   The Drupal URL path to convert.
+   * 
+   * @return string
+   *   The Drupal site name equivalent.
+   */
+  public static function convertURLToSiteName($url) {
+    $sitename = $url;
+    // Remove protocol
+    if (($protocol = strpos($sitename, '//')) !== FALSE) {
+      $sitename = substr($sitename, $protocol + 2);
+    }
+    // No question marks
+    if (($query = strpos($sitename, '?')) !== FALSE) {
+      $sitename = substr($sitename, 0, $query);
+    }
+    // No fragments
+    if (($frag = strpos($sitename, '#')) !== FALSE) {
+      $sitename = substr($sitename, 0, $frag);
+    }
+    // No port numbers
+    preg_replace('`:\d{1,}`', '', $sitename);
+    // Convert slashes to dots
+    $sitename = str_replace('/', '.', $sitename);
+    return $sitename;
   }
   
   /**

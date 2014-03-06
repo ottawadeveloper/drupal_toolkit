@@ -1,0 +1,47 @@
+<?php
+/**
+ * @file Defines the DrupalSubSite class.
+ */
+
+define('SUBSITE_IDENTIFIER', 'subsite-id');
+
+/**
+ * Contains all the relevant information for a Drupal subsite 
+ * definition.
+ */
+class DrupalSubSite extends GenericDrupalEntity {
+  
+  private $parentSite;
+  
+  public function __construct(DrupalSite $site, $subsiteID) {
+    $this->parentSite = $site;
+    $this->setSetting(SUBSITE_IDENTIFIER, $subsiteID);
+  }
+  
+  public function getParentSite() {
+    return $this->parentSite;
+  }
+  
+  public function getSubSiteID() {
+    return $this->getSetting(SUBSITE_IDENTIFIER);
+  }
+  
+  protected function getConfigurationPath() {
+    return assemble_path(
+        $this->getParentSite()->getBuildFolder(),
+        'webcms.' . $this->getSubSiteID() . '.scf'
+    );
+  }
+  
+  protected function uuid() {
+    return $this->parentSite->uuid() . '_' . $this->getSubSiteID();
+  }
+  
+  protected function getOldConfigurationPaths() {
+    return array(
+      assemble_path($this->getParentSite()->getBuildFolder(),
+      'webcms.' . $this->getSubSiteID() . '.cfg'),
+    );
+  }
+  
+}

@@ -1,3 +1,8 @@
+## 2014-03-04
+
+Confirmed the six original commands work with default settings on
+Ubuntu 12 LTS.
+
 ## 2014-02-27
 
 This is a status update on the progress of the toolkit.

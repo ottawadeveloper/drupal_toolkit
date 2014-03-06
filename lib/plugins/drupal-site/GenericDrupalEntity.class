@@ -1,0 +1,277 @@
+<?php
+/**
+ * @file Defines the GenericDrupalEntity class.
+ */
+
+/**
+ * Provides common tools required by both Sites and Subsites.
+ */
+class GenericDrupalEntity {
+   
+  /**
+   * Settings for the site. Plugins may extend these.
+   * @var array
+   */
+  private $settings = array();
+  
+  /**
+   * List of server files. These are key files that only the webserver
+   * should have access to.
+   * 
+   * Only local files should be registered.
+   * 
+   * @var array
+   */
+  private $serverFiles = array();
+  
+  /**
+   * List of system files. These are key files that only the system should
+   * have access to.
+   * 
+   * Only local files should be registered.
+   * 
+   * @var array
+   */
+  private $systemFiles = array();
+  
+  /**
+   * List of replacement strings keyed by their replacement values.
+   * 
+   * @var type 
+   */
+  private $placeholders = array();
+  
+  public function __construct() {
+    
+  }
+  
+  /**
+   * Sets a token for the site.
+   * 
+   * @param string $token
+   *   The token name to set. See @ref site_tokens "token types".
+   * @param string $value
+   *   The value for the token.
+   */
+  public function setToken($token, $value) {
+    $this->placeholders[$token] = $value;
+  }
+  
+  /**
+   * Replaces all tokens in $in with their replacement values.
+   * 
+   * Note that all tokens should be upper case!
+   * 
+   * @param string $in
+   *   An input string to replace tokens in.
+   * 
+   * @return string
+   *   $in with all instances of tokens replaced.
+   * 
+   * @see @ref site_tokens "Site token types"
+   */
+  public function replaceTokens($in) {
+    foreach ($this->placeholders as $k => $v) {
+      $in = str_replace('@@' . strtoupper($k), $v, $in);
+    }
+    return $in;
+  }
+  
+  /**
+   * Retrieves a setting from the site.
+   * 
+   * @param string $key
+   *   The key to retrieve.
+   * @param mixed $default
+   *   A default value to return if not found. Defaults to NULL.
+   * 
+   * @return mixed
+   *   The value of the setting defined by $key or the value of $default if
+   *   $key is not set.
+   */
+  public function getSetting($key, $default = NULL) {
+    if (isset($this->settings[$key])) {
+      return $this->settings[$key];
+    }
+    return $default;
+  }
+  
+  /**
+   * Appends a setting value to the settings array.
+   * 
+   * Use this over setSetting() when you want to create an array of values
+   * that is extensible.
+   * 
+   * @param string $key
+   *   The key to extend.
+   * @param mixed $value
+   *   The value to append to the settings key.
+   */
+  public function appendSettingValue($key, $value) {
+    if (empty($this->settings[$key])) {
+      $this->settings[$key] = array();
+    }
+    elseif (!is_array($this->settings[$key])) {
+      $this->settings[$key] = array($this->settings[$key]);
+    }
+    if (is_array($value)) {
+      array_extend($this->settings[$key], $value);
+    }
+    else {
+      $this->settings[$key][] = $value;
+    }
+    $this->settings[$key] = array_unique_numeric($this->settings[$key]);
+  }
+  
+  /**
+   * Registers a file as a system file.
+   * 
+   * @param string $file
+   *   The path to a system file.
+   */
+  public function registerSystemFile($file) {
+    $this->systemFiles[] = $file;
+  }
+  
+  /**
+   * Registers a file as a server file.
+   * 
+   * @param string $file
+   *   The path to a server file.
+   */
+  public function registerServerFile($file) {
+    $this->serverFiles[] = $file;
+  }
+  
+  /**
+   * Retrieves all server files.
+   * 
+   * @return array
+   *   An array of server files.
+   */
+  public function getServerFiles() {
+    return $this->serverFiles;
+  }
+  
+  /**
+   * Retrieves all system files.
+   * 
+   * @return array
+   *   An array of system files.
+   */
+  public function getSystemFiles() {
+    return $this->systemFiles;
+  }
+  
+  /**
+   * Sets the specified setting to $value.
+   * 
+   * @param string $key
+   *   The setting key.
+   * @param mixed $value
+   *   The setting value.
+   */
+  public function setSetting($key, $value) {
+    $this->settings[$key] = $value;
+  }
+  
+  /**
+   * Extends the settings with more settings.
+   * 
+   * @param array $settings
+   *   An array of settings
+   * 
+   * @see array_extend()
+   */
+  public function extendSettings(array $settings) {
+    array_extend($this->settings, $settings);
+  }
+  
+  /**
+   * Saves the configuration file.
+   * 
+   * @return boolean
+   *   TRUE if the file was saved, otherwise FALSE.
+   */
+  public function saveConfiguration() {
+    $path = $this->getConfigurationPath();
+    if (!is_writable($path)) {
+      return FALSE;
+    }
+    $export = array(
+      'settings' => $this->settings,
+      'placeholders' => $this->placeholders,
+    );
+    return file_put_contents($path, serialize($export));
+  }
+  
+  /**
+   * Loads settings from the settings file.
+   * 
+   * @return boolean
+   *   TRUE if the settings file was loaded correctly, otherwise FALSE.
+   */
+  public function loadSettings() {
+    if ($this->exists()) {
+      $contents = unserialize(file_get_contents($this->getConfigurationPath()));
+      array_extend($this->settings, $contents['settings']);
+      array_extend($this->placeholders, $contents['placeholders']);
+      return TRUE;
+    }
+    return FALSE;
+  }
+  
+  /**
+   * Checks to see if the site exists already.
+   * 
+   * @return boolean
+   *   Returns TRUE if the site already exists, otherwise FALSE.
+   */
+  public function exists() {
+    return file_exists($this->getConfigurationPath());
+  }
+  
+  /**
+   * Checks to see if the site exists in an older format.
+   * 
+   * @return boolean
+   *   Returns TRUE if the site existed from the last builder, otherwise FALSE.
+   */
+  public function existsBackwards() {
+    $paths = $this->getOldConfigurationPaths();
+    foreach ($paths as $path) {
+      if (file_exists($path)) {
+        return TRUE;
+      }
+    }
+    return FALSE;
+  }
+  
+  /**
+   * Returns the configuration path for this entity.
+   * 
+   * @return string
+   *   The configuration path.
+   */
+  protected abstract function getConfigurationPath();
+  
+  /**
+   * Returns an array of possible older paths for this entity. 
+   * If one of these files exists, it means that an older, incompatible
+   * version of this tool was used.
+   * 
+   * @return array
+   *   An array of old possible configuration paths.
+   */
+  protected function getOldConfigurationPaths() {
+    return array();
+  }
+  
+  /**
+   * Returns a unique identifier for this object.
+   * 
+   * @return string
+   *   A unique identifier.
+   */
+  protected abstract function uuid();
+}
