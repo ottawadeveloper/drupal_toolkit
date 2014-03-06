@@ -1,8 +1,16 @@
 <?php
 /**
  * @file Defines the DrupalSubSite class.
+ * 
+ * @defgroup subsite_settings "Subsite Settings"
+ * Settings that are stored in the subsite's .scf file.
  */
 
+/**
+ * The setting that holds the main identifier.
+ * 
+ * @ingroup subsite_settings
+ */
 define('SUBSITE_IDENTIFIER', 'subsite-id');
 
 /**
@@ -11,17 +19,42 @@ define('SUBSITE_IDENTIFIER', 'subsite-id');
  */
 class DrupalSubSite extends GenericDrupalEntity {
   
+  /**
+   * The parent site for this subsite.
+   * 
+   * @var DrupalSite
+   */
   private $parentSite;
   
+  /**
+   * Constructs an instance of this object.
+   * 
+   * @param DrupalSite $site
+   *   The parent site for this subsite.
+   * @param string $subsiteID
+   *   The subsite ID for this subsite.
+   */
   public function __construct(DrupalSite $site, $subsiteID) {
     $this->parentSite = $site;
     $this->setSetting(SUBSITE_IDENTIFIER, $subsiteID);
   }
   
+  /**
+   * Retrieves the parent site for this subsite.
+   * 
+   * @return DrupalSite
+   *   The parent site.
+   */
   public function getParentSite() {
     return $this->parentSite;
   }
   
+  /**
+   * Retrieves the main ID for this subsite.
+   * 
+   * @return string
+   *   The subsite ID.
+   */
   public function getSubSiteID() {
     return $this->getSetting(SUBSITE_IDENTIFIER);
   }
@@ -34,7 +67,7 @@ class DrupalSubSite extends GenericDrupalEntity {
   }
   
   protected function uuid() {
-    return $this->parentSite->uuid() . '_' . $this->getSubSiteID();
+    return $this->getParentSite()->uuid() . '_' . $this->getSubSiteID();
   }
   
   protected function getOldConfigurationPaths() {

@@ -6,7 +6,7 @@
 /**
  * Provides common tools required by both Sites and Subsites.
  */
-class GenericDrupalEntity {
+abstract class GenericDrupalEntity {
    
   /**
    * Settings for the site. Plugins may extend these.
