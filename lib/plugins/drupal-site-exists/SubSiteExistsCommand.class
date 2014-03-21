@@ -1,0 +1,34 @@
+<?php
+/**
+ * @file Defines the SubSiteExistsCommand class.
+ */
+
+/**
+ * Responsible for handling the subsite-exists command.
+ */
+class SubSiteExistsCommand extends GenericSiteCommand {
+ 
+  public function verifyRequirements() {
+    $site = $this->getSubSite();
+    if (empty($site)) {
+      $this->error(STRING_ERROR_MISSING_SUBSITE);
+      return FALSE;
+    }
+    return parent::verifyRequirements();
+  }
+  
+  public function executeCommand() {
+    $site = $this->getSubSite();
+    if ($site->existsBackwards()) {
+      $this->out()->writeLine('Subsite is outdated!');
+      exit(2);
+    }
+    if (!$site->exists()) {
+      $this->out()->writeLine('Subsite does not exist');
+      exit(1);
+    }
+    $this->out()->writeLine('Subsite exists');
+    exit(0);
+  }
+  
+}

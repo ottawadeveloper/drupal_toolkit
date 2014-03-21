@@ -41,10 +41,6 @@ abstract class GenericDrupalEntity {
    */
   private $placeholders = array();
   
-  public function __construct() {
-    
-  }
-  
   /**
    * Sets a token for the site.
    * 
