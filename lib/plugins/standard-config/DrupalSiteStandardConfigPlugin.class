@@ -179,8 +179,20 @@ class DrupalSiteStandardConfigPlugin extends GenericPlugin implements EventListe
         }
       }
     }
+    $entity->setSetting(SITE_SETTING_ALL_DOMAINS, $domains);
     $entity->setToken(SITE_TOKEN_ALL_DOMAINS, implode(', ', $domains));
     $entity->setToken(SITE_TOKEN_ALL_URLS, implode(', ', $entity->getAllURLs()));
+    if ($entity instanceof DrupalSubSite) {
+      $parent = $entity->getParentSite();
+      $parentDomains = $parent->getSetting(SITE_SETTING_ALL_DOMAINS);
+      foreach ($domains as $d) {
+        if (!in_array($d, $parentDomains)) {
+          $parentDomains[] = $d;
+        }
+      }
+      $parent->setSetting(SITE_SETTING_ALL_DOMAINS, $parentDomains);
+      $parent->setToken(SITE_TOKEN_ALL_DOMAINS, implode(', ', $parentDomains));
+    }
   }
   
 }

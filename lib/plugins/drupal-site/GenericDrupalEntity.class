@@ -46,6 +46,13 @@ define('SITE_TOKEN_PRIMARY_DOMAIN', 'SITE_DOMAIN');
 define('SITE_TOKEN_ALL_DOMAINS', 'SITE_ALL_DOMAINS');
 
 /**
+ * Site setting for an array of all the domains
+ * 
+ * @ingroup site_settings
+ */
+define('SITE_SETTING_ALL_DOMAINS', 'all-domains');
+
+/**
  * Provides common tools required by both Sites and Subsites.
  */
 abstract class GenericDrupalEntity {

@@ -22,6 +22,8 @@ define('EVENT_SUBSITE_BUILD_SERVER_CONFIG', 'subsite-build-server-config');
 
 define('EVENT_SUBSITE_BUILD_EXTRAS', 'subsite-build-extras');
 
+define('EVENT_SUBSITE_BUILD_PARENT_SERVER_REFRESH', 'subsite-build-parent-refresh');
+
 define('EVENT_SUBSITE_BUILD_COMPLETE', 'subsite-build-complete');
 
 define('STRING_SUBSITE_BUILD_GENERIC_ERROR', 'drupal_site_build.error.subsite-generic');

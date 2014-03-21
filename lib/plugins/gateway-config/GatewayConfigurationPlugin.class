@@ -119,6 +119,7 @@ class GatewayConfigurationPlugin extends GenericPlugin implements EventListener 
       EVENT_FIND_GATEWAY_SERVERS,
       EVENT_SITE_BUILD_MORE_CONFIG,
       EVENT_UPDATE_REFRESH_SERVER_CONFIG,
+      EVENT_SUBSITE_BUILD_PARENT_SERVER_REFRESH,
     ), $this);
     $this->config()->extendDefaultConfiguration(array(
       CONFIG_HAS_GATEWAY => FALSE,
@@ -139,6 +140,12 @@ class GatewayConfigurationPlugin extends GenericPlugin implements EventListener 
   
   public function captureEvent(&$context, $type) {
     switch ($type) {
+      case EVENT_SUBSITE_BUILD_PARENT_SERVER_REFRESH:
+        if (empty($context->handled) || $context->success) {
+          $context->success = $this->publishGatewayConfig($context->subsite->getParentSite());
+          $context->handled = TRUE;
+        }
+        break;
       case EVENT_UPDATE_REFRESH_SERVER_CONFIG:
         if (empty($context->handled) || $context->success) {
           $context->success = $this->updateAll($context->site);
