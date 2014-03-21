@@ -296,6 +296,7 @@ class DatabaseConfigurationPlugin extends GenericPlugin implements EventListener
       case EVENT_SUBSITE_BUILD_SERVER_CONFIG:
         if (empty($context->handled) || $context->success) {
           $context->success = $this->createDatabase($context->subsite);
+          $context->handled = TRUE;
         }
         break;
       case EVENT_SITE_BUILD_MORE_CONFIG:

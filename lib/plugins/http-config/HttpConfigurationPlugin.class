@@ -185,6 +185,12 @@ class HttpConfigurationPlugin extends GenericPlugin implements EventListener {
   
   public function captureEvent(&$context, $eventType) {
     switch ($eventType) {
+      case EVENT_SUBSITE_BUILD_PARENT_SERVER_REFRESH:
+        if (empty($context->handled) || $context->success) {
+          $context->success = $this->publishConfig($context->subsite->getParentSite());
+          $context->handled = TRUE;
+        }
+        break;
       case EVENT_UPDATE_REFRESH_SERVER_CONFIG:
         if (empty($context->handled) || $context->success) {
           $context->success = $this->updateAll($context->site);
