@@ -14,6 +14,21 @@
 define('SUBSITE_IDENTIFIER', 'subsite-id');
 
 /**
+ * The site token that holds the subsite ID. Only available to subsites.
+ * 
+ * @ingroup site_tokens
+ */
+define('SITE_TOKEN_SUBSITE_ID', 'SUBSITE_ID');
+
+/**
+ * The site token that holds the subsite's parent BUILD_NAME. Only available to
+ * subsites.
+ * 
+ * @ingroup site_tokens
+ */
+define('SITE_TOKEN_SUBSITE_PARENT_ID', 'SUBSITE_PARENT_ID');
+
+/**
  * Contains all the relevant information for a Drupal subsite 
  * definition.
  */
@@ -37,6 +52,9 @@ class DrupalSubSite extends GenericDrupalEntity {
   public function __construct(DrupalSite $site, $subsiteID) {
     $this->parentSite = $site;
     $this->setSetting(SUBSITE_IDENTIFIER, $subsiteID);
+    $this->setToken(SITE_TOKEN_SUBSITE_ID, $subsiteID);
+    $this->setToken(SITE_TOKEN_SUBSITE_PARENT_ID, $site->getBuildName());
+    $this->setToken(SITE_TOKEN_BUILD_NAME, $site->getBuildName() . '_' . $subsiteID);
   }
   
   /**
