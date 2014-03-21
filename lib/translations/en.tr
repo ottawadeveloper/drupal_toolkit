@@ -34,7 +34,11 @@ drupal_site.error.missing-site = 'No site with the given name exists.'
 drupal_site.error.site-exists = 'A site with the given name already exists.'
 drupal_site.error.no-setting = 'This plugin requires the site setting [!key].'
 drupal_site.error.no-save = 'Unable to save configuration details.
-'
+drupal_site.error.already-subsite = 'A subsite with the given name already exists.'
+drupal_site.error.no-subsite = 'The subsite object could not be created.'
+drupal_site.error.missing-subsite = 'No subsite with the given name exists.'
+drupal_site.error.old-subsite' = 'This subsite is too old to use with this command, update it first.'
+
 drupal_site_build.error.no-more-config = 'An error occured during additional configuration steps.'
 drupal_site_build.error.no-server-config = 'Unable to configure the server.'
 drupal_site_build.error.no-server-structure = 'Unable to initialize the server structure.'

@@ -39,6 +39,34 @@ define('STRING_ERROR_ALREADY_SITE', 'drupal_site.error.site-exists');
 define('STRING_COULD_NOT_SAVE_SITE', 'drupal_site.error.no-save');
 
 /**
+ * String token for when the subsite object could not be built.
+ * 
+ * @ingroup strings
+ */
+define('STRING_ERROR_NO_SUBSITE', 'drupal_site.error.no-subsite');
+
+/**
+ * String token for when the subsite exists and we don't want to overwrite it.
+ * 
+ * @ingroup strings
+ */
+define('STRING_ERROR_OLD_SUBSITE', 'drupal_site.error.old-subsite');
+
+/**
+ * String token for when the subsite does not exist.
+ * 
+ * @ingroup strings
+ */
+define('STRING_ERROR_MISSING_SUBSITE', 'drupal_site.error.missing-subsite');
+
+/**
+ * String token for when the subsite already exists and it should not.
+ * 
+ * @ingroup strings
+ */
+define('STRING_ERROR_ALREADY_SUBSITE', 'drupal_site.error.already-subsite');
+
+/**
  * Provides a base for commands that need to work with sites.
  */
 abstract class GenericSiteCommand extends GenericCommand {
@@ -48,14 +76,43 @@ abstract class GenericSiteCommand extends GenericCommand {
    * 
    * @param int $pos 
    *   The position of the argument in the build name.
+   * 
    * @return string
    *   The build name.
    */
   protected function getBuildName($pos = 1) {
-    $buildName = $this->args()->getArg($pos);
-    $buildName = preg_replace('`[^A-Za-z0-9_]`i', '_', $buildName);
-    $buildName = preg_replace('`_{2,}`', '_', $buildName);
-    return strtolower($buildName);
+    return $this->sanitizeName($this->args()->getArg($pos));
+  }
+  
+  /**
+   * Retrieves the build's subsite name as specified by the argument.
+   * 
+   * @param int $pos
+   *   The position of the argument for the build subsite name.
+   * 
+   * @return string
+   *   The build subsite name.
+   */
+  protected function getSubSiteName($pos = 2) {
+    return $this->sanitizeName($this->args()->getArg($pos));
+  }
+  
+  /**
+   * Sanitizes the site and subsite build names.
+   * 
+   * Currently this involves:
+   * - replace all non alpha-numerical characters with underscores
+   * - replace sets of two or more underscores with a single underscore
+   * - trim all underscores off the ends.
+   * 
+   * @param string $name
+   *   A name to sanitize.
+   * 
+   * @return string
+   *   The sanitized site/subsite name.
+   */
+  private function sanitizeName($name) {
+    return strtolower(trim(preg_replace('`_{2,}`', '_', preg_replace('[^A-Za-z0-9_]', '_', $name)), '_'));
   }
   
   /**
@@ -103,6 +160,70 @@ abstract class GenericSiteCommand extends GenericCommand {
   }
   
   /**
+   * Verifies that the subsite exists.
+   * 
+   * @param string $siteName
+   *   The name of the parent site, or NULL to load it from the default location.
+   * @param string $subSiteName
+   *   The name of the subsite, or NULL to load it from the default location.
+   * 
+   * @return boolean
+   *   TRUE if the subsite exists and does not need to be migrated, otherwise
+   *   returns FALSE.
+   */
+  protected function requireSubSite($siteName = NULL, $subSiteName = NULL) {
+    if (!$this->requireSite($siteName)) {
+      return FALSE;
+    }
+    $subsite = $this->getSubSite($siteName, $subSiteName);
+    if (empty($subsite)) {
+      $this->error(STRING_ERROR_NO_SUBSITE);
+      return FALSE;
+    }
+    if ($subsite->existsBackwards()) {
+      $this->error(STRING_ERROR_OLD_SUBSITE);
+      return FALSE;
+    }
+    if (!$subsite->exists()) {
+      $this->error(STRING_ERROR_MISSING_SUBSITE);
+      return FALSE;
+    }
+    return TRUE;
+  }
+  
+  /**
+   * Verifies that the subsite does not exists.
+   * 
+   * @param string $siteName
+   *   The name of the parent site, or NULL to load it from the default location.
+   * @param string $subSiteName
+   *   The name of the subsite, or NULL to load it from the default location.
+   * 
+   * @return boolean
+   *   TRUE if the subsite exists and does not need to be migrated, otherwise
+   *   returns FALSE.
+   */
+  protected function requireNoSubSite($siteName = NULL, $subSiteName = NULL) {
+    if (!$this->requireSite($siteName)) {
+      return FALSE;
+    }
+    $subsite = $this->getSubSite($siteName, $subSiteName);
+    if (empty($subsite)) {
+      $this->error(STRING_ERROR_NO_SUBSITE);
+      return FALSE;
+    }
+    if ($subsite->existsBackwards()) {
+      $this->error(STRING_ERROR_OLD_SUBSITE);
+      return FALSE;
+    }
+    if ($subsite->exists()) {
+      $this->error(STRING_ERROR_ALREADY_SUBSITE);
+      return FALSE;
+    }
+    return TRUE;
+  }
+  
+  /**
    * Requires that the site does not exist.
    * 
    * @param string $name
@@ -141,6 +262,26 @@ abstract class GenericSiteCommand extends GenericCommand {
       $name = $this->getBuildName();
     }
     return DrupalSite::createSite($this->config(), $name, $this->isLocal());
+  }
+  
+  /**
+   * Retrieves a subsite object.
+   * 
+   * @param string $parentName
+   *   The parent name, or leave NULL to auto-load it from the default 
+   *   position.
+   * @param string $subsiteName
+   *   The subsite name, or leave NULL to auto-load it from the default
+   *   position.
+   * 
+   * @return DrupalSubSite
+   *   The subsite object.
+   */
+  protected function getSubSite($parentName = NULL, $subsiteName = NULL) {
+    if (empty($subsiteName)) {
+      $subsiteName = $this->getSubSiteName();
+    }
+    return new DrupalSubSite($this->getSite($parentName), $subsiteName);
   }
   
   public function verifyRequirements() {
