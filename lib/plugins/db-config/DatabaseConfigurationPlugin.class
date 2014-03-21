@@ -273,6 +273,7 @@ class DatabaseConfigurationPlugin extends GenericPlugin implements EventListener
       EVENT_CAST_DB_SERVER,
       EVENT_FIND_DB_SERVERS,
       EVENT_REMOVE_ALL,
+      EVENT_SUBSITE_BUILD_SERVER_CONFIG,
     ), $this);
     $this->config()->extendDefaultConfiguration(array(
       CONFIG_SITE_DB_USER_PATTERN => '@@BUILD_NAME',
@@ -292,6 +293,11 @@ class DatabaseConfigurationPlugin extends GenericPlugin implements EventListener
   
   public function captureEvent(&$context, $type) {
     switch ($type) {
+      case EVENT_SUBSITE_BUILD_SERVER_CONFIG:
+        if (empty($context->handled) || $context->success) {
+          $context->success = $this->createDatabase($context->subsite);
+        }
+        break;
       case EVENT_SITE_BUILD_MORE_CONFIG:
         if ($context->success) {
           $context->success = $this->createDatabase($context->site);
@@ -358,12 +364,12 @@ class DatabaseConfigurationPlugin extends GenericPlugin implements EventListener
    * 
    * @see DrupalSiteBuildPlugin
    * 
-   * @param DrupalSite $site
-   *   The DrupalSite we're configuring
+   * @param GenericDrupalEntity $site
+   *   The site or subsite we're configuring
    * 
    * @return
    */
-  private function createDatabase(DrupalSite $site) {
+  private function createDatabase(GenericDrupalEntity $site) {
     $context = (object) array(
       'servers' => array(),
     );
@@ -384,7 +390,7 @@ class DatabaseConfigurationPlugin extends GenericPlugin implements EventListener
     if (empty($dbpass)) {
       $dbpass = $this->config()->getConfig(CONFIG_DB_DEFAULT_PASSWORD);
     }
-    $prefix = $this->args()->getOption(CONFIG_DB_PREFIX);
+    $prefix = $this->config()->getConfig(CONFIG_DB_PREFIX);
     $drupalSettings = array();
     $dbStorage = array();
     $connectionKeys = array();
@@ -460,7 +466,7 @@ class DatabaseConfigurationPlugin extends GenericPlugin implements EventListener
   /**
    * Writes the database settings to the settings.php file for the site.
    * 
-   * @param DrupalSite $site
+   * @param GenericDrupalEntity $site
    *   The site to write settings for.
    * @param array $dbSettings
    *   The database settings to write.
@@ -470,7 +476,7 @@ class DatabaseConfigurationPlugin extends GenericPlugin implements EventListener
    * 
    * @see DatabaseConfigurationPlugin::convertSettingsToString()
    */
-  private function writeDatabaseSettings(DrupalSite $site, array $dbSettings) {
+  private function writeDatabaseSettings(GenericDrupalEntity $site, array $dbSettings) {
     $settingsFile = $site->getSetting(SITE_SETTINGS_FILE);
     if (empty($settingsFile)) {
       return FALSE;

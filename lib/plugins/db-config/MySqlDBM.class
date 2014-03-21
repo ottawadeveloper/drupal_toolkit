@@ -58,18 +58,22 @@ class MySqlDBM extends GenericDBM {
     return empty($exit);
   }
   
+  private function cleanName($name) {
+    return strtolower(preg_replace('`[^A-Za-z]`i', '', $name));
+  }
+  
   public function sanitizeDatabaseName($database) {
-    $database = parent::sanitizeDatabaseName($database);
+    $database = parent::sanitizeDatabaseName($this->cleanName($database));
     if (strlen($database) > 64) {
-      $database = substr($database, 0, 64);
+      $database = substr($database, 0, 32) . substr($database, -32);
     }
     return $database;
   }
   
   public function sanitizeUsername($username) {
-    $username = parent::sanitizeUsername($username);
+    $username = parent::sanitizeUsername($this->cleanName($username));
     if (strlen($username) > 16) {
-      $username = substr($username, 0, 16);
+      $username = substr($username, 0, 8) . substr($username, -8);
     }
     return $username;
   }
