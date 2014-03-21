@@ -21,6 +21,11 @@ define('CONFIG_SITE_URL_PREFIX', 'site-url-prefix');
 define('CONFIG_SITE_URL_PATTERN', 'site-url-pattern');
 
 /**
+ * Config setting to specify a pattern for a subsite's primary URL.
+ */
+define('CONFIG_SUBSITE_URL_PATTERN', 'subsite-url-pattern');
+
+/**
  * Argument to provide extra URLs for the site.
  * 
  * @ingroup args
@@ -43,6 +48,7 @@ class DrupalSiteStandardConfigPlugin extends GenericPlugin implements EventListe
   public function initialize() {
     $this->events()->registerListener(array(
       EVENT_SITE_CONFIGURE,
+      EVENT_SUBSITE_BUILD_CONFIG,
     ), $this);
   }
   
@@ -53,8 +59,17 @@ class DrupalSiteStandardConfigPlugin extends GenericPlugin implements EventListe
           $context->success = $this->configureSite($context->site);
         }
         break;
+      case EVENT_SUBSITE_BUILD_CONFIG:
+        if (empty($context->handled) || $context->success) {
+          $context->success = $this->configureSubSite($context->subsite);
+        }
+        break;
     }
   } 
+  
+  private function configureSubSite(DrupalSubSite $subsite) {
+    return $this->addEntityDomains($subsite);
+  }
   
   /**
    * Retrieves a list of extra URLs.
@@ -73,18 +88,21 @@ class DrupalSiteStandardConfigPlugin extends GenericPlugin implements EventListe
   /**
    * Retrieves the primary site URL
    * 
-   * @param DrupalSite $site
-   *   The site we're operating on.
+   * @param GenericDrupalEntity $site
+   *   The site or subsite we're operating on.
    * 
    * @return string
    *   The primary URL or null if we cannot figure out one.
    */
-  private function getSiteURL(DrupalSite $site) {
+  private function getSiteURL(GenericDrupalEntity $site) {
     $fromArg = $this->args()->getOption(ARG_SITE_URL);
     if (!empty($fromArg)) {
       return $fromArg;
     }
     $pattern = $this->config()->getConfig(CONFIG_SITE_URL_PATTERN);
+    if ($site instanceof DrupalSubSite) {
+      $pattern = $this->config()->getConfig(CONFIG_SUBSITE_URL_PATTERN);
+    }    
     if (!empty($pattern)) {
       return $site->replaceTokens($pattern);
     }
@@ -118,32 +136,50 @@ class DrupalSiteStandardConfigPlugin extends GenericPlugin implements EventListe
    *   TRUE if the site was configured correctly, otherwise FALSE.
    */
   private function configureSite(DrupalSite $site) {
-    $primary = trim($this->getSiteURL($site));
-    $site->setPrimaryURL($primary);
-    $primaryDomain = $this->fetchDomain($primary);
-    $allDomains = array($primaryDomain);
+    $this->addEntityDomains($site);
+    return TRUE;
+  }
+  
+  /**
+   * Appends all the information needed about the site or subsite in concern
+   * of domains and URLs.
+   * 
+   * @param GenericDrupalEntity $entity
+   *   The entity to configure
+   */
+  private function addEntityDomains(GenericDrupalEntity $entity) {
+    $primary = trim($this->getSiteURL($entity));
+    $entity->setPrimaryURL($primary);
+    $entity->setToken(SITE_TOKEN_PRIMARY_URL, $primary);
+    $entity->setToken(SITE_TOKEN_PRIMARY_DOMAIN, $this->fetchDomain($primary));
+    $domains = array(
+      $this->fetchDomain($primary),
+    );
+    $prefix = $this->config()->getConfig(CONFIG_SITE_URL_PREFIX);
+    if (!empty($prefix)) {
+      $prefixedPrimary = $prefix . $primary;
+      $entity->addExtraURL($prefixedPrimary);
+      $domains[] = $this->fetchDomain($prefixedPrimary);
+    }
     foreach ($this->getExtraURLs() as $url) {
       $url = trim($url);
-      if ($url != $primary) {
-        $site->addExtraURL($url);
-        $domain = $this->fetchDomain($url);
-        if (!in_array($domain, $allDomains)) {
-          $allDomains[] = $domain;
+      if ($url !== $primary) {
+        $entity->addExtraURL($url);
+        $d = $this->fetchDomain($url);
+        if (!in_array($d, $domains)) {
+          $domains[] = $d;
+        }
+        if (!empty($prefix)) {
+          $entity->addExtraURL($prefix . $url);
+          $prefixedDomain = $prefix . $d;
+          if (!in_array($prefixedDomain, $domains)) {
+            $domains[] = $prefixedDomain;
+          }
         }
       }
     }
-    $prefix = $this->config()->getConfig(CONFIG_SITE_URL_PREFIX);
-    if (!empty($prefix)) {
-      foreach($site->getAllURLs() as $url) {
-        $prefixed = $prefix . $url;
-        $site->addExtraURL($prefixed);
-      }
-    }
-    
-    $site->setToken(SITE_TOKEN_PRIMARY_URL, $primary);
-    $extras = $site->getAllURLs();
-    $site->setToken(SITE_TOKEN_ALL_URLS, implode(', ', $extras));
-    return TRUE;
+    $entity->setToken(SITE_TOKEN_ALL_DOMAINS, implode(', ', $domains));
+    $entity->setToken(SITE_TOKEN_ALL_URLS, implode(', ', $entity->getAllURLs()));
   }
   
 }

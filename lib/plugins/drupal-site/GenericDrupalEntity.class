@@ -4,6 +4,48 @@
  */
 
 /**
+ * The primary URL for the site.
+ * 
+ * @ingroup site_settings
+ */
+define('SITE_PRIMARY_URL', 'primary_url');
+
+/**
+ * Extra URLs for the site.
+ * 
+ * @ingroup site_settings
+ */
+define('SITE_EXTRA_URLS', 'extra_urls');
+
+/**
+ * Site token for the Primary URL.
+ * 
+ * @ingroup site_tokens
+ */
+define('SITE_TOKEN_PRIMARY_URL', 'SITE_PRIMARY_URL');
+
+/**
+ * Site token for all the URLs.
+ *
+ * @ingroup site_tokens
+ */
+define('SITE_TOKEN_ALL_URLS', 'SITE_ALL_URLS');
+
+/**
+ * Site token for the primary domain.
+ * 
+ * @ingroup site_tokens
+ */
+define('SITE_TOKEN_PRIMARY_DOMAIN', 'SITE_DOMAIN');
+
+/**
+ * Site token for all the domains
+ * 
+ * @ingroup site_tokens
+ */
+define('SITE_TOKEN_ALL_DOMAINS', 'SITE_ALL_DOMAINS');
+
+/**
  * Provides common tools required by both Sites and Subsites.
  */
 abstract class GenericDrupalEntity {
@@ -169,6 +211,41 @@ abstract class GenericDrupalEntity {
    */
   public function setSetting($key, $value) {
     $this->settings[$key] = $value;
+  }
+  
+  /**
+   * Sets the primary URL.
+   * 
+   * @param string $url
+   *   The primary URL.
+   */
+  public function setPrimaryURL($url) {
+    $this->setSetting(SITE_PRIMARY_URL, $url);
+  }
+  
+  /**
+   * Adds an extra URL.
+   * 
+   * @param string $url
+   *   The extra URL.
+   */
+  public function addExtraURL($url) {
+    $this->settings[SITE_EXTRA_URLS][] = $url;
+  }
+  
+  /**
+   * Retrieves all the URLs (primary and extra).
+   * 
+   * @return array
+   *   An array of URLs.
+   */
+  public function getAllURLs() {
+    $urls = $this->getSetting(SITE_EXTRA_URLS);
+    $p = $this->getSetting(SITE_PRIMARY_URL);
+    if (!empty($p)) {
+      $urls[] = $p;
+    }
+    return $urls;
   }
   
   /**
