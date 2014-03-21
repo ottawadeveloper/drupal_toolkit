@@ -85,8 +85,9 @@ class DrupalSiteBuildPlugin extends GenericPlugin {
   public function initialize() {
     $root = dirname(__FILE__);
     require assemble_path($root, 'SiteBuildCommand.class');
-    $obj = new SiteBuildCommand();
-    $this->router()->addCommand('site-build', $obj);
+    require assemble_path($root, 'SubSiteBuildCommand.class');
+    $this->router()->addCommand('site-build', new SiteBuildCommand());
+    $this->router()->addCommand('subsite-build', new SubSiteBuildCommand());
     $this->config()->extendDefaultConfiguration(array(
       CONFIG_SITE_URL_PREFIX => '',
       CONFIG_SITE_URL_PATTERN => '@@BUILD_NAME.localhost',

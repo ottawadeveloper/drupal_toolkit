@@ -1,0 +1,78 @@
+<?php
+
+
+/**
+ * LIST OF THINGS THAT NEED TO HAPPEN
+ * 
+ * SETTINGS
+ * CODEBASE
+ * SERVER_CONFIG
+ * 
+ * - configure subsite from args/config
+ * - 
+ */
+
+define('EVENT_SUBSITE_BUILD_START', 'subsite-build-start');
+
+define('EVENT_SUBSITE_BUILD_CONFIG', 'subsite-build-config');
+
+define('EVENT_SUBSITE_BUILD_CODEBASE', 'subsite-build-codebase');
+
+define('EVENT_SUBSITE_BUILD_SERVER_CONFIG', 'subsite-build-server-config');
+
+define('EVENT_SUBSITE_BUILD_EXTRAS', 'subsite-build-extras');
+
+define('EVENT_SUBSITE_BUILD_COMPLETE', 'subsite-build-complete');
+
+define('STRING_SUBSITE_BUILD_GENERIC_ERROR', 'drupal_site_build.error.subsite-generic');
+
+class SubSiteBuildCommand extends GenericSiteCommand {
+  
+  public function verifyArguments() {
+    return parent::verifyArguments() && $this->requireNoSubSite();
+  }
+  
+  public function executeCommand() {
+    $context = (object) array(
+      'subsite' => $this->getSubSite(),
+    );
+    $context->subsite->getParentSite()->loadSettings();
+    $this->executeStep(EVENT_SUBSITE_BUILD_START, $context, TRUE, TRUE);
+    $this->executeStep(EVENT_SUBSITE_BUILD_CONFIG, $context);
+    $this->executeStep(EVENT_SUBSITE_BUILD_CODEBASE, $context, FALSE, FALSE);
+    $this->executeStep(EVENT_SUBSITE_BUILD_SERVER_CONFIG, $context, TRUE, FALSE);
+    $this->executeStep(EVENT_SUBSITE_BUILD_EXTRAS, $context, TRUE, FALSE);
+    $this->executeStep(EVENT_SUBSITE_BUILD_COMPLETE, $context, TRUE, FALSE);
+  }
+  
+  /**
+   * Executes a step.
+   * 
+   * @param string $stepEvent
+   *   The event to fire.
+   * @param stdClass $context
+   *   The context object.
+   * @param boolean $optional
+   *   If TRUE, success is not required.
+   * @param boolean $die
+   *   If TRUE, the script will exit if the step does not succeed.
+   * 
+   * @return boolean
+   *   TRUE if the step did not exit.
+   */
+  private function executeStep($stepEvent, &$context, $optional = FALSE, $die = TRUE) {
+    $context->success = $optional;
+    $context->handled = FALSE;
+    $this->events()->fireEvent($stepEvent, $context);
+    if (empty($context->success)) {
+      $this->error(STRING_SUBSITE_BUILD_GENERIC_ERROR, array(
+        '!step' => $stepEvent,
+      ));
+      if ($die) {
+        exit(1);
+      }
+    }
+    return TRUE;
+  }
+  
+}

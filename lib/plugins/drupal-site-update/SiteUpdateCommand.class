@@ -129,6 +129,21 @@ class SiteUpdateCommand extends GenericSiteCommand {
     return parent::verifyRequirements();
   }
   
+  /**
+   * Executes a step.
+   * 
+   * @param string $stepEvent
+   *   The event to fire.
+   * @param stdClass $context
+   *   The context object.
+   * @param boolean $optional
+   *   If TRUE, success is not required.
+   * @param boolean $die
+   *   If TRUE, the script will exit if the step does not succeed.
+   * 
+   * @return boolean
+   *   TRUE if the step did not exit.
+   */
   private function executeStep($stepEvent, &$context, $optional = FALSE, $die = TRUE) {
     $context->success = $optional;
     $context->handled = FALSE;
