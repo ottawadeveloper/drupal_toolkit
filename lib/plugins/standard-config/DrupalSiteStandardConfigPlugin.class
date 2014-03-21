@@ -68,7 +68,8 @@ class DrupalSiteStandardConfigPlugin extends GenericPlugin implements EventListe
   } 
   
   private function configureSubSite(DrupalSubSite $subsite) {
-    return $this->addEntityDomains($subsite);
+    $this->addEntityDomains($subsite);
+    return TRUE;
   }
   
   /**

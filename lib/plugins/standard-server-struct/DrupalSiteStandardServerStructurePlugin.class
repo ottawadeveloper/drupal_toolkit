@@ -52,6 +52,7 @@ class DrupalSiteStandardServerStructurePlugin extends GenericPlugin implements E
       EVENT_SITE_BUILD_SERVER_STRUCTURE,
       EVENT_REMOVE_ALL,
       EVENT_UPDATE_PREPARE_SERVER,
+      EVENT_SUBSITE_BUILD_CONFIG,
     ), $this);
     $this->config()->extendDefaultConfiguration(array(
       CONFIG_SERVER_SITES_DIR => '',
@@ -131,6 +132,21 @@ class DrupalSiteStandardServerStructurePlugin extends GenericPlugin implements E
     }
     return !is_link($path);
   }
+
+  /**
+   * Configures a subsite to have the necessary items from its parent item.
+   * 
+   * @param DrupalSubSite $subsite
+   *   Subsite to configure
+   * 
+   * @return boolean
+   *   TRUE if successful, otherwise FALSE.
+   */
+  private function configureSubsite(DrupalSubSite $subsite) {    
+    $subsite->setSetting(SITE_SETTING_DOCROOT, $subsite->getParentSite()->getSetting(SITE_SETTING_DOCROOT));
+    $subsite->setToken(SITE_TOKEN_DOCROOT, $subsite->getParentSite()->getSetting(SITE_SETTING_DOCROOT));
+    return TRUE;
+  }
   
   public function captureEvent(&$context, $type) {
     switch ($type) {
@@ -140,6 +156,11 @@ class DrupalSiteStandardServerStructurePlugin extends GenericPlugin implements E
         break;
       case EVENT_REMOVE_ALL:
         $context->success = $this->deleteServerStructure($context->site) && $context->success;
+        break;
+      case EVENT_SUBSITE_BUILD_CONFIG:
+        if (empty($context->handled) || $context->success) {
+          $context->success = $this->configureSubsite();
+        }
         break;
     }
   }

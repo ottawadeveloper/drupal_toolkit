@@ -120,6 +120,7 @@ class DrushConfigurationPlugin extends GenericPlugin implements EventListener {
     $this->events()->registerListener(array(
       EVENT_UPDATE_REFRESH_SERVER_CONFIG,
       EVENT_SITE_BUILD_MORE_CONFIG,
+      EVENT_SUBSITE_BUILD_SERVER_CONFIG,
     ), $this);
   }
   
@@ -134,6 +135,12 @@ class DrushConfigurationPlugin extends GenericPlugin implements EventListener {
           $context->handled = TRUE;
           $context->success = $this->updateAliases($context->site);
         }
+      case EVENT_SUBSITE_BUILD_SERVER_CONFIG:
+        if (empty($context->handled) || $context->success) {
+          $context->handled = TRUE;
+          $context->success = $this->createAliases($context->subsite);
+        }
+        break;
       case EVENT_SITE_BUILD_MORE_CONFIG:
         if ($context->success) {
           $context->success = $this->createAliases($context->site);
@@ -171,7 +178,7 @@ class DrushConfigurationPlugin extends GenericPlugin implements EventListener {
    * @return boolean
    *   TRUE if the alias was created, otherwise FALSE.
    */
-  private function createAliases(DrupalSite $site, $update = FALSE) {
+  private function createAliases(GenericDrupalEntity $site, $update = FALSE) {
     $config = $this->getConfig(array(
       'template' => CONFIG_DRUSH_ALIAS_TEMPLATE,
       'default-dir' => CONFIG_DRUSH_ALIAS_DIR,
@@ -228,7 +235,7 @@ class DrushConfigurationPlugin extends GenericPlugin implements EventListener {
    * @return boolean
    *   TRUE if the configuration is written successfully, otherwise FALSE.
    */
-  private function writeTemplate(array &$aliasList, DrupalSite $site, PhysicalServerInterface $server, $ddir, $dfile, $dconfig) {
+  private function writeTemplate(array &$aliasList, GenericDrupalEntity $site, PhysicalServerInterface $server, $ddir, $dfile, $dconfig) {
     $dir = $server->getSetting(SERVER_SETTING_DRUSH_DIR);
     if (empty($dir)) { $dir = $ddir; }
     $file = $server->getSetting(SERVER_SETTING_DRUSH_FILE_TEMPLATE);

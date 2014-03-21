@@ -347,4 +347,12 @@ abstract class GenericDrupalEntity {
    *   A unique identifier.
    */
   protected abstract function uuid();
+  
+  /**
+   * Retrieves the build name.
+   * 
+   * @return string
+   *   The name of the build.
+   */
+  public abstract function getBuildName();
 }

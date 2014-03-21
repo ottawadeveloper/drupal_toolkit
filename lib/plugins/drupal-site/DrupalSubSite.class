@@ -77,6 +77,10 @@ class DrupalSubSite extends GenericDrupalEntity {
     return $this->getSetting(SUBSITE_IDENTIFIER);
   }
   
+  public function getBuildName() {
+    return $this->getSubSiteID();
+  }
+  
   protected function getConfigurationPath() {
     return assemble_path(
         $this->getParentSite()->getBuildFolder(),
