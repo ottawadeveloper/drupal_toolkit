@@ -146,7 +146,8 @@ class HostsConfigurationPlugin extends GenericPlugin implements EventListener {
       EVENT_CAST_MANAGED_HOST_SERVER,
       EVENT_SITE_BUILD_MORE_CONFIG,
       EVENT_FIND_MANAGED_HOST_SERVERS,
-      EVENT_REMOVE_ALL
+      EVENT_REMOVE_ALL,
+      EVENT_SUBSITE_BUILD_PARENT_SERVER_REFRESH,
     ), $this);
   }
   
@@ -156,6 +157,12 @@ class HostsConfigurationPlugin extends GenericPlugin implements EventListener {
   
   public function captureEvent(&$context, $eventType) {
     switch ($eventType) {
+      case EVENT_SUBSITE_BUILD_PARENT_SERVER_REFRESH:
+        if (empty($context->handled) || $context->success) {
+          $context->success = $this->updateHostFile($context->subsite->getParentSite());
+          $context->handled = TRUE;
+        }
+        break;
       case EVENT_UPDATE_REFRESH_SERVER_CONFIG:
         if ((!$context->handled) || $context->success) {
           $context->success = $this->refreshHostFiles($context->site);
@@ -248,12 +255,8 @@ class HostsConfigurationPlugin extends GenericPlugin implements EventListener {
       return FALSE;
     }
     $map = array();
-    foreach ($site->getAllURLs() as $url) {
-      $pieces = parse_url($url);
-      if (!empty($pieces['host'])) {
-        $url = $pieces['host'];
-      }
-      $map[$url] = $config['ip'];
+    foreach ($site->getSetting(SITE_SETTING_ALL_DOMAINS) as $host) {
+      $map[$host] = $config['ip'];
     }
     $context = (object) array(
       'servers' => array(),

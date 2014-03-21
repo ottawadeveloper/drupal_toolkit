@@ -170,6 +170,7 @@ class HttpConfigurationPlugin extends GenericPlugin implements EventListener {
       EVENT_CAST_HTTP_SERVER,
       EVENT_SITE_BUILD_CONFIGURE_SERVER,
       EVENT_UPDATE_PREPARE_SERVER,
+      EVENT_SUBSITE_BUILD_PARENT_SERVER_REFRESH,
     ), $this);
     $this->config()->extendDefaultConfiguration(array(
       CONFIG_HTTP_STATIC_CONFIG => FALSE,
