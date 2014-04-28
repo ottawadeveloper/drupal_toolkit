@@ -165,9 +165,9 @@ class DrupalSite extends GenericDrupalEntity {
    *   The build ID.
    */
   public function registerNewBuildID($buildID) {
-    $this->settings[SITE_LAST_BUILD_ID] = $this->settings[SITE_LATEST_BUILD_ID];
-    $this->settings[SITE_LATEST_BUILD_ID] = $buildID;
-    $this->settings[SITE_BUILD_IDS][] = $buildID;
+    $this->setSetting(SITE_LAST_BUILD_ID, $this->getSetting(SITE_LATEST_BUILD_ID));
+    $this->setSetting(SITE_LATEST_BUILD_ID, $buildID);
+    $this->appendSettingValue(SITE_BUILD_IDS, $buildID);
   }
   
   /**
@@ -178,8 +178,8 @@ class DrupalSite extends GenericDrupalEntity {
    *   The build ID to remove.
    */
   public function deleteBuildID($buildID) {
-    $ids = $this->settings[SITE_BUILD_IDS];
-    $this->settings[SITE_BUILD_IDS] = array();
+    $ids = $this->getSetting(SITE_BUILD_IDS);
+    $this->setSetting(SITE_BUILD_IDS, array());
     foreach ($ids as $id) {
       if ($id !== $buildID) {
         $this->registerNewBuildID($id);
@@ -194,7 +194,7 @@ class DrupalSite extends GenericDrupalEntity {
    *   The current build ID.
    */
   public function getBuildID() {
-    return $this->settings[SITE_LATEST_BUILD_ID];
+    return $this->getSetting(SITE_LATEST_BUILD_ID);
   }
   
   /**
@@ -204,12 +204,7 @@ class DrupalSite extends GenericDrupalEntity {
    *   The previous build ID.
    */
   public function getPreviousBuildID() {
-    if (isset($this->settings[SITE_LAST_BUILD_ID])) {
-      return $this->settings[SITE_LAST_BUILD_ID];
-    }
-    else {
-      return NULL;
-    }
+    return $this->getSetting(SITE_LAST_BUILD_ID);
   }
   
   /**

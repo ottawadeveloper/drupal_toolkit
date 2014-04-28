@@ -220,6 +220,9 @@ class HostsConfigurationPlugin extends GenericPlugin implements EventListener {
    */
   private function cleanHostFiles(DrupalSite $site) {
     $hosts = $site->getSetting(SITE_HOST_FILES);
+    if (empty($hosts)) {
+      return TRUE;
+    }
     $r = TRUE;
     foreach ($hosts['servers'] as $host) {
       if ($host instanceof HostFileManagerInterface) {

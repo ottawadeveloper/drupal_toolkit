@@ -136,6 +136,13 @@ abstract class GenericPlugin implements PluginInterface {
   }
   
   /**
+   * Alias of GenericPlugin::showWork().
+   */
+  protected function working($messageKey, array $args = array()) {
+    return $this->showWork($messageKey, $args);
+  }
+  
+  /**
    * Shows a success message to the user.
    * 
    * @param string $messageKey
@@ -143,6 +150,14 @@ abstract class GenericPlugin implements PluginInterface {
    */
   protected function showSuccess($messageKey, array $args = array()) {
     $this->out()->log($this->strings()->getString($messageKey, $args), MESSAGE_SUCCESS);
+  }
+  
+  
+  /**
+   * Alias of GenericPlugin::showSuccess().
+   */
+  protected function success($messageKey, array $args = array()) {
+    return $this->showSuccess($messageKey, $args);
   }
   
   /**
@@ -153,6 +168,13 @@ abstract class GenericPlugin implements PluginInterface {
    */
   protected function showFailure($messageKey, array $args = array()) {
     $this->out()->log($this->strings()->getString($messageKey, $args), MESSAGE_FAILURE);
+  }
+  
+  /**
+   * Alias of GenericPlugin::showFailure().
+   */
+  protected function failure($messageKey, array $args = array()) {
+    return $this->showFailure($messageKey, $args);
   }
   
   /**

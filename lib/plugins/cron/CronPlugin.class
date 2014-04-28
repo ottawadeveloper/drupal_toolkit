@@ -127,6 +127,20 @@ define('CONFIG_STATIC_CRON', 'cron-static-config');
 define('SERVER_SETTING_STATIC_CRON', 'cron-static-config');
 
 /**
+ * String for telling the user that the cron tasks are being deleted.
+ * 
+ * @ingroup strings
+ */
+define('STRING_WORKING_CRON_DELETE', 'cron.working.delete');
+
+/**
+ * String for telling the user that the cron tasks were deleted.
+ * 
+ * @ingroup strings
+ */
+define('STRING_SUCCESS_CRON_DELETE', 'cron.success.delete');
+  
+/**
  * Responsible for installing cron tasks for Drupal.
  */
 class CronPlugin extends GenericPlugin implements EventListener {
@@ -212,6 +226,7 @@ class CronPlugin extends GenericPlugin implements EventListener {
       return FALSE;
     }
     $ret = TRUE;
+    $this->working(STRING_WORKING_CRON_DELETE);
     foreach ($site->getSetting(SITE_CRON_MACHINES) as $key => $machine) {
       $valid = FALSE;
       if ($machine instanceof CronManagerInterface) {
@@ -233,6 +248,7 @@ class CronPlugin extends GenericPlugin implements EventListener {
             $ret = FALSE;
       }
     }
+    $this->success(STRING_SUCCESS_CRON_DELETE);
     return $ret;
   }
   

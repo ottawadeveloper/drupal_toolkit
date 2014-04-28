@@ -333,6 +333,9 @@ class DatabaseConfigurationPlugin extends GenericPlugin implements EventListener
    */
   private function deleteDatabases(DrupalSite $site) {
     $servers = $site->getSetting(SITE_DATABASE_LIST);
+    if (empty($servers)) {
+      return TRUE;
+    }
     $ret = TRUE;
     foreach ($servers as $serverData) {
       $server = $this->castDatabaseServer($serverData['dbSettings'], $serverData['type']);

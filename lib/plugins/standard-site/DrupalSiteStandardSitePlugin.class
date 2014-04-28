@@ -115,10 +115,12 @@ class DrupalSiteStandardSitePlugin extends GenericPlugin implements EventListene
       EVENT_SITE_BUILD_SITES,
       EVENT_UPDATE_SITES,
       EVENT_ROLLBACK_PHASE3,
+      EVENT_SUBSITE_BUILD_CODEBASE,
     ), $this);
     $this->config()->extendDefaultConfiguration(array(
       CONFIG_SKIP_REDUNDANT_SYMLINKS => FALSE,
     ));
+    echo 'initialized dsssp';
     $this->config()->extendFromOption(CONFIG_SKIP_REDUNDANT_SYMLINKS, OPTION_SKIP_REDUNDANT_SYMLINKS);
   }
   
@@ -230,6 +232,7 @@ class DrupalSiteStandardSitePlugin extends GenericPlugin implements EventListene
    *   TRUE if they were initialized successfully, otherwise FALSE.
    */
   private function initializeSites(DrupalSite $site) {
+    echo '1';
     $currentBase = $site->getSetting(SITE_SETTING_CURRENT_BUILD);
     if (empty($currentBase)) { 
       $this->error(STRING_SITE_MISSING_SETTING, array(

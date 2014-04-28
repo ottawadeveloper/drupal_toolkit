@@ -137,3 +137,6 @@ cron_plugin.error.bad-creation = "Could not create the cron task"
 cron_plugin.error.could-not-delete-task = "Could not delete the cron task"
 
 drupal_site_build.error.subsite-generic = "An error occured while building a subsite."
+
+cron.working.delete = 'Deleting crontab entries...'
+cron.success.delete = 'Successfully deleted all crontab entries.'

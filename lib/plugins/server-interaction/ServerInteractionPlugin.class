@@ -193,6 +193,10 @@ class ServerInteractionPlugin extends GenericPlugin implements EventListener {
    */
   private function deleteRemoteFiles(DrupalSite $site) {
     $remoteFiles = $site->getSetting(SITE_REMOTE_FILES);
+    // protect against this variable not being initialized yet
+    if (empty($remoteFiles)) {
+      return TRUE;
+    }
     $r = TRUE;
     foreach ($remoteFiles as $remote) {
       if ($remote['server'] instanceof PhysicalServerInterface) {
