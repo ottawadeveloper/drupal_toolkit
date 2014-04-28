@@ -276,7 +276,14 @@ abstract class GenericDrupalEntity {
   public function saveConfiguration() {
     $path = $this->getConfigurationPath();
     if (!is_writable($path)) {
-      return FALSE;
+      if (file_exists($path)) {
+        return FALSE;
+      }
+      else {
+        if (!is_writable(dirname($path))) {
+          return FALSE;
+        }
+      }
     }
     $export = array(
       'settings' => $this->settings,

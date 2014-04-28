@@ -232,7 +232,6 @@ class DrupalSiteStandardSitePlugin extends GenericPlugin implements EventListene
    *   TRUE if they were initialized successfully, otherwise FALSE.
    */
   private function initializeSites(DrupalSite $site) {
-    echo '1';
     $currentBase = $site->getSetting(SITE_SETTING_CURRENT_BUILD);
     if (empty($currentBase)) { 
       $this->error(STRING_SITE_MISSING_SETTING, array(
@@ -294,7 +293,7 @@ class DrupalSiteStandardSitePlugin extends GenericPlugin implements EventListene
     if (!$this->symlinkAllSites($site)) {
       return FALSE;
     }
-    return $context->success;
+    return TRUE;
   }
   
   private function refreshSiteSymlinks(DrupalSite $site, $newBuildID) {
@@ -318,6 +317,7 @@ class DrupalSiteStandardSitePlugin extends GenericPlugin implements EventListene
         }
       }
     }
+    return TRUE;
   }
   
   /**
