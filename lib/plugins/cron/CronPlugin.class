@@ -155,6 +155,20 @@ define('STRING_WORKING_CRON_SETUP', 'cron.working.setup');
 define('STRING_SUCCESS_CRON_SETUP', 'cron.success.setup');
   
 /**
+ * String for telling the user that a cron task item is being deleted.
+ * 
+ * @ingroup strings
+ */
+define('STRING_WORKING_CRON_DELETE_ITEM', 'cron.working.delete_item');
+
+/**
+ * String for telling the user that a cron task item is being setup.
+ * 
+ * @ingroup strings
+ */
+define('STRING_WORKING_CRON_SETUP_ITEM', 'cron.working.setup_item');
+
+/**
  * Responsible for installing cron tasks for Drupal.
  */
 class CronPlugin extends GenericPlugin implements EventListener {
@@ -247,6 +261,9 @@ class CronPlugin extends GenericPlugin implements EventListener {
     }
     $this->working(STRING_WORKING_CRON_DELETE);
     foreach ($machines as $key => $machine) {
+      $this->working(STRING_WORKING_CRON_DELETE_ITEM, array(
+        '!name' => $key,
+      ));
       $valid = FALSE;
       if ($machine instanceof CronManagerInterface) {
         if ($machine->machine()->initialize()) {
@@ -363,6 +380,9 @@ class CronPlugin extends GenericPlugin implements EventListener {
             continue;
           }
         }
+        $this->working(STRING_WORKING_CRON_SETUP_ITEM, array(
+          '!name' => $key,
+        ));
         if (!$machine->scheduleTask($alias, $command)) {
           $this->error(STRING_ERROR_COULD_NOT_CREATE_CRON, array(
             '!server' => $key,
