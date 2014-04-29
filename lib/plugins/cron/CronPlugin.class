@@ -175,6 +175,7 @@ class CronPlugin extends GenericPlugin implements EventListener {
       CONFIG_DEFAULT_CRON_TYPE => CRON_TYPE_CRONTAB,
       CONFIG_STATIC_CRON => FALSE,
     ));
+    $this->error('NOTHING', array(), CLOG_CRITICAL);
   }
   
   public function captureEvent(&$context, $eventType) {

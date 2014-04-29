@@ -123,6 +123,8 @@ abstract class GenericPlugin implements PluginInterface {
    * 
    * @param string $messageKey
    *   The error message.
+   * @param array $args
+   *   Arguments to pass to the translation engine.
    * @param int $level
    *   One of the @ref log_levels "log level constants".
    */
@@ -135,6 +137,8 @@ abstract class GenericPlugin implements PluginInterface {
    * 
    * @param string $messageKey
    *   The warning message.
+   * @param array $args
+   *   Arguments to pass to the translation engine.
    */
   protected function warn($messageKey, array $args = array()) {
     $this->out()->log($this->strings()->getString($messageKey, $args), CLOG_WARNING);
@@ -145,6 +149,8 @@ abstract class GenericPlugin implements PluginInterface {
    * 
    * @param string $messageKey
    *   The message.
+   * @param array $args
+   *   Arguments to pass to the translation engine.
    */
   protected function showWork($messageKey, array $args = array()) {
     $this->out()->message($this->strings()->getString($messageKey, $args), MESSAGE_WORKING);
@@ -162,6 +168,8 @@ abstract class GenericPlugin implements PluginInterface {
    * 
    * @param string $messageKey
    *   The message.
+   * @param array $args
+   *   Arguments to pass to the translation engine.
    */
   protected function showSuccess($messageKey, array $args = array()) {
     $this->out()->message($this->strings()->getString($messageKey, $args), MESSAGE_SUCCESS);
@@ -180,6 +188,8 @@ abstract class GenericPlugin implements PluginInterface {
    * 
    * @param string $messageKey
    *   The message.
+   * @param array $args
+   *   Arguments to pass to the translation engine.
    */
   protected function showFailure($messageKey, array $args = array()) {
     $this->out()->message($this->strings()->getString($messageKey, $args), MESSAGE_FAILURE);

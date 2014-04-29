@@ -76,7 +76,11 @@ class PHPTerminal implements Writer, Logger, Messenger {
     CLOG_ERROR => TERMINAL_FOREGROUND_COLOR_LIGHT_RED,
     CLOG_WARNING => TERMINAL_FOREGROUND_COLOR_YELLOW,
     CLOG_NOTICE => TERMINAL_FOREGROUND_COLOR_YELLOW,
-    CLOG_CRITICAL => TERMINAL_FOREGROUND_COLOR_LIGHT_RED,
+    CLOG_CRITICAL => TERMINAL_FOREGROUND_COLOR_WHITE,
+  );
+  
+  private static $typeBackgroundColours = array(
+    CLOG_CRITICAL => TERMINAL_BACKGROUND_COLOR_RED,
   );
   
   public function __construct() {}
@@ -179,8 +183,12 @@ class PHPTerminal implements Writer, Logger, Messenger {
     if (isset(self::$typeColours[$logLevel])) {
       $color = self::$typeColours[$logLevel];
     }
+    $bgColor = NULL;
+    if (isset(self::$typeBackgroundColours[$logLevel])) {
+      $bgColor = self::$typeBackgroundColours[$logLevel];
+    }
     if ($logLevel <= $this->debugLevel) {
-      $this->writeStatusMessage($logEntry, $this->strings()->getString(OutputManager::$logLevelNames[$logLevel]), $color);
+      $this->writeStatusMessage($logEntry, $this->strings()->getString(OutputManager::$logLevelNames[$logLevel]), $color, $bgColor);
     }
   }
   
@@ -207,13 +215,13 @@ class PHPTerminal implements Writer, Logger, Messenger {
    * @param string $type
    *   The message type.
    */
-  private function writeStatusMessage($status, $type, $typeColor = NULL) {
+  private function writeStatusMessage($status, $type, $typeColor = NULL, $bgColor = NULL) {
     $message = '';
     if ($this->timestamp) {
       $message .= terminal_color_string(date($this->timestampFormat), TERMINAL_FOREGROUND_COLOR_WHITE);
     }
     if ($this->showTypes) {
-      $type = terminal_color_string('[' . strtolower($type) . ']', $typeColor);
+      $type = terminal_color_string('[' . strtolower($type) . ']', $typeColor, $bgColor);
       if ($this->autoFlexPadding) {
         if (strlen($type) > ($this->typePadding - 1)) {
           $this->typePadding = strlen($type) + 1;
