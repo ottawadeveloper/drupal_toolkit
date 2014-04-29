@@ -1,0 +1,17 @@
+<?php
+
+class ConfigExportCommand extends GenericCommand {
+  
+  public function executeCommand() {
+    $config = $this->config()->getDefaultConfiguration();
+    $config['plugin-registry'] = array();
+    $config['plugin-includes'] = array();
+    $config['config-files'] = array();
+    $config['yaml-files'] = array();
+    ksort($config);
+    if (class_exists('Spyc')) {
+      echo Spyc::YAMLDump($config);
+    }
+  }
+  
+}

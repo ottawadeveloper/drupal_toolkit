@@ -12,7 +12,8 @@ interface PluginInterface
             EventDependency,
             OutputDependency,
             RouterDependency,
-            StringDependency {
+            StringDependency,
+            DependencyManagerDependency {
   
   /**
    * Get the required plugins for this plugin.

@@ -52,20 +52,34 @@ class LinuxCrontab extends GenericCronManager {
     switch ($this->config()->getConfig(CONFIG_CRONTAB_FREQUENCY)) {
       case '@yearly':
       case '@annually':
+      case '@every-year':
         $components['month'] = '@';
         $components['day'] = '@';
+        $components['hour'] = '@';
+        $components['minute'] = '@';
         break;
       case '@monthly':
+      case '@every-month':
         $components['day'] = '@';
+        $components['hour'] = '@';
+        $components['minute'] = '@';
         break;
       case '@weekly':
+      case '@every-week':
         $components['weekday'] = '@';
-        break;
-      case '@hourly':
         $components['hour'] = '@';
-        break;
-      case '@minute':
         $components['minute'] = '@';
+        break;
+      case '@daily':
+      case '@every-day':
+        $components['hour'] = '@';
+        $components['minute'] = '@';
+      case '@hourly':
+      case '@every-hour':
+        $components['minute'] = '@';
+        break;
+      case '@minutely':
+      case '@every-minute':
         break;
       default:
         $pieces = explode(' ', $this->config()->getConfig(CONFIG_CRONTAB_FREQUENCY));
@@ -75,9 +89,11 @@ class LinuxCrontab extends GenericCronManager {
         }
         break;
     }
+    var_dump($components);
     foreach ($components as $element => $pattern) {
       $components[$element] = crontab_simplify($element, $pattern);
     }
+    var_dump($components);
     return implode(' ', $components);
   }
   

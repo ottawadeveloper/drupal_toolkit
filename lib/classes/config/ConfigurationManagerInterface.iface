@@ -21,6 +21,14 @@
 interface ConfigurationManagerInterface extends ArgsDependency {
   
   /**
+   * Retrieves all of the configuration.
+   * 
+   * @return array
+   *   An array containing all of the configuration.
+   */
+  function getDefaultConfiguration();
+  
+  /**
    * Retrieves a configuration setting.
    * 
    * @param string $key

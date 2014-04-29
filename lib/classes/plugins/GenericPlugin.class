@@ -57,6 +57,13 @@ abstract class GenericPlugin implements PluginInterface {
    */
   private $sm;
   
+  /**
+   *  Dependency manager object.
+   * 
+   * @var DependencyManagerInterface
+   */
+  private $dm;
+  
   public function setArgs(ArgsInterface $a) {
     $this->args = $a;
   }
@@ -79,6 +86,14 @@ abstract class GenericPlugin implements PluginInterface {
   
   public function setStringManager(StringManagerInterface $sm) {
     $this->sm = $sm;
+  }
+  
+  public function setDependencyManager(DependencyManagerInterface $dm) {
+    $this->dm = $dm;
+  }
+  
+  public function dm() {
+    return $this->dm;
   }
   
   public function strings() { return $this->sm; }

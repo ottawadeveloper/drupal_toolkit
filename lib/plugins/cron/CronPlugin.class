@@ -304,7 +304,8 @@ class CronPlugin extends GenericPlugin implements EventListener {
         );
         $this->events()->fireEvent(EVENT_CAST_CRON_SERVER, $next);
         if (!empty($next->cronServer)) {
-          $machines[$k] = $server;
+          $machines[$k] = $next->cronServer;
+          $this->dm()->setDependencies($next->cronServer);
         }
       }
     }

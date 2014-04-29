@@ -1,0 +1,22 @@
+<?php
+
+
+class ConfigExportPlugin extends GenericPlugin implements EventListener {
+  
+  public function initialize() {
+    $root = dirname(__FILE__);
+    require assemble_path($root, 'ConfigExportCommand.class');
+    $this->events()->registerListener(array(
+      EVENT_CORE_REGISTER_COMMANDS,
+    ), $this);
+  }
+  
+  public function captureEvent(&$context, $eventType) {
+    switch ($eventType) {
+      case EVENT_CORE_REGISTER_COMMANDS:
+        $this->router()->addCommand('config-export', new ConfigExportCommand());
+        break;
+    }
+  }
+  
+}

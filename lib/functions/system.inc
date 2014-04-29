@@ -109,6 +109,9 @@ function crontab_simplify($type, $value) {
   $maxes = array('minute' => 59, 'hour' => 23, 'day' => 28, 'month' => 12, 'weekday' => 6);
   $value = str_replace('?', '*', $value);
   $value = str_replace('H', '@', $value);
+  if ($value === '@') {
+    $value = '@('.$mins[$type].'-'.$maxes[$type].')';
+  }
   $value = preg_replace_callback('`@/(\d{1,})`i', 'regex_callback_crontab_interval', $value);
   $value = preg_replace('`@([^\(])`i', '@(' . $mins[$type] . '-' . $maxes[$type] . ')$1', $value);
   $value = preg_replace('`@(\d{1,})`i', '@(' . $mins[$type] . '-$1)', $value);

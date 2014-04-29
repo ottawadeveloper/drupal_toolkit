@@ -384,6 +384,7 @@ $core_plugins = array(
   'upstream-db' => 'UpstreamDatabasePlugin',
   'upstream-files' => 'UpstreamFilesPlugin',
   'cron' => 'CronPlugin',
+  'config-export' => 'ConfigExportPlugin',
 );
 
 /*
