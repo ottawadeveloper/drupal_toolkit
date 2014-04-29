@@ -27,6 +27,12 @@ plugin.error.missing-config = 'Plugin requires configuration setting [!key].'
 db_config.error.cannot-create-db = Unable to create database.
 db_config.error.cannot-write-settings = 'Unable to write DB settings to settings.php.'
 db_config.error.cannot-cast-db = 'Unable to cast database to !type.'
+db_config.working.db-delete = 'Deleting databases.'
+db_config.working.db-delete-item = 'Deleting database !name.'
+db_config.working.db-create = 'Creating databases.'
+db_config.working.db-create-item = 'Creating database !name.'
+db_config.success.db-delete = 'All databases deleted.'
+db_config.success.db-create = 'All databases created.'
 
 drupal_site.error.no-site = 'Could not build a site object.'
 drupal_site.error.old-site = 'This site is too old to use with this command, update it first.'
@@ -139,5 +145,7 @@ cron.working.delete = 'Deleting crontab entries...'
 cron.working.setup = 'Creating crontab entries...'
 cron.success.delete = 'Successfully deleted all crontab entries.'
 cron.success.setup = 'Successfully created all crontab entries.'
+cron.working.delete_item = 'Deleting crontask for !name.'
+cron.working.setup_item = 'Creating crontask for !name.'
 
 drupal_site_build.error.subsite-generic = "An error occured while building a subsite."
