@@ -135,6 +135,7 @@ class DrushConfigurationPlugin extends GenericPlugin implements EventListener {
           $context->handled = TRUE;
           $context->success = $this->updateAliases($context->site);
         }
+        break;
       case EVENT_SUBSITE_BUILD_SERVER_CONFIG:
         if (empty($context->handled) || $context->success) {
           $context->handled = TRUE;

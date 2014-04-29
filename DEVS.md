@@ -56,7 +56,7 @@ interface should have the injector method called, passing the object registered
 with the unique name you provided. The component interface limits objects that
 can be registered to the appropriate type.
 
-### Registering a Dependency Object
+#### Registering a Dependency Object
 
 To register an object, you call the object method registerObject() or the static
 method setObject(). This takes two parameters: the unique string used when
@@ -64,7 +64,7 @@ registering the dependency interface, and an instance of the object to use. You
 should call this immediately after registering your interface with a default
 implementation.
 
-### Injecting Dependencies
+#### Injecting Dependencies
 
 Finally, to have the dependency manager act on a new object, it must be 
 passed to the manager's object method setDependencies() or static method 
@@ -124,3 +124,6 @@ of ArgsInterface will be injected into your object (this is done by default
 for plug-ins). You can then access this object using the args() function. The
 definition of ArgsInterface outlines how you can access them properly.
 
+### Managing Configuration
+
+Each plugin can require different configuration options. 
