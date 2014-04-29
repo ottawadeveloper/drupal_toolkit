@@ -135,8 +135,9 @@ cron_plugin.error.could-not-init-server = "Could not reinitialize server !key"
 cron_plugin.error.no-url = "Could not find a cron URL"
 cron_plugin.error.bad-creation = "Could not create the cron task"
 cron_plugin.error.could-not-delete-task = "Could not delete the cron task"
+cron.working.delete = 'Deleting crontab entries...'
+cron.working.setup = 'Creating crontab entries...'
+cron.success.delete = 'Successfully deleted all crontab entries.'
+cron.success.setup = 'Successfully created all crontab entries.'
 
 drupal_site_build.error.subsite-generic = "An error occured while building a subsite."
-
-cron.working.delete = 'Deleting crontab entries...'
-cron.success.delete = 'Successfully deleted all crontab entries.'

@@ -139,6 +139,20 @@ define('STRING_WORKING_CRON_DELETE', 'cron.working.delete');
  * @ingroup strings
  */
 define('STRING_SUCCESS_CRON_DELETE', 'cron.success.delete');
+
+/**
+ * String for telling the user that cron tasks are being setup.
+ * 
+ * @ingroup strings
+ */
+define('STRING_WORKING_CRON_SETUP', 'cron.working.setup');
+
+/**
+ * String for telling the user that cron tasks were setup properly.
+ * 
+ * @ingroup strings
+ */
+define('STRING_SUCCESS_CRON_SETUP', 'cron.success.setup');
   
 /**
  * Responsible for installing cron tasks for Drupal.
@@ -338,6 +352,7 @@ class CronPlugin extends GenericPlugin implements EventListener {
       $this->error(STRING_ERROR_NO_CRON_URL);
       return FALSE;
     }
+    $this->working(STRING_WORKING_CRON_SETUP);
     $command = 'wget ' . escapeshellarg($cron);
     $machines = $this->getCronMachines();
     foreach ($machines as $key => $machine) {
@@ -356,6 +371,7 @@ class CronPlugin extends GenericPlugin implements EventListener {
         }
       }
     }
+    $this->success(STRING_SUCCESS_CRON_SETUP);
     $site->setSetting(SITE_CRON_MACHINES, $machines);
     return TRUE;
   }
