@@ -3,6 +3,11 @@
  * @file Defines the PHPTerminal class.
  */
 
+define('PHP_TERMINAL_FOREGROUND_COLOR_RED', '1;31');
+define('PHP_TERMINAL_FOREGROUND_COLOR_YELLOW', '1;33');
+define('PHP_TERMINAL_FOREGROUND_COLOR_GREEN', '1;32');
+define('PHP_TERMINAL_FOREGROUND_COLOR_PURPLE', '1;35');
+
 /**
  * Responsible for logging messages to the console.
  * 
@@ -69,6 +74,15 @@ class PHPTerminal implements Writer, Logger, Messenger {
    */
   private $sm;
   
+  private static $typeColours = array(
+    MESSAGE_WORKING => PHP_TERMINAL_FOREGROUND_COLOR_PURPLE,
+    MESSAGE_FAILURE => PHP_TERMINAL_FOREGROUND_COLOR_RED,
+    MESSAGE_SUCCESS => PHP_TERMINAL_FOREGROUND_COLOR_GREEN,
+    CLOG_ERROR => PHP_TERMINAL_FOREGROUND_COLOR_RED,
+    CLOG_WARNING => PHP_TERMINAL_FOREGROUND_COLOR_YELLOW,
+    CLOG_NOTICE => PHP_TERMINAL_FOREGROUND_COLOR_YELLOW,
+    CLOG_CRITICAL => PHP_TERMINAL_FOREGROUND_COLOR_RED,
+  );
   
   public function __construct() {}
   
@@ -166,23 +180,27 @@ class PHPTerminal implements Writer, Logger, Messenger {
   }
   
   public function log($logEntry, $logLevel = CLOG_NOTICE) {
+    $color = NULL;
+    if (isset(self::$typeColours[$logLevel])) {
+      $color = self::$typeColours[$logLevel];
+    }
     if ($logLevel <= $this->debugLevel) {
-      if (!isset(OutputManager::$logLevelNames[$logLevel])) {
-        debug_print_backtrace();
-        die();
-      }
-      $this->writeStatusMessage($logEntry, $this->strings()->getString(OutputManager::$logLevelNames[$logLevel]));
+      $this->writeStatusMessage($logEntry, $this->strings()->getString(OutputManager::$logLevelNames[$logLevel]), $color);
     }
   }
   
   public function message($message, $type = MESSAGE_WORKING) {
+    $typeColor = NULL;
+    if (isset(self::$typeColours[$type])) {
+      $typeColor = self::$typeColours[$type];
+    }
     if ($type == MESSAGE_WORKING) {
       if ($this->writeNonCriticalMessages) {
-        $this->writeStatusMessage($message, $this->strings()->getString(OutputManager::$messageTypeNames[$type]));
+        $this->writeStatusMessage($message, $this->strings()->getString(OutputManager::$messageTypeNames[$type]), $typeColor);
       }
     }
     else {
-      $this->writeStatusMessage($message, $this->strings()->getString(OutputManager::$messageTypeNames[$type]));
+      $this->writeStatusMessage($message, $this->strings()->getString(OutputManager::$messageTypeNames[$type]), $typeColor);
     }
   }
   
@@ -194,13 +212,13 @@ class PHPTerminal implements Writer, Logger, Messenger {
    * @param string $type
    *   The message type.
    */
-  private function writeStatusMessage($status, $type) {
+  private function writeStatusMessage($status, $type, $typeColor = NULL) {
     $message = '';
     if ($this->timestamp) {
       $message .= date($this->timestampFormat);
     }
     if ($this->showTypes) {
-      $type = '[' . strtolower($type) . ']';
+      $type = $this->colorText('[' . strtolower($type) . ']', $typeColor);
       if ($this->autoFlexPadding) {
         if (strlen($type) > ($this->typePadding - 1)) {
           $this->typePadding = strlen($type) + 1;
@@ -210,6 +228,13 @@ class PHPTerminal implements Writer, Logger, Messenger {
     }
     $message .= $status;
     $this->write($message . "\r\n");
+  }
+  
+  private function colorText($text, $color = NULL) {
+    if (empty($color)) {
+      return $text;
+    }
+    return "\033[" . $color . 'm' . $text . "\033[0m";
   }
   
   public function write($message) {
