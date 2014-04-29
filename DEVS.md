@@ -3,6 +3,15 @@
 These notes are geared towards people who will be working on this toolkit or
 providing third-party plug-ins for it.
 
+### Key Documentation Note
+
+In several places throughout DTK (events, options, string translations, 
+configuration, etc), constants have been used instead of raw strings. These
+constants have then been documented into certain defgroups. This pattern should
+be continued whenever you work directly with DTK, as it keeps the documentation
+on key strings up to date. Never use a raw string unless you are sure you know
+what you are doing.
+
 ### Dependency Injection
 
 In order to properly support the plug-in system, the toolkit extensively 

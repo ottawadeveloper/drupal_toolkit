@@ -172,7 +172,7 @@ class CronPlugin extends GenericPlugin implements EventListener {
         }
         break;
       case EVENT_REMOVE_ALL:
-        $context->success = $this->deleteCronTasks($context->site) && $success;
+        $context->success = $this->deleteCronTasks($context->site) && $context->success;
         $context->handled = TRUE;
         break;
       case EVENT_INSTALL_EXTRAS:
@@ -226,8 +226,12 @@ class CronPlugin extends GenericPlugin implements EventListener {
       return FALSE;
     }
     $ret = TRUE;
+    $machines = $site->getSetting(SITE_CRON_MACHINES);
+    if (empty($machines)) {
+      return TRUE;
+    }
     $this->working(STRING_WORKING_CRON_DELETE);
-    foreach ($site->getSetting(SITE_CRON_MACHINES) as $key => $machine) {
+    foreach ($machines as $key => $machine) {
       $valid = FALSE;
       if ($machine instanceof CronManagerInterface) {
         if ($machine->machine()->initialize()) {

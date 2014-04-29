@@ -167,6 +167,10 @@ class PHPTerminal implements Writer, Logger, Messenger {
   
   public function log($logEntry, $logLevel = CLOG_NOTICE) {
     if ($logLevel <= $this->debugLevel) {
+      if (!isset(OutputManager::$logLevelNames[$logLevel])) {
+        debug_print_backtrace();
+        die();
+      }
       $this->writeStatusMessage($logEntry, $this->strings()->getString(OutputManager::$logLevelNames[$logLevel]));
     }
   }

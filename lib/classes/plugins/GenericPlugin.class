@@ -147,7 +147,7 @@ abstract class GenericPlugin implements PluginInterface {
    *   The message.
    */
   protected function showWork($messageKey, array $args = array()) {
-    $this->out()->log($this->strings()->getString($messageKey, $args), MESSAGE_WORKING);
+    $this->out()->message($this->strings()->getString($messageKey, $args), MESSAGE_WORKING);
   }
   
   /**
@@ -164,7 +164,7 @@ abstract class GenericPlugin implements PluginInterface {
    *   The message.
    */
   protected function showSuccess($messageKey, array $args = array()) {
-    $this->out()->log($this->strings()->getString($messageKey, $args), MESSAGE_SUCCESS);
+    $this->out()->message($this->strings()->getString($messageKey, $args), MESSAGE_SUCCESS);
   }
   
   
@@ -182,7 +182,7 @@ abstract class GenericPlugin implements PluginInterface {
    *   The message.
    */
   protected function showFailure($messageKey, array $args = array()) {
-    $this->out()->log($this->strings()->getString($messageKey, $args), MESSAGE_FAILURE);
+    $this->out()->message($this->strings()->getString($messageKey, $args), MESSAGE_FAILURE);
   }
   
   /**
