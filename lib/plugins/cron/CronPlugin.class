@@ -281,10 +281,12 @@ class CronPlugin extends GenericPlugin implements EventListener {
         $this->warn(STRING_COULD_NOT_INIT_SERVER, array(
           '!site' => $key,
         ));
-            $ret = FALSE;
+        $ret = FALSE;
       }
     }
-    $this->success(STRING_SUCCESS_CRON_DELETE);
+    if ($ret) {
+      $this->success(STRING_SUCCESS_CRON_DELETE);
+    }
     return $ret;
   }
   

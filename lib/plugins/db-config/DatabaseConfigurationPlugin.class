@@ -257,6 +257,48 @@ define('STRING_UNABLE_TO_DELETE_USER', 'db_config.error.cannot-delete-user');
 define('SITE_DB_CONNECTION_KEYS', 'db-connection-keys');
 
 /**
+ * String for when databases are being deleted.
+ * 
+ * @ingroup strings
+ */
+define('STRING_WORKING_DB_DELETE', 'db_config.working.db-delete');
+
+/**
+ * String for when all databases have been deleted.
+ * 
+ * @ingroup strings
+ */
+define('STRING_SUCCESS_DB_DELETE', 'db_config.success.db-delete');
+
+/**
+ * String for when a database is being deleted.
+ * 
+ * @ingroup strings
+ */
+define('STRING_WORKING_DB_DELETE_ITEM', 'db_config.working.db-delete-item');
+
+/**
+ * String for when databases are being created.
+ * 
+ * @ingroup strings
+ */
+define('STRING_WORKING_DB_CREATE', 'db_config.working.db-create');
+
+/**
+ * String for when all databases have been created.
+ * 
+ * @ingroup strings
+ */
+define('STRING_SUCCESS_DB_CREATE', 'db_config.success.db-create');
+
+/**
+ * String for when a database has been created.
+ * 
+ * @ingroup strings
+ */
+define('STRING_WORKING_DB_CREATE_ITEM', 'db_config.working.db-create-item');
+
+/**
  * This plugin manages the database for a Drupal site.
  * 
  * @ingroup plugins
@@ -337,7 +379,11 @@ class DatabaseConfigurationPlugin extends GenericPlugin implements EventListener
       return TRUE;
     }
     $ret = TRUE;
-    foreach ($servers as $serverData) {
+    $this->working(STRING_WORKING_DB_DELETE);
+    foreach ($servers as $key => $serverData) {
+      $this->working(STRING_WORKING_DB_DELETE_ITEM, array(
+        '!name' => $key,
+      ));
       $server = $this->castDatabaseServer($serverData['dbSettings'], $serverData['type']);
       if ($server instanceof DatabaseManagerInterface) {
         if (!$server->deleteDatabase($serverData['database'])) {
@@ -359,6 +405,9 @@ class DatabaseConfigurationPlugin extends GenericPlugin implements EventListener
         ));
         $ret = FALSE;
       }
+    }
+    if ($ret) {
+      $this->success(STRING_SUCCESS_DB_DELETE);
     }
     return $ret;
   }
@@ -398,14 +447,15 @@ class DatabaseConfigurationPlugin extends GenericPlugin implements EventListener
     $drupalSettings = array();
     $dbStorage = array();
     $connectionKeys = array();
-    foreach ($context->servers as $server) {
+    $this->working(STRING_WORKING_DB_CREATE);
+    foreach ($context->servers as $key => $server) {
       if ($server instanceof DatabaseManagerInterface) {
         $dbname = $server->sanitizeDatabaseName($dbname);
         $username = $server->sanitizeUsername($username);
         if ($dbpass == DB_RANDOM_PASSWORD) {
           $dbpass = $server->randomPassword();
         }
-        $dbStorage[] = array(
+        $dbStorage[$key] = array(
           'type' => $server->getSetting(DB_HOST_TYPE),
           'dbSettings' => $server->getSettings(),
           'username' => $username,
@@ -424,6 +474,9 @@ class DatabaseConfigurationPlugin extends GenericPlugin implements EventListener
       }
     }
     foreach ($context->servers as $server) {
+      $this->working(STRING_WORKING_DB_CREATE_ITEM, array(
+        '!name' => $key,
+      ));
       if ($server instanceof DatabaseManagerInterface) {
         if (!$server->createDatabase($dbname, $username, $dbpass, $host)) {
           $this->error(STRING_CANNOT_CREATE_DB);
@@ -437,6 +490,7 @@ class DatabaseConfigurationPlugin extends GenericPlugin implements EventListener
     }
     $site->setSetting(SITE_DB_CONNECTION_KEYS, $connectionKeys);
     $site->setSetting(SITE_DATABASE_LIST, $dbStorage);
+    $this->success(STRING_SUCCESS_DB_CREATE);
     return TRUE;
   }
   
