@@ -89,11 +89,9 @@ class LinuxCrontab extends GenericCronManager {
         }
         break;
     }
-    var_dump($components);
     foreach ($components as $element => $pattern) {
       $components[$element] = crontab_simplify($element, $pattern);
     }
-    var_dump($components);
     return implode(' ', $components);
   }
   

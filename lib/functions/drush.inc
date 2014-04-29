@@ -259,7 +259,7 @@ function drush_get_variable($variable, $alias = NULL) {
   if (!extra_empty($exit)) {
     return NULL;
   }
-  return drush_info_get_key_value($out, $variable);
+  return trim(drush_info_get_key_value($out, $variable), '"');
 }
 
 /**
