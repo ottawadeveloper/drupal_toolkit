@@ -76,6 +76,8 @@ class Args implements ArgsInterface {
   }
   
   public function getOption($long = NULL, $short = NULL) {
+    // Specifying $short as TRUE means to use the first
+    // character of $long as the value for $short.
     if ($short === TRUE && !empty($long)) {
       $short = substr($long, 0 ,1);
     }
@@ -99,7 +101,7 @@ class Args implements ArgsInterface {
    *   A string that might contain an option or an argument.
    */
   private function processArgument($arg) {
-    if (strlen($arg) > 2) {
+    if (strlen($arg) > 1) {
       if (substr($arg, 0, 2) == '--') {
         $this->processOption(substr($arg, 2), FALSE);
         return;

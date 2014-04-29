@@ -1,3 +1,53 @@
+## Overview
+
+Drupal ToolKit (DTK) is a PHP command line tool that aims to simplify managing
+multiple sites, with and without different codebases, for enterprise Drupal 
+environments. The target audience of this project would be organizations that
+create and manage multiple Drupal sites, using either many codebases or a 
+single codebase, and are looking for a tool that they can use on their own
+servers to build and install new sites, updating existing sites, delete old 
+sites, etc.
+
+### Why not Drush?
+
+Drush is an amazing tool, and this tool strongly leverages Drush to perform
+existing tasks. Once a site is up and running, Drush can and should be used
+to manage most of your tasks.
+
+But a site install is more complicated than what Drush does, and we feel that
+Drush should remain focused on interacting only with Drupal. We therefore have
+chosen to build a different tool that leverages Drush wherever possible but
+also can interact with other libraries, such as Apache, nginx, etc.
+
+### Features
+
+Our goal is therefore to support the entire spin-up process of a Drupal site, of
+which Drush is merely a part of. Specifically, we aim to support:
+
+- Generating a new codebase using drush make
+- Creating database(s) via MySQL directly (and other DBMSs)
+- Installing Drupal via drush
+- Adding any relevant host file entries
+- Adding a crontab entry
+- Managing Apache/nginx server configurations (both web servers and gateway 
+  servers)
+- Creating a drush alias automatically
+- Automatically take backups at key points
+- Properly setup file system permissions
+- Interface with multiple servers for relevant configuration options
+- Download the database and files from an upstream server (QA verification)
+- Preserve certain variables on the site when downloading from upstream
+- Support a consistent structure for sites that is easy to update
+- Streamlining the update procedure to be automated with good failure protection
+- Streamlining the deletion procedure to ensure all relevant files are removed
+
+## 2014-04-27
+
+Currently this project is undergoing some significant tweaks to support
+sub-sites as well as proper Drupal sites. These subsites follow the 
+documentation provided for creating subsites (see 
+https://drupal.org/documentation/install/multi-site).
+
 ## 2014-03-04
 
 Confirmed the six original commands work with default settings on

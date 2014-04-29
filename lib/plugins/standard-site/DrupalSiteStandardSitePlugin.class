@@ -120,7 +120,6 @@ class DrupalSiteStandardSitePlugin extends GenericPlugin implements EventListene
     $this->config()->extendDefaultConfiguration(array(
       CONFIG_SKIP_REDUNDANT_SYMLINKS => FALSE,
     ));
-    echo 'initialized dsssp';
     $this->config()->extendFromOption(CONFIG_SKIP_REDUNDANT_SYMLINKS, OPTION_SKIP_REDUNDANT_SYMLINKS);
   }
   
