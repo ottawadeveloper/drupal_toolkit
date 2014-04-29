@@ -185,3 +185,4 @@ require "functions/system.inc";
 require "functions/special.inc";
 require "functions/drush.inc";
 require "functions/hosts.inc";
+require "functions/terminal.inc";
