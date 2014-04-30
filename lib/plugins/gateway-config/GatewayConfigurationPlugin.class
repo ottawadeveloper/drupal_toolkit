@@ -110,6 +110,28 @@ define('STRING_GATEWAY_BAD_WRITE', 'gateway.error.bad-write');
 define('CONFIG_HAS_GATEWAY', 'has-gateways');
 
 /**
+ * String token for when gateway configuration is about to be published.
+ * 
+ * @ingroup strings
+ */
+define('STRING_WORKING_CONFIGURE_GATEWAY', 'gateway.working.configure');
+
+/**
+ * String token for when a specific server's gateway configuration is about to
+ * be published.
+ * 
+ * @ingroup strings
+ */
+define('STRING_WORKING_CONFIGURE_GATEWAY_ITEM', 'gateway.working.configure-item');
+
+/**
+ * String token for when all gateway configuration was published successfully.
+ * 
+ * @ingroup strings
+ */
+define('STRING_SUCCESS_CONFIGURE_GATEWAY', 'gateway.success.configure');
+
+/**
  * Responsible for configuring any gateway servers that have been defined.
  */
 class GatewayConfigurationPlugin extends GenericPlugin implements EventListener {
@@ -208,13 +230,17 @@ class GatewayConfigurationPlugin extends GenericPlugin implements EventListener 
     );
     $this->events()->fireEvent(EVENT_FIND_GATEWAY_SERVERS, $context);
     $gatewayRegistry = array();
-    foreach ($context->servers as $gatewayServer) {
+    $this->working(STRING_WORKING_CONFIGURE_GATEWAY);
+    foreach ($context->servers as $key => $gatewayServer) {
       if ($gatewayServer instanceof GenericHttpServer) {
         if ($update) {
           if (!extra_empty($gatewayServer->machine()->getSetting(SERVER_SETTING_GATEWAY_STATIC_CONFIG))) {
             continue;
           }
         }
+        $this->working(STRING_WORKING_CONFIGURE_GATEWAY_ITEM, array(
+          '!name' => $key,
+        ));
         $config = $defaultConfig;
         $configFile = $gatewayServer->machine()->getSetting(SERVER_SETTING_GATEWAY_CONFIG_TEMPLATE);
         if (is_readable($configFile)) {
@@ -238,6 +264,7 @@ class GatewayConfigurationPlugin extends GenericPlugin implements EventListener 
       }
     }
     $site->appendSettingValue(SITE_REMOTE_FILES, $gatewayRegistry);
+    $this->success(STRING_SUCCESS_CONFIGURE_GATEWAY);
     return TRUE;
   }
   
