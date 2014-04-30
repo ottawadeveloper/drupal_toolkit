@@ -8,6 +8,11 @@
  */
 class LocalMachine extends GenericMachine {
   
+  public function __construct($vars = array()) {
+    parent::__construct($vars);
+    $this->setNameKey('auto-localhost');
+  }
+  
   public function executeCommand($command, $args = array(), &$out = array(), &$exit = 0) {
     return execute_system_command($command, $args, $out, $exit);
   }

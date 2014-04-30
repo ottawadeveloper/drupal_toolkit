@@ -163,6 +163,7 @@ class ServerInteractionPlugin extends GenericPlugin implements EventListener {
                 continue;
               }
             }
+            $context->server->setNameKey($key);
             if ($context->server->initialize()) {
               $servers[$key] = $context->server;
             }
@@ -175,7 +176,7 @@ class ServerInteractionPlugin extends GenericPlugin implements EventListener {
         }
       }
       if ((!$noLocal) && extra_empty($this->config()->getConfig('si-disable-local-' . $type))) {
-        $servers[] = new LocalMachine();
+        $servers['auto-localhost'] = new LocalMachine();
       }
       $this->servers[$type] = $servers;
     }

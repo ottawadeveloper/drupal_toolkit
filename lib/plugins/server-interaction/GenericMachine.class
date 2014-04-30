@@ -18,6 +18,13 @@ abstract class GenericMachine implements PhysicalServerInterface {
   private $vars;
   
   /**
+   * Stores this machine's identifying key.
+   * 
+   * @var string
+   */
+  private $nameKey;
+  
+  /**
    * Constructor.
    * 
    * @param array $vars
@@ -25,6 +32,14 @@ abstract class GenericMachine implements PhysicalServerInterface {
    */
   public function __construct(array $vars = array()) {
     $this->vars = $vars;
+  }
+  
+  public function setNameKey($key) {
+    $this->nameKey = $key;
+  }
+  
+  public function getNameKey() {
+    return $this->nameKey;
   }
   
   public function serialize() {

@@ -58,6 +58,22 @@ interface PhysicalServerInterface extends Serializable {
   function readFile($file);
   
   /**
+   * Sets the name key.
+   * 
+   * @param string $key
+   *   An identifying key for this server.
+   */
+  function setNameKey($key);
+  
+  /**
+   * Retrieves the name key.
+   * 
+   * @return string
+   *   Returns the identifying key.
+   */
+  function getNameKey();
+  
+  /**
    * Downloads a file to the local server, using a temporary file path if none
    * is specified.
    * 
