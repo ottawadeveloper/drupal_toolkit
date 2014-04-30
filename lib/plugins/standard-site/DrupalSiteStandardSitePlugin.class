@@ -98,6 +98,104 @@ define('SITE_SETTINGS_TEMPLATE', 'settings-template');
 define('STRING_UNABLE_TO_DELETE_DEFAULT', 'standard_site.error.unable-to-delete-default');
 
 /**
+ * String token for when the default site is about to be removed.
+ * 
+ * @ingroup strings
+ */
+define('STRING_WORKING_REMOVE_DEFAULT_SITE', 'standard_site.working.remove-default');
+
+/**
+ * String token for when the subsite's sites directory is about to be built.
+ * 
+ * @ingroup strings
+ */
+define('STRING_WORKING_CREATE_SUBSITE_SITES', 'standard_site.working.create-subsite-sites');
+
+/**
+ * String token for when the subsite's settings.php file is about to be built.
+ * 
+ * @ingroup strings
+ */
+define('STRING_WORKING_CREATE_SUBSITE_SETTINGS', 'standard_site.working.create-subsite-settings');
+
+/**
+ * String token for when the site's sites directory is about to be built.
+ * 
+ * @ingroup strings
+ */
+define('STRING_WORKING_CREATE_SITES', 'standard_site.working.create-sites');
+
+/**
+ * String token for when the site's settings.php file is about to be built.
+ * 
+ * @ingroup strings
+ */
+define('STRING_WORKING_CREATE_SITE_SETTINGS', 'standard_site.working.create-site-settings');
+
+/**
+ * String token for when redundant symlinks are about to be created.
+ * 
+ * @ingroup strings
+ */
+define('STRING_WORKING_CREATE_REDUNDANT_SYMLINKS', 'standard_site.working.create-redundant-symlinks');
+
+/**
+ * String token for when all the sites are about to be symlinked.
+ * 
+ * @ingroup strings
+ */
+define('STRING_WORKING_SYMLINK_SITES', 'standard_site.working.symlink-sites');
+
+/**
+ * String token for when a specific site is about to be symlinked.
+ * 
+ * @ingroup strings
+ */
+define('STRING_WORKING_SYMLINK_SITE', 'standard_site.working.symlink-site');
+
+/**
+ * String token for when a redundant symlink is about to be created.
+ * 
+ * @ingroup strings
+ */
+define('STRING_WORKING_CREATE_REDUNDANT_SYMLINK', 'standard_site.working.create-redundant-symlink');
+
+/**
+ * String token for when the default site was removed successfully.
+ * 
+ * @ingroup strings
+ */
+define('STRING_SUCCESS_REMOVE_DEFAULT_SITE', 'standard_site.success.remove-default');
+
+/**
+ * String token for when the subsite's sites were created successfully.
+ * 
+ * @ingroup strings
+ */
+define('STRING_SUCCESS_CREATE_SUBSITE_SITES', 'standard_site.success.create-subsite-sites');
+
+/**
+ * String token for when the site's sites were created successfully.
+ * 
+ * @ingroup strings
+ */
+define('STRING_SUCCESS_CREATE_SITES', 'standard_site.success.create-sites');
+
+/**
+ * String token for when the redundant symlinks were created successfully.
+ * 
+ * @ingroup strings
+ */
+define('STRING_SUCCESS_CREATE_REDUNDANT_SYMLINKS', 'standard_site.success.create-redundant-symlinks');
+
+/**
+ * String token for when all the sites were created successfully.
+ * 
+ * @ingroup strings
+ */
+define('STRING_SUCCESS_SYMLINK_SITES', 'standard_site.success.symlink-sites');
+
+/**
  * Responsible for managing the basic sites configuration for Drupal sites.
  * 
  * This refers mostly to the contents of the Drupal sites folder, except for the
@@ -161,6 +259,7 @@ class DrupalSiteStandardSitePlugin extends GenericPlugin implements EventListene
    *   TRUE if all the sites were updated successfully, otherwise FALSE.
    */
   private function updateSites(DrupalSite $site) {
+    $this->working(STRING_WORKING_REMOVE_DEFAULT_SITE);
     $defaultSite = $site->getSetting(SITE_SETTING_CURRENT_BUILD);
     if (empty($defaultSite)) {
       $this->error(STRING_SITE_MISSING_SETTING, array(
@@ -174,10 +273,12 @@ class DrupalSiteStandardSitePlugin extends GenericPlugin implements EventListene
       $this->error(STRING_UNABLE_TO_DELETE_DEFAULT);
       return FALSE;
     }
+    $this->success(STRING_SUCCESS_REMOVE_DEFAULT_SITE);
     return $this->symlinkAllSites($site);
   }
   
   private function initializeSubSites(DrupalSubSite $subsite) {
+    $this->working(STRING_WORKING_CREATE_SUBSITE_SITES);
     $currentBase = $subsite->getParentSite()->getSetting(SITE_SETTING_CURRENT_BUILD);
     if (empty($currentBase)) { 
       $this->error(STRING_SITE_MISSING_SETTING, array(
@@ -202,6 +303,7 @@ class DrupalSiteStandardSitePlugin extends GenericPlugin implements EventListene
     $primarySite = DrupalSite::convertURLToSiteName($primary);
     $primarySiteDirectory = assemble_path($subsite->getParentSite()->getBuildFolder(), $structureSites, $primarySite);
     mkdir($primarySiteDirectory);
+    $this->working(STRING_WORKING_CREATE_SUBSITE_SETTINGS);
     $newSettingsFile = assemblePath($primarySiteDirectory, 'settings.php');
     $defaultSettings = $subsite->getParentSite()->getSetting(SITE_SETTINGS_TEMPLATE);
     copy($defaultSettings, $newSettingsFile);
@@ -218,6 +320,7 @@ class DrupalSiteStandardSitePlugin extends GenericPlugin implements EventListene
     if (!$this->symlinkAllSites($subsite->getParentSite())) {
       return FALSE;
     }
+    $this->success(STRING_SUCCESS_CREATE_SUBSITE_SITES);
     return TRUE;
   }
   
@@ -231,6 +334,7 @@ class DrupalSiteStandardSitePlugin extends GenericPlugin implements EventListene
    *   TRUE if they were initialized successfully, otherwise FALSE.
    */
   private function initializeSites(DrupalSite $site) {
+    $this->working(STRING_WORKING_CREATE_SITES);
     $currentBase = $site->getSetting(SITE_SETTING_CURRENT_BUILD);
     if (empty($currentBase)) { 
       $this->error(STRING_SITE_MISSING_SETTING, array(
@@ -265,6 +369,8 @@ class DrupalSiteStandardSitePlugin extends GenericPlugin implements EventListene
       }
     }
 
+    $this->working(STRING_WORKING_CREATE_SITE_SETTINGS);
+    
     // Allow other plugins to change the settings if needed.
     $context = (object) array(
       'extra_settings' => '',
@@ -292,6 +398,7 @@ class DrupalSiteStandardSitePlugin extends GenericPlugin implements EventListene
     if (!$this->symlinkAllSites($site)) {
       return FALSE;
     }
+    $this->success(STRING_SUCCESS_CREATE_SITES);
     return TRUE;
   }
   
@@ -300,11 +407,15 @@ class DrupalSiteStandardSitePlugin extends GenericPlugin implements EventListene
   }
   
   private function createRedundantSymlinks(GenericDrupalEntity $site, $primary, $path) {
+    $this->working(STRING_WORKING_CREATE_REDUNDANT_SYMLINKS);
     $urls = $site->getAllURLs();
     $default = assemble_path($path, $primary);
     foreach ($urls as $url) {
       $name = DrupalSite::convertURLToSiteName($url);
       if ($name !== $primary) {
+        $this->working(STRING_WORKING_CREATE_REDUNDANT_SYMLINK, array(
+          '!name' => $name,
+        ));
         $site->appendSettingValue(SITE_EXISTING_SITES, $name);
         $link = assemble_path($path, $name);
         symlink($default, $link);
@@ -316,6 +427,7 @@ class DrupalSiteStandardSitePlugin extends GenericPlugin implements EventListene
         }
       }
     }
+    $this->success(STRING_SUCCESS_CREATE_REDUNDANT_SYMLINKS);
     return TRUE;
   }
   
@@ -328,7 +440,8 @@ class DrupalSiteStandardSitePlugin extends GenericPlugin implements EventListene
    * @return boolean
    *   TRUE if the sites could be symlinked, otherwise FALSE.
    */
-  private function symlinkAllSites(DrupalSite $site) {    
+  private function symlinkAllSites(DrupalSite $site) {
+    $this->working(STRING_WORKING_SYMLINK_SITES);
     $staticSites = assemble_path($site->getBuildFolder(), $site->getSetting(SITE_SITES_DIR));
     $h = opendir($staticSites);
     if (empty($h)) {
@@ -338,6 +451,9 @@ class DrupalSiteStandardSitePlugin extends GenericPlugin implements EventListene
     $targetBase = assemble_path($site->getSetting(SITE_SETTING_CURRENT_BUILD), 'sites');
     while (($dir = readdir($h)) !== FALSE) {
       if ($dir != '.' && $dir != '..') {
+        $this->working(STRING_WORKING_SYMLINK_SITE, array(
+          '!site' => $dir,
+        ));
         $full = assemble_path($staticSites, $dir);
         if (is_dir($full)) {
           $linkPath = assemble_path($targetBase, $dir);
@@ -351,6 +467,7 @@ class DrupalSiteStandardSitePlugin extends GenericPlugin implements EventListene
         }
       }
     }
+    $this->success(STRING_SUCCESS_SYMLINK_SITES);
     return TRUE;
   }
   
