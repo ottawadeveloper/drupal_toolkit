@@ -157,6 +157,34 @@ define('STRING_COULD_NOT_INSTALL', 'drush_install.error.could-not-install');
 define('STRING_COULD_NOT_INSTALL_MODULES', 'drush_install.error.could-not-install-modules');
 
 /**
+ * String token for when all modules are installed successfully.
+ * 
+ * @ingroup strings
+ */
+define('STRING_SUCCESS_INSTALL_MODULES', 'drush_install.success.modules');
+
+/**
+ * String token for when a set of custom modules are about to be installed.
+ * 
+ * @ingroup strings
+ */
+define('STRING_WORKING_INSTALL_MODULES', 'drush_install.working.modules');
+
+/**
+ * String token for when Drupal has been installed.
+ * 
+ * @ingroup strings
+ */
+define('STRING_SUCCESS_INSTALL_DRUPAL', 'drush_install.success.drupal');
+
+/**
+ * String token for when Drupal is about to be installed.
+ * 
+ * @ingroup strings
+ */
+define('STRING_WORKING_INSTALL_DRUPAL', 'drush_install.working.drupal');
+
+/**
  * Takes ownership of the install task using drush si.
  */
 class DrushInstallPlugin extends GenericPlugin implements EventListener {
@@ -206,14 +234,18 @@ class DrushInstallPlugin extends GenericPlugin implements EventListener {
       $this->error(STRING_NO_LOCAL_ALIAS);
       return FALSE;
     }
+    $this->message(STRING_WORKING_INSTALL_DRUPAL);
     if (!$this->installDrupal($drushAlias)) {
       $this->error(STRING_COULD_NOT_INSTALL);
       return FALSE;
     }
+    $this->success(STRING_SUCCESS_INSTALL_DRUPAL);
+    $this->message(STRING_WORKING_INSTALL_MODULES);
     if (!$this->installModules($drushAlias)) {
       $this->error(STRING_COULD_NOT_INSTALL_MODULES);
       return FALSE;
     }
+    $this->message(STRING_SUCCESS_INSTALL_MODULES);
     return TRUE;
   }
   
