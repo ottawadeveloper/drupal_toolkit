@@ -137,6 +137,24 @@ define('STRING_ERROR_UNABLE_TO_DELETE_CODEBASE', 'standard_build.error.delete-co
  */
 define('CONFIG_REMOVE_BUILD_FILES', 'remove-build-files');
 
+define('STRING_WORKING_BUILD_SAVE_REVERTED_CODE', 'standard_build.working.save-reverted');
+define('STRING_SUCCESS_BUILD_SAVE_REVERTED_CODE', 'standard_build.success.save-reverted');
+define('STRING_FAILURE_BUILD_SAVE_REVERTED_CODE', 'standard_build.failure.save-reverted');
+define('STRING_SUCCESS_BUILD_REMOVE_EXTRAS', 'standard_build.success.remove-extras');
+define('STRING_FAILURE_BUILD_REMOVE_EXTRAS', 'standard_build.failure.remove-extras');
+define('STRING_WORKING_BUILD_REMOVE_EXTRAS', 'standard_build.working.remove-extras');
+define('STRING_WORKING_BUILD_DELETE_CODEBASE', 'standard_build.working.delete-codebase');
+define('STRING_SUCCESS_BUILD_DELETE_CODEBASE', 'standard_build.success.delete-codebase');
+define('STRING_WORKING_BUILD_CURRENT_SYMLINK', 'standard_build.working.symlink-current');
+define('STRING_SUCCESS_BUILD_CURRENT_SYMLINK', 'standard_build.success.symlink-current');
+define('STRING_WORKING_BUILD_REVERT_SITE_VARS', 'standard_build.working.revert-site-vars');
+define('STRING_SUCCESS_BUILD_REVERT_SITE_VARS', 'standard_build.success.revert-site-vars');
+define('STRING_WORKING_BUILD_CONSTRUCT_CODEBASE', 'standard_build.working.construct-codebase');
+define('STRING_WORKING_BUILD_GIT_CLONE', 'standard_build.working.git-clone');
+define('STRING_WORKING_BUILD_DRUSH_MAKE', 'standard_build.working.drush-make');
+define('STRING_SUCCESS_BUILD_CONSTRUCT_CODEBASE', 'standard_build.success.construct-codebase');
+
+
 /**
  * Responsible for building a new codebase on demand.
  * 
@@ -226,9 +244,17 @@ class DrupalSiteStandardBuildPlugin extends GenericPlugin implements EventListen
       ));
       return FALSE; 
     }
+    $this->working(STRING_WORKING_BUILD_SAVE_REVERTED_CODE);
     $revertedBase = assemble_path($site->getBuildFolder(), $cbDir, $revertedID);
     $target = assemble_path($site->getBuildFolder(), 'reverted', $revertedID, 'code');
-    return copy_all($revertedBase, $target);
+    $ret = copy_all($revertedBase, $target);
+    if ($ret) {
+      $this->success(STRING_SUCCESS_BUILD_SAVE_REVERTED_CODE);
+    }
+    else {
+      $this->failure(STRING_FAILURE_BUILD_SAVE_REVERTED_CODE);
+    }
+    return $ret;
   }
   
   /**
@@ -248,6 +274,9 @@ class DrupalSiteStandardBuildPlugin extends GenericPlugin implements EventListen
     if (empty($extraFiles)) {
       return TRUE;
     }
+    $this->working(STRING_WORKING_BUILD_REMOVE_EXTRAS, array(
+      '!files' => implode(', ', $extraFiles),
+    ));
     $ret = TRUE;
     foreach ($extraFiles as $file) {
       $path = assemble_path($buildDirectory, $file);
@@ -262,6 +291,12 @@ class DrupalSiteStandardBuildPlugin extends GenericPlugin implements EventListen
           $ret = FALSE;
         }
       }
+    }
+    if ($ret) {
+      $this->success(STRING_SUCCESS_BUILD_REMOVE_EXTRAS);
+    }
+    else {
+      $this->failure(STRING_FAILURE_BUILD_REMOVE_EXTRAS);
     }
     return $ret;
   }
@@ -285,6 +320,7 @@ class DrupalSiteStandardBuildPlugin extends GenericPlugin implements EventListen
       ));
       return FALSE; 
     }
+    $this->working(STRING_WORKING_BUILD_DELETE_CODEBASE);
     $deleteCodebase = assemble_path($site->getBuildFolder(), $cbDir, $buildID);
     if (is_dir($deleteCodebase)) {
       remove_directory($deleteCodebase);
@@ -293,6 +329,7 @@ class DrupalSiteStandardBuildPlugin extends GenericPlugin implements EventListen
       $this->error(STRING_ERROR_UNABLE_TO_DELETE_CODEBASE);
       return FALSE;
     }
+    $this->success(STRING_SUCCESS_BUILD_DELETE_CODEBASE);
     return TRUE;
   }
   
@@ -306,6 +343,7 @@ class DrupalSiteStandardBuildPlugin extends GenericPlugin implements EventListen
    *   TRUE if successful, otherwise FALSE.
    */
   private function updateCurrentLink(DrupalSite $site) {
+    $this->working(STRING_WORKING_BUILD_CURRENT_SYMLINK);
     $latestCodebase = $site->getSetting(SITE_SETTING_CURRENT_BUILD);
     if (empty($latestCodebase)) {
       $this->error(STRING_SITE_MISSING_SETTING, array(
@@ -314,7 +352,6 @@ class DrupalSiteStandardBuildPlugin extends GenericPlugin implements EventListen
       return FALSE;
     }
     $currentLink = assemble_path($site->getBuildFolder(), 'current');
-    
     if (is_link($currentLink)) {
       unlink($currentLink);
     }
@@ -322,6 +359,7 @@ class DrupalSiteStandardBuildPlugin extends GenericPlugin implements EventListen
       $this->error(STRING_SITE_NO_CURRENT);
       return FALSE;
     }
+    $this->success(STRING_SUCCESS_BUILD_CURRENT_SYMLINK);
     return TRUE;
   }
   
@@ -336,6 +374,7 @@ class DrupalSiteStandardBuildPlugin extends GenericPlugin implements EventListen
    *   TRUE if successful, otherwise FALSE.
    */
   private function refreshSiteVariables(DrupalSite $site, $oldBuildID) {
+    $this->working(STRING_WORKING_BUILD_REVERT_SITE_VARS);
     $cbDir = $site->getSetting(SITE_CODEBASE_DIR);
     if (empty($cbDir)) { 
       $this->error(STRING_SITE_MISSING_SETTING, array(
@@ -345,6 +384,7 @@ class DrupalSiteStandardBuildPlugin extends GenericPlugin implements EventListen
     }
     $buildDir = assemble_path($site->getBuildFolder(), $cbDir, $oldBuildID);
     $site->setSetting(SITE_SETTING_CURRENT_BUILD, $buildDir);
+    $this->success(STRING_SUCCESS_BUILD_REVERT_SITE_VARS);
     return TRUE;
   }
   
@@ -360,6 +400,7 @@ class DrupalSiteStandardBuildPlugin extends GenericPlugin implements EventListen
    *   TRUE if the build was successful, otherwise FALSE.
    */
   private function buildSite(DrupalSite $site, $buildID, $update = FALSE) {
+    $this->working(STRING_WORKING_BUILD_CONSTRUCT_CODEBASE);
     $config = $this->getConfig(array(
       CONFIG_GIT_REPO_ROOT,
       CONFIG_DRUSH_MAKE_REPO,
@@ -384,11 +425,13 @@ class DrupalSiteStandardBuildPlugin extends GenericPlugin implements EventListen
       $this->error(STRING_SITE_INVALID_CODEBASE);
       return FALSE;
     }
+    $this->working(STRING_WORKING_BUILD_GIT_CLONE);
     if (!git_clone($config[CONFIG_GIT_REPO_ROOT], $config[CONFIG_DRUSH_MAKE_REPO], $newCodebase, $branch)) {
       $this->error(STRING_SITE_NO_CLONE);
       return FALSE;
     }
-    $site->setSetting(SITE_SETTING_CLONED_BRANCH, $branch);
+    $site->setSetting(STRING_SETTING_CLONED_BRANCH, $branch);
+    $this->working(SITE_WORKING_BUILD_DRUSH_MAKE);
     if (!drush_make(assemble_path($newCodebase, $config[CONFIG_DRUSH_MAKE_FILE]), $config[CONFIG_DRUSH_MAKE_OPTIONS])) {
       $this->error(STRING_SITE_NO_MAKE);
       return FALSE;
@@ -407,6 +450,8 @@ class DrupalSiteStandardBuildPlugin extends GenericPlugin implements EventListen
     );
     
     $this->events()->fireEvent(EVENT_CONTINUE_STANDARD_BUILD, $context);
+    
+    $this->success(STRING_SUCCESS_BUILD_CONSTRUCT_CODEBASE);
     
     return $context->success;
   }
