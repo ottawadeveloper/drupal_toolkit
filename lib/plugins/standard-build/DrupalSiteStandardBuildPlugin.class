@@ -137,21 +137,116 @@ define('STRING_ERROR_UNABLE_TO_DELETE_CODEBASE', 'standard_build.error.delete-co
  */
 define('CONFIG_REMOVE_BUILD_FILES', 'remove-build-files');
 
+/**
+ * String token for when a codebase that was reverted from is being saved.
+ * 
+ * @strings
+ */
 define('STRING_WORKING_BUILD_SAVE_REVERTED_CODE', 'standard_build.working.save-reverted');
+
+/**
+ * String token for when a reverted codebase was saved successfully.
+ * 
+ * @strings
+ */
 define('STRING_SUCCESS_BUILD_SAVE_REVERTED_CODE', 'standard_build.success.save-reverted');
+
+/**
+ * String token for when a reverted codebase fails to save properly.
+ * 
+ * @strings
+ */
 define('STRING_FAILURE_BUILD_SAVE_REVERTED_CODE', 'standard_build.failure.save-reverted');
+
+/**
+ * String token for when extra files are successfully removed.
+ * 
+ * @strings
+ */
 define('STRING_SUCCESS_BUILD_REMOVE_EXTRAS', 'standard_build.success.remove-extras');
+
+/**
+ * String token for when the toolkit failed to remove extra files from the build.
+ * 
+ * @strings
+ */
 define('STRING_FAILURE_BUILD_REMOVE_EXTRAS', 'standard_build.failure.remove-extras');
+
+/**
+ * String token for when extra files are about to be removed from the build.
+ * 
+ * @strings
+ */
 define('STRING_WORKING_BUILD_REMOVE_EXTRAS', 'standard_build.working.remove-extras');
+
+/**
+ * String token for when a codebase is about to be deleted.
+ * 
+ * @strings
+ */
 define('STRING_WORKING_BUILD_DELETE_CODEBASE', 'standard_build.working.delete-codebase');
+
+/**
+ * String token for when a codebase was successfully deleted.
+ * 
+ * @strings
+ */
 define('STRING_SUCCESS_BUILD_DELETE_CODEBASE', 'standard_build.success.delete-codebase');
+
+/**
+ * String token for when the current symlink is about to be updated.
+ * 
+ * @strings
+ */
 define('STRING_WORKING_BUILD_CURRENT_SYMLINK', 'standard_build.working.symlink-current');
+
+/**
+ * String token for when the current symlink was successfully updated.
+ * 
+ * @strings
+ */
 define('STRING_SUCCESS_BUILD_CURRENT_SYMLINK', 'standard_build.success.symlink-current');
+
+/**
+ * String token for when certain site variables are about to be reverted.
+ * 
+ * @strings
+ */
 define('STRING_WORKING_BUILD_REVERT_SITE_VARS', 'standard_build.working.revert-site-vars');
+
+/**
+ * String token for when the site variables were fully reverted.
+ * 
+ * @strings
+ */
 define('STRING_SUCCESS_BUILD_REVERT_SITE_VARS', 'standard_build.success.revert-site-vars');
+
+/**
+ * String token for when a new codebase is about to be constructed.
+ * 
+ * @strings
+ */
 define('STRING_WORKING_BUILD_CONSTRUCT_CODEBASE', 'standard_build.working.construct-codebase');
+
+/**
+ * String token for when the make repo is about to be cloned.
+ * 
+ * @strings
+ */
 define('STRING_WORKING_BUILD_GIT_CLONE', 'standard_build.working.git-clone');
+
+/**
+ * String token for when the drush make command is about to be run.
+ * 
+ * @strings
+ */
 define('STRING_WORKING_BUILD_DRUSH_MAKE', 'standard_build.working.drush-make');
+
+/**
+ * String token for when a new codebase is completed successfully.
+ * 
+ * @strings
+ */
 define('STRING_SUCCESS_BUILD_CONSTRUCT_CODEBASE', 'standard_build.success.construct-codebase');
 
 
