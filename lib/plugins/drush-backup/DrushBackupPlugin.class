@@ -203,7 +203,9 @@ class DrushBackupPlugin extends GenericPlugin implements EventListener {
    *   TRUE if all the backups were deleted, otherwise FALSE.
    */
   private function deleteBackup(DrupalSite $site, $buildID) {
-    $this->working(STRING_WORKING_DRUSH_DELETE_BACKUPS);
+    $this->working(STRING_WORKING_DRUSH_DELETE_BACKUPS, array(
+      '!buildid' => $buildID
+    ));
     $backupDirectory = assemble_path($site->getBuildFolder(), 'backups', $buildID);
     if (is_dir($backupDirectory)) {
       remove_directory($backupDirectory);
@@ -212,7 +214,9 @@ class DrushBackupPlugin extends GenericPlugin implements EventListener {
       $this->error(STRING_ERROR_COULD_NOT_DELETE_BACKUP);
       return FALSE;
     }
-    $this->success(STRING_SUCCESS_DRUSH_DELETE_BACKUPS);
+    $this->success(STRING_SUCCESS_DRUSH_DELETE_BACKUPS, array(
+      '!buildid' => $buildID
+    ));
     return TRUE;
   }
   

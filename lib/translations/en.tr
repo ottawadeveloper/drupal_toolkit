@@ -56,6 +56,9 @@ drupal_site_build.error.no-build-name = 'This command requires a build name to b
 
 drush_config.error.bad-server = 'Unable to reconnect to server.'
 drush_config.error.no-delete = 'Could not delete drush alias file.'
+drush_config.working.setup = 'Setting up drush aliases.'
+drush_config.working.setup-alias = 'Setting up drush alias on [!name].'
+drush_config.success.setup = 'All drush aliases setup successfully!'
 
 flog.error.no-log-file = 'Unable to open [!path] for logging, file logging skipped.'
 
@@ -116,6 +119,14 @@ drupal_site_update.error = 'Unable to update site, failure on step [!step]!'
 drush_backup.error.no-db-backup = 'Unable to backup the database.'
 drush_backup.error.delete-backup = 'Unable to delete the database backup.'
 drush_backup.error.restore-error = 'Unable to restore from backup !file.'
+drush_backup.working.restore = 'Restoring from database backup.'
+drush_backup.working.restore-item = 'Restoring [!dbkey] from !file.'
+drush_backup.success.restore = 'Database restored!'
+drush_backup.working.delete = 'Deleting database backups for build [!buildid].'
+drush_backup.success.delete = 'Successfully deleted database backups.'
+drush_backup.working.backup = 'Backing up database.'
+drush_backup.success.backup = 'Successfully backed up database.'
+drush_backup.working.backup-item = 'Backing up database [!dbkey].'
 
 drush_maintenance.error.maintenance-mode-failure = 'Unable to set maintenance mode to !state.'
 
@@ -149,3 +160,7 @@ cron.working.delete_item = 'Deleting crontask for !name.'
 cron.working.setup_item = 'Creating crontask for !name.'
 
 drupal_site_build.error.subsite-generic = "An error occured while building a subsite."
+
+drupal_site.working.history-cleanup = 'Removing up to !count old builds.'
+drupal_site.success.history-cleanup = 'Build history has been pruned.'
+drupal_site.working.history-cleanup-item = 'Removing old build !buildID.'
