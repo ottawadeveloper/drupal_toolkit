@@ -24,6 +24,12 @@ define('STRING_ERROR_COULD_NOT_DELETE_BACKUP', 'drush_backup.error.delete-backup
  */
 define('STRING_ERROR_COULD_NOT_RESTORE_BACKUP', 'drush_backup.error.restore-error');
 
+define('STRING_WORKING_DRUSH_RESTORE', 'drush_backup.working.restore');
+
+define('STRING_WORKING_DRUSH_RESTORE_ITEM', 'drush_backup.working.restore-item');
+
+define('STRING_SUCCESS_DRUSH_RESTORE', 'drush_backup.success.restore');
+
 /**
  * Responsible for database backups using drush.
  */
@@ -88,6 +94,7 @@ class DrushBackupPlugin extends GenericPlugin implements EventListener {
       ));
       return FALSE;
     }
+    $this->working(STRING_WORKING_DRUSH_RESTORE);
     $keys = array(
       'default' => 'default',
     ) + $site->getSetting(SITE_DB_CONNECTION_KEYS);
@@ -99,6 +106,10 @@ class DrushBackupPlugin extends GenericPlugin implements EventListener {
     $ret = TRUE;
     foreach ($keys as $dbkey) {
       $file = assemble_path($backupDirectory, $dbkey . '.sql');
+      $this->working(STRING_WORKING_DRUSH_RESTORE_ITEM, array(
+        '!dbkey' => $dbkey,
+        '!file' => $file,
+      ));
       drush_drop_db($drushAlias, $dbkey);
       if (!drush_restore_db($file, $drushAlias, $dbkey)) {
         $this->warn(STRING_ERROR_COULD_NOT_RESTORE_BACKUP, array(
@@ -113,6 +124,7 @@ class DrushBackupPlugin extends GenericPlugin implements EventListener {
         rename($file, $target);
       }
     }
+    $this->working(STRING_SUCCESS_DRUSH_RESTORE);
     return $ret;
   }
   
