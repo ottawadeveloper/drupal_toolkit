@@ -123,6 +123,49 @@ define('SITE_HOST_FILES', 'host-files');
 define('STRING_HOST_REMOVAL_ERROR', 'hosts_config.error.unable-to-clean-host-file');
 
 /**
+ * String token for when all the host files are about to be sanitizied.
+ * 
+ * @ingroup strings
+ */
+define('STRING_WORKING_REMOVING_HOSTS', 'hosts_config.working.removing-hosts');
+
+/**
+ * String token for when a specific server's host file is about to be modified
+ * to remove specific entries.
+ * 
+ * @ingroup strings
+ */
+define('STRING_WORKING_REMOVING_HOSTS_ITEM', 'hosts_config.working-removing-hosts-item');
+
+/**
+ * String token for when all relevant host file entries have been removed.
+ * 
+ * @ingroup strings
+ */
+define('STRING_SUCCESS_REMOVING_HOSTS', 'hosts_config.success.removing-hosts');
+
+/**
+ * String token for when all host files are about to be updated.
+ * 
+ * @ingroup strings
+ */
+define('STRING_WORKING_UPDATING_HOSTS', 'hosts_config.working.updating-hosts');
+
+/**
+ * String token for when a specific server's host file is about to be updated.
+ * 
+ * @ingroup strings
+ */
+define('STRING_WORKING_UPDATING_HOSTS_ITEM', 'hosts_config.working-updating-hosts-item');
+
+/**
+ * String token for when all host files have been updated.
+ * 
+ * @ingroup strings
+ */
+define('STRING_SUCCESS_UPDATING_HOSTS', 'hosts_config.success.updating-hosts');
+
+/**
  * Plugin to manage the hosts file configuration of one or more servers.
  */
 class HostsConfigurationPlugin extends GenericPlugin implements EventListener {
@@ -224,7 +267,11 @@ class HostsConfigurationPlugin extends GenericPlugin implements EventListener {
       return TRUE;
     }
     $r = TRUE;
-    foreach ($hosts['servers'] as $host) {
+    $this->working(STRING_WORKING_REMOVING_HOSTS);
+    foreach ($hosts['servers'] as $key => $host) {
+      $this->working(STRING_WORKING_REMOVING_HOSTS_ITEM, array(
+        '!name' => $key,
+      ));
       if ($host instanceof HostFileManagerInterface) {
         if (!$host->cleanHostEntries($hosts['map'])) {
           $this->warn(STRING_HOST_REMOVAL_ERROR);
@@ -235,6 +282,9 @@ class HostsConfigurationPlugin extends GenericPlugin implements EventListener {
         $this->warn(STRING_HOST_REMOVAL_ERROR);
         $r = FALSE;
       }
+    }
+    if ($r) {
+      $this->success(STRING_SUCCESS_REMOVING_HOSTS);
     }
     return $r;
   }
@@ -269,21 +319,26 @@ class HostsConfigurationPlugin extends GenericPlugin implements EventListener {
       'servers' => array(),
       'map' => $map,
     );
-    foreach ($context->servers as $server) {
+    $this->working(STRING_WORKING_UPDATING_HOSTS);
+    foreach ($context->servers as $key => $server) {
       if ($server instanceof HostFileManagerInterface) {
         if ($update) {
           if (!extra_empty($server->machine()->getSetting(SERVER_SETTING_STATIC_HOSTS))) {
             continue;
           }
         }
+        $this->working(STRING_WORKING_UPDATING_HOSTS_ITEM, array(
+          '!name' => $key,
+        ));
         if (!$server->addHostFileEntries($map)) {
           $this->error(STRING_HOSTS_FILE_BAD_WRITE);
           return FALSE;
         }
-        $registry['servers'][] = $server;
+        $registry['servers'][$key] = $server;
       }
     }
     $site->setSetting(SITE_HOST_FILES, $registry);
+    $this->success(STRING_SUCCSES_UPDATING_HOSTS);
     return TRUE;
   }
   
