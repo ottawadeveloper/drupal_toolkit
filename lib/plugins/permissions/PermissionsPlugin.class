@@ -293,13 +293,13 @@ class PermissionsPlugin extends GenericPlugin implements EventListener {
     }
     $failures = 0;
     foreach ($target as $tfile) {
-      $this->out()->message($this->strings()->getString(STRING_PERMISSIONS_MESSAGE, array(
+      $this->working(STRING_PERMISSIONS_MESSAGE, array(
         '!file' => $tfile,
         '!user' => $user,
         '!group' => $group,
         '!access' => decoct($access),
         '!recursion' => $recursive ? ' recursively' : '',
-      )));
+      ));
       $failures += chmog($tfile, $user, $group, $access, $recursive);
     }
     if (!empty($failures)) {
