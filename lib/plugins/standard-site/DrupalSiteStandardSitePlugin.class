@@ -210,7 +210,7 @@ class DrupalSiteStandardSitePlugin extends GenericPlugin implements EventListene
       return FALSE;
     }
     $subsite->setSetting(SITE_SETTINGS_FILE, $newSettingsFile);
-    $subsite->registerServerFile($newSettingsFile);
+    $subsite->registerSystemFile($newSettingsFile);
     $subsite->registerServerFile(assemble_path($primarySiteDirectory, 'files'));
     if (!$this->createRedundantSymlinks($subsite, $primary, assemble_path($subsite->getParentSite()->getBuildFolder(), $structureSites))) {
       return FALSE;
