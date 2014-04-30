@@ -82,6 +82,27 @@ define('EVENT_CLEANUP_BUILD', 'drupal-build-cleanup');
 define('EVENT_DELETE_BUILD', 'drupal-delete-build');
 
 /**
+ * String token for when the build history needs to be pruned.
+ * 
+ * @ingroup strings
+ */
+define('STRING_WORKING_SITE_HISTORY_CLEANUP', 'drupal_site.working.history-cleanup');
+
+/**
+ * String token for when an old build is about to be pruned.
+ * 
+ * @ingroup strings
+ */
+define('STRING_WORKING_SITE_HISTORY_DELETE_ITEM', 'drupal_site.working.history-cleanup-item');
+
+/**
+ * String token for when the build history has been pruned.
+ * 
+ * @ingroup strings
+ */
+define('STRING_SUCCESS_SITE_HISTORY_CLEANUP', 'drupal_site.success.history-cleanup');
+
+/**
  * Basic plugin that provides some useful classes and configuration settings
  * for working with Drupal sites. Most plugins that rely on the DrupalSite 
  * object will need to require this one.
@@ -136,14 +157,23 @@ class DrupalSitePlugin extends GenericPlugin implements EventListener {
       return TRUE;
     }
     $del = count($builds) - $max;
+    $this->working(STRING_WORKING_SITE_HISTORY_CLEANUP, array(
+      '!count' => $del,
+    ));
     $ret = TRUE;
     foreach ($builds as $buildID) {
       if ($del > 0) {
+        $this->working(STRING_WORKING_SITE_HISTORY_DELETE, array(
+          '!buildID' => $buildID,
+        ));
         if (!$site->deleteBuild($this->events(), $buildID)) {
           $ret = FALSE;
         }
         $del--;
       }
+    }
+    if ($ret) {
+      $this->success(STRING_SUCCESS_SITE_HISTORY_CLEANUP);
     }
     return $ret;
   }
