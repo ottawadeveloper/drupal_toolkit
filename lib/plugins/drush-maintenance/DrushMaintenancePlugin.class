@@ -25,6 +25,20 @@ define('STRING_WORKING_MAINTENANCE_MODE_ENGAGE', 'drush_maintenance.working.enga
 define('STRING_WORKING_MAINTENANCE_MODE_DISENGAGE', 'drush_maintenance.working.disengage');
 
 /**
+ * String token for when maintenance mode is about to be engaged.
+ * 
+ * @ingroup string
+ */
+define('STRING_WORKING_MAINTENANCE_MODE_ENGAGE_ITEM', 'drush_maintenance.working.engage-item');
+
+/**
+ * String token for when maintenance mode is about to be disengaged.
+ * 
+ * @ingroup string
+ */
+define('STRING_WORKING_MAINTENANCE_MODE_DISENGAGE_ITEM', 'drush_maintenance.working.disengage-item');
+
+/**
  * String token for when maintenance mode has been engaged.
  * 
  * @ingroup string
@@ -92,9 +106,20 @@ class DrushMaintenancePlugin extends GenericPlugin implements EventListener {
       $this->working(STRING_WORKING_MAINTENANCE_MODE_DISENGAGE);
     }
     foreach ($aliases as $alias) {
+      if ($on) {
+        $this->working(STRING_WORKING_MAINTENANCE_MODE_ENGAGE_ITEM, array(
+          '!alias' => $alias,
+        ));
+      }
+      else {
+        $this->working(STRING_WORKING_MAINTENANCE_MODE_DISENGAGE_ITEM, array(
+          '!alias' => $alias,
+        ));
+      }
       if (!drush_maintenance_mode(!!$on, $alias)) {
         $this->error(STRING_MAINTENANCE_MODE_FAILURE, array(
           '!state' => $on ? 1 : 0,
+          '!alias' => $alias,
         ));
         return FALSE;
       }

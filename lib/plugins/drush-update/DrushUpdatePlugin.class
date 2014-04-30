@@ -18,6 +18,48 @@ define('STRING_COULD_NOT_UPDATE_DB', 'drush_update.error.no-updb');
 define('STRING_COULD_NOT_CLEAR_DRUPAL_CACHE', 'drush_update.error.cache-failure');
 
 /**
+ * String token for when we are about to wipe all caches.
+ * 
+ * @ingroup strings
+ */
+define('STRING_WORKING_CACHE_WIPE', 'drush_update.working.cache-wipe');
+
+/**
+ * String token for when a site is about to have it's cache wiped
+ * 
+ * @ingrou strings
+ */
+define('STRING_WORKING_CACHE_WIPE_ITEM', 'drush_update.working.cache-wipe-item');
+
+/**
+ * String token for when all the caches have been wiped successfully.
+ * 
+ * @ingroup strings
+ */
+define('STRING_SUCCESS_CACHE_WIPE', 'drush_update.success.cache-wipe');
+
+/**
+ * String token for when all databases are about to be updated.
+ * 
+ * @ingroup strings
+ */
+define('STRING_WORKING_DB_UPDATE', 'drush_update.working.db-update');
+
+/**
+ * String token for when a database is about to be updated.
+ * 
+ * @ingroup strings
+ */
+define('STRING_WORKING_DB_UPDATE_ITEM', 'drush_update.working.db-update-item');
+
+/**
+ * String token for when all databases have been updated.
+ * 
+ * @ingroup strings
+ */
+define('STRING_SUCCESS_DB_UPDATE', 'drush_update.success.db-update');
+
+/**
  * Responsible for updating a Drupal site via drush.
  */
 class DrushUpdatePlugin extends GenericPlugin implements EventListener {
@@ -65,12 +107,17 @@ class DrushUpdatePlugin extends GenericPlugin implements EventListener {
       ));
       return FALSE;
     }
+    $this->working(STRING_WORKING_CACHE_WIPE);
     foreach ($aliases as $alias) {
+      $this->working(STRING_WORKING_CACHE_WIPE_ITEM, array(
+        '!alias' => $alias,
+      ));
       if (!drush_cache_clear($alias)) {
         $this->error(STRING_COULD_NOT_CLEAR_DRUPAL_CACHE);
         return FALSE;
       }
     }
+    $this->working(STRING_SUCCESS_CACHE_WIPE);
     return TRUE;
   }
   
@@ -91,11 +138,16 @@ class DrushUpdatePlugin extends GenericPlugin implements EventListener {
       ));
       return FALSE;
     }
+    $this->working(STRING_WORKING_DB_UPDATE);
     foreach ($aliases as $alias) {
+      $this->working(STRING_WORKING_DB_UPDATE_ITEM, array(
+        '!alias' => $alias,
+      ));
       if (!drush_updb($alias)) {
         return FALSE;
       }
     }
+    $this->success(STRING_SUCCESS_DB_UPDATE);
     return TRUE;
   }
   
