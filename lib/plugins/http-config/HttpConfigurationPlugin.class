@@ -154,6 +154,48 @@ define('STRING_HTTP_NO_CONFIG', 'http_config.error.no-config');
 define('STRING_HTTP_BAD_WRITE', 'http_config.error.bad-write');
 
 /**
+ * String token for when all HTTP servers are about to be restarted.
+ * 
+ * @ingroup strings
+ */
+define('STRING_WORKING_HTTP_RESTART', 'http_config.working.restart');
+
+/**
+ * String token for when a specific HTTP server is about to be restarted.
+ * 
+ * @ingroup strings
+ */
+define('STRING_WORKING_HTTP_RESTART_SERVER', 'http_config.working.restart-server');
+
+/**
+ * String token for when all HTTP servers have been restarted.
+ * 
+ * @ingroup strings
+ */
+define('STRING_SUCCESS_HTTP_RESTART', 'http_config.success.restart');
+
+/**
+ * String token for when all HTTP servers are about to be configured.
+ * 
+ * @ingroup strings
+ */
+define('STRING_WORKING_HTTP_CONFIGURE', 'http_config.working.configure');
+
+/**
+ * String token for when a specific HTTP server is about to be configured.
+ * 
+ * @ingroup strings
+ */
+define('STRING_WORKING_HTTP_CONFIGURE_SERVER', 'http_config.working.configure-server');
+
+/**
+ * String token fro when all HTTP servers have been configured.
+ * 
+ * @ingroup strings
+ */
+define('STRING_SUCCESS_HTTP_CONFIGURE', 'http_config.success.configure');
+
+/**
  * Plugin to manage configuring the HTTP server for the Drupal install.
  */
 class HttpConfigurationPlugin extends GenericPlugin implements EventListener {
@@ -255,12 +297,17 @@ class HttpConfigurationPlugin extends GenericPlugin implements EventListener {
     $context = (object) array(
       'servers' => array(),
     );
+    $this->working(STRING_WORKING_HTTP_RESTART);
     $this->events()->fireEvent(EVENT_FIND_HTTP_SERVERS, $context);
-    foreach ($context->servers as $httpServer) {
+    foreach ($context->servers as $key => $httpServer) {
+      $this->working(STRING_WORKING_HTTP_RESTART_SERVER, array(
+        '!name' => $key,
+      ));
       if ($httpServer instanceof GenericHttpServer) {
         $httpServer->doReboot();
       }
     }
+    $this->working(STRING_SUCCESS_HTTP_RESTART);
     return TRUE;
   }
   
@@ -289,7 +336,8 @@ class HttpConfigurationPlugin extends GenericPlugin implements EventListener {
     );
     $this->events()->fireEvent(EVENT_FIND_HTTP_SERVERS, $context);
     $httpRegistry = array();
-    foreach ($context->servers as $httpServer) {
+    $this->working(STRING_WORKING_HTTP_CONFIGURE);
+    foreach ($context->servers as $key => $httpServer) {
       if ($httpServer instanceof GenericHttpServer) {
         if ($update) {
           // Check if we should be updating the config files.
@@ -297,6 +345,9 @@ class HttpConfigurationPlugin extends GenericPlugin implements EventListener {
             continue;
           }
         }
+        $this->working(STRING_WORKING_HTTP_CONFIGURE_SERVER, array(
+          '!name' => $key,
+        ));
         $configFile = $httpServer->machine()->getSetting(SERVER_SETTING_HTTP_CONFIG_TEMPLATE);
         if (empty($configFile)) {
           $configFile = $c['template'];
@@ -339,6 +390,7 @@ class HttpConfigurationPlugin extends GenericPlugin implements EventListener {
       }
     }
     $site->appendSettingValue(SITE_REMOTE_FILES, $httpRegistry);
+    $this->success(STRING_SUCCESS_HTTP_CONFIGURE);
     return TRUE;
   }
   
