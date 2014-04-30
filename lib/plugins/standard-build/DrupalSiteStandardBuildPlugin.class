@@ -415,7 +415,9 @@ class DrupalSiteStandardBuildPlugin extends GenericPlugin implements EventListen
       ));
       return FALSE; 
     }
-    $this->working(STRING_WORKING_BUILD_DELETE_CODEBASE);
+    $this->working(STRING_WORKING_BUILD_DELETE_CODEBASE, array(
+      '!buildID' => $buildID,
+    ));
     $deleteCodebase = assemble_path($site->getBuildFolder(), $cbDir, $buildID);
     if (is_dir($deleteCodebase)) {
       remove_directory($deleteCodebase);
