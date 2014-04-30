@@ -11,6 +11,34 @@
 define('STRING_MAINTENANCE_MODE_FAILURE', 'drush_maintenance.error.maintenance-mode-failure');
 
 /**
+ * String token for when maintenance mode is about to be engaged.
+ * 
+ * @ingroup string
+ */
+define('STRING_WORKING_MAINTENANCE_MODE_ENGAGE', 'drush_maintenance.working.engage');
+
+/**
+ * String token for when maintenance mode is about to be disengaged.
+ * 
+ * @ingroup string
+ */
+define('STRING_WORKING_MAINTENANCE_MODE_DISENGAGE', 'drush_maintenance.working.disengage');
+
+/**
+ * String token for when maintenance mode has been engaged.
+ * 
+ * @ingroup string
+ */
+define('STRING_SUCCESS_MAINTENANCE_MODE_ENGAGE', 'drush_maintenance.success.engage');
+
+/**
+ * String token for when maintenance mode has been disengaged.
+ * 
+ * @ingroup string
+ */
+define('STRING_SUCCESS_MAINTENANCE_MODE_DISENGAGE', 'drush_maintenance.success.disengage');
+
+/**
  * Responsible for various functions relating to the update process.
  */
 class DrushMaintenancePlugin extends GenericPlugin implements EventListener {
@@ -57,6 +85,12 @@ class DrushMaintenancePlugin extends GenericPlugin implements EventListener {
    */
   private function setMaintenanceMode(DrupalSite $site, $on = TRUE) {
     $aliases = $site->getSetting(SITE_DRUSH_ALIASES);
+    if ($on) {
+      $this->working(STRING_WORKING_MAINTENANCE_MODE_ENGAGE);
+    }
+    else {
+      $this->working(STRING_WORKING_MAINTENANCE_MODE_DISENGAGE);
+    }
     foreach ($aliases as $alias) {
       if (!drush_maintenance_mode(!!$on, $alias)) {
         $this->error(STRING_MAINTENANCE_MODE_FAILURE, array(
@@ -64,6 +98,12 @@ class DrushMaintenancePlugin extends GenericPlugin implements EventListener {
         ));
         return FALSE;
       }
+    }
+    if ($on) {
+      $this->working(STRING_SUCCESS_MAINTENANCE_MODE_ENGAGE);
+    }
+    else {
+      $this->working(STRING_SUCCESS_MAINTENANCE_MODE_DISENGAGE);
     }
     return TRUE;
   }
