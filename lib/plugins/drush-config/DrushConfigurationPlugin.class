@@ -103,6 +103,27 @@ define('SITE_DRUSH_ALIAS', 'drush-alias');
 define('SITE_DRUSH_ALIASES', 'drush-aliases');
 
 /**
+ * String token for when the system is about to setup the drush aliases.
+ * 
+ * @ingroup strings
+ */
+define('STRING_WORKING_DRUSH_ALIASES_SETUP', 'drush_config.working.setup');
+
+/**
+ * String token for when the system is done setting up the drush aliases.
+ * 
+ * @ingroup strings
+ */
+define('STRING_SUCCESS_DRUSH_ALIASES_SETUP', 'drush_config.success.setup');
+
+/**
+ * String token for when the system is setting up a specific alias.
+ * 
+ * @ingroup strings
+ */
+define('STRING_WORKING_DRUSH_ALIAS_SETUP', 'drush_config.working.setup-alias');
+
+/**
  * Takes responsibility for setting up the drush alias.
  */
 class DrushConfigurationPlugin extends GenericPlugin implements EventListener {
@@ -195,13 +216,17 @@ class DrushConfigurationPlugin extends GenericPlugin implements EventListener {
     $this->events()->fireEvent(EVENT_FIND_SERVERS, $context);
     $defaultAlias = $this->defaultDrushTemplate();
     $aliasList = array();
-    foreach ($context->servers as $server) {
+    $this->working(STRING_WORKING_DRUSH_ALIASES_SETUP);
+    foreach ($context->servers as $key => $server) {
       if ($server instanceof PhysicalServerInterface) {
         if ($update) {
           if (!extra_empty($server->getSetting(SERVER_SETTING_STATIC_ALIAS))) {
             continue;
           }
         }
+        $this->working(STRING_WORKING_DRUSH_ALIAS_SETUP, array(
+          '!name' => $key,
+        ));
         if (!$this->writeTemplate($aliasList, $site, $server, $config['default-dir'], $config['template'], $defaultAlias)) {
           return FALSE;
         }
@@ -212,6 +237,7 @@ class DrushConfigurationPlugin extends GenericPlugin implements EventListener {
       $site->appendSettingValue(SITE_DRUSH_ALIASES, $site->getBuildName());
     }
     $site->appendSettingValue(SITE_REMOTE_FILES, $aliasList);
+    $this->success(STRING_SUCCESS_DRUSH_ALIASES_SETUP);
     return TRUE;
   }
   
