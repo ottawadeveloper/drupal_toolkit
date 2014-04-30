@@ -120,6 +120,7 @@ class DrupalSiteStandardConfigPlugin extends GenericPlugin implements EventListe
    *   The domain name of URL
    */
   private function fetchDomain($url) {
+    // domains that don't begin with a protocol are not handled correctly.
     if (strpos($url, '://') === FALSE) {
       $url = 'http://' . $url;
     }
