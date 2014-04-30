@@ -24,11 +24,59 @@ define('STRING_ERROR_COULD_NOT_DELETE_BACKUP', 'drush_backup.error.delete-backup
  */
 define('STRING_ERROR_COULD_NOT_RESTORE_BACKUP', 'drush_backup.error.restore-error');
 
+/**
+ * String token for when the toolkit is about to restore from backups.
+ * 
+ * @ingroup strings
+ */
 define('STRING_WORKING_DRUSH_RESTORE', 'drush_backup.working.restore');
 
+/**
+ * String token for when the toolkit is about to restore an item from backups.
+ * 
+ * @ingroup strings
+ */
 define('STRING_WORKING_DRUSH_RESTORE_ITEM', 'drush_backup.working.restore-item');
 
+/**
+ * String token for when the toolkit is done restoring from backups.
+ * 
+ * @ingroup strings
+ */
 define('STRING_SUCCESS_DRUSH_RESTORE', 'drush_backup.success.restore');
+
+/**
+ * String token for when the toolkit is deleting backups.
+ * 
+ * @ingroup strings
+ */
+define('STRING_WORKING_DRUSH_DELETE_BACKUPS', 'drush_backup.working.delete');
+
+/**
+ * String token for when the toolkit is done deleting backups.
+ * 
+ * @ingroup strings
+ */
+define('STRING_SUCCESS_DRUSH_DELETE_BACKUPS', 'drush_backup.success.delete');
+
+/**
+ * String token for when the toolkit is backing up the databases.
+ * 
+ * @ingroup strings
+ */
+define('STRING_WORKING_DRUSH_BACKUP', 'drush_backup.working.backup');
+
+/**
+ * String token for when the toolkit is backing up a specific database.
+ * 
+ * @ingroup strings
+ */
+define('STRING_WORKING_DRUSH_BACKUP_ITEM', 'drush_backup.working.backup-item');
+
+/**
+ * String token for when the toolkit has finished backing up all the databases
+ */
+define('STRING_SUCCESS_DRUSH_BACKUP', 'drush_backup.success.backup');
 
 /**
  * Responsible for database backups using drush.
@@ -124,7 +172,7 @@ class DrushBackupPlugin extends GenericPlugin implements EventListener {
         rename($file, $target);
       }
     }
-    $this->working(STRING_SUCCESS_DRUSH_RESTORE);
+    $this->success(STRING_SUCCESS_DRUSH_RESTORE);
     return $ret;
   }
   
@@ -155,6 +203,7 @@ class DrushBackupPlugin extends GenericPlugin implements EventListener {
    *   TRUE if all the backups were deleted, otherwise FALSE.
    */
   private function deleteBackup(DrupalSite $site, $buildID) {
+    $this->working(STRING_WORKING_DRUSH_DELETE_BACKUPS);
     $backupDirectory = assemble_path($site->getBuildFolder(), 'backups', $buildID);
     if (is_dir($backupDirectory)) {
       remove_directory($backupDirectory);
@@ -163,6 +212,7 @@ class DrushBackupPlugin extends GenericPlugin implements EventListener {
       $this->error(STRING_ERROR_COULD_NOT_DELETE_BACKUP);
       return FALSE;
     }
+    $this->success(STRING_SUCCESS_DRUSH_DELETE_BACKUPS);
     return TRUE;
   }
   
@@ -186,6 +236,7 @@ class DrushBackupPlugin extends GenericPlugin implements EventListener {
       ));
       return FALSE;
     }
+    $this->working(STRING_WORKING_DRUSH_BACKUP);
     $keys = array(
       'default' => 'default',
     ) + $site->getSetting(SITE_DB_CONNECTION_KEYS);
@@ -194,6 +245,9 @@ class DrushBackupPlugin extends GenericPlugin implements EventListener {
       mkdir_all($backupDirectory);
     }
     foreach ($keys as $dbkey) {
+      $this->working(STRING_WORKING_DRUSH_BACKUP_ITEM, array(
+        '!dbkey' => $dbkey,
+      ));
       $file = assemble_path($backupDirectory, $dbkey . '.sql');
       if (!drush_db_dump($drushAlias, $file, array(
         'database' => $dbkey,
@@ -202,6 +256,7 @@ class DrushBackupPlugin extends GenericPlugin implements EventListener {
         return FALSE;
       }
     }
+    $this->success(STRING_SUCCESS_DRUSH_BACKUP);
     return TRUE;
   }  
   
