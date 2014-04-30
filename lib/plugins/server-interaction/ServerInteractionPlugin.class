@@ -88,6 +88,10 @@ define('STRING_UNABLE_TO_DELETE_REMOTE_FILE', 'server_interaction.error.could-no
  */
 define('STRING_UNABLE_TO_CAST_SERVER', 'server_interaction.error.unable-to-cast');
 
+define('STRING_SUCCESS_DELETING_REMOTE_FILE', 'server_interaction.success.remote-delete');
+define('STRING_WORKING_DELETING_REMOTE_FILE', 'server_interaction.working.remote-delete');
+define('STRING_WORKING_DELETING_REMOTE_FILE_ITEM', 'server_interaction.working.remote-delete-item');
+
 /**
  * Manages the list of the different types of servers that can be used by
  * various plugins.
@@ -199,8 +203,13 @@ class ServerInteractionPlugin extends GenericPlugin implements EventListener {
       return TRUE;
     }
     $r = TRUE;
+    $this->working(STRING_WORKING_DELETING_REMOTE_FILES);
     foreach ($remoteFiles as $remote) {
       if ($remote['server'] instanceof PhysicalServerInterface) {
+        $this->working(STRING_WORKING_DELETING_REMOTE_FILES_ITEM, array(
+          '!name' => $remote['server']->getNameKey(),
+          '!file' => $remote['file'],
+        ));
         if (!$remote['server']->initialize()) {
           $this->warn(STRING_SERVER_INTERACTION_NO_SERVER);
           $r = FALSE;
@@ -215,6 +224,7 @@ class ServerInteractionPlugin extends GenericPlugin implements EventListener {
         $r = FALSE;
       }
     }
+    $this->success(STRING_SUCCESS_DELETING_REMOTE_FILES);
     return $r;
   }
   
