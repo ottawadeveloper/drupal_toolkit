@@ -153,6 +153,10 @@ standard_site.success.create-sites = 'All config directories and links created.'
 
 standard_structure.error-could-not-create-dir = 'Could not create directory [!dir].'
 standard_structure.error.could-not-remove-build = 'Could not remove the build directory.'
+standard_structure.working.remove-site = 'Removing site structure...'
+standard_structure.working.build-site = 'Creating site structure...'
+standard_structure.success.remove-site = 'Site structure removed.'
+standard_structure.success.build-site = 'Site structure created.'
 
 drupal_site_install.error.install-error = 'Could not install the site.'
 
@@ -202,6 +206,12 @@ drush_update.working.db-update = 'Updating the database on all sites and subsite
 drush_update.working.db-update-item = 'Updating the database on !alias.'
 drush_update.success.db-update = 'All databases updated successfully.'
 
+upstream.working.pull = 'Syncing with upstream server...'
+upstream.success.pull = 'Fully synchronized with upstream server.'
+
+upstream_files.working.download = 'Downloading remote files directory...'
+upstream_files.success.download = 'Remote files directory copied.'
+
 upstream_db.error.unable-to-download = "Unable to retrieve the remote database."
 upstream_db.error.unable-to-create-local-dump = "Unable to export the local database."
 upstream_db.error.unable-to-preserve-state = "An error occurred while preserving the state of the local installation."
@@ -213,6 +223,35 @@ upstream_db.error.unable-to-import-upstream = "Unable to import the remote datab
 upstream_db.error.unable-to-import-local = "Unable to import the exported tables from the local database."
 upstream_db.error.unable-to-restore-variable = "Unable to restore variable !name to value [!value]"
 upstream_db.error.missing-upstream-server = "No upstream server is declared."
+upstream_db.working.preserve-vars = 'Preserving stateful variables...'
+upstream_db.working.preserve-var = 'Preserving stateful variable [!var]...'
+upstream_db.working.restore-vars = 'Restoring stateful variables...'
+upstream_db.working.restore-var = 'Restoring stateful variable [!var]...'
+upstream_db.working.backup-db = 'Backing up local database...'
+upstream_db.working.restore-backup = 'Restoring from backup database...'
+upstream_db.working.sync-db = 'Synchronizing all databases...'
+upstream_db.working.download-db = 'Downloading database dump...'
+upstream_db.working.sync-db-item = 'Synchronizing database @!alias!key...'
+upstream_db.working.preserve = 'Preserving current system state...'
+upstream_db.working.drop-current = 'Dropping current databases...'
+upstream_db.working.import-remote = 'Importing remote database...'
+upstream_db.working.import-local = 'Importing local database...'
+upstream_db.working.restore = 'Restoring system state...'
+upstream_db.working.generate-local = 'Generating local database dump...'
+upstream_db.working.generate-remote = 'Generating remote database dump...'
+upstream_db.success.preserve-vars = 'Stateful variables preserved.'
+upstream_db.success.restore-vars = 'Stateful variables restored.'
+upstream_db.success.backup-db = 'Database backup created.'
+upstream_db.success.restore-db = 'Successfully restored from database backup.'
+upstream_db.success.sync-db = 'Synchronized all databases.'
+upstream_db.success.sync-db-item = 'Database item synchronized.'
+upstream_db.success.generate-local = 'Local database dump generated.'
+upstream_db.success.generate-remote = 'Remote database dump generated.'
+upstream_db.failure.restore-backup = 'Failure to restore from backup!'
+upstream_db.failure.backup-db = 'Failure to backup database.'
+upstream_db.failure.generate-remote = 'Failure to generate remote database dump.'
+upstream_db.failure.generate-local = 'Failure to generate local database dump.'
+upstream_db.error.unable-to-download-upstream = 'Unable to download upstream database dump.'
 
 drupal_site_rollback.error.generic = "An error has occurred during the rollback process on step [!step]."
 drupal_site_rollback.error.two-builds-required = "There must be two builds in order to rollback."
