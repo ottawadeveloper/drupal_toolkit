@@ -527,8 +527,8 @@ class DrupalSiteStandardBuildPlugin extends GenericPlugin implements EventListen
       $this->error(STRING_SITE_NO_CLONE);
       return FALSE;
     }
-    $site->setSetting(STRING_SETTING_CLONED_BRANCH, $branch);
-    $this->working(SITE_WORKING_BUILD_DRUSH_MAKE);
+    $site->setSetting(SITE_SETTING_CLONED_BRANCH, $branch);
+    $this->working(STRING_WORKING_BUILD_DRUSH_MAKE);
     if (!drush_make(assemble_path($newCodebase, $config[CONFIG_DRUSH_MAKE_FILE]), $config[CONFIG_DRUSH_MAKE_OPTIONS])) {
       $this->error(STRING_SITE_NO_MAKE);
       return FALSE;

@@ -156,7 +156,7 @@ define('STRING_WORKING_UPDATING_HOSTS', 'hosts_config.working.updating-hosts');
  * 
  * @ingroup strings
  */
-define('STRING_WORKING_UPDATING_HOSTS_ITEM', 'hosts_config.working-updating-hosts-item');
+define('STRING_WORKING_UPDATING_HOSTS_ITEM', 'hosts_config.working.updating-hosts-item');
 
 /**
  * String token for when all host files have been updated.
@@ -338,7 +338,7 @@ class HostsConfigurationPlugin extends GenericPlugin implements EventListener {
       }
     }
     $site->setSetting(SITE_HOST_FILES, $registry);
-    $this->success(STRING_SUCCSES_UPDATING_HOSTS);
+    $this->success(STRING_SUCCESS_UPDATING_HOSTS);
     return TRUE;
   }
   

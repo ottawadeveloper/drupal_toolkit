@@ -473,7 +473,7 @@ class DatabaseConfigurationPlugin extends GenericPlugin implements EventListener
         );
       }
     }
-    foreach ($context->servers as $server) {
+    foreach ($context->servers as $key => $server) {
       $this->working(STRING_WORKING_DB_CREATE_ITEM, array(
         '!name' => $key,
       ));
@@ -583,13 +583,13 @@ class DatabaseConfigurationPlugin extends GenericPlugin implements EventListener
     $defaultType = $this->config()->getConfig(CONFIG_DB_DEFAULT_TYPE);
     $servers = $this->config()->getConfig(CONFIG_DB_SERVERS);
     $dbServers = array();
-    foreach ($servers as $server) {
+    foreach ($servers as $k => $server) {
       $type = isset($server[DB_HOST_TYPE]) ? $server[DB_HOST_TYPE] : $defaultType;
       $server[DB_HOST_TYPE] = $type;
       $dbServer = $this->getCastedDBServer($server, $type);
       if ($dbServer instanceof DatabaseManagerInterface) {
         if ($dbServer->available()) {
-          $dbServers[] = $dbServer;
+          $dbServers[$k] = $dbServer;
         }
       }
     }

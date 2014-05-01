@@ -133,7 +133,6 @@ class DrupalSiteStandardServerStructurePlugin extends GenericPlugin implements E
     }
     $serverDir = $config[CONFIG_SERVER_SITES_DIR];
     $link = assemble_path($serverDir, $site->getBuildName());
-    echo $link;
     if (is_link($link)) {
       $this->error(STRING_SERVER_STRUCTURE_ALREADY_EXISTS);
       return FALSE;
