@@ -152,10 +152,22 @@ class DrupalSite extends GenericDrupalEntity {
     return $this->getBuildName();
   }
   
+  /**
+   * Registers a new subsite after it has been successfully built.
+   * 
+   * @param DrupalSubSite $subsite
+   *   The subsite object.
+   */
   public function registerSubSite(DrupalSubSite $subsite) {
     $this->appendSettingValue(SITE_SUBSITE_LIST, $subsite->getSubSiteID());
   }
   
+  /**
+   * Retrieves a list of subsite IDs that can be used with getSubSite().
+   * 
+   * @return array
+   *   An array of subsite IDs.
+   */
   public function getSubSites() {
     return $this->getSetting(SITE_SUBSITE_LIST);
   }
