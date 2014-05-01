@@ -71,6 +71,8 @@ define('STRING_ERROR_ALREADY_SUBSITE', 'drupal_site.error.already-subsite');
  */
 abstract class GenericSiteCommand extends GenericCommand {
   
+  private $loadedSite = NULL;
+  
   /**
    * Retrieves the build name specified by the argument.
    * 
@@ -258,10 +260,13 @@ abstract class GenericSiteCommand extends GenericCommand {
    * @see DrupalSite::createSite()
    */
   protected function getSite($name = NULL) {
-    if (empty($name)) {
-      $name = $this->getBuildName();
+    if (empty($this->loadedSite)) {
+      if (empty($name)) {
+        $name = $this->getBuildName();
+      }
+      $this->loadedSite = DrupalSite::createSite($this->config(), $name, $this->isLocal());
     }
-    return DrupalSite::createSite($this->config(), $name, $this->isLocal());
+    return $this->loadedSite;
   }
   
   /**

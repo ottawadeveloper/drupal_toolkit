@@ -44,6 +44,8 @@ drupal_site.error.already-subsite = 'A subsite with the given name already exist
 drupal_site.error.no-subsite = 'The subsite object could not be created.'
 drupal_site.error.missing-subsite = 'No subsite with the given name exists.'
 drupal_site.error.old-subsite' = 'This subsite is too old to use with this command, update it first.'
+drupal_site.error.not-installed = 'The site has not been installed yet.'
+drupal_site.error.already-installed = 'The site has already been installed.'
 
 drupal_site_build.error.no-more-config = 'An error occured during additional configuration steps.'
 drupal_site_build.error.no-server-config = 'Unable to configure the server.'

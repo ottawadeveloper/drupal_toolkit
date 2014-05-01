@@ -103,6 +103,20 @@ define('STRING_WORKING_SITE_HISTORY_DELETE_ITEM', 'drupal_site.working.history-c
 define('STRING_SUCCESS_SITE_HISTORY_CLEANUP', 'drupal_site.success.history-cleanup');
 
 /**
+ * String token for when the site has not been installed yet.
+ * 
+ * @ingroup strings
+ */
+define('STRING_ERROR_SITE_NOT_INSTALLED', 'drupal_site.error.not-installed');
+
+/**
+ * String token for when the site has already been installed.
+ * 
+ * @ingroup strings
+ */
+define('STRING_ERROR_SITE_INSTALLED', 'drupal_site.error.already-installed');
+
+/**
  * Basic plugin that provides some useful classes and configuration settings
  * for working with Drupal sites. Most plugins that rely on the DrupalSite 
  * object will need to require this one.
@@ -163,7 +177,7 @@ class DrupalSitePlugin extends GenericPlugin implements EventListener {
     $ret = TRUE;
     foreach ($builds as $buildID) {
       if ($del > 0) {
-        $this->working(STRING_WORKING_SITE_HISTORY_DELETE, array(
+        $this->working(STRING_WORKING_SITE_HISTORY_DELETE_ITEM, array(
           '!buildID' => $buildID,
         ));
         if (!$site->deleteBuild($this->events(), $buildID)) {

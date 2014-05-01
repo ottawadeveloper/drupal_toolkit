@@ -51,6 +51,12 @@ class SiteInstallCommand extends GenericSiteCommand {
     if (!$this->requireCommand('drush')) {
       return FALSE;
     }
+    $site = $this->getSite();
+    $site->loadSettings();
+    if (!extra_empty($site->getSetting(SITE_IS_INSTALLED))) {
+      $this->error(STRING_ERROR_SITE_INSTALLED);
+      return FALSE;
+    }
     return parent::verifyRequirements();
   }
   
@@ -82,6 +88,7 @@ class SiteInstallCommand extends GenericSiteCommand {
       $this->error(STRING_INSTALL_ERROR);
       exit(1);
     }
+    $site->setSetting(SITE_IS_INSTALLED, "1");
     $this->events()->fireEvent(EVENT_INSTALL_DONE, $baseContext);
     if (!$site->saveConfiguration()) {
       $this->error(STRING_COULD_NOT_SAVE_SITE);

@@ -90,6 +90,8 @@ abstract class GenericDrupalEntity {
    */
   private $placeholders = array();
   
+  private $settingsLoaded = FALSE;
+  
   /**
    * Sets a token for the site.
    * 
@@ -299,13 +301,13 @@ abstract class GenericDrupalEntity {
    *   TRUE if the settings file was loaded correctly, otherwise FALSE.
    */
   public function loadSettings() {
-    if ($this->exists()) {
+    if (!$this->settingsLoaded && $this->exists()) {
       $contents = unserialize(file_get_contents($this->getConfigurationPath()));
       array_extend($this->settings, $contents['settings']);
       array_extend($this->placeholders, $contents['placeholders']);
-      return TRUE;
+      $this->settingsLoaded = TRUE;
     }
-    return FALSE;
+    return $this->settingsLoaded;
   }
   
   /**

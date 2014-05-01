@@ -126,6 +126,12 @@ class SiteUpdateCommand extends GenericSiteCommand {
     if (!$this->requireSite()) {
       return FALSE;
     }
+    $site = $this->getSite();
+    $site->loadSettings();
+    if (extra_empty($site->getSetting(SITE_IS_INSTALLED))) {
+      $this->error(STRING_ERROR_SITE_NOT_INSTALLED);
+      return FALSE;
+    }
     return parent::verifyRequirements();
   }
   

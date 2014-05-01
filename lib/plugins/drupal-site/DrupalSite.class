@@ -68,6 +68,13 @@ define('SITE_LATEST_BUILD_ID', 'latest_build_id');
 define('SITE_EXISTING_SITES', 'existing_sites');
 
 /**
+ * Whether or not the site is instaleld.
+ * 
+ * @ingroup site_settings
+ */
+define('SITE_IS_INSTALLED', 'is_installed');
+
+/**
  * A token for SITE_BUILD_NAME.
  * 
  * @ingroup site_tokens
