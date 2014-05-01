@@ -71,7 +71,21 @@ define('STRING_ERROR_ALREADY_SUBSITE', 'drupal_site.error.already-subsite');
  */
 abstract class GenericSiteCommand extends GenericCommand {
   
+  /**
+   * Caches the loaded site object to prevent multiple calls for building
+   * the object and loading settings.
+   * 
+   * @var DrupalSite
+   */
   private $loadedSite = NULL;
+  
+  /**
+   * Caches the loaded subsite object to prevent multiple calls for building
+   * the object and loading settings.
+   * 
+   * @var DrupalSubSite
+   */
+  private $loadedSubSite = NULL;
   
   /**
    * Retrieves the build name specified by the argument.
@@ -283,10 +297,13 @@ abstract class GenericSiteCommand extends GenericCommand {
    *   The subsite object.
    */
   protected function getSubSite($parentName = NULL, $subsiteName = NULL) {
-    if (empty($subsiteName)) {
-      $subsiteName = $this->getSubSiteName();
+    if (empty($this->loadedSubSite)) {
+      if (empty($subsiteName)) {
+        $subsiteName = $this->getSubSiteName();
+      }
+      $this->loadedSubSite = new DrupalSubSite($this->getSite($parentName), $subsiteName);
     }
-    return new DrupalSubSite($this->getSite($parentName), $subsiteName);
+    return $this->loadedSubSite;
   }
   
   public function verifyRequirements() {
