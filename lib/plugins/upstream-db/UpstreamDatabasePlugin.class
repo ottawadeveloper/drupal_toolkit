@@ -619,8 +619,8 @@ class UpstreamDatabasePlugin extends GenericPlugin implements EventListener {
       unlink($localDumpFile);
       return FALSE;
     }
-    $this->working(STRING_WORKING_UPSTREAM_IMPORT_LOCAL);
     if (!empty($localDumpFile)) {
+      $this->working(STRING_WORKING_UPSTREAM_IMPORT_LOCAL);
       if (!drush_restore_db($localDumpFile, $localAlias, $localDBKey)) {
         $this->error(STRING_UPSTREAM_UNABLE_TO_IMPORT_LOCAL_DB);
         unlink($upstreamDumpFile);
