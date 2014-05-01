@@ -46,6 +46,34 @@ define('STRING_STRUCTURE_DIR_FAILURE', 'standard_structure.error-could-not-creat
 define('STRING_COULD_NOT_REMOVE_BUILD_DIR', 'standard_structure.error.could-not-remove-build');
 
 /**
+ * String token for when a site is about to be removed entirely.
+ * 
+ * @ingroup strings
+ */
+define('STRING_WORKING_REMOVE_SITE', 'standard_structure.working.remove-site');
+
+/**
+ * String token for when a site was entirely removed succcessfully.
+ * 
+ * @ingroup strings
+ */
+define('STRING_SUCCESS_REMOVE_SITE', 'standard_structure.success.remove-site');
+
+/**
+ * String token for when a new site is about to be built.
+ * 
+ * @ingroup strings
+ */
+define('STRING_WORKING_BUILD_STRUCTURE', 'standard_structure.working.build-site');
+
+/**
+ * String token for when a new site was built successfully.
+ * 
+ * @ingroup strings
+ */
+define('STRING_SUCCESS_BUILD_STRUCTURE', 'standard_structure.success.build-site');
+
+/**
  * Responsible for setting up the structure of a build.
  */
 class DrupalSiteStandardStructurePlugin extends GenericPlugin implements EventListener {
@@ -78,10 +106,12 @@ class DrupalSiteStandardStructurePlugin extends GenericPlugin implements EventLi
   }
   
   private function deleteSite(DrupalSite $site) {
+    $this->working(STRING_WORKING_REMOVE_SITE);
     if (!remove_directory($site->getBuildFolder())) {
       $this->warn(STRING_COULD_NOT_REMOVE_BUILD_DIR);
       return FALSE;
     }
+    $this->success(STRING_SUCCESS_REMOVE_SITE);
     return TRUE;
   }
   
@@ -109,6 +139,7 @@ class DrupalSiteStandardStructurePlugin extends GenericPlugin implements EventLi
    *   TRUE if successful, otherwise FALSE.
    */
   private function buildSite(DrupalSite $site) {
+    $this->working(STRING_WORKING_BUILD_STRUCTURE);
     $context = (object) array(
       'dirs' => array(
         '/',
@@ -134,6 +165,8 @@ class DrupalSiteStandardStructurePlugin extends GenericPlugin implements EventLi
     }
     $site->setSetting(SITE_CODEBASE_DIR, $context->codebaseDir);
     $site->setSetting(SITE_SITES_DIR, $context->sitesDir);
+
+    $this->success(STRING_SUCCESS_BUILD_STRUCTURE);
     
     $context = (object) array(
       'success' => TRUE,
