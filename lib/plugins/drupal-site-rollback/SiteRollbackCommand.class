@@ -120,9 +120,12 @@ class SiteRollbackCommand extends GenericSiteCommand {
    *   TRUE if the step did not exit.
    */
   private function executeStep($stepEvent, &$context, $optional = FALSE, $die = TRUE) {
-    $context->success = $optional;
+    $context->success = TRUE;
     $context->handled = FALSE;
     $this->events()->fireEvent($stepEvent, $context);
+    if (!$optional && (!$context->handled)) {
+      $context->success = FALSE;
+    }
     if (empty($context->success)) {
       $this->error(STRING_ROLLBACK_STANDARD_ERROR, array(
         '!step' => $stepEvent,
@@ -143,6 +146,7 @@ class SiteRollbackCommand extends GenericSiteCommand {
       'currentBuild' => $site->getBuildID(),
     );
     $this->executeStep(EVENT_ROLLBACK_PREPARE, $baseContext, TRUE, TRUE);
+    die();
     $this->executeStep(EVENT_ROLLBACK_BACKUP, $baseContext, FALSE, TRUE);
     $this->executeStep(EVENT_ROLLBACK_START, $baseContext, TRUE, TRUE);
     $this->executeStep(EVENT_ROLLBACK_PHASE1, $baseContext, TRUE, TRUE);

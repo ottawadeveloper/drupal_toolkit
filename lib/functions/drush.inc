@@ -469,7 +469,8 @@ function drush_restore_db($sqlFile, $alias = NULL, $database = NULL) {
   if (!empty($database)) {
     $sub .= ' --database=!db';
   }
-  return extra_empty(drush_command($sub, $alias, $args));
+  $result = drush_command($sub, $alias, $args);
+  return extra_empty($result);
 }
 
 /**

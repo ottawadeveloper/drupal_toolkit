@@ -158,13 +158,22 @@ class DrushBackupPlugin extends GenericPlugin implements EventListener {
         '!dbkey' => $dbkey,
         '!file' => $file,
       ));
-      drush_drop_db($drushAlias, $dbkey);
-      if (!drush_restore_db($file, $drushAlias, $dbkey)) {
+      if (!is_readable($file)) {
         $this->warn(STRING_ERROR_COULD_NOT_RESTORE_BACKUP, array(
           '!db' => $dbkey,
           '!alias' => $drushAlias,
           '!file' => $file,
         ));
+        $ret = FALSE;
+        continue;
+      }
+      drush_drop_db($drushAlias, $dbkey);
+      if (!drush_restore_db($file, $drushAlias, $dbkey)) {
+        $this->error(STRING_ERROR_COULD_NOT_RESTORE_BACKUP, array(
+          '!db' => $dbkey,
+          '!alias' => $drushAlias,
+          '!file' => $file,
+        ), CLOG_CRITICAL);
         $ret = FALSE;
       }
       else {
@@ -233,7 +242,12 @@ class DrushBackupPlugin extends GenericPlugin implements EventListener {
    */
   private function drushBackup(DrupalSite $site, $type = 'updates', $buildID = NULL) {
     if (empty($buildID)) {
-      $buildID = $site->getBuildID();
+      if ($type === 'updates') {
+        $buildID = $site->getPreviousBuildID();
+      }
+      else {
+        $buildID = $site->getBuildID();
+      }
     }
     $drushAlias = $site->getSetting(SITE_DRUSH_ALIAS);
     if (empty($drushAlias)) {
