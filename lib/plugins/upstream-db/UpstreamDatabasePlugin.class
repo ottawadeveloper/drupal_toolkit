@@ -155,6 +155,209 @@ define('EVENT_UPSTREAM_DATABASE_PRESERVE_STATE', 'upstream-db-preserve-state');
 define('EVENT_UPSTREAM_DATABASE_RESTORE_STATE', 'upstream-db-restore-state');
 
 /**
+ * String token for when all stateful variables are about to be preserved.
+ * 
+ * @ingroup strings
+ */
+define('STRING_WORKING_PRESERVE_VARS', 'upstream_db.working.preserve-vars');
+
+/**
+ * String token for when a variable is about to be preserved.
+ * 
+ * @ingroup strings
+ */
+define('STRING_WORKING_PRESERVE_VAR', 'upstream_db.working.preserve-var');
+
+/**
+ * String token for when all stateful variables are about to be restored.
+ * 
+ * @ingroup strings
+ */
+define('STRING_WORKING_RESTORE_VARS', 'upstream_db.working.restore-vars');
+
+/**
+ * String token for when a variable is about to be restored.
+ * 
+ * @ingroup strings
+ */
+define('STRING_WORKING_RESTORE_VAR', 'upstream_db.working.restore-var');
+
+/**
+ * String token for when a backup is about to be taken.
+ * 
+ * @ingroup strings
+ */
+define('STRING_WORKING_UPSTREAM_DB_BACKUP', 'upstream_db.working.backup-db');
+
+/**
+ * String token for when a backup is about to be restored.
+ * 
+ * @ingroup strings
+ */
+define('STRING_WORKING_UPSTREAM_DB_RESTORE', 'upstream_db.working.restore-backup');
+
+/**
+ * String token for when databases are about to be sync'd.
+ * 
+ * @ingroup strings
+ */
+define('STRING_WORKING_SYNC_DB', 'upstream_db.working.sync-db');
+
+/**
+ * String token for when a database is about to be downloaded.
+ * 
+ * @ingroup strings
+ */
+define('STRING_WORKING_DOWNLOAD_UPSTREAM_DB', 'upstream_db.working.download-db');
+
+/**
+ * String token for when a database item is about to be sync'd.
+ * 
+ * @ingroup strings
+ */
+define('STRING_WORKING_SYNC_DB_ITEM', 'upstream_db.working.sync-db-item');
+
+/**
+ * String token for when state is about to be preserved.
+ * 
+ * @ingroup strings
+ */
+define('STRING_WORKING_UPSTREAM_PRESERVE_STATE', 'upstream_db.working.preserve');
+
+/**
+ * String token for when the current database is about to be dropped.
+ * 
+ * @ingroup strings
+ */
+define('STRING_WORKING_UPSTREAM_DROP_CURRENT', 'upstream_db.working.drop-current');
+
+/**
+ * String token for when importing the remote databases is about to start.
+ * 
+ * @ingroup strings
+ */
+define('STRING_WORKING_UPSTREAM_IMPORT_REMOTE', 'upstream_db.working.import-remote');
+
+/**
+ * String token for when importing the local databases is about to start.
+ * 
+ * @ingroup strings
+ */
+define('STRING_WORKING_UPSTREAM_IMPORT_LOCAL', 'upstream_db.working.import-local');
+
+/**
+ * String token for when restoring any preserved states starts.
+ * 
+ * @ingroup strings
+ */
+define('STRING_WORKING_UPSTREAM_RESTORE_STATE', 'upstream_db.working.restore');
+
+/**
+ * String token for when a local DB dump is about to start.
+ * 
+ * @ingroup strings
+ */
+define('STRING_WORKING_GENERATE_LOCAL_DUMP', 'upstream_db.working.generate-local');
+
+/**
+ * String token for when a remote DB dump is about to start.
+ * 
+ * @ingroup strings
+ */
+define('STRING_WORKING_GENERATE_REMOTE_DUMP', 'upstream_db.working.generate-remote');
+
+/**
+ * String token for when variables were preserved properly.
+ * 
+ * @ingroup strings
+ */
+define('STRING_SUCCESS_PRESERVE_VARS', 'upstream_db.success.preserve-vars');
+
+/**
+ * String token for when variables were restored properly.
+ * 
+ * @ingroup strings
+ */
+define('STRING_SUCCESS_RESTORE_VARS', 'upstream_db.success.restore-vars');
+
+/**
+ * String token for when the backup is successful.
+ * 
+ * @ingroup strings
+ */
+define('STRING_SUCCESS_UPSTREAM_DB_BACKUP', 'upstream_db.success.backup-db');
+
+/**
+ * String token for when the backup is successfully restored.
+ * 
+ * @ingroup strings
+ */
+define('STRING_SUCCESS_UPSTREAM_DB_RESTORE', 'upstream_db.success.restore-db');
+
+/**
+ * String token for when all databases were sync'd successfully.
+ * 
+ * @ingroup strings
+ */
+define('STRING_SUCCESS_SYNC_DB', 'upstream_db.success.sync-db');
+
+/**
+ * String token for when a database was sync'd successfully.
+ * 
+ * @ingroup strings
+ */
+define('STRING_SUCCESS_SYNC_DB_ITEM', 'upstream_db.success.sync-db-item');
+
+/**
+ * String token for when the local dump was successful.
+ * 
+ * @ingroup strings
+ */
+define('STRING_SUCCESS_GENERATE_LOCAL_DUMP', 'upstream_db.success.generate-local');
+
+/**
+ * String token for when the remote dump was successful.
+ * 
+ * @ingroup strings
+ */
+define('STRING_SUCCESS_GENERATE_REMOTE_DUMP', 'upstream_db.success.generate-remote');
+
+/**
+ * String token for when the backup of the current database could not be
+ * restored.
+ * 
+ * @ingroup strings
+ */
+define('STRING_FAILURE_UPSTREAM_DB_RESTORE', 'upstream_db.failure.restore-backup');
+
+/**
+ * String token for when the current database could not be backed up.
+ * 
+ * @ingroup strings
+ */
+define('STRING_FAILURE_UPSTREAM_DB_BACKUP', 'upstream_db.failure.backup-db');
+
+/**
+ * String token for when the upstream database dump could not be generated.
+ * 
+ * @ingroup strings
+ */
+define('STRING_FAILURE_GENERATE_REMOTE_DUMP', 'upstream_db.failure.generate-remote');
+
+/**
+ * String token for when the local database dump could not be generated.
+ * 
+ * @ingroup strings
+ */
+define('STRING_FAILURE_GENERATE_LOCAL_DUMP', 'upstream_db.failure.generate-local');
+
+/**
+ * String token for when the upstream database could not be downloaded.
+ * 
+ * @ingroup strings
+ */
+define('STRING_ERROR_UPSTREAM_UNABLE_TO_DOWNLOAD_DB', 'upstream_db.error.unable-to-download-upstream');
+/**
  * Responsible for downloading an upstream database and allowing some of the
  * settings to be preserved from the older version of the site.
  */
@@ -219,14 +422,19 @@ class UpstreamDatabasePlugin extends GenericPlugin implements EventListener {
    *   TRUE if the variables were all saved, otherwise FALSE.
    */
   private function preserveVariablesTable($alias, &$state) {
+    $this->working(STRING_WORKING_PRESERVE_VARS);
     $variables = $this->config()->getConfig(CONFIG_PRESERVE_VARIABLES);
     if (!extra_empty($variables)) {
       $vars = array();
       foreach ($variables as $variable) {
+        $this->working(STRING_WORKING_PRESERVE_VAR, array(
+          '!var' => $variable,
+        ));
         $vars[$variable] = drush_get_variable($variable, $alias);
       }
       $state['variables'] = $vars;
     }
+    $this->success(STRING_SUCCESS_PRESERVE_VARS);
     return TRUE;
   }
   
@@ -242,9 +450,13 @@ class UpstreamDatabasePlugin extends GenericPlugin implements EventListener {
    *   TRUE if all the variables were set properly, otherwise FALSE.
    */
   private function restoreVariablesTable($alias, &$state) {
+    $this->working(STRING_WORKING_RESTORE_VARS);
     if (!empty($state['variables'])) {
       foreach ($state['variables'] as $name => $value) {
         if ($value !== NULL) {
+          $this->working(STRING_WORKING_RESTORE_VAR, array(
+            '!var' => $name,
+          ));
           if (!drush_set_variable($name, $value, $alias)) {
             $this->error(STRING_UPSTREAM_UNABLE_TO_RESTORE_VARIABLE, array(
               '!name' => $name,
@@ -255,6 +467,7 @@ class UpstreamDatabasePlugin extends GenericPlugin implements EventListener {
         }
       }
     }
+    $this->success(STRING_SUCCESS_RESTORE_VARS);
     return TRUE;
   }
   
@@ -270,9 +483,17 @@ class UpstreamDatabasePlugin extends GenericPlugin implements EventListener {
    *   The path to the backup file, or FALSE if the backup failed.
    */
   private function backupOriginalDatabase($drushAlias, $database) {
-    return drush_db_dump($drushAlias, TRUE, array(
+    $this->working(STRING_WORKING_UPSTREAM_DB_BACKUP);
+    $ret = drush_db_dump($drushAlias, TRUE, array(
       'database' => $database,
     ));
+    if ($ret) {
+      $this->success(STRING_SUCCESS_UPSTREAM_DB_BACKUP);
+    }
+    else {
+      $this->failure(STRING_FAILURE_UPSTREAM_DB_BACKUP);
+    }
+    return $ret;
   }
   
   /**
@@ -289,8 +510,16 @@ class UpstreamDatabasePlugin extends GenericPlugin implements EventListener {
    *   TRUe if the DB was restored, otherwise FALSe.
    */
   private function restoreOriginalDatabase($drushAlias, $database, $file) {
-    drush_drop_db($alias, $database);
-    return drush_restore_db($file, $drushAlias, $database);
+    $this->working(STRING_WORKING_UPSTREAM_DB_RESTORE);
+    drush_drop_db($drushAlias, $database);
+    $ret = drush_restore_db($file, $drushAlias, $database);
+    if ($ret) {
+      $this->success(STRING_SUCCESS_UPSTREAM_DB_RESTORE);
+    }
+    else {
+      $this->failure(STRING_FAILURE_UPSTREAM_DB_RESTORE);
+    }
+    return $ret;
   }
   
   /**
@@ -305,6 +534,7 @@ class UpstreamDatabasePlugin extends GenericPlugin implements EventListener {
    *   TRUE if the sync was successful, otherwise FALSE.
    */
   private function syncUpstreamDatabases(DrupalSite $site, $drushAlias, PhysicalServerInterface $server) {
+    $this->working(STRING_WORKING_SYNC_DB);
     $keys = array(
       'default' => 'default',
     ) + $site->getSetting(SITE_DB_CONNECTION_KEYS);
@@ -318,11 +548,15 @@ class UpstreamDatabasePlugin extends GenericPlugin implements EventListener {
         if (!$this->restoreOriginalDatabase($drushAlias, $key, $backup)) {
           $this->error(STRING_UPSTREAM_UNABLE_TO_RESTORE_DATABASE, array(), CLOG_CRITICAL);
         }
+        else {
+          $this->error(STRING_ERROR_UPSTREAM_UNABLE_TO_DOWNLOAD_DB);
+        }
         unlink($backup);
         return FALSE;
       }
       unlink($backup);
     }
+    $this->success(STRING_SUCCESS_SYNC_DB);
     return TRUE;
   }
   
@@ -340,6 +574,10 @@ class UpstreamDatabasePlugin extends GenericPlugin implements EventListener {
    *   TRUE if the database was synched properly, otherwise FALSE.
    */
   private function syncUpstreamDatabase(PhysicalServerInterface $server, $localAlias, $localDBKey) {
+    $this->working(STRING_WORKING_SYNC_DB_ITEM, array(
+      '!alias' => $localAlias,
+      '!key' => $localDBKey,
+    ));
     $upstreamDumpFile = $this->downloadUpstreamDatabase($server, $localAlias, $localDBKey);
     if (empty($upstreamDumpFile)) {
       $this->error(STRING_UPSTREAM_UNABLE_TO_DOWNLOAD_DUMP);
@@ -359,6 +597,7 @@ class UpstreamDatabasePlugin extends GenericPlugin implements EventListener {
       'handled' => FALSE,
       'success' => TRUE,
     );
+    $this->working(STRING_WORKING_UPSTREAM_PRESERVE_STATE);
     $this->events()->fireEvent(EVENT_UPSTREAM_DATABASE_PRESERVE_STATE, $context);
     if (empty($context->success)) {
       $this->error(STRING_UPSTREAM_UNABLE_TO_PRESERVE_STATE);
@@ -366,21 +605,21 @@ class UpstreamDatabasePlugin extends GenericPlugin implements EventListener {
       unlink($localDumpFile);
       return FALSE;
     }
-    
+    $this->working(STRING_WORKING_UPSTREAM_DROP_CURRENT);
     if (!drush_drop_db($localAlias, $localDBKey)) {
       $this->error(STRING_UPSTREAM_UNABLE_TO_DROP_CURRENT_DB);
       unlink($upstreamDumpFile);
       unlink($localDumpFile);
       return FALSE;
     }
-    
+    $this->working(STRING_WORKING_UPSTREAM_IMPORT_REMOTE);
     if (!drush_restore_db($upstreamDumpFile, $localAlias, $localDBKey)) {
       $this->error(STRING_UPSTREAM_UNABLE_TO_IMPORT_UPSTREAM_DB);
       unlink($upstreamDumpFile);
       unlink($localDumpFile);
       return FALSE;
     }
-    
+    $this->working(STRING_WORKING_UPSTREAM_IMPORT_LOCAL);
     if (!empty($localDumpFile)) {
       if (!drush_restore_db($localDumpFile, $localAlias, $localDBKey)) {
         $this->error(STRING_UPSTREAM_UNABLE_TO_IMPORT_LOCAL_DB);
@@ -389,7 +628,7 @@ class UpstreamDatabasePlugin extends GenericPlugin implements EventListener {
         return FALSE;
       }
     }
-    
+    $this->working(STRING_WORKING_UPSTREAM_RESTORE_STATE);
     $context->handled = FALSE;
     $context->success = TRUE;
     $this->events()->fireEvent(EVENT_UPSTREAM_DATABASE_RESTORE_STATE, $context);
@@ -399,9 +638,9 @@ class UpstreamDatabasePlugin extends GenericPlugin implements EventListener {
       unlink($localDumpFile);
       return FALSE;
     }
-    
     unlink($upstreamDumpFile);
     unlink($localDumpFile);
+    $this->success(STRING_SUCCESS_SYNC_DB_ITEM);
     return TRUE;
   }
   
@@ -424,10 +663,17 @@ class UpstreamDatabasePlugin extends GenericPlugin implements EventListener {
       // Null indicates that we don't any relevant tables in the DB to dump.
       return NULL;
     }
+    $this->working(STRING_WORKING_GENERATE_LOCAL_DUMP);
     $file = drush_db_dump($alias, TRUE, array(
       'database' => $localDBKey,
       'tables-key' => $tableKey,
     ));
+    if (!empty($file)) {
+      $this->success(STRING_SUCCESS_GENERATE_LOCAL_DUMP);
+    }
+    else {
+      $this->failure(STRING_FAILURE_GENERATE_LOCAL_DUMP);
+    }
     return $file;
   }
   
@@ -446,6 +692,7 @@ class UpstreamDatabasePlugin extends GenericPlugin implements EventListener {
    *   an error generating the file.
    */
   private function downloadUpstreamDatabase(PhysicalServerInterface $server, $alias, $localDBKey) {
+    $this->working(STRING_WORKING_GENERATE_REMOTE_DUMP);
     $ignoreKey = $this->config()->getConfig(CONFIG_UPSTREAM_IGNORE_UPSTREAM_TABLES_KEY);
     $command = 'drush @' . $alias . ' sql-dump --result-file --database=!db';
     $args = array(
@@ -468,6 +715,12 @@ class UpstreamDatabasePlugin extends GenericPlugin implements EventListener {
       }
     }
     $path = $server->downloadFile($file);
+    if (empty($path)) {
+      $this->failure(STRING_FAILURE_GENERATE_REMOTE_DUMP);
+    }
+    else {
+      $this->success(STRING_SUCCESS_GENERATE_REMOTE_DUMP);
+    }
     return $path;
   }
   
