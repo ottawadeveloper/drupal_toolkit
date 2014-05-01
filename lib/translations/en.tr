@@ -28,9 +28,9 @@ db_config.error.cannot-create-db = Unable to create database.
 db_config.error.cannot-write-settings = 'Unable to write DB settings to settings.php.'
 db_config.error.cannot-cast-db = 'Unable to cast database to !type.'
 db_config.working.db-delete = 'Deleting databases.'
-db_config.working.db-delete-item = 'Deleting database !name.'
+db_config.working.db-delete-item = 'Deleting database !name on [!server].'
 db_config.working.db-create = 'Creating databases.'
-db_config.working.db-create-item = 'Creating database !name.'
+db_config.working.db-create-item = 'Creating database !name on [!server].'
 db_config.success.db-delete = 'All databases deleted.'
 db_config.success.db-create = 'All databases created.'
 

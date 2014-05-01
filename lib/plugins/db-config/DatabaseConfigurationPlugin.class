@@ -381,10 +381,11 @@ class DatabaseConfigurationPlugin extends GenericPlugin implements EventListener
     $ret = TRUE;
     $this->working(STRING_WORKING_DB_DELETE);
     foreach ($servers as $key => $serverData) {
-      $this->working(STRING_WORKING_DB_DELETE_ITEM, array(
-        '!name' => $key,
-      ));
       $server = $this->castDatabaseServer($serverData['dbSettings'], $serverData['type']);
+      $this->working(STRING_WORKING_DB_DELETE_ITEM, array(
+        '!server' => $key,
+        '!name' => $serverData['database'],
+      ));
       if ($server instanceof DatabaseManagerInterface) {
         if (!$server->deleteDatabase($serverData['database'])) {
           $this->warn(STRING_UNABLE_TO_DELETE_DB, array(
@@ -475,7 +476,8 @@ class DatabaseConfigurationPlugin extends GenericPlugin implements EventListener
     }
     foreach ($context->servers as $key => $server) {
       $this->working(STRING_WORKING_DB_CREATE_ITEM, array(
-        '!name' => $key,
+        '!name' => $dbname,
+        '!server' => $key,
       ));
       if ($server instanceof DatabaseManagerInterface) {
         if (!$server->createDatabase($dbname, $username, $dbpass, $host)) {

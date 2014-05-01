@@ -59,7 +59,7 @@ class MySqlDBM extends GenericDBM {
   }
   
   private function cleanName($name) {
-    return strtolower(preg_replace('`[^A-Za-z]`i', '', $name));
+    return strtolower(preg_replace('`[^A-Za-z0-9]`i', '', $name));
   }
   
   public function sanitizeDatabaseName($database) {
