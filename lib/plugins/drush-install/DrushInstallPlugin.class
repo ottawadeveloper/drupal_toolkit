@@ -234,18 +234,18 @@ class DrushInstallPlugin extends GenericPlugin implements EventListener {
       $this->error(STRING_NO_LOCAL_ALIAS);
       return FALSE;
     }
-    $this->message(STRING_WORKING_INSTALL_DRUPAL);
+    $this->working(STRING_WORKING_INSTALL_DRUPAL);
     if (!$this->installDrupal($drushAlias)) {
       $this->error(STRING_COULD_NOT_INSTALL);
       return FALSE;
     }
     $this->success(STRING_SUCCESS_INSTALL_DRUPAL);
-    $this->message(STRING_WORKING_INSTALL_MODULES);
+    $this->working(STRING_WORKING_INSTALL_MODULES);
     if (!$this->installModules($drushAlias)) {
       $this->error(STRING_COULD_NOT_INSTALL_MODULES);
       return FALSE;
     }
-    $this->message(STRING_SUCCESS_INSTALL_MODULES);
+    $this->success(STRING_SUCCESS_INSTALL_MODULES);
     return TRUE;
   }
   
