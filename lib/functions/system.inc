@@ -331,8 +331,7 @@ function shell_command_available($command_name) {
  * @return int
  *   The number of errors that occured during the process.
  */
-function chmog($target, $owner, $group, $access, $recursive = FALSE) {
-  static $chmog_processed = array();
+function chmog($target, $owner, $group, $access, $recursive = FALSE, $chmog_processed = array()) {
   // protection against recursive symlinks
   if (is_link($target)) {
     $target = realpath($target);
@@ -356,7 +355,7 @@ function chmog($target, $owner, $group, $access, $recursive = FALSE) {
     if (!empty($h)) {
       while (($file = readdir($h)) !== FALSE) {
         if ($file != '.' && $file != '..') {
-          $failures += chmog(assemble_path($target, $file), $owner, $group, $access, $recursive);
+          $failures += chmog(assemble_path($target, $file), $owner, $group, $access, $recursive, $chmog_processed);
         }
       }
     }
