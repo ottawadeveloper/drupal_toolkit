@@ -464,7 +464,7 @@ class HttpConfigurationPlugin extends GenericPlugin implements EventListener {
     );
     $this->events()->fireEvent(EVENT_FIND_SERVERS, $context);
     $httpServers = array();
-    foreach ($context->servers as $server) {
+    foreach ($context->servers as $key => $server) {
       if ($server instanceof PhysicalServerInterface) {
         $type = $server->getSetting(SERVER_SETTING_HTTP_TYPE);
         if (empty($type)) {
@@ -472,7 +472,7 @@ class HttpConfigurationPlugin extends GenericPlugin implements EventListener {
         }
         $httpServer = $this->getCastedServer($server, $type);
         if (!empty($httpServer)) {
-          $httpServers[] = $httpServer;
+          $httpServers[$key] = $httpServer;
         }
       }
     }
