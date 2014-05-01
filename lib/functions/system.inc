@@ -332,6 +332,10 @@ function shell_command_available($command_name) {
  *   The number of errors that occured during the process.
  */
 function chmog($target, $owner, $group, $access, $recursive = FALSE) {
+  static $chmog_processed = array();
+  if (in_array($target, $chmog_processed)) {
+    return TRUE;
+  }
   $failures = 0;
   if (!chmod($target, $access)) {
     $failures++;
@@ -343,6 +347,7 @@ function chmog($target, $owner, $group, $access, $recursive = FALSE) {
     $failures++;
   }
   if (is_dir($target) && $recursive) {
+    $chmog_processed[] = $target;
     $h = opendir($target);
     if (!empty($h)) {
       while (($file = readdir($h)) !== FALSE) {
