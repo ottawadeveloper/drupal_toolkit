@@ -172,7 +172,9 @@ class DrushBackupPlugin extends GenericPlugin implements EventListener {
         rename($file, $target);
       }
     }
-    $this->success(STRING_SUCCESS_DRUSH_RESTORE);
+    if ($ret) {
+      $this->success(STRING_SUCCESS_DRUSH_RESTORE);
+    }
     return $ret;
   }
   

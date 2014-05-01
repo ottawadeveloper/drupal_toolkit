@@ -240,6 +240,7 @@ class DrupalSiteStandardSitePlugin extends GenericPlugin implements EventListene
           $context->handled = TRUE;
           $context->success = $this->refreshSiteSymlinks($context->site, $context->revertBuild);
         }
+        break;
       case EVENT_SUBSITE_BUILD_CODEBASE:
         if (empty($context->handled) || $context->success) {
           $context->handled = TRUE;
