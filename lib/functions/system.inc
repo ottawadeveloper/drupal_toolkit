@@ -333,8 +333,12 @@ function shell_command_available($command_name) {
  */
 function chmog($target, $owner, $group, $access, $recursive = FALSE) {
   static $chmog_processed = array();
+  // protection against recursive symlinks
+  if (is_link($target)) {
+    $target = realpath($target);
+  }
   if (in_array($target, $chmog_processed)) {
-    return TRUE;
+    return 0;
   }
   $failures = 0;
   if (!chmod($target, $access)) {
