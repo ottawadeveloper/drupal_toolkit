@@ -68,6 +68,13 @@ define('SITE_LATEST_BUILD_ID', 'latest_build_id');
 define('SITE_EXISTING_SITES', 'existing_sites');
 
 /**
+ * A list of subsites.
+ * 
+ * @ingroup site_settings
+ */
+define('SITE_SUBSITE_LIST', 'subsite_list');
+
+/**
  * Whether or not the site is instaleld.
  * 
  * @ingroup site_settings
@@ -143,6 +150,14 @@ class DrupalSite extends GenericDrupalEntity {
   
   public function uuid() {
     return $this->getBuildName();
+  }
+  
+  public function registerSubSite(DrupalSubSite $subsite) {
+    $this->appendSettingValue(SITE_SUBSITE_LIST, $subsite->getSubSiteID());
+  }
+  
+  public function getSubSites() {
+    return $this->getSetting(SITE_SUBSITE_LIST);
   }
     
   /**

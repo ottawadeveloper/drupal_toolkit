@@ -203,7 +203,7 @@ class DrupalSiteStandardServerStructurePlugin extends GenericPlugin implements E
         break;
       case EVENT_SUBSITE_BUILD_CONFIG:
         if (empty($context->handled) || $context->success) {
-          $context->success = $this->configureSubsite();
+          $context->success = $this->configureSubsite($context->subsite);
         }
         break;
     }

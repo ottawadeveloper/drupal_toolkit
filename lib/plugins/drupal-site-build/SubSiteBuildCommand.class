@@ -1,15 +1,26 @@
 <?php
-
+/**
+ * @file Defines the SubSiteBuildCommand class
+ */
 
 /**
- * LIST OF THINGS THAT NEED TO HAPPEN
  * 
- * SETTINGS
- * CODEBASE
- * SERVER_CONFIG
  * 
- * - configure subsite from args/config
- * - 
+ * 
+ * START:
+ * CONFIG:
+ * CODEBASE:
+ * - primary site folder
+ * - site links
+ * - settings.php
+ * - recursive root symlinks
+ * SERVER_CONFIG:
+ * - database
+ * EXTRAS:
+ * - drush alias
+ * PARENT_SERVER_REFRESH: 
+ * - database
+ * COMPLETE:
  */
 
 define('EVENT_SUBSITE_BUILD_START', 'subsite-build-start');
@@ -35,8 +46,9 @@ class SubSiteBuildCommand extends GenericSiteCommand {
   }
   
   public function executeCommand() {
+    $subsite = $this->getSubSite();
     $context = (object) array(
-      'subsite' => $this->getSubSite(),
+      'subsite' => $subsite,
     );
     $context->subsite->getParentSite()->loadSettings();
     $this->executeStep(EVENT_SUBSITE_BUILD_START, $context, TRUE, TRUE);
@@ -45,6 +57,15 @@ class SubSiteBuildCommand extends GenericSiteCommand {
     $this->executeStep(EVENT_SUBSITE_BUILD_SERVER_CONFIG, $context, TRUE, FALSE);
     $this->executeStep(EVENT_SUBSITE_BUILD_EXTRAS, $context, TRUE, FALSE);
     $this->executeStep(EVENT_SUBSITE_BUILD_COMPLETE, $context, TRUE, FALSE);
+    $subsite->getParentSite()->registerSubSite($subsite);
+    $saved = $subsite->getParentSite()->saveConfiguration();
+    if ($saved) {
+      $saved = $subsite->saveConfiguration();
+    }
+    if (empty($saved)) {
+      $this->error(STRING_CANNOT_WRITE_SETTINGS);
+      die(1);
+    }
   }
   
   /**

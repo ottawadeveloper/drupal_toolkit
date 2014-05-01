@@ -249,7 +249,7 @@ abstract class GenericDrupalEntity {
    *   An array of URLs.
    */
   public function getAllURLs() {
-    $urls = $this->getSetting(SITE_EXTRA_URLS);
+    $urls = $this->getSetting(SITE_EXTRA_URLS, array());
     $p = $this->getSetting(SITE_PRIMARY_URL);
     if (!empty($p)) {
       $urls[] = $p;

@@ -146,7 +146,6 @@ class SiteRollbackCommand extends GenericSiteCommand {
       'currentBuild' => $site->getBuildID(),
     );
     $this->executeStep(EVENT_ROLLBACK_PREPARE, $baseContext, TRUE, TRUE);
-    die();
     $this->executeStep(EVENT_ROLLBACK_BACKUP, $baseContext, FALSE, TRUE);
     $this->executeStep(EVENT_ROLLBACK_START, $baseContext, TRUE, TRUE);
     $this->executeStep(EVENT_ROLLBACK_PHASE1, $baseContext, TRUE, TRUE);

@@ -196,6 +196,41 @@ define('STRING_SUCCESS_CREATE_REDUNDANT_SYMLINKS', 'standard_site.success.create
 define('STRING_SUCCESS_SYMLINK_SITES', 'standard_site.success.symlink-sites');
 
 /**
+ * Site setting that holds the list of root symlinks.
+ * 
+ * @ingroup site_settings
+ */
+define('SITE_ROOT_SYMLINKS', 'root-symlinks');
+
+/**
+ * String token for when creating root symlinks.
+ * 
+ * @ingroup strings
+ */
+define('STRING_WORKING_CREATING_ROOT_SYMLINKS', 'standard_site.working.creating-root-symlinks');
+
+/**
+ * String token for when creating a root symlink.
+ * 
+ * @ingroup strings
+ */
+define('STRING_WORKING_CREATING_ROOT_SYMLINK', 'standard_site.working.creating-root-symlink');
+
+/**
+ * String token for when all the root symlinks are created.
+ * 
+ * @ingroup strings
+ */
+define('STRING_SUCCESS_CREATING_ROOT_SYMLINKS', 'standard_site.success.creating-root-symlinks');
+
+/**
+ * String token for when there is an error creating a root symlink.
+ * 
+ * @ingroup strings
+ */
+define('STRING_ERROR_UNABLE_TO_CREATE_ROOT_SYMLINK', 'standard_site.error.unable-to-create-root-symlink');
+
+/**
  * Responsible for managing the basic sites configuration for Drupal sites.
  * 
  * This refers mostly to the contents of the Drupal sites folder, except for the
@@ -305,7 +340,7 @@ class DrupalSiteStandardSitePlugin extends GenericPlugin implements EventListene
     $primarySiteDirectory = assemble_path($subsite->getParentSite()->getBuildFolder(), $structureSites, $primarySite);
     mkdir($primarySiteDirectory);
     $this->working(STRING_WORKING_CREATE_SUBSITE_SETTINGS);
-    $newSettingsFile = assemblePath($primarySiteDirectory, 'settings.php');
+    $newSettingsFile = assemble_path($primarySiteDirectory, 'settings.php');
     $defaultSettings = $subsite->getParentSite()->getSetting(SITE_SETTINGS_TEMPLATE);
     copy($defaultSettings, $newSettingsFile);
     if (!file_exists($newSettingsFile)) {
@@ -315,14 +350,67 @@ class DrupalSiteStandardSitePlugin extends GenericPlugin implements EventListene
     $subsite->setSetting(SITE_SETTINGS_FILE, $newSettingsFile);
     $subsite->registerSystemFile($newSettingsFile);
     $subsite->registerServerFile(assemble_path($primarySiteDirectory, 'files'));
-    if (!$this->createRedundantSymlinks($subsite, $primary, assemble_path($subsite->getParentSite()->getBuildFolder(), $structureSites))) {
+    if (!$this->createRedundantSymlinks($subsite, $primarySite, assemble_path($subsite->getParentSite()->getBuildFolder(), $structureSites))) {
       return FALSE;
     }
     if (!$this->symlinkAllSites($subsite->getParentSite())) {
       return FALSE;
     }
+    if (!$this->createRootSymlinks($currentBase, $subsite)) {
+      return FALSE;
+    }
     $this->success(STRING_SUCCESS_CREATE_SUBSITE_SITES);
     return TRUE;
+  }
+  
+  private function createRootSymlinks($base, GenericDrupalEntity $entity) {
+    $roots = $this->getRootSymlinks($entity);
+    if (empty($roots)) {
+      return TRUE;
+    }
+    $this->working(STRING_WORKING_CREATING_ROOT_SYMLINKS);
+    $ret = TRUE;
+    
+    foreach ($roots as $root) {
+      $this->working(STRING_WORKING_CREATING_ROOT_SYMLINK, array(
+        '!link' => $root,
+      ));
+      $link = assemble_path($base, $root);
+      symlink($base, $link);
+      if (!is_link($link)) {
+        $this->error(STRING_ERROR_UNABLE_TO_CREATE_ROOT_SYMLINK, array(
+          '!link' => $link,
+        ));
+        $ret = FALSE;
+      }
+    }
+    if ($ret) {
+      $this->success(STRING_SUCCESS_CREATING_ROOT_SYMLINKS);
+    }
+    return $ret;
+  }
+  
+  private function getRootSymlinks(GenericDrupalEntity $entity) {
+    $dirs = array();
+    foreach ($entity->getAllURLs() as $url) {
+      if (strpos($url, '://') === FALSE) {
+        $url = 'http://' . $url;
+      }
+      $path = parse_url($url, PHP_URL_PATH);
+      if (!empty($path)) {
+        $path = str_replace('\\' ,'/', $path);
+        $pieces = explode('/', $path);
+        foreach ($pieces as $piece) {
+          $piece = trim($piece);
+          if (!empty($piece)) {
+            if (!in_array($piece, $dirs)) {
+              $dirs[] = $piece;
+            }
+          }
+        }
+      }
+    }
+    return $dirs;
   }
   
   /**
@@ -397,6 +485,9 @@ class DrupalSiteStandardSitePlugin extends GenericPlugin implements EventListene
     $site->registerServerFile($settingsFile);
     $site->registerServerFile(assemble_path($realDefault, 'files'));
     if (!$this->symlinkAllSites($site)) {
+      return FALSE;
+    }
+    if (!$this->createRootSymlinks($currentBase, $subsite)) {
       return FALSE;
     }
     $this->success(STRING_SUCCESS_CREATE_SITES);

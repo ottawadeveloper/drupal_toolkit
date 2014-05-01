@@ -46,6 +46,10 @@ define('ARG_SITE_URL', 'site-url');
 class DrupalSiteStandardConfigPlugin extends GenericPlugin implements EventListener {
   
   public function initialize() {
+    $this->config()->extendDefaultConfiguration(array(
+      CONFIG_SITE_URL_PATTERN => '@@BUILD_NAME.localhost',
+      CONFIG_SUBSITE_URL_PATTERN => '@@SUBSITE_PARENT_ID.localhost/@@SUBSITE_ID',
+    ));
     $this->events()->registerListener(array(
       EVENT_SITE_CONFIGURE,
       EVENT_SUBSITE_BUILD_CONFIG,
