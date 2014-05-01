@@ -37,6 +37,20 @@ define('STRING_MISSING_UPSTREAM_SERVER', 'upstream.error.missing-upstream-server
 define('EVENT_UPSTREAM_PULL', 'pull-upstream-data');
 
 /**
+ * String token for when an upstream pull is about to begin.
+ * 
+ * @ingroup strings
+ */
+define('STRING_WORKING_PULL_UPSTREAM', 'upstream.working.pull');
+
+/**
+ * String token for when an upstream pull is complete.
+ * 
+ * @ingroup strings
+ */
+define('STRING_SUCCESS_PULL_UPSTREAM', 'upstream.success.pull');
+
+/**
  * Generic plugin that supports the concept of upstream servers.
  */
 class UpstreamPlugin extends GenericPlugin implements EventListener {
@@ -96,6 +110,7 @@ class UpstreamPlugin extends GenericPlugin implements EventListener {
     if (!extra_empty($this->config()->getConfig(CONFIG_IGNORE_UPSTREAM))) {
       return TRUE;
     }
+    $this->working(STRING_WORKING_PULL_UPSTREAM);
     $server = $this->getUpstreamServer();
     // Bail on the process if there is no upstream server defined.
     if (empty($server)) {
@@ -117,6 +132,9 @@ class UpstreamPlugin extends GenericPlugin implements EventListener {
       'handled' => FALSE,
     );
     $this->events()->fireEvent(EVENT_UPSTREAM_PULL, $context);
+    if ($context->success) {
+      $this->success(STRING_SUCCESS_PULL_UPSTREAM);
+    }
     return $context->success;
   }
   
