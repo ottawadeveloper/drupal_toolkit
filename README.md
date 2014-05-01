@@ -41,6 +41,19 @@ which Drush is merely a part of. Specifically, we aim to support:
 - Streamlining the update procedure to be automated with good failure protection
 - Streamlining the deletion procedure to ensure all relevant files are removed
 
+## Command Status
+
+- site-build: working
+- site-exists: working
+- site-install: working
+- site-update: working (site only)
+- site-rollback: working (site only)
+- site-delete: ??
+- subsite-build: working
+- subsite-exists: working
+- subsite-install: not implemented
+- subsite-delete: not implemented
+
 ## 2014-04-27
 
 Currently this project is undergoing some significant tweaks to support
