@@ -88,9 +88,26 @@ define('STRING_UNABLE_TO_DELETE_REMOTE_FILE', 'server_interaction.error.could-no
  */
 define('STRING_UNABLE_TO_CAST_SERVER', 'server_interaction.error.unable-to-cast');
 
-define('STRING_SUCCESS_DELETING_REMOTE_FILE', 'server_interaction.success.remote-delete');
-define('STRING_WORKING_DELETING_REMOTE_FILE', 'server_interaction.working.remote-delete');
-define('STRING_WORKING_DELETING_REMOTE_FILE_ITEM', 'server_interaction.working.remote-delete-item');
+/**
+ * String token for when the server is done deleting remote files.
+ * 
+ * @ingroup strings
+ */
+define('STRING_SUCCESS_DELETING_REMOTE_FILES', 'server_interaction.success.remote-delete');
+
+/**
+ * String token for when the server is about to delete some remote files.
+ * 
+ * @ingroup strings
+ */
+define('STRING_WORKING_DELETING_REMOTE_FILES', 'server_interaction.working.remote-delete');
+
+/**
+ * String token for when the server is deleting a specific remote file.
+ * 
+ * @ingroup strings
+ */
+define('STRING_WORKING_DELETING_REMOTE_FILES_ITEM', 'server_interaction.working.remote-delete-item');
 
 /**
  * Manages the list of the different types of servers that can be used by
