@@ -8,14 +8,14 @@
  * 
  * @ingroup events
  */
-define('EVENT_REMOVE_SUBSITE_ALL');
+define('EVENT_REMOVE_SUBSITE_ALL', 'subsite-remove');
 
 /**
  * Generic message if there is an error removing the subsite.
  * 
  * @ingroup strings
  */
-define('STRING_ERROR_REMOVE_SUBSITE');
+define('STRING_ERROR_REMOVE_SUBSITE', 'drupal_site_delete.error.removing-subsite');
 
 /**
  * Event fired after the subsite has been removed to cleanup the parent
@@ -23,7 +23,7 @@ define('STRING_ERROR_REMOVE_SUBSITE');
  * 
  * @ingroup events
  */
-define('EVENT_REMOVE_SUBSITE_CLEANUP');
+define('EVENT_REMOVE_SUBSITE_CLEANUP', 'subsite-remove-cleanup');
 
 /**
  * Responsible for organizing the deletion of a subsite.
