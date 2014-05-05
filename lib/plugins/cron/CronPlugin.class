@@ -360,7 +360,7 @@ class CronPlugin extends GenericPlugin implements EventListener {
    *   TRUE if the cron tabs were installed successfully, otherwise FALSE.
    */
   private function installCronJob(GenericDrupalEntity $site, $update = FALSE) {
-    $alias = $site->getSetting(SITE_DRUSH_ALIAS);
+    $alias = $site->getDrushAlias();
     if (empty($alias)) {
       $this->error(STRING_SITE_MISSING_SETTING, array(
         '!key' => SITE_DRUSH_ALIAS

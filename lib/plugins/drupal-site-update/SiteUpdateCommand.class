@@ -118,6 +118,13 @@ define('EVENT_UPDATE_REFRESH_SERVER_CONFIG', 'update-refresh-server');
 define('STRING_UPDATE_GENERIC_ERROR', 'drupal_site_update.error');
 
 /**
+ * Event fired to prepare a subsite for an update
+ * 
+ * @ingroup events
+ */
+define('EVENT_UPDATE_PREPARE_SUBSITE', 'update-prepare-subsite');
+
+/**
  * Responsible for updating a Drupal site.
  */
 class SiteUpdateCommand extends GenericSiteCommand {
@@ -179,6 +186,14 @@ class SiteUpdateCommand extends GenericSiteCommand {
     $this->executeStep(EVENT_UPDATE_SITES, $baseContext);
     $this->executeStep(EVENT_UPDATE_CODEBASE_COMPLETE, $baseContext, TRUE);
     $this->executeStep(EVENT_UPDATE_TAKE_BACKUP, $baseContext);
+    $subsites = $site->getSubSites();
+    foreach ($subsites as $id) {
+      $context = (object) array(
+        'subsite' => $site->getSubSite($id),
+        'build_id' => $buildID,
+      );
+      $this->executeStep(EVENT_UPDATE_PREPARE_SUBSITE, $context);
+    }
     $this->executeStep(EVENT_UPDATE_PREPARE_FOR_UPDATE, $baseContext, FALSE, FALSE);
     $this->executeStep(EVENT_UPDATE_PREPARE_SERVER, $baseContext, TRUE, FALSE);
     $this->executeStep(EVENT_UPDATE_PRIOR_ACTIONS, $baseContext, TRUE, FALSE);

@@ -1,0 +1,195 @@
+<?php
+/**
+ * @file Defines the DrupalSiteEvent class.
+ */
+
+/**
+ * Handles much of the wrapper work around working with site and subsite
+ * events.
+ */
+class DrupalSiteEvent {
+  
+  /**
+   * The generic drupal entity being fired by this object.
+   * 
+   * @var GenericDrupalEntity
+   */
+  private $site;
+  
+  /**
+   * Whether or not a plug-in has attempted to deal with this event.
+   * 
+   * @var boolean
+   */
+  private $handled = FALSE;
+  
+  /**
+   * Whether or not all plug-ins were successful in dealing with this event.
+   * 
+   * @var boolean
+   */
+  private $success = FALSE;
+  
+  /**
+   * Whether or not this plug-in is optional.
+   * 
+   * @var boolean
+   */
+  private $optional;
+  
+  /**
+   * Additional variables for this event.
+   * 
+   * @var array
+   */
+  private $variables = array();
+  
+  /**
+   * 
+   * @param GenericDrupalEntity $entity
+   *   The entity that this event is related.
+   * @param boolean $optional
+   *   Whether or not this event is optional.
+   * @param array $variables
+   *   Extra variables.
+   */
+  public function __construct(GenericDrupalEntity $entity, $optional = FALSE, $variables = array()) {
+    $this->site = $entity;
+    $this->optional = $optional;
+    $this->variables = $variables;
+  }
+  
+  /**
+   * Retrieves an extra variable value.
+   * 
+   * @param string $key
+   *   The extra variable's key name.
+   * @param mixed $default
+   *   The default return value if it is not set. Defaults to FALSE.
+   * 
+   * @return mixed
+   *   The value of the variable.
+   */
+  public function getVariable($key, $default = FALSE) {
+    if (isset($this->variables[$key])) {
+      return $this->variables[$key];
+    }
+    return $default;
+  }
+  
+  /**
+   * Sets the value of a variable.
+   * 
+   * @param string $key
+   *   The key to set.
+   * @param mixed $value
+   *   The value to set.
+   */
+  public function setVariable($key, $value) {
+    $this->variables[$key] = $value;
+  }
+  
+  /**
+   * Sets whether or not a plug-in's attempt to deal with an event was
+   * successful or not.
+   * 
+   * @param boolean $result
+   *   TRUE if successful, otherwise FALSE. 
+   */
+  public function setResult($result) {
+    if (!$this->handled) {
+      $this->success = !!$result;
+      $this->handled = TRUE;
+    }
+    else {
+      $this->success = (!!$result) && $this->success;
+    }
+  }
+  
+  /**
+   * Checks to see if the event was successfully dealt with.
+   * 
+   * @return boolean
+   *   TRUE if successful, or optional and not handled.
+   */
+  public function success() {
+    return $this->success || ($this->optional && empty($this->handled));
+  }
+  
+  /**
+   * Retrieves the DrupalEntity.
+   * 
+   * @return GenericDrupalEntity
+   *   The generic drupal entity as specified by the constructor.
+   */
+  public function getEntity() {
+    return $this->site;
+  }
+  
+  /**
+   * Retrieves an instance of DrupalSite. This returns the parent site for
+   * subsites.
+   * 
+   * @return DrupalSite
+   *   The appropriate DrupalSite instance.
+   */
+  public function getSite() {
+    if ($this->site instanceof DrupalSubSite) {
+      return $this->site->getParentSite();
+    }
+    return $this->site;
+  }
+  
+  /**
+   * Retrieves an instance of DrupalSubSite.
+   * 
+   * @return DrupalSubSite
+   *   Returns the entity if it's a subsite, otherwise NULL.
+   */
+  public function getSubSite() {
+    if ($this->site instanceof DrupalSubSite) {
+      return $this->site;
+    }
+    return NULL;
+  }
+  
+  /**
+   * Fires an event with appropriate handling of error conditions
+   * 
+   * @param OutputManagerInterface $out
+   *   DI for output.
+   * @param EventsManagerInterface $events
+   *   DI for event management.
+   * @param type $context
+   *   A context array with some or all of the following keys:
+   *   - entity: An instance of GenericDrupalEntity (required)
+   *   - name: The name of the event to fire (required)
+   *   - optional: Set to TRUE to make the event optional (eg no handling is not an error).
+   *   - variables: An array of additional variables
+   *   - error: An error message to display if unsuccessful
+   *   - continue: Set to TRUE to prevent the system from dying on a lack
+   *     of success
+   *   - code: The error code to die() with. Defaults to 1.
+   * 
+   * @return boolean
+   *   TRUE if successful, FALSE if otherwise and continue was set in $context.
+   */
+  public static function fireSiteEvent(OutputManagerInterface $out, EventsManagerInterface $events, $context) {
+    $event = new DrupalSiteEvent(
+        $context['entity'], 
+        isset($context['optional']) ? $context['optional'] : FALSE, 
+        isset( $context['variables']) ? $context['variables'] : array()
+    );
+    $events->fireEvent($context['name'], $event);
+    if (!$event->success()) {
+      if (!empty($context['error'])) {
+        $out->log($context['error'], CLOG_ERROR);
+      }
+      if (!empty($context['continue'])) {
+        die(isset($context['code']) ? $context['code'] : 1);
+      }
+    }
+    return $event->success();
+  }
+  
+}

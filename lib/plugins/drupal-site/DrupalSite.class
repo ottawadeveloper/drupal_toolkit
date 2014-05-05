@@ -135,7 +135,6 @@ class DrupalSite extends GenericDrupalEntity {
       assemble_path($this->getBuildFolder(), 'webcms.cfg'),
     );
   }
-  
   /**
    * Retrieves a subsite.
    * 

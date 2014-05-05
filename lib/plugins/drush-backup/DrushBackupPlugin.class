@@ -116,6 +116,11 @@ class DrushBackupPlugin extends GenericPlugin implements EventListener {
           $context->handled = TRUE;
         }
         break;
+      case EVENT_UPDATE_PREPARE_SUBSITE:
+        if (empty($context->handled) || $context->success) {
+          $context->handled = TRUE;
+          $context->success = $this->drushBackup($context->subsite);
+        }
     }
   }
   
@@ -134,7 +139,7 @@ class DrushBackupPlugin extends GenericPlugin implements EventListener {
    * @return boolean
    *   TRUE if successful, otherwise FALSE.
    */
-  public function restoreFromBackup(DrupalSite $site, $buildID) {
+  public function restoreFromBackup(GenericDrupalEntity $site, $buildID) {
     $drushAlias = $site->getSetting(SITE_DRUSH_ALIAS);
     if (empty($drushAlias)) {
       $this->error(STRING_SITE_MISSING_SETTING, array(
@@ -198,7 +203,7 @@ class DrushBackupPlugin extends GenericPlugin implements EventListener {
    * @return boolean
    *   TRUE if successful, otherwise FALSE.
    */
-  private function backupForRollback(DrupalSite $site, $buildID) {
+  private function backupForRollback(GenericDrupalEntity $site, $buildID) {
     return $this->drushBackup($site, 'reverted', $buildID);
   }
   
@@ -240,7 +245,7 @@ class DrushBackupPlugin extends GenericPlugin implements EventListener {
    * @return boolean
    *   Whether or not the backup was successful.
    */
-  private function drushBackup(DrupalSite $site, $type = 'updates', $buildID = NULL) {
+  private function drushBackup(GenericDrupalEntity $site, $type = 'updates', $buildID = NULL) {
     if (empty($buildID)) {
       if ($type === 'updates') {
         $buildID = $site->getPreviousBuildID();

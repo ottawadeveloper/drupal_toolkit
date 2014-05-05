@@ -131,6 +131,7 @@ class DrupalSitePlugin extends GenericPlugin implements EventListener {
     require assemble_path($root, 'DrupalSite.class');
     require assemble_path($root, 'DrupalSubSite.class');
     require assemble_path($root, 'GenericSiteCommand.class');
+    require assemble_path($root, 'DrupalSiteEvent.class');
     $this->config()->extendDefaultConfiguration(array(
       CONFIG_ALLOW_LOCAL_SITES => LOCAL_SITES_ALLOW,
       CONFIG_BUILD_DIRECTORY => '',
