@@ -4,13 +4,6 @@
  */
 
 /**
- * String token for when we are unable to remove the site entirely.
- * 
- * @ingroup strings
- */
-define('STRING_UNABLE_TO_REMOVE', 'drupal_site_delete.error.unable-to-remove');
-
-/**
  * Responsible for handling the site-delete command.
  */
 class SiteDeleteCommand extends GenericSiteCommand {
@@ -24,32 +17,23 @@ class SiteDeleteCommand extends GenericSiteCommand {
   
   public function executeCommand() {
     $site = $this->getSite();
-    $site->loadSettings();
     $success = TRUE;
+    $context = array(
+      'entity' => NULL,
+      'name' => EVENT_REMOVE_SUBSITE_ALL,
+      'optional' => TRUE,
+      'error' => STRING_ERROR_REMOVE_SUBSITE,
+      'continue' => TRUE,
+    );
     foreach ($site->getSubSites() as $id) {
       $subsite = $site->getSubSite($id);
       $subsite->loadSettings();
-      $context = (object) array(
-        'site' => $subsite,
-        'success' => TRUE,
-        'handled' => FALSE,
-      );
-      $this->events()->fireEvent(EVENT_REMOVE_SUBSITE_ALL, $context);
-      if (empty($context->success)) {
-        $this->error(STRING_ERROR_REMOVE_SUBSITE);
+      $context['entity'] = $subsite;
+      if (!DrupalSiteEvent::fireSiteEvent($this->out(), $this->events(), $context)) {
         $success = FALSE;
       }
     }
-    $context = (object) array(
-      'site' => $site,
-      'success' => TRUE,
-      'fromBuild' => FALSE,
-    );
-    $this->events()->fireEvent(EVENT_REMOVE_ALL, $context);
-    if (empty($success) || !$context->success) {
-      $this->error(STRING_UNABLE_TO_REMOVE);
-      exit(1);
-    }
+    $this->executeSiteCommandStep(EVENT_REMOVE_ALL, FALSE, 0, STRING_UNABLE_TO_REMOVE);
   }
   
 }
