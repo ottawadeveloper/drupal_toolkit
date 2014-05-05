@@ -101,6 +101,13 @@ define('SITE_TOKEN_BUILD_DIR', 'BUILD_DIRECTORY');
 class DrupalSite extends GenericDrupalEntity {
  
   /**
+   * Cached subsites.
+   * 
+   * @var array
+   */
+  private $cachedSubSites = array();
+  
+  /**
    * Constructs an instance of DrupalSite.
    * 
    * You should use the factory method instead.
@@ -145,7 +152,11 @@ class DrupalSite extends GenericDrupalEntity {
    *   An instance of DrupalSubSite tied to $subsiteID.
    */
   public function getSubSite($subsiteID) {
-    return new DrupalSubSite($this, $subsiteID);
+    if (!isset($this->cachedSubSites[$subsiteID])) {
+      $this->cachedSubSites[$subsiteID] = new DrupalSubSite($this, $subsiteID);
+      $this->cachedSubSites[$subsiteID]->loadSettings();
+    }
+    return $this->cachedSubSites[$subsiteID];
   }
   
   public function uuid() {

@@ -70,6 +70,8 @@ define('COMMAND_STEP_SITE', 'site');
 
 define('COMMAND_STEP_SUBSITE', 'subsite');
 
+define('COMMAND_STEP_ALL_SUBSITES', 'subsites-all');
+
 /**
  * Provides a base for commands that need to work with sites.
  */
@@ -360,6 +362,15 @@ abstract class GenericSiteCommand extends GenericCommand {
     foreach ($steps as $step) {
       array_extend($step, $defaults);
       switch ($step['type']) {
+        case COMMAND_STEP_ALL_SUBSITES:
+          $success = $this->executeAllSubSiteCommandStep(
+              $step['event'],
+              !empty($step['optional']),
+              empty($step['die']) ? 0 : $step['die'],
+              isset($step['error']) ? $step['error'] : NULL,
+              $step['vars']
+          ) && $success;
+          break;
         case COMMAND_STEP_SUBSITE:
           $success = $this->executeSubSiteCommandStep(
               $step['event'],
@@ -449,6 +460,44 @@ abstract class GenericSiteCommand extends GenericCommand {
   }
   
   /**
+   * Executes a command step for a subsite.
+   * 
+   * @param string $event
+   *   Identifying string for the event.
+   * @param boolean $optional
+   *   Whether or not the event is optional.
+   * @param int $die
+   *   The error code to die with. If set to 0, will not die.
+   * @param string $error
+   *   The error lookup string to display on error. Set to NULL to not display
+   *   a message.
+   * @param array $vars
+   *   An array of extra variables.
+   * 
+   * @return boolean
+   *   TRUE if successful (or optional and not handled), FALSE if die is empty
+   *   otherwise.
+   */
+  protected function executeAllSubSiteCommandStep($event, $optional = FALSE, $die = 1, $error = NULL, $vars = array()) {
+    $context = array(
+      'entity' => NULL,
+      'name' => $event,
+      'optional' => $optional,
+      'variables' => $vars,
+      'error' => $error,
+      'continue' => !empty($die),
+      'code' => empty($die) ? 1 : $die,
+    );
+    $success = TRUE;
+    $site = $this->getSite();
+    foreach ($site->getSubSites() as $id) {
+      $context['entity'] = $site->getSubSite($id);
+      $success = DrupalSiteEvent::fireSiteEvent($this->out(), $this->events(), $context) && $success;
+    }
+    return $success;
+  }
+  
+  /**
    * Saves the site configuration, with error message and optional auto-death.
    * 
    * @param boolean $die
@@ -476,6 +525,25 @@ abstract class GenericSiteCommand extends GenericCommand {
     $site = $subsite->getParentSite();
     return $this->saveEntityConfiguration($site, $die) && 
         $this->saveEntityConfiguration($subsite, $die);
+  }
+  
+  /**
+   * Saves the subsite configuration, with error message and optional auto-death.
+   * 
+   * @param boolean $die
+   *   Set to FALSE to not die but return FALSE instead.
+   * 
+   * @return boolean
+   *   Whether or not the site configuration was saved.
+   */
+  protected function saveAllSubSiteConfiguration($die = TRUE) {
+    $site = $this->getSite();
+    $success = TRUE;
+    foreach ($site->getSubSites() as $id) {
+      $subsite = $site->getSubSite($id);
+      $success = $this->saveEntityConfiguration($subsite, $die) && $success;
+    }
+    return $this->saveEntityConfiguration($site, $die) && $success;
   }
   
   /**
