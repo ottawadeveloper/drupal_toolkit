@@ -4,29 +4,39 @@
  */
 
 /**
- * String token for when the subsite has already been installed.
- * 
- * @ingroup strings
- */
-define('STRING_ERROR_SUBSITE_INSTALLED', 'drupal_site.error.subsite-already-installed.');
-
-/**
  * Responsible for the command that installs a subsite. This proceeds in
  * a similar fashion to installing the site itself, except that different
  * variables may be used.
  */
 class SubSiteInstallCommand extends GenericSiteCommand {
   
+  /**
+   * The necessary steps for installing a site.
+   * 
+   * @var array
+   */
+  private $steps = array(
+    array(
+      'event' => EVENT_INSTALL_START,
+      'optional' => TRUE,
+    ),
+    array(
+      'event' => EVENT_INSTALL_TASK,
+    ),
+    array(
+      'event' => EVENT_INSTALL_EXTRAS,
+    ),
+    array(
+      'event' => EVENT_INSTALL_DONE,
+      'optional' => TRUE,
+    ),
+  );
+  
   public function verifyRequirements() {
     if (!$this->requireSubSite()) {
       return FALSE;
     }
-    if (!$this->requireCommand('drush')) {
-      return FALSE;
-    }
-    $site = $this->getSubSite();
-    $site->loadSettings();
-    if (!extra_empty($site->getSetting(SITE_IS_INSTALLED))) {
+    if (!extra_empty($this->getSubSite()->getSetting(SITE_IS_INSTALLED))) {
       $this->error(STRING_ERROR_SUBSITE_INSTALLED);
       return FALSE;
     }
@@ -34,38 +44,12 @@ class SubSiteInstallCommand extends GenericSiteCommand {
   }
   
   public function executeCommand() {
-    $site = $this->getSubSite();
-    $site->loadSettings();
-    $baseContext = (object) array(
-      'site' => $site,
-    );
-    $this->events()->fireEvent(EVENT_INSTALL_START, $baseContext);
-    
-    $taskContext = (object) array(
-      'site' => $baseContext->site,
-      'success' => FALSE,
-    );
-    
-    $this->events()->fireEvent(EVENT_INSTALL_TASK, $taskContext);
-    if (!$taskContext->success) {
-      $this->error(STRING_INSTALL_ERROR);
-      exit(1);
-    }
-    
-    $extraContext = (object) array(
-      'site' => $baseContext->site,
-      'success' => TRUE,
-    );
-    $this->events()->fireEvent(EVENT_INSTALL_EXTRAS, $extraContext);
-    if (!$extraContext->success) {
-      $this->error(STRING_INSTALL_ERROR);
-      exit(1);
-    }
-    $site->setSetting(SITE_IS_INSTALLED, "1");
-    $this->events()->fireEvent(EVENT_INSTALL_DONE, $baseContext);
-    if (!$site->saveConfiguration()) {
-      $this->error(STRING_COULD_NOT_SAVE_SITE);
-    }
+    $this->executeAllSteps($this->steps, array(
+      'error' => STRING_INSTALL_ERROR,
+      'type' => COMMAND_TYPE_SUBSITE,
+    ));
+    $this->getSubSite()->setSetting(SITE_IS_INSTALLED, "1");
+    $this->saveSubSiteConfiguration();
   }
   
 }
