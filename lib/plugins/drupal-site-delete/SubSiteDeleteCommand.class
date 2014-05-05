@@ -18,6 +18,14 @@ define('EVENT_REMOVE_SUBSITE_ALL');
 define('STRING_ERROR_REMOVE_SUBSITE');
 
 /**
+ * Event fired after the subsite has been removed to cleanup the parent
+ * site object.
+ * 
+ * @ingroup events
+ */
+define('EVENT_REMOVE_SUBSITE_CLEANUP');
+
+/**
  * Responsible for organizing the deletion of a subsite.
  */
 class SubSiteDeleteCommand extends GenericSiteCommand {
@@ -36,6 +44,7 @@ class SubSiteDeleteCommand extends GenericSiteCommand {
       'handled' => FALSE,
     );
     $this->events()->fireEvent(EVENT_REMOTE_SUBSITE_ALL, $context);
+    $this->events()->fireEvent(EVENT_REMOTE_SUBSITE_CLEANUP, $context);
     if (empty($context->success)) {
       $this->error(STRING_ERROR_REMOVE_SUBSITE);
       exit(1);
