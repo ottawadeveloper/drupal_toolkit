@@ -117,6 +117,15 @@ class DrupalSiteEvent {
   }
   
   /**
+   * Checks to see if a handler should be executed.
+   * 
+   * @return boolean
+   */
+  public function checkExecution() {
+    return empty($this->handled) || $this->success;
+  }
+  
+  /**
    * Retrieves the DrupalEntity.
    * 
    * @return GenericDrupalEntity

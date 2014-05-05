@@ -174,10 +174,11 @@ define('STRING_WORKING_CRON_SETUP_ITEM', 'cron.working.setup_item');
 class CronPlugin extends GenericPlugin implements EventListener {
   
   public function initialize() {
-    $base = dirname(__FILE__);
-    require assemble_path($base, 'CronManagerInterface.iface');
-    require assemble_path($base, 'GenericCronManager.class');
-    require assemble_path($base, 'LinuxCrontab.class');
+    $this->includeFiles(dirname(__FILE__), array(
+      'CronManagerInterface.iface',
+      'GenericCronManager.class',
+      'LinuxCrontab.class'
+    ));
     $this->events()->registerListener(array(
       EVENT_INSTALL_EXTRAS,
       EVENT_CAST_CRON_SERVER,
@@ -189,31 +190,31 @@ class CronPlugin extends GenericPlugin implements EventListener {
       CONFIG_DEFAULT_CRON_TYPE => CRON_TYPE_CRONTAB,
       CONFIG_STATIC_CRON => FALSE,
     ));
-    $this->error('NOTHING', array(), CLOG_CRITICAL);
   }
   
   public function captureEvent(&$context, $eventType) {
+    switch($eventType) {
       case EVENT_UPDATE_PRIOR_ACTIONS:
-        if (empty($context->handled) || $context->success) {
-          $context->success = $this->updateAll($context->site);
-          $context->handled = TRUE;
+        if ($context->checkExecution()) {
+          $context->setResults($this->updateAll($context->getSite()));
         }
         break;
       case EVENT_REMOVE_SUBSITE_ALL:
       case EVENT_REMOVE_ALL:
-        $context->success = $this->deleteCronTasks($context->site) && $context->success;
-        $context->handled = TRUE;
+        if ($context->checkExecution()) {
+          $context->setResults($this->deleteCronTasks($context->getEntity()));
+        }
         break;
       case EVENT_INSTALL_EXTRAS:
-        if (empty($context->handled) || $context->success) {
-          $context->handled = TRUE;
-          $context->success = $this->installCronJob($context->site);
+        if ($context->checkExecution()) {
+          $context->setResults($this->installCronJob($context->getEntity()));
         }
         break;
       case EVENT_CAST_CRON_SERVER:
         if (empty($context->cronServer)) {
           $context->cronServer = $this->castCronMachine($context->server, $context->cronType);
         }
+        break;
     }
   }
   
