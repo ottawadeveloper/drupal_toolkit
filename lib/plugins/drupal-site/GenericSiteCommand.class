@@ -283,6 +283,9 @@ abstract class GenericSiteCommand extends GenericCommand {
         $name = $this->getBuildName();
       }
       $this->loadedSite = DrupalSite::createSite($this->config(), $name, $this->isLocal());
+      if (!empty($this->loadedSite)) {
+        $this->loadedSite->loadSettings();
+      }
     }
     return $this->loadedSite;
   }
@@ -306,6 +309,9 @@ abstract class GenericSiteCommand extends GenericCommand {
         $subsiteName = $this->getSubSiteName();
       }
       $this->loadedSubSite = new DrupalSubSite($this->getSite($parentName), $subsiteName);
+      if (!empty($this->loadedSubSite)) {
+        $this->loadedSubSite->loadSettings();
+      }
     }
     return $this->loadedSubSite;
   }
@@ -467,7 +473,9 @@ abstract class GenericSiteCommand extends GenericCommand {
    */
   protected function saveSubSiteConfiguration($die = TRUE) {
     $subsite = $this->getSubSite();
-    return $this->saveEntityConfiguration($subsite, $die);
+    $site = $subsite->getParentSite();
+    return $this->saveEntityConfiguration($site, $die) && 
+        $this->saveEntityConfiguration($subsite, $die);
   }
   
   /**
