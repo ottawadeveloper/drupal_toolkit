@@ -124,6 +124,13 @@ define('STRING_SUCCESS_DRUSH_ALIASES_SETUP', 'drush_config.success.setup');
 define('STRING_WORKING_DRUSH_ALIAS_SETUP', 'drush_config.working.setup-alias');
 
 /**
+ * Configuration setting for the Drush file alias template.
+ * 
+ * @ingroup config
+ */
+define('CONFIG_DRUSH_ALIAS_FILE_TEMPLATE', 'drush-file-template');
+
+/**
  * Takes responsibility for setting up the drush alias.
  */
 class DrushConfigurationPlugin extends GenericPlugin implements EventListener {
@@ -131,7 +138,8 @@ class DrushConfigurationPlugin extends GenericPlugin implements EventListener {
   public function initialize() {
     $this->config()->extendDefaultConfiguration(array(
       CONFIG_DRUSH_ALIAS_STATIC => FALSE,
-      CONFIG_DRUSH_ALIAS_TEMPLATE => '@@BUILD_NAME.alias.drushrc.php',
+      CONFIG_DRUSH_ALIAS_TEMPLATE => '@@SITE_UUID',
+      CONFIG_DRUSH_ALIAS_FILE_TEMPLATE => '@@SITE_UUID.alias.drushrc.php',
       CONFIG_DRUSH_ALIAS_DIR => '/etc/drush',
       CONFIG_DRUSH_ALIAS_CREATE_FOR_LOCAL => TRUE,
       CONFIG_SERVER_LIST => array(
@@ -204,6 +212,7 @@ class DrushConfigurationPlugin extends GenericPlugin implements EventListener {
     $config = $this->getConfig(array(
       'template' => CONFIG_DRUSH_ALIAS_TEMPLATE,
       'default-dir' => CONFIG_DRUSH_ALIAS_DIR,
+      'file-template' => CONFIG_DRUSH_ALIAS_FILE_TEMPLATE,
     ));
     if (empty($config)) {
       return FALSE;
@@ -227,14 +236,20 @@ class DrushConfigurationPlugin extends GenericPlugin implements EventListener {
         $this->working(STRING_WORKING_DRUSH_ALIAS_SETUP, array(
           '!name' => $key,
         ));
-        if (!$this->writeTemplate($aliasList, $site, $server, $config['default-dir'], $config['template'], $defaultAlias)) {
+        if (!$this->writeTemplate($aliasList, $site, $server, $config['default-dir'], $config['file-template'], $defaultAlias)) {
           return FALSE;
         }
       }
     }
+    $alias = $site->replaceTokens($config['template']);
     if (!$context->skipLocal) {
-      $site->setSetting(SITE_DRUSH_ALIAS, $site->getBuildName());
-      $site->appendSettingValue(SITE_DRUSH_ALIASES, $site->getBuildName());
+      $site->setSetting(SITE_DRUSH_ALIAS, $alias);
+      if ($site instanceof DrupalSubSite) {
+        $site->getParentSite()->appendSettingValue(SITE_DRUSH_ALIASES, $alias);
+      }
+      else {
+        $site->appendSettingValue(SITE_DRUSH_ALIASES, $alias);
+      }
     }
     $site->appendSettingValue(SITE_REMOTE_FILES, $aliasList);
     $this->success(STRING_SUCCESS_DRUSH_ALIASES_SETUP);

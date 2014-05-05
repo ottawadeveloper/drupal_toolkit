@@ -53,6 +53,13 @@ define('SITE_TOKEN_ALL_DOMAINS', 'SITE_ALL_DOMAINS');
 define('SITE_SETTING_ALL_DOMAINS', 'all-domains');
 
 /**
+ * Site token for a unique identifier.
+ * 
+ * @ingroup site_tokens
+ */
+define('SITE_TOKEN_UUID', 'SITE_UUID');
+
+/**
  * Provides common tools required by both Sites and Subsites.
  */
 abstract class GenericDrupalEntity {

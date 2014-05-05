@@ -222,13 +222,13 @@ class DrushInstallPlugin extends GenericPlugin implements EventListener {
   /**
    * Responsible for the site install command.
    * 
-   * @param DrupalSite $site
+   * @param GenericDrupalEntity $site
    *   The site to install.
    * 
    * @return boolean
    *   TRUE if the site was installed successfully, otherwise FALSE.
    */
-  private function installSite(DrupalSite $site) {
+  private function installSite(GenericDrupalEntity $site) {
     $drushAlias = $site->getSetting(SITE_DRUSH_ALIAS);
     if (empty($drushAlias)) {
       $this->error(STRING_NO_LOCAL_ALIAS);

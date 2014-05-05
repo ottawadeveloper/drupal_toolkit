@@ -123,6 +123,7 @@ class DrupalSite extends GenericDrupalEntity {
     $this->setSetting(SITE_EXISTING_SITES, array('default'));
     $this->setToken(SITE_TOKEN_BUILD_NAME, $name);
     $this->setToken(SITE_TOKEN_BUILD_DIR, $folder);
+    $this->setToken(SITE_TOKEN_UUID, $this->uuid());
   }
   
   protected function getConfigurationPath() {

@@ -55,6 +55,7 @@ class DrupalSubSite extends GenericDrupalEntity {
     $this->setToken(SITE_TOKEN_SUBSITE_ID, $subsiteID);
     $this->setToken(SITE_TOKEN_SUBSITE_PARENT_ID, $site->getBuildName());
     $this->setToken(SITE_TOKEN_BUILD_NAME, $site->getBuildName() . '_' . $subsiteID);
+    $this->setToken(SITE_TOKEN_UUID, $this->uuid());
   }
   
   /**
