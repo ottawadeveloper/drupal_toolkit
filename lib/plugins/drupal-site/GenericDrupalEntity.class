@@ -93,10 +93,15 @@ abstract class GenericDrupalEntity {
   /**
    * List of replacement strings keyed by their replacement values.
    * 
-   * @var type 
+   * @var array
    */
   private $placeholders = array();
   
+  /**
+   * Flag for whether or not the settings have been loaded.
+   * 
+   * @var boolean
+   */
   private $settingsLoaded = FALSE;
   
   /**
