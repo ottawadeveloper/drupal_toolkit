@@ -1,0 +1,45 @@
+<?php
+/**
+ * @file Defines the SubSiteDeleteCommand class.
+ */
+
+/**
+ * Event fired to remove all evidence that a subsite ever existed.
+ * 
+ * @ingroup events
+ */
+define('EVENT_REMOVE_SUBSITE_ALL');
+
+/**
+ * Generic message if there is an error removing the subsite.
+ * 
+ * @ingroup strings
+ */
+define('STRING_ERROR_REMOVE_SUBSITE');
+
+/**
+ * Responsible for organizing the deletion of a subsite.
+ */
+class SubSiteDeleteCommand extends GenericSiteCommand {
+  
+  public function verifyRequirements() {
+    if (!$this->requireSubSite()) {
+      return FALSE;
+    }
+    return parent::verifyRequirements();
+  }
+  
+  public function executeCommand() {
+    $context = (object) array(
+      'subsite' => $this->getSubSite(),
+      'success' => TRUE,
+      'handled' => FALSE,
+    );
+    $this->events()->fireEvent(EVENT_REMOTE_SUBSITE_ALL, $context);
+    if (empty($context->success)) {
+      $this->error(STRING_ERROR_REMOVE_SUBSITE);
+      exit(1);
+    }
+  }
+  
+}

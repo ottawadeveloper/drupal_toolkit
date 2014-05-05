@@ -12,6 +12,7 @@ class DrupalSiteDeletePlugin extends GenericPlugin implements EventListener {
   public function initialize() {
     $base = dirname(__FILE__);
     require assemble_path($base, 'SiteDeleteCommand.class');
+    require assemble_path($base, 'SubSiteDeleteCommand.class');
     $this->events()->registerListener(array(
       EVENT_CORE_REGISTER_COMMANDS,
     ), $this);
@@ -25,6 +26,7 @@ class DrupalSiteDeletePlugin extends GenericPlugin implements EventListener {
     switch ($eventType) {
       case EVENT_CORE_REGISTER_COMMANDS:
         $this->router()->addCommand('site-delete', new SiteDeleteCommand());
+        $this->router()->addCommand('subsite-delete', new SubSiteDeleteCommand());
         break;
     }
   }
