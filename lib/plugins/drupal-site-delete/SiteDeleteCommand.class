@@ -25,13 +25,28 @@ class SiteDeleteCommand extends GenericSiteCommand {
   public function executeCommand() {
     $site = $this->getSite();
     $site->loadSettings();
+    $success = TRUE;
+    foreach ($site->getSubSites() as $id) {
+      $subsite = $site->getSubSite($id);
+      $subsite->loadSettings();
+      $context = (object) array(
+        'site' => $subsite,
+        'success' => TRUE,
+        'handled' => FALSE,
+      );
+      $this->events()->fireEvent(EVENT_REMOVE_SUBSITE_ALL, $context);
+      if (empty($context->success)) {
+        $this->error(STRING_ERROR_REMOVE_SUBSITE);
+        $success = FALSE;
+      }
+    }
     $context = (object) array(
       'site' => $site,
       'success' => TRUE,
       'fromBuild' => FALSE,
     );
     $this->events()->fireEvent(EVENT_REMOVE_ALL, $context);
-    if (!$context->success) {
+    if (empty($success) || !$context->success) {
       $this->error(STRING_UNABLE_TO_REMOVE);
       exit(1);
     }
