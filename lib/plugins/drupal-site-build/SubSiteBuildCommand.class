@@ -40,6 +40,11 @@ class SubSiteBuildCommand extends GenericSiteCommand {
   );
   
   public function verifyArguments() {
+    if (!$this->isLocal()) {
+      if (!$this->requireConfig(CONFIG_BUILD_DIRECTORY)) {
+        return FALSE;
+      }
+    }
     return parent::verifyArguments() && $this->requireNoSubSite();
   }
   

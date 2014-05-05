@@ -23,44 +23,39 @@ class SiteBuildCommand extends GenericSiteCommand {
    * @var array
    */
   private $steps = array(
-      array(
-        'event' => EVENT_SITE_BUILD_START,
-      ),
-      array(
-        'event' => EVENT_SITE_CONFIGURE,
-        'error' => STRING_COULD_NOT_CONFIGURE_SITE,
-      ),
-      array(
-        'event' => EVENT_SITE_BUILD_STRUCTURE,
-        'error' => STRING_COULD_NOT_BUILD_STRUCTURE,
-      ),
-      array(
-        'event' => EVENT_SITE_BUILD_CODEBASE,
-        'error' => STRING_COULD_NOT_CREATE_BUILD,
-      ),
-      array(
-        'event' => EVENT_SITE_BUILD_SITES,
-        'error' => STRING_COULD_NOT_SETUP_SITES,
-      ),
-      array(
-        'event' => EVENT_SITE_BUILD_SERVER_STRUCTURE,
-        'error' => STRING_COULD_NOT_STRUCTURE_SERVER,
-      ),
-      array(
-        'event' => EVENT_SITE_BUILD_CONFIGURE_SERVER,
-        'error' => STRING_COULD_NOT_CONFIGURE_SERVER,
-      ),
-      array(
-        'event' => EVENT_SITE_BUILT,
-      )
-    );
+    array(
+      'event' => EVENT_SITE_BUILD_START,
+    ),
+    array(
+      'event' => EVENT_SITE_CONFIGURE,
+      'error' => STRING_COULD_NOT_CONFIGURE_SITE,
+    ),
+    array(
+      'event' => EVENT_SITE_BUILD_STRUCTURE,
+      'error' => STRING_COULD_NOT_BUILD_STRUCTURE,
+    ),
+    array(
+      'event' => EVENT_SITE_BUILD_CODEBASE,
+      'error' => STRING_COULD_NOT_CREATE_BUILD,
+    ),
+    array(
+      'event' => EVENT_SITE_BUILD_SITES,
+      'error' => STRING_COULD_NOT_SETUP_SITES,
+    ),
+    array(
+      'event' => EVENT_SITE_BUILD_SERVER_STRUCTURE,
+      'error' => STRING_COULD_NOT_STRUCTURE_SERVER,
+    ),
+    array(
+      'event' => EVENT_SITE_BUILD_CONFIGURE_SERVER,
+      'error' => STRING_COULD_NOT_CONFIGURE_SERVER,
+    ),
+    array(
+      'event' => EVENT_SITE_BUILT,
+    )
+  );
   
   public function verifyArguments() {
-    $buildName = $this->getBuildName();
-    if (empty($buildName)) {
-      $this->error(STRING_MISSING_BUILD_NAME);
-      return FALSE;
-    }
     if (!$this->isLocal()) {
       if (!$this->requireConfig(CONFIG_BUILD_DIRECTORY)) {
         return FALSE;
