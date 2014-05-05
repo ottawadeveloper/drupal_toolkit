@@ -8,6 +8,19 @@
  */
 class SiteDeleteCommand extends GenericSiteCommand {
   
+  private $steps = array(
+    array(
+      'event' => EVENT_REMOVE_SUBSITE_ALL,
+      'error' => STRING_ERROR_REMOVE_SUBSITE,
+      'type' => COMMAND_STEP_ALL_SUBSITES,
+    ),
+    array(
+      'event' => EVENT_REMOVE_ALL,
+      'error' => STRING_UNABLE_TO_REMOVE,
+      'type' => COMMAND_STEP_SITE,
+    ),
+  );
+  
   public function verifyRequirements() {
     if (!$this->requireSite()) {
       return FALSE;
@@ -16,24 +29,10 @@ class SiteDeleteCommand extends GenericSiteCommand {
   }
   
   public function executeCommand() {
-    $site = $this->getSite();
-    $success = TRUE;
-    $context = array(
-      'entity' => NULL,
-      'name' => EVENT_REMOVE_SUBSITE_ALL,
-      'optional' => TRUE,
-      'error' => STRING_ERROR_REMOVE_SUBSITE,
+    $this->executeAllSteps($this->steps, array(
       'continue' => TRUE,
-    );
-    foreach ($site->getSubSites() as $id) {
-      $subsite = $site->getSubSite($id);
-      $subsite->loadSettings();
-      $context['entity'] = $subsite;
-      if (!DrupalSiteEvent::fireSiteEvent($this->out(), $this->events(), $context)) {
-        $success = FALSE;
-      }
-    }
-    $this->executeSiteCommandStep(EVENT_REMOVE_ALL, FALSE, 0, STRING_UNABLE_TO_REMOVE);
+      'optional' => TRUE,
+    ));
   }
   
 }
