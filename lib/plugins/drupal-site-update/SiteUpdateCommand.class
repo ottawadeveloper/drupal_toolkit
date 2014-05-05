@@ -4,211 +4,110 @@
  */
 
 /**
- * Fired before the update process begins.
- * 
- * @ingroup events
- */
-define('EVENT_UPDATE_START', 'begin-update');
-
-/**
- * Fired to build the new codebase.
- * 
- * @ingroup events
- */
-define('EVENT_UPDATE_CODEBASE', 'update-codebase');
-
-/**
- * Fired to migrate in the site definitions.
- * 
- * @ingroup events
- */
-define('EVENT_UPDATE_SITES', 'update-sites');
-
-/**
- * Fired when the codebase work is complete, but before we take a backup.
- * 
- * @ingroup events
- */
-define('EVENT_UPDATE_CODEBASE_COMPLETE', 'update-codebase-complete');
-
-/**
- * Fired to get a backup done.
- * 
- * @ingroup events
- */
-define('EVENT_UPDATE_TAKE_BACKUP', 'update-backup');
-
-/**
- * Fired to prepare the site for the update (eg engage maintenance mode).
- * 
- * @ingroup events
- */
-define('EVENT_UPDATE_PREPARE_FOR_UPDATE', 'update-prepare');
-
-/**
- * Fired to prepare the server for the update (eg update config files).
- * 
- * @ingroup events
- */
-define('EVENT_UPDATE_PREPARE_SERVER', 'update-server-prep');
-
-/**
- * Fired as a last-minute hook for plugins to do something immediately before
- * the core update actions.
- * 
- * @ingroup events
- */
-define('EVENT_UPDATE_PRIOR_ACTIONS', 'update-prior-actions');
-
-/**
- * Fired to allow plugins to provide actions that must take place on the
- * site.
- * 
- * @ingroup events
- */
-define('EVENT_UPDATE_ACTIONS', 'update-core');
-
-/**
- * Fired to allow plugins to provide actions after the actions are complete.
- * 
- * @ingroup events
- */
-define('EVENT_UPDATE_COMPLETE', 'update-complete');
-
-/**
- * Fired to prepare the site for a complete cache wipe.
- * 
- * @ingroup events
- */
-define('EVENT_UPDATE_PREPARE_FOR_REFRESH', 'update-refresh-prep');
-
-/**
- * Fired to wipe all the caches and make the site live again.
- * 
- * @ingroup events
- */
-define('EVENT_UPDATE_REFRESH', 'update-refresh');
-
-/**
- * Fired to cleanup anything we need to last-minute.
- * 
- * @ingroup events
- */
-define('EVENT_UPDATE_CLEANUP', 'update-cleanup');
-
-/**
- * Fired when the update is completely done.
- * 
- * @ingroup events
- */
-define('EVENT_UPDATE_FINISH', 'finish-update');
-
-/**
- * Fired to trigger an update of the server configuration.
- * 
- * @ingroup events
- */
-define('EVENT_UPDATE_REFRESH_SERVER_CONFIG', 'update-refresh-server');
-
-/**
- * String token for when the site fails to update.
- * 
- * @ingroup strings
- */
-define('STRING_UPDATE_GENERIC_ERROR', 'drupal_site_update.error');
-
-/**
- * Event fired to prepare a subsite for an update
- * 
- * @ingroup events
- */
-define('EVENT_UPDATE_PREPARE_SUBSITE', 'update-prepare-subsite');
-
-/**
  * Responsible for updating a Drupal site.
  */
 class SiteUpdateCommand extends GenericSiteCommand {
+  
+  /**
+   * Array of required steps.
+   * 
+   * @var array
+   */
+  private $steps = array(
+    array(
+      'event' => EVENT_UPDATE_START,
+    ),
+    array(
+      'event' => EVENT_UPDATE_CODEBASE,
+    ),
+    array(
+      'event' => EVENT_UPDATE_SITES,
+    ),
+    array(
+      'event' => EVENT_UPDATE_CODEBASE_COMPLETE,
+      'optional' => TRUE,
+    ),
+    array(
+      'event' => EVENT_UPDATE_TAKE_BACKUP,
+    ),
+    array(
+      'event' => EVENT_UPDATE_PREPARE_SUBSITE,
+      'type' => COMMAND_STEP_ALL_SITES,
+      'optional' => TRUE,
+    ),
+    array(
+      'event' => EVENT_UPDATE_PREPARE_FOR_UPDATE,
+      'continue' => TRUE,
+    ),
+    array(
+      'event' => EVENT_UPDATE_PREPARE_SERVER,
+      'continue' => TRUE,
+      'optional' => TRUE,
+    ),
+    
+    array(
+      'event' => EVENT_UPDATE_PRIOR_ACTIONS,
+      'continue' => TRUE,
+      'optional' => TRUE,
+    ),
+    array(
+      'event' => EVENT_UPDATE_ACTIONS,
+      'continue' => TRUE,
+    ),
+    array(
+      'event' => EVENT_UPDATE_COMPLETE,
+      'continue' => TRUE,
+      'optional' => TRUE,
+    ),
+    array(
+      'event' => EVENT_UPDATE_REFRESH_SERVER_CONFIG,
+      'continue' => TRUE,
+      'optional' => TRUE,
+    ),
+    array(
+      'event' => EVENT_UPDATE_PREPARE_FOR_REFRESH,
+      'continue' => TRUE,
+      'optional' => TRUE,
+    ),
+    array(
+      'event' => EVENT_UPDATE_REFRESH,
+      'continue' => TRUE,
+    ),
+    array(
+      'event' => EVENT_UPDATE_CLEANUP,
+      'optional' => TRUE,
+      'continue' => TRUE,
+    ),
+    array(
+      'event' => EVENT_CLEANUP_BUILD,
+      'continue' => TRUE,
+    ),
+    array(
+      'event' => EVENT_UPDATE_FINISH,
+      'continue' => TRUE,
+      'optional' => TRUE,
+    ),
+  );
   
   public function verifyRequirements() {
     if (!$this->requireSite()) {
       return FALSE;
     }
-    $site = $this->getSite();
-    $site->loadSettings();
-    if (extra_empty($site->getSetting(SITE_IS_INSTALLED))) {
+    if (extra_empty($this->getSite()->getSetting(SITE_IS_INSTALLED))) {
       $this->error(STRING_ERROR_SITE_NOT_INSTALLED);
       return FALSE;
     }
     return parent::verifyRequirements();
   }
   
-  /**
-   * Executes a step.
-   * 
-   * @param string $stepEvent
-   *   The event to fire.
-   * @param stdClass $context
-   *   The context object.
-   * @param boolean $optional
-   *   If TRUE, success is not required.
-   * @param boolean $die
-   *   If TRUE, the script will exit if the step does not succeed.
-   * 
-   * @return boolean
-   *   TRUE if the step did not exit.
-   */
-  private function executeStep($stepEvent, &$context, $optional = FALSE, $die = TRUE) {
-    $context->success = $optional;
-    $context->handled = FALSE;
-    $this->events()->fireEvent($stepEvent, $context);
-    if (empty($context->success)) {
-      $this->error(STRING_UPDATE_GENERIC_ERROR, array(
-        '!step' => $stepEvent,
-      ));
-      if ($die) {
-        exit(1);
-      }
-    }
-    return TRUE;
-  }
-  
   public function executeCommand() {
-    $site = $this->getSite();
-    $site->loadSettings();
-    $buildID = date('Ymd-His');
-    $baseContext = (object) array(
-      'site' => $site,
-      'build_id' => $buildID,
-    );
-    $this->events()->fireEvent(EVENT_UPDATE_START, $baseContext);
-    $this->executeStep(EVENT_UPDATE_CODEBASE, $baseContext);
-    $site->registerNewBuildID($buildID);
-    $this->executeStep(EVENT_UPDATE_SITES, $baseContext);
-    $this->executeStep(EVENT_UPDATE_CODEBASE_COMPLETE, $baseContext, TRUE);
-    $this->executeStep(EVENT_UPDATE_TAKE_BACKUP, $baseContext);
-    $subsites = $site->getSubSites();
-    foreach ($subsites as $id) {
-      $context = (object) array(
-        'subsite' => $site->getSubSite($id),
-        'build_id' => $buildID,
-      );
-      $this->executeStep(EVENT_UPDATE_PREPARE_SUBSITE, $context);
-    }
-    $this->executeStep(EVENT_UPDATE_PREPARE_FOR_UPDATE, $baseContext, FALSE, FALSE);
-    $this->executeStep(EVENT_UPDATE_PREPARE_SERVER, $baseContext, TRUE, FALSE);
-    $this->executeStep(EVENT_UPDATE_PRIOR_ACTIONS, $baseContext, TRUE, FALSE);
-    $this->executeStep(EVENT_UPDATE_ACTIONS, $baseContext, FALSE, FALSE);
-    $this->executeStep(EVENT_UPDATE_COMPLETE, $baseContext, TRUE, FALSE);
-    $this->executeStep(EVENT_UPDATE_REFRESH_SERVER_CONFIG, $baseContext, TRUE, FALSE);
-    $this->executeStep(EVENT_UPDATE_PREPARE_FOR_REFRESH, $baseContext, TRUE, FALSE);
-    $this->executeStep(EVENT_UPDATE_REFRESH, $baseContext, FALSE, FALSE);
-    $this->executeStep(EVENT_UPDATE_CLEANUP, $baseContext, TRUE, FALSE);
-    $this->executeStep(EVENT_CLEANUP_BUILD, $baseContext, FALSE, FALSE);
-    $this->events()->fireEvent(EVENT_UPDATE_FINISH, $baseContext, FALSE, FALSE);
-    if (!$site->saveConfiguration()) {
-      $this->error(STRING_COULD_NOT_SAVE_SITE);
-      die();
-    }
+    $this->executeAllSteps($this->steps, array(
+      'type' => COMMAND_STEP_SITE,
+      'vars' => array(
+        'buildID' => dtk_generate_build_id(),
+      ),
+    ));
+    $this->saveSiteConfiguration();
   }
   
 }
