@@ -4,98 +4,61 @@
  */
 
 /**
- * Fired so that plugins can prepare the site for rolling back to a previous 
- * update.
- * 
- * @ingroup events
- */
-define('EVENT_ROLLBACK_PREPARE', 'rollback-prep');
-
-/**
- * Fired to confirm that a backup is being taken in case we need to rollback
- * the rollback.
- * 
- * @ingroup events
- */
-define('EVENT_ROLLBACK_BACKUP', 'rollback-backup');
-
-/**
- * Fired to start the backup process.
- * 
- * @ingroup events
- */
-define('EVENT_ROLLBACK_START', 'rollback-start');
-
-/**
- * Fired for phase 1 of the rollback process. This is intended as a pre-rollback
- * phase for things that must happen before the actual rollback happens.
- * 
- * @ingroup events
- */
-define('EVENT_ROLLBACK_PHASE1', 'rollback-phase1');
-
-/**
- * Fired for phase 2 of the rollback process. This is intended to be the 
- * primary rollback event used.
- * 
- * @ingroup events
- */
-define('EVENT_ROLLBACK_PHASE2', 'rollback-phase2');
-
-/**
- * Fired for phase 3 of the rollback process. This is intended to be the
- * post-rollback phase for things that must happen after the actual rollback.
- * 
- * @ingroup events
- */
-define('EVENT_ROLLBACK_PHASE3', 'rollback-phase3');
-
-/**
- * Fired when the rollback phases are all finished.
- * 
- * @ingroup events
- */
-define('EVENT_ROLLBACK_FINISH', 'rollback-finish');
-
-/**
- * Fired to cleanup after the rollback has been finished.
- * 
- * @ingroup events
- */
-define('EVENT_ROLLBACK_CLEAN', 'rollback-clean');
-
-/**
- * Fired when the cleanup process is complete.
- * 
- * @ingroup events
- */
-define('EVENT_ROLLBACK_COMPLETE', 'rollback-complete');
-
-/**
- * Standard error message for the rollback process.
- * 
- * @ingroup strings
- */
-define('STRING_ROLLBACK_STANDARD_ERROR', 'drupal_site_rollback.error.generic');
-
-/**
- * Error message for if there are two builds missing.
- * 
- * @ingroup strings
- */
-define('STRING_ROLLBACK_REQUIRES_TWO_BUILDS', 'drupal_site_rollback.error.two-builds-required');
-
-/**
  * The rollback command undoes what was done in the update command.
  */
 class SiteRollbackCommand extends GenericSiteCommand {
+  
+  /**
+   * The steps that must be executed for a rollback command.
+   * 
+   * @var array
+   */
+  private $steps = array(
+    array(
+      'event' => EVENT_ROLLBACK_PREPARE,
+      'optional' => TRUE,
+    ),
+    array(
+      'event' => EVENT_ROLLBACK_BACKUP,
+    ),
+    array(
+      'event' => EVENT_ROLLBACK_START,
+      'optional' => TRUE,
+    ),
+    array(
+      'event' => EVENT_ROLLBACK_PHASE1,
+      'optional' => TRUE,
+    ),
+    array(
+      'event' => EVENT_ROLLBACK_PHASE2,
+      'continue' => TRUE,
+    ),
+    array(
+      'event' => EVENT_ROLLBACK_PHASE3,
+      'continue' => TRUE,
+      'optional' => TRUE,
+    ),
+    array(
+      'event' => EVENT_ROLLBACK_FINISH,
+      'continue' => TRUE,
+    ),
+    array(
+      'event' => EVENT_ROLLBACK_CLEAN,
+      'continue' => TRUE,
+      'optional' => TRUE,
+    ),
+    array(
+      'event' => EVENT_ROLLBACK_COMPLETE,
+      'optional' => TRUE,
+      'continue' => TRUE,
+    ),
+  );
   
   public function verifyRequirements() {
     if (!$this->requireSite()) {
       return FALSE;
     }
     $site = $this->getSite();
-    $site->loadSettings();
     $lastBuild = $site->getPreviousBuildID();
     if (empty($lastBuild)) {
       $this->error(STRING_ROLLBACK_REQUIRES_TWO_BUILDS);
@@ -104,61 +67,19 @@ class SiteRollbackCommand extends GenericSiteCommand {
     return parent::verifyRequirements();
   }
   
-  /**
-   * Executes a step.
-   * 
-   * @param string $stepEvent
-   *   The event to fire.
-   * @param stdClass $context
-   *   The context object.
-   * @param boolean $optional
-   *   If TRUE, success is not required.
-   * @param boolean $die
-   *   If TRUE, the script will exit if the step does not succeed.
-   * 
-   * @return boolean
-   *   TRUE if the step did not exit.
-   */
-  private function executeStep($stepEvent, &$context, $optional = FALSE, $die = TRUE) {
-    $context->success = TRUE;
-    $context->handled = FALSE;
-    $this->events()->fireEvent($stepEvent, $context);
-    if (!$optional && (!$context->handled)) {
-      $context->success = FALSE;
-    }
-    if (empty($context->success)) {
-      $this->error(STRING_ROLLBACK_STANDARD_ERROR, array(
-        '!step' => $stepEvent,
-      ));
-      if ($die) {
-        exit(1);
-      }
-    }
-    return TRUE;
-  }
   
   public function executeCommand() {
     $site = $this->getSite();
-    $site->loadSettings();
-    $baseContext = (object) array(
-      'site' => $site,
-      'revertBuild' => $site->getPreviousBuildID(),
-      'currentBuild' => $site->getBuildID(),
-    );
-    $this->executeStep(EVENT_ROLLBACK_PREPARE, $baseContext, TRUE, TRUE);
-    $this->executeStep(EVENT_ROLLBACK_BACKUP, $baseContext, FALSE, TRUE);
-    $this->executeStep(EVENT_ROLLBACK_START, $baseContext, TRUE, TRUE);
-    $this->executeStep(EVENT_ROLLBACK_PHASE1, $baseContext, TRUE, TRUE);
-    $this->executeStep(EVENT_ROLLBACK_PHASE2, $baseContext, FALSE, FALSE);
-    $this->executeStep(EVENT_ROLLBACK_PHASE3, $baseContext, TRUE, FALSE);
-    $this->executeStep(EVENT_ROLLBACK_FINISH, $baseContext, FALSE, FALSE);
-    $this->executeStep(EVENT_ROLLBACK_CLEAN, $baseContext, TRUE, FALSE);
-    $this->executeStep(EVENT_ROLLBACK_COMPLETE, $baseContext, TRUE, FALSE);
-    $site->deleteBuild($this->events(), $baseContext->currentBuild);
-    if (!$site->saveConfiguration()) {
-      $this->error(STRING_COULD_NOT_SAVE_SITE);
-      exit(1);
-    }
+    $current = $site->getBuildID();
+    $this->executeAllSteps($this->steps, array(
+      'vars' => array(
+        'revertBuild' => $site->getPreviousBuildID(),
+        'currentBuild' => $current,
+      ),
+      'type' => COMMAND_STEP_SITE,
+    ));
+    $site->deleteBuild($this->events(), $current);
+    $this->saveSiteConfiguration();
   }
   
 }
