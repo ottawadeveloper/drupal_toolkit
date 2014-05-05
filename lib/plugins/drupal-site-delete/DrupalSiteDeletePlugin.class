@@ -39,9 +39,10 @@ define('EVENT_REMOVE_SUBSITE_CLEANUP', 'subsite-remove-cleanup');
 class DrupalSiteDeletePlugin extends GenericPlugin implements EventListener {
   
   public function initialize() {
-    $base = dirname(__FILE__);
-    require assemble_path($base, 'SiteDeleteCommand.class');
-    require assemble_path($base, 'SubSiteDeleteCommand.class');
+    $this->includeFiles(dirname(__FILE__), array(
+      'SiteDeleteCommand.class',
+      'SubSiteDeleteCommand.class',
+    ));
     $this->events()->registerListener(array(
       EVENT_CORE_REGISTER_COMMANDS,
     ), $this);
