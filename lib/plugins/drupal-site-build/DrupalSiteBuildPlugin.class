@@ -80,14 +80,72 @@ define('CONFIG_SITE_CLEANUP_ON_ERROR', 'site-cleanup-on-error');
  */
 define('EVENT_SITE_CONFIGURE', 'site-config');
 
-class DrupalSiteBuildPlugin extends GenericPlugin {
+/**
+ * String token for if there is no build name.
+ * 
+ * @ingroup strings
+ */
+define('STRING_MISSING_BUILD_NAME', 'drupal_site_build.error.no-build-name');
+
+/**
+ * String token for if the site configuration could not be done successfully.
+ * 
+ * @ingroup strings
+ */
+define('STRING_COULD_NOT_CONFIGURE_SITE', 'drupal_site_build.error.no-config');
+
+/**
+ * String token for if the site's internal structure could not be established.
+ * 
+ * @ingroup strings
+ */
+define('STRING_COULD_NOT_BUILD_STRUCTURE', 'drupal_site_build.error.no-structure');
+
+/**
+ * String token for if the site's codebase could not be built.
+ * 
+ * @ingroup strings
+ */
+define('STRING_COULD_NOT_CREATE_BUILD', 'drupal_site_build.error.no-build');
+
+/**
+ * String token for if the sites could not be setup properly.
+ * 
+ * @ingroup strings
+ */
+define('STRING_COULD_NOT_SETUP_SITES', 'drupal_site_build.error.no-sites');
+
+/**
+ * String token for if the server structure could not be established.
+ * 
+ * @ingroup strings
+ */
+define('STRING_COULD_NOT_STRUCTURE_SERVER', 'drupal_site_build.error.no-server-structure');
+
+/**
+ * String token for if the server configuration could not be established.
+ * 
+ * @ingroup strings
+ */
+define('STRING_COULD_NOT_CONFIGURE_SERVER', 'drupal_site_build.error.no-server-config');
+
+/**
+ * String token for if there was an error during an additional configuration step.
+ * 
+ * @ingroup strings
+ */
+define('STRING_ADDITIONAL_CONFIG_ERROR', 'drupal_site_build.error.no-more-config');
+
+class DrupalSiteBuildPlugin extends GenericPlugin implements EventListener {
   
   public function initialize() {
-    $root = dirname(__FILE__);
-    require assemble_path($root, 'SiteBuildCommand.class');
-    require assemble_path($root, 'SubSiteBuildCommand.class');
-    $this->router()->addCommand('site-build', new SiteBuildCommand());
-    $this->router()->addCommand('subsite-build', new SubSiteBuildCommand());
+    $this->includeFiles(dirname(__FILE__), array(
+      'SiteBuildCommand.class',
+      'SubSiteBuildCommand.class',
+    ));
+    $this->events()->registerListener(array(
+      EVENT_CORE_REGISTER_COMMANDS
+    ), $this);
     $this->config()->extendDefaultConfiguration(array(
       CONFIG_SITE_URL_PREFIX => '',
       CONFIG_SITE_URL_PATTERN => '@@BUILD_NAME.localhost',
@@ -97,6 +155,15 @@ class DrupalSiteBuildPlugin extends GenericPlugin {
   
   public function requiredPlugins() {
     return array('DrupalSitePlugin');
+  }
+  
+  public function captureEvent(&$context, $eventType) {
+    switch ($eventType) {
+      case EVENT_CORE_REGISTER_COMMANDS:
+        $this->router()->addCommand('site-build', new SiteBuildCommand());
+        $this->router()->addCommand('subsite-build', new SubSiteBuildCommand());
+        break;
+    }
   }
   
 }

@@ -57,11 +57,7 @@ class DrupalSubSite extends GenericDrupalEntity {
     $this->setToken(SITE_TOKEN_BUILD_NAME, $site->getBuildName() . '_' . $subsiteID);
     $this->setToken(SITE_TOKEN_UUID, $this->uuid());
   }
-  
-  public function getDrushAliases() {
-    return array($this->getSetting(SITE_DRUSH_ALIAS));
-  }
-  
+    
   /**
    * Retrieves the parent site for this subsite.
    * 

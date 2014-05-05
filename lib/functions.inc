@@ -216,6 +216,10 @@ function dtk_execute_command($commandName, $exit = TRUE) {
   return TRUE;
 }
 
+function dtk_generate_build_id() {
+  return date('Ymd-His');
+}
+
 // Additional includes.
 require "functions/system.inc";
 require "functions/special.inc";

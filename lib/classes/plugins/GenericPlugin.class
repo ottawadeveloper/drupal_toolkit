@@ -247,4 +247,11 @@ abstract class GenericPlugin implements PluginInterface {
     return $results;
   }
   
+  protected function includeFiles($base, $files) {
+    foreach ($files as $file) {
+      $full = assemble_path($base, $file);
+      require $full;
+    }
+  }
+  
 }

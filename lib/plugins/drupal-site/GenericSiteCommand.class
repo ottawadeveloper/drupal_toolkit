@@ -66,6 +66,10 @@ define('STRING_ERROR_MISSING_SUBSITE', 'drupal_site.error.missing-subsite');
  */
 define('STRING_ERROR_ALREADY_SUBSITE', 'drupal_site.error.already-subsite');
 
+define('COMMAND_STEP_SITE', 'site');
+
+define('COMMAND_STEP_SUBSITE', 'subsite');
+
 /**
  * Provides a base for commands that need to work with sites.
  */
@@ -316,6 +320,176 @@ abstract class GenericSiteCommand extends GenericCommand {
         && $this->requireFunction('rename')
         && $this->requireFunction('copy')
         && $this->requireFunction('symlink');
+  }
+  
+  /**
+   * Executes an array of step commands.
+   * 
+   * @param array $steps
+   *   An array of step arrays:
+   *   - event: the name of the event to fire
+   *   - optional: set to TRUE to make the step optional
+   *   - die: set to the error code to die with or 0 to not die
+   *   - vars: extra vars to fire the event with
+   *   - type: site or subsite
+   *   - error: an error key token to use in case of error or NULL to
+   *     not display a message.
+   * 
+   * @param array $defaults
+   *   Default values for all steps. Can specify anything except the 
+   *   "event" key.
+   * 
+   * @return boolean
+   *   TRUE if all events executed, otherwise FALSE.
+   */
+  protected function executeAllSteps(array $steps, $defaults = array()) {
+    $defaults += array(
+      'optional' => FALSE,
+      'die' => 1,
+      'error' => NULL,
+      'type' => COMMAND_STEP_SITE,
+      'vars' => array(),
+    );
+    $success = TRUE;
+    foreach ($steps as $step) {
+      array_extend($step, $defaults);
+      switch ($step['type']) {
+        case COMMAND_STEP_SUBSITE:
+          $success = $this->executeSubSiteCommandStep(
+              $step['event'],
+              !empty($step['optional']),
+              empty($step['die']) ? 0 : $step['die'],
+              isset($step['error']) ? $step['error'] : NULL,
+              $step['vars']
+          ) && $success;
+          break;
+        case COMMAND_STEP_SITE:
+        default:
+          $success = $this->executeSiteCommandStep(
+              $step['event'],
+              !empty($step['optional']),
+              empty($step['die']) ? 0 : $step['die'],
+              isset($step['error']) ? $step['error'] : NULL,
+              $step['vars']
+          ) && $success;
+          break;
+      }
+    }
+    return $success;
+  }
+  
+  /**
+   * Executes a command step for a site.
+   * 
+   * @param string $event
+   *   Identifying string for the event.
+   * @param boolean $optional
+   *   Whether or not the event is optional.
+   * @param int $die
+   *   The error code to die with. If set to 0, will not die.
+   * @param string $error
+   *   The error lookup string to display on error. Set to NULL to not display
+   *   a message.
+   * @param array $vars
+   *   An array of extra variables.
+   * 
+   * @return boolean
+   *   TRUE if successful (or optional and not handled), FALSE if die is empty
+   *   otherwise.
+   */
+  protected function executeSiteCommandStep($event, $optional = FALSE, $die = 1, $error = NULL, $vars = array()) {
+    $context = array(
+      'entity' => $this->getSite(),
+      'name' => $event,
+      'optional' => $optional,
+      'variables' => $vars,
+      'error' => $error,
+      'continue' => !empty($die),
+      'code' => empty($die) ? 1 : $die,
+    );
+    return DrupalSiteEvent::fireSiteEvent($this->out(), $this->events(), $context);
+  }
+    
+  /**
+   * Executes a command step for a subsite.
+   * 
+   * @param string $event
+   *   Identifying string for the event.
+   * @param boolean $optional
+   *   Whether or not the event is optional.
+   * @param int $die
+   *   The error code to die with. If set to 0, will not die.
+   * @param string $error
+   *   The error lookup string to display on error. Set to NULL to not display
+   *   a message.
+   * @param array $vars
+   *   An array of extra variables.
+   * 
+   * @return boolean
+   *   TRUE if successful (or optional and not handled), FALSE if die is empty
+   *   otherwise.
+   */
+  protected function executeSubSiteCommandStep($event, $optional = FALSE, $die = 1, $error = NULL, $vars = array()) {
+    $context = array(
+      'entity' => $this->getSubSite(),
+      'name' => $event,
+      'optional' => $optional,
+      'variables' => $vars,
+      'error' => $error,
+      'continue' => !empty($die),
+      'code' => empty($die) ? 1 : $die,
+    );
+    return DrupalSiteEvent::fireSiteEvent($this->out(), $this->events(), $context);
+  }
+  
+  /**
+   * Saves the site configuration, with error message and optional auto-death.
+   * 
+   * @param boolean $die
+   *   Set to FALSE to not die but return FALSE instead.
+   * 
+   * @return boolean
+   *   Whether or not the site configuration was saved.
+   */
+  protected function saveSiteConfiguration($die = TRUE) {
+    $site = $this->getSite();
+    return $this->saveEntityConfiguration($site, $die);
+  }
+  
+  /**
+   * Saves the subsite configuration, with error message and optional auto-death.
+   * 
+   * @param boolean $die
+   *   Set to FALSE to not die but return FALSE instead.
+   * 
+   * @return boolean
+   *   Whether or not the site configuration was saved.
+   */
+  protected function saveSubSiteConfiguration($die = TRUE) {
+    $subsite = $this->getSubSite();
+    return $this->saveEntityConfiguration($subsite, $die);
+  }
+  
+  /**
+   * Saves the entity configuration, with error message and optional auto-death.
+   * 
+   * @param GenericDrupalEntity $entity
+   *   The Drupal entity to save.
+   * @param boolean $die
+   *   Set to FALSE to not die but return FALSE instead.
+   * 
+   * @return boolean
+   *   Whether or not the site configuration was saved.
+   */
+  private function saveEntityConfiguration(GenericDrupalEntity $entity, $die = TRUE) {
+    if (!$entity->saveConfiguration()) {
+      $this->out->log(STRING_COULD_NOT_SAVE_SITE);
+      if ($die) {
+        exit(1);
+      }
+      return FALSE;
+    }
+    return TRUE;
   }
   
 }
