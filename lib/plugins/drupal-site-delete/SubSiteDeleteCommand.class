@@ -8,6 +8,21 @@
  */
 class SubSiteDeleteCommand extends GenericSiteCommand {
   
+  /**
+   * An array of steps to take for this command.
+   * 
+   * @var array
+   */
+  private $steps = array(
+    array(
+      'event' => EVENT_REMOTE_SUBSITE_ALL,
+    ),
+    array(
+      'event' => EVENT_REMOTE_SUBSITE_CLEANUP,
+      'optional' => TRUE,
+    ),
+  );
+  
   public function verifyRequirements() {
     if (!$this->requireSubSite()) {
       return FALSE;
@@ -16,17 +31,10 @@ class SubSiteDeleteCommand extends GenericSiteCommand {
   }
   
   public function executeCommand() {
-    $context = (object) array(
-      'subsite' => $this->getSubSite(),
-      'success' => TRUE,
-      'handled' => FALSE,
-    );
-    $this->events()->fireEvent(EVENT_REMOTE_SUBSITE_ALL, $context);
-    $this->events()->fireEvent(EVENT_REMOTE_SUBSITE_CLEANUP, $context);
-    if (empty($context->success)) {
-      $this->error(STRING_ERROR_REMOVE_SUBSITE);
-      exit(1);
-    }
+    $this->executeAllSteps($this->steps, array(
+      'type' => COMMAND_STEP_SUBSITE,
+    ));
+    $this->saveSubSiteConfiguration();
   }
   
 }
