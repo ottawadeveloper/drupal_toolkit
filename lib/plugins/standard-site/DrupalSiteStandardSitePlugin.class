@@ -487,7 +487,7 @@ class DrupalSiteStandardSitePlugin extends GenericPlugin implements EventListene
     if (!$this->symlinkAllSites($site)) {
       return FALSE;
     }
-    if (!$this->createRootSymlinks($currentBase, $subsite)) {
+    if (!$this->createRootSymlinks($currentBase, $site)) {
       return FALSE;
     }
     $this->success(STRING_SUCCESS_CREATE_SITES);

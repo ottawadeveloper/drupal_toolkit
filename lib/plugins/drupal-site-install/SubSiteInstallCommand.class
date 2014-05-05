@@ -1,0 +1,17 @@
+<?php
+/**
+ * @file Defines the SubSiteInstallCommand class.
+ */
+
+/**
+ * Responsible for the command that installs a subsite. This proceeds in
+ * a similar fashion to installing the site itself, except that different
+ * variables may be used.
+ */
+class SubSiteInstallCommand extends GenericSiteCommand {
+  
+  public function executeCommand() {
+    
+  }
+  
+}
