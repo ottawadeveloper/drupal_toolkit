@@ -4,6 +4,61 @@
  */
 
 /**
+ * An event to be fired when starting to build a subsite.
+ * 
+ * @ingroup events
+ */
+define('EVENT_SUBSITE_BUILD_START', 'subsite-build-start');
+
+/**
+ * An event to be fired to configure the subsite build.
+ * 
+ * @ingroup events
+ */
+define('EVENT_SUBSITE_BUILD_CONFIG', 'subsite-build-config');
+
+/**
+ * An event to be fired to build the subsite's codebase.
+ * 
+ * @ingroup events
+ */
+define('EVENT_SUBSITE_BUILD_CODEBASE', 'subsite-build-codebase');
+
+/**
+ * An event to be fired to build the subsite's server configuration.
+ * 
+ * @ingroup events
+ */
+define('EVENT_SUBSITE_BUILD_SERVER_CONFIG', 'subsite-build-server-config');
+
+/**
+ * An event to be fired to build anything extra before the parent
+ * gets refreshed.
+ * 
+ * @ingroup events
+ */
+define('EVENT_SUBSITE_BUILD_EXTRAS', 'subsite-build-extras');
+
+/**
+ * An event to be fired in order to refresh the parent configuration.
+ * 
+ * @ingroup events
+ */
+define('EVENT_SUBSITE_BUILD_PARENT_SERVER_REFRESH', 'subsite-build-parent-refresh');
+
+/**
+ * An event to fire when the build is complete.
+ * 
+ * @ingroup events
+ */
+define('EVENT_SUBSITE_BUILD_COMPLETE', 'subsite-build-complete');
+
+/**
+ * A string token for when the subsite build process fails.
+ */
+define('STRING_SUBSITE_BUILD_GENERIC_ERROR', 'drupal_site_build.error.subsite-generic');
+
+/**
  * Fired when we're ready for additional configuration.
  * 
  * Context settings:
