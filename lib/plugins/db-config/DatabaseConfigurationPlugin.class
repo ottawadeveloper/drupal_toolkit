@@ -356,8 +356,10 @@ class DatabaseConfigurationPlugin extends GenericPlugin implements EventListener
       case EVENT_FIND_DB_SERVERS:
         $context->servers = array_merge($context->servers, $this->getDatabaseServers());
         break;
+      case EVENT_REMOVE_SUBSITE_ALL:
       case EVENT_REMOVE_ALL:
         $context->success = $this->deleteDatabases($context->site) && $context->success;
+        $context->handled = TRUE;
         break;
     }
   }
@@ -366,14 +368,14 @@ class DatabaseConfigurationPlugin extends GenericPlugin implements EventListener
    * Responsible for deleting all the databases and users created for this
    * site.
    * 
-   * @param DrupalSite $site
+   * @param GenericDrupalEntity $site
    *   The site to delete databases for.
    * 
    * @return boolean
    *   TRUE if all the databases/users were deleted, or FALSE if even one had
    *   an error.
    */
-  private function deleteDatabases(DrupalSite $site) {
+  private function deleteDatabases(GenericDrupalEntity $site) {
     $servers = $site->getSetting(SITE_DATABASE_LIST);
     if (empty($servers)) {
       return TRUE;

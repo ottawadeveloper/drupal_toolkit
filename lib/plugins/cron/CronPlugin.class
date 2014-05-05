@@ -193,16 +193,13 @@ class CronPlugin extends GenericPlugin implements EventListener {
   }
   
   public function captureEvent(&$context, $eventType) {
-    switch ($eventType) {
-      case EVENT_REMOVE_SUBSITE_ALL:
-        $context->success = $this->deleteCronTasks($context->site) && $context->success;
-        break;
       case EVENT_UPDATE_PRIOR_ACTIONS:
         if (empty($context->handled) || $context->success) {
           $context->success = $this->updateAll($context->site);
           $context->handled = TRUE;
         }
         break;
+      case EVENT_REMOVE_SUBSITE_ALL:
       case EVENT_REMOVE_ALL:
         $context->success = $this->deleteCronTasks($context->site) && $context->success;
         $context->handled = TRUE;
