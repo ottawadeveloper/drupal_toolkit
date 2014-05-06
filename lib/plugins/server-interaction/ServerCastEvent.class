@@ -1,0 +1,85 @@
+<?php
+/**
+ * @file Defines the ServerCastEvent
+ */
+
+/**
+ * An event that is used to cast servers.
+ */
+class ServerCastEvent extends DtkEvent {
+  
+  /**
+   * The type to cast to.
+   * 
+   * @var string
+   */
+  private $type = NULL;
+  
+  /**
+   * The server being casted.
+   * 
+   * @var PhysicalServerInterface
+   */
+  private $server = NULL;
+  
+  /**
+   * The casted version of $server.
+   * 
+   * @var object
+   */
+  private $casted = NULL;
+  
+  /**
+   * 
+   * @param string $type
+   *   The type of server to cast to.
+   * @param PhysicalServerInterface $server
+   *   The server instance to cast.
+   */
+  public function __construct($type, PhysicalServerInterface $server) {
+    $this->type = $type;
+    $this->server = $server;
+  }
+  
+  public function success() {
+    return !empty($this->casted);
+  }
+  
+  /**
+   * Retrieves the server type being casted to.
+   * 
+   * @return string
+   */
+  public function getType() {
+    return $this->type;
+  }
+  
+  /**
+   * Retrieves the server being casted.
+   * 
+   * @return PhysicalServerInstance
+   */
+  public function getServer() {
+    return $this-server;
+  }
+  
+  /**
+   * Sets the casted server.
+   * 
+   * @param object $casted
+   *   The casted server.
+   */
+  public function setCastedServer($casted) {
+    $this->casted = $casted;
+  }
+  
+  /**
+   * Retrieves the casted server.
+   * 
+   * @return object
+   */
+  public function getCastedServer() {
+    return $this->casted;
+  }
+  
+}

@@ -142,8 +142,8 @@ abstract class GenericDrupalEntity {
    * @return string
    *   The drush alias.
    */
-  public function getDrushAlias() {
-    return $this->getSetting(SITE_DRUSH_ALIAS);
+  public function getDrushAlias($required = FALSE) {
+    return $this->getSetting(SITE_DRUSH_ALIAS, FALSE, $required);
   }
   
   /**
@@ -153,14 +153,22 @@ abstract class GenericDrupalEntity {
    *   The key to retrieve.
    * @param mixed $default
    *   A default value to return if not found. Defaults to NULL.
+   * @param boolean $required
+   *   If set to TRUE, will cause an error message to be displayed if
+   *   $key is not available;
    * 
    * @return mixed
    *   The value of the setting defined by $key or the value of $default if
    *   $key is not set.
    */
-  public function getSetting($key, $default = NULL) {
+  public function getSetting($key, $default = NULL, $required = FALSE) {
     if (isset($this->settings[$key])) {
       return $this->settings[$key];
+    }
+    if ($required) {
+      $this->error(STRING_SITE_MISSING_SETTING, array(
+        '!key' => $key
+      ));
     }
     return $default;
   }
@@ -384,7 +392,7 @@ abstract class GenericDrupalEntity {
    * @return string
    *   A unique identifier.
    */
-  protected abstract function uuid();
+  public abstract function uuid();
   
   /**
    * Retrieves the build name.

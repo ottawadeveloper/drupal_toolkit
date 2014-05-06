@@ -1,0 +1,144 @@
+<?php
+/**
+ * @file Defines the DtkEvent class.
+ */
+
+/**
+ * Provides a base framework for event handling.
+ */
+class DtkEvent {
+  
+  
+  /**
+   * Whether or not a plug-in has attempted to deal with this event.
+   * 
+   * @var boolean
+   */
+  private $handled = FALSE;
+  
+  /**
+   * Whether or not all plug-ins were successful in dealing with this event.
+   * 
+   * @var boolean
+   */
+  private $success = FALSE;
+  
+  /**
+   * Whether or not this plug-in is optional.
+   * 
+   * @var boolean
+   */
+  private $optional;
+  
+  /**
+   * Additional variables for this event.
+   * 
+   * @var array
+   */
+  private $variables = array();
+  
+  /**
+   * Whether or not the event should continue executing.
+   *  
+   * @var boolean
+   */
+  private $propagate = TRUE;
+  
+  /**
+   * 
+   * @param boolean $optional
+   *   Whether or not this event is optional.
+   * @param array $variables
+   *   Extra variables.
+   */
+  public function __construct($optional = FALSE, $variables = array()) {
+    $this->optional = $optional;
+    $this->variables = $variables;
+  }
+  
+  /**
+   * Checks to see if the event handlers should keep firing.
+   * 
+   * @return boolean
+   *   Whether or not to continue firing.
+   */
+  public function checkContinueFiring() {
+    return $this->propagate;
+  }
+  
+  /**
+   * Stop further handlers from firing.
+   */
+  public function stopFiring() {
+    $this->propagate = FALSE;
+  }
+  
+  
+  /**
+   * Retrieves an extra variable value.
+   * 
+   * @param string $key
+   *   The extra variable's key name.
+   * @param mixed $default
+   *   The default return value if it is not set. Defaults to FALSE.
+   * 
+   * @return mixed
+   *   The value of the variable.
+   */
+  public function getVariable($key, $default = FALSE) {
+    if (isset($this->variables[$key])) {
+      return $this->variables[$key];
+    }
+    return $default;
+  }
+  
+  /**
+   * Sets the value of a variable.
+   * 
+   * @param string $key
+   *   The key to set.
+   * @param mixed $value
+   *   The value to set.
+   */
+  public function setVariable($key, $value) {
+    $this->variables[$key] = $value;
+  }
+  
+  /**
+   * Sets whether or not a plug-in's attempt to deal with an event was
+   * successful or not.
+   * 
+   * @param boolean $result
+   *   TRUE if successful, otherwise FALSE. 
+   */
+  public function setResult($result) {
+    if (!$this->handled) {
+      $this->success = !!$result;
+      $this->handled = TRUE;
+    }
+    else {
+      $this->success = (!!$result) && $this->success;
+    }
+  }
+  
+  /**
+   * Checks to see if the event was successfully dealt with.
+   * 
+   * @return boolean
+   *   TRUE if successful, or optional and not handled.
+   */
+  public function success() {
+    return $this->success || ($this->optional && empty($this->handled));
+  }
+  
+  /**
+   * Checks to see if a handler should be executed.
+   * 
+   * @return boolean
+   */
+  public function checkExecution() {
+    return empty($this->handled) || $this->success;
+  }
+  
+  
+}

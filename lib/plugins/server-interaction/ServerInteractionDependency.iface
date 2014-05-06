@@ -1,0 +1,32 @@
+<?php
+/**
+ * @file Provides the ServerInteractionDependency interface.
+ */
+
+/**
+ * 
+ * If a class requires access to the server interaction module, they should:
+ * - Declare ServerInteractionPlugin to be a requirement
+ * - Implement this interface.
+ * 
+ * See ServerInteractionManagerInterface for more details on interacting with
+ * the SI plug-in.
+ */
+interface ServerInteractionDependency {
+  
+  /**
+   * Sets the SI manager instance currently being used.
+   * 
+   * @param ServerInteractionManagerInterface $servers
+   */
+  function setServerManager(ServerInteractionManagerInterface $servers);
+  
+  /**
+   * Returns the instance of ServerInteractionManagerInterface that is currently
+   * being used.
+   * 
+   * @return ServerInteractionManagerInterface
+   */
+  function servers();
+  
+}

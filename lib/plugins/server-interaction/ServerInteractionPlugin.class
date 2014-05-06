@@ -115,6 +115,21 @@ define('STRING_WORKING_DELETING_REMOTE_FILES_ITEM', 'server_interaction.working.
  */
 class ServerInteractionPlugin extends GenericPlugin implements EventListener {
     
+  public function __construct() {
+    $this->includeFiles(dirname(__FILE__), array(
+      'PhysicalServerInterface.iface',
+      'GenericMachine.class',
+      'LocalMachine.class',
+      'RemoteMachine.class',
+      'ServerLocationEvent.class',
+      'ServerCastEvent.class',
+      'ServerLocationEvent.class',
+      'ServerInteractionManagerInterface.iface',
+      'ServerInteractionManager.class',
+      'ServerInteractionDependency.iface',
+    ));
+  }
+  
   /**
    * An array of servers, keyed by type.
    * 
@@ -123,20 +138,11 @@ class ServerInteractionPlugin extends GenericPlugin implements EventListener {
   private $servers = array();
   
   public function initialize() {
-    $files = array(
-      'PhysicalServerInterface.iface',
-      'GenericMachine.class',
-      'LocalMachine.class',
-      'RemoteMachine.class',
-    );
-    $root = dirname(__FILE__);
-    foreach ($files as $file) {
-      require assemble_path($root, $file);
-    }
     $this->events()->registerListener(array(
       EVENT_FIND_SERVERS,
       EVENT_REMOVE_ALL,
       EVENT_CAST_PHYSICAL_SERVER,
+      EVENT_CORE_DEPENDENCY_INJECTION,
     ), $this);
     $this->config()->extendDefaultConfiguration(array(
       CONFIG_SERVER_LIST => array(),
@@ -276,6 +282,12 @@ class ServerInteractionPlugin extends GenericPlugin implements EventListener {
         break;
       case EVENT_REMOVE_ALL:
         $context->success = $this->deleteRemoteFiles($context->site) && $context->success;
+        break;
+      case EVENT_CORE_DEPENDENCY_INJECTION:
+        $this->dm()->registerInjector('ServerInteractionDependency', 'setServerManager', 'servers', 'ServerInteractionManagerInterface');
+        $servers = new ServerInteractionManager();
+        $this->dm()->setDependencies($servers);
+        $this->dm()->registerObject('servers', $servers);
         break;
     }
   }

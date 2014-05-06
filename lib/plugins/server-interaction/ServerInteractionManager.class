@@ -1,0 +1,116 @@
+<?php
+/**
+ * @file Defines the ServerInteractionManager class.
+ */
+
+/**
+ * A concrete default implementation of ServerInteractionManagerInterface.
+ */
+class ServerInteractionManager implements ServerInteractionManagerInterface {
+  
+  /**
+   * DI injection of output.
+   * 
+   * @var OutputManagerInterface
+   */
+  private $out = NULL;
+  
+  
+  /**
+   * DI injection of events.
+   * 
+   * @var EventManagerInterface
+   */
+  private $events = NULL;
+  
+  
+  /**
+   * DI injection of string manager.
+   * 
+   * @var StringManagerInterface
+   */
+  private $strings = NULL;
+  
+  public function setStringManager(StringManagerInterface $sm) {
+    $this->strings = $sm;
+  }
+  
+  public function setEventManager(EventManagerInterface $em) {
+    $this->events = $em;
+  }
+  
+  public function strings() {
+    return $this->strings;
+  }
+  
+  public function events() {
+    return $this->events;
+  }
+  
+  public function setOutput(OutputManagerInterface $out) {
+    $this->out = $out;
+  }
+  
+  public function out() {
+    return $this->out;
+  }
+  
+  /**
+   * Wrapper for quickly sending an error message.
+   * 
+   * @param string $message
+   *   The error message key.
+   * @param array $args
+   *   An array of arguments.
+   */
+  private function error($message, $args = array()) {
+    $text = $this->strings()->getString($message, $args);
+    $this->out()->log($text, CLOG_ERROR);
+  }
+  
+  public function getServerList($serverType, $serverEvent, $typeKey, $defaultType = NULL, $useLocal = FALSE) {
+    $machines = $this->findServers($serverType, $useLocal);
+    $servers = array();
+    foreach ($machines as $key => $machine) {
+      if ($machine instanceof PhysicalServerInterface) {
+        $type = NULL;
+        if (!empty($typeKey)) {
+          $type = $machine->getSetting($type);
+        }
+        if (empty($type)) {
+          $type = $defaultType;
+        }
+        $server = $this->castServer($machine, $type, $serverEvent);
+        if (!empty($server)) {
+          $servers[$key] = $server;
+        }
+      }
+    }
+    return $servers;
+  }
+  
+  public function castServer(PhysicalServerInterface $server, $type, $eventName) {
+    $event = new ServerCastEvent($type, $server);
+    $this->events()->fireEvent($eventName, $event);
+    if (!$event->success()) {
+      $this->error(STRING_ERROR_SI_COULD_NOT_CAST, array(
+        '!type' => $type,
+      ));
+      return FALSE;
+    }
+    return $event->getCastedServer();
+  }
+  
+  public function findServers($type, $includeLocal = FALSE) {
+    $event = new ServerLocationEvent($type, $includeLocal);
+    $this->events()->fireEvent(EVENT_FIND_SERVERS, $event);
+    if (!$event->success()) {
+      $this->error(STRING_ERROR_SI_COULD_NOT_FIND_SERVERS, array(
+        '!type' => $type,
+      ));
+      return FALSE;
+    }
+    return $event->discoveredServers();
+  }
+  
+}

@@ -7,7 +7,7 @@
  * Handles much of the wrapper work around working with site and subsite
  * events.
  */
-class DrupalSiteEvent {
+class DrupalSiteEvent extends DtkEvent {
   
   /**
    * The generic drupal entity being fired by this object.
@@ -15,35 +15,7 @@ class DrupalSiteEvent {
    * @var GenericDrupalEntity
    */
   private $site;
-  
-  /**
-   * Whether or not a plug-in has attempted to deal with this event.
-   * 
-   * @var boolean
-   */
-  private $handled = FALSE;
-  
-  /**
-   * Whether or not all plug-ins were successful in dealing with this event.
-   * 
-   * @var boolean
-   */
-  private $success = FALSE;
-  
-  /**
-   * Whether or not this plug-in is optional.
-   * 
-   * @var boolean
-   */
-  private $optional;
-  
-  /**
-   * Additional variables for this event.
-   * 
-   * @var array
-   */
-  private $variables = array();
-  
+    
   /**
    * 
    * @param GenericDrupalEntity $entity
@@ -54,75 +26,8 @@ class DrupalSiteEvent {
    *   Extra variables.
    */
   public function __construct(GenericDrupalEntity $entity, $optional = FALSE, $variables = array()) {
+    parent::__construct($optional, $variables);
     $this->site = $entity;
-    $this->optional = $optional;
-    $this->variables = $variables;
-  }
-  
-  /**
-   * Retrieves an extra variable value.
-   * 
-   * @param string $key
-   *   The extra variable's key name.
-   * @param mixed $default
-   *   The default return value if it is not set. Defaults to FALSE.
-   * 
-   * @return mixed
-   *   The value of the variable.
-   */
-  public function getVariable($key, $default = FALSE) {
-    if (isset($this->variables[$key])) {
-      return $this->variables[$key];
-    }
-    return $default;
-  }
-  
-  /**
-   * Sets the value of a variable.
-   * 
-   * @param string $key
-   *   The key to set.
-   * @param mixed $value
-   *   The value to set.
-   */
-  public function setVariable($key, $value) {
-    $this->variables[$key] = $value;
-  }
-  
-  /**
-   * Sets whether or not a plug-in's attempt to deal with an event was
-   * successful or not.
-   * 
-   * @param boolean $result
-   *   TRUE if successful, otherwise FALSE. 
-   */
-  public function setResult($result) {
-    if (!$this->handled) {
-      $this->success = !!$result;
-      $this->handled = TRUE;
-    }
-    else {
-      $this->success = (!!$result) && $this->success;
-    }
-  }
-  
-  /**
-   * Checks to see if the event was successfully dealt with.
-   * 
-   * @return boolean
-   *   TRUE if successful, or optional and not handled.
-   */
-  public function success() {
-    return $this->success || ($this->optional && empty($this->handled));
-  }
-  
-  /**
-   * Checks to see if a handler should be executed.
-   * 
-   * @return boolean
-   */
-  public function checkExecution() {
-    return empty($this->handled) || $this->success;
   }
   
   /**

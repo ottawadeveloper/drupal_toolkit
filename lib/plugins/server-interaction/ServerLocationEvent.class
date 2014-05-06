@@ -1,0 +1,80 @@
+<?php
+/**
+ * @file Defines the ServerLocationEvent class.
+ */
+
+/**
+ * An event that is fired in order to locate a set of servers.
+ */
+class ServerLocationEvent extends DtkEvent {
+  
+  /**
+   * The type of server to find.
+   * 
+   * @var string
+   */
+  private $serverType = NULL;
+  
+  /**
+   * Whether or not to include the local server.
+   * 
+   * @var boolean
+   */
+  private $includeLocal = FALSE;
+  
+  /**
+   * The found servers.
+   * 
+   * @var array
+   */
+  private $servers = array();
+  
+  /**
+   * 
+   * @param string $type
+   *   The type of server to found.
+   * @param boolean $useLocal
+   *   Whether or not to find the local server.
+   */
+  public function __construct($type, $useLocal = FALSE) {
+    parent::__construct(TRUE);
+    $this->serverType = $type;
+    $this->includeLocal = $useLocal;
+  }
+  
+  /**
+   * Adds a discovered server.
+   * 
+   * @param string $key
+   *   The key of the server.
+   * @param PhysicalServerInterface $server
+   *   The server object.
+   */
+  public function addDiscoveredServer($key, PhysicalServerInterface $server) {
+    if (!empty($server)) {
+      $this->servers[$key] = $server;
+    }
+  }
+  
+  /**
+   * Adds multiple servers.
+   * 
+   * @param array $servers
+   *   Array of servers, keyed by their identifiers.
+   */
+  public function addDiscoveredServers(array $servers) {
+    foreach ($servers as $key => $server) {
+      $this->addDiscoveredServer($key, $server);
+    }
+  }
+  
+  /**
+   * Returns the list of discovered servers.
+   *  
+   * @return array
+   */
+  public function discoveredServers() {
+    return $this->servers;
+  }
+  
+}

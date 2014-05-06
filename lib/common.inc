@@ -293,6 +293,7 @@ $files = array(
   'classes/events/EventListener.iface',
   'classes/events/EventManager.class',
   'classes/events/EventDependency.iface',
+  'classes/events/DtkEvent.class',
   'classes/string/StringManager.class',
   'classes/router/RouterInterface.iface',
   'classes/router/RouterDependency.iface',

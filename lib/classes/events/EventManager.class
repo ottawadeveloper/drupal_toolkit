@@ -69,20 +69,15 @@ class EventManager implements EventManagerInterface,
     return TRUE;
   }
   
-  public function fireEvent($type, &$context = NULL) {
-    $message = 'Firing event [' . $type . '].';
-    $this->out->debug($message);
+  public function fireEvent($type, DtkEvent &$context = NULL) {
+    $this->out->debug('Firing event [' . $type . '].');
     if (empty($context)) {
-      $context = (object) array();
+      $context = new DtkEvent();
     }
-    if (is_array($context)) {
-      $context = (object) $context;
-    }
-    $context->stopPropagation = FALSE;
     if (isset($this->registry[$type])) {
       foreach ($this->registry[$type] as $listener) {
         $listener->captureEvent($context, $type);
-        if ($context->stopPropagation) {
+        if (!$context->checkContinueFiring()) {
           break;
         }
       }

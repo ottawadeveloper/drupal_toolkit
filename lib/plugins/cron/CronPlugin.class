@@ -171,14 +171,27 @@ define('STRING_WORKING_CRON_SETUP_ITEM', 'cron.working.setup_item');
 /**
  * Responsible for installing cron tasks for Drupal.
  */
-class CronPlugin extends GenericPlugin implements EventListener {
+class CronPlugin extends GenericPlugin implements EventListener, ServerInteractionDependency {
+
+  private $servers;
   
-  public function initialize() {
+  public function __construct() {
     $this->includeFiles(dirname(__FILE__), array(
       'CronManagerInterface.iface',
       'GenericCronManager.class',
       'LinuxCrontab.class'
     ));
+  }
+  
+  public function setServerManager(ServerInteractionManagerInterface $servers) {
+    $this->servers = $servers;
+  }
+  
+  public function servers() {
+    return $this->servers;
+  }
+  
+  public function initialize() {
     $this->events()->registerListener(array(
       EVENT_INSTALL_EXTRAS,
       EVENT_CAST_CRON_SERVER,
@@ -211,84 +224,17 @@ class CronPlugin extends GenericPlugin implements EventListener {
         }
         break;
       case EVENT_CAST_CRON_SERVER:
-        if (empty($context->cronServer)) {
-          $context->cronServer = $this->castCronMachine($context->server, $context->cronType);
+        $server = $this->castCronMachine($context->getServer(), $context->getType());
+        if (!empty($server)) {
+          $context->setCastedServer($server);
+          $context->stopFiring();
         }
         break;
     }
   }
   
   public function requiredPlugins() {
-    return array('DrupalSitePlugin', 'DrushConfigurationPlugin');
-  }
-  
-  /**
-   * Updates all the cron tasks associated with a site.
-   * 
-   * @param DrupalSite $site
-   *   The site to update cron tasks.
-   * 
-   * @return boolean
-   *   TRUE if successful, otherwise FALSE.
-   */
-  private function updateAll(DrupalSite $site) {
-    if (extra_empty($this->config()->getConfig(CONFIG_STATIC_CRON))) {
-      return $this->installCronJob($site, TRUE);
-    }
-    return TRUE;
-  }
-  
-  /**
-   * Deletes all the cron tasks from a site.
-   * 
-   * @param GenericDrupalEntity $site
-   *   The site to delete cron tasks.
-   * 
-   * @return boolean
-   *   TRUE if success, otherwise FALSE.
-   */
-  private function deleteCronTasks(GenericDrupalEntity $site) {
-    $alias = $site->getSetting(SITE_DRUSH_ALIAS);
-    if (empty($alias)) {
-      $this->error(STRING_SITE_MISSING_SETTING, array(
-        '!key' => SITE_DRUSH_ALIAS
-      ));
-      return FALSE;
-    }
-    $ret = TRUE;
-    $machines = $site->getSetting(SITE_CRON_MACHINES);
-    if (empty($machines)) {
-      return TRUE;
-    }
-    $this->working(STRING_WORKING_CRON_DELETE);
-    foreach ($machines as $key => $machine) {
-      $this->working(STRING_WORKING_CRON_DELETE_ITEM, array(
-        '!name' => $key,
-      ));
-      $valid = FALSE;
-      if ($machine instanceof CronManagerInterface) {
-        if ($machine->machine()->initialize()) {
-          $valid = TRUE;
-          if (!$machine->deleteScheduledTask($alias)) {
-            $this->warn(STRING_COULD_NOT_DELETE_CRON, array(
-              '!site' => $key,
-              '!alias' => $alias,
-            ));
-            $ret = FALSE;
-          }
-        }
-      }
-      if (!$valid) {
-        $this->warn(STRING_COULD_NOT_INIT_SERVER, array(
-          '!site' => $key,
-        ));
-        $ret = FALSE;
-      }
-    }
-    if ($ret) {
-      $this->success(STRING_SUCCESS_CRON_DELETE);
-    }
-    return $ret;
+    return array('DrupalSitePlugin', 'DrushConfigurationPlugin', 'ServerInteractionPlugin');
   }
   
   /**
@@ -319,36 +265,92 @@ class CronPlugin extends GenericPlugin implements EventListener {
    */
   private function getCronMachines() {
     $type = $this->config()->getConfig(CONFIG_DEFAULT_CRON_TYPE);
-    $context = (object) array(
-      'success' => FALSE,
-      'handled' => FALSE,
-      'servers' => array(),
-      'skipLocal' => FALSE,
-      'serverType' => SERVER_TYPE_CRON,
+    return $this->servers()->getServerList(
+        SERVER_TYPE_CRON, 
+        EVENT_CAST_CRON_SERVER,
+        SERVER_SETTING_CRON_TYPE,
+        $type,
+        FALSE
     );
-    $this->events()->fireEvent(EVENT_FIND_SERVERS, $context);
-    $machines = array();
-    foreach ($context->servers as $k => $server) {
-      if ($server instanceof PhysicalServerInterface) {
-        $stype = $server->getSetting(SERVER_SETTING_CRON_TYPE);
-        if (empty($stype)) {
-          $stype = $type;
-        }
-        $next = (object) array(
-          'success' => FALSE,
-          'handled' => FALSE,
-          'server' => $server,
-          'cronServer' => NULL,
-          'cronType' =>$stype,
-        );
-        $this->events()->fireEvent(EVENT_CAST_CRON_SERVER, $next);
-        if (!empty($next->cronServer)) {
-          $machines[$k] = $next->cronServer;
-          $this->dm()->setDependencies($next->cronServer);
-        }
+  }
+  
+  /**
+   * Updates all the cron tasks associated with a site.
+   * 
+   * @param DrupalSite $site
+   *   The site to update cron tasks.
+   * 
+   * @return boolean
+   *   TRUE if successful, otherwise FALSE.
+   */
+  private function updateAll(DrupalSite $site) {
+    if (extra_empty($this->config()->getConfig(CONFIG_STATIC_CRON))) {
+      return $this->installCronJob($site, TRUE);
+    }
+    return TRUE;
+  }
+  
+  /**
+   * Deletes all the cron tasks from a site.
+   * 
+   * @param GenericDrupalEntity $site
+   *   The site to delete cron tasks.
+   * 
+   * @return boolean
+   *   TRUE if success, otherwise FALSE.
+   */
+  private function deleteCronTasks(GenericDrupalEntity $site) {
+    $this->working(STRING_WORKING_CRON_DELETE);
+    $alias = $site->getSetting(SITE_DRUSH_ALIAS, NULL, TRUE);
+    if (empty($alias)) { return FALSE; }
+    $machines = $site->getSetting(SITE_CRON_MACHINES);
+    $ret = TRUE;
+    foreach ($machines as $key => $machine) {
+      $this->working(STRING_WORKING_CRON_DELETE_ITEM, array(
+        '!name' => $machinename,
+      ));
+      if (!$this->deleteCronTask($key, $machine, $alias, $site->uuid())) {
+        $ret = FALSE;
       }
     }
-    return $machines;
+    if ($ret) { $this->success(STRING_SUCCESS_CRON_DELETE); }
+    return $ret;
+  }
+  
+  /**
+   * Deletes a cron task from a site.
+   * 
+   * @param string $machinename
+   *   The machine name of the machine.
+   * @param CronManagerInterface $machine
+   *   The server instance.
+   * @param string $identifier
+   *   The identifier used to build the cron task.
+   * @param string $sitename
+   *   The name of the site.
+   * 
+   * @return boolean
+   *   Whether or not creating the cron task was successful.
+   */
+  private function deleteCronTask($machinename, $machine, $identifier, $sitename) {
+    if ($machine instanceof CronManagerInterface) {
+      if ($machine->machine()->initialize()) {
+        if (!$machine->deleteScheduledTask($identifier)) {
+            $this->warn(STRING_COULD_NOT_DELETE_CRON, array(
+              '!site' => $sitename,
+              '!alias' => $identifier,
+              '!name' => $machinename,
+            ));
+          return FALSE;
+        }
+        return TRUE;
+      }
+    }
+    $this->warn(STRING_COULD_NOT_INIT_SERVER, array(
+      '!site' => $sitename,
+      '!name' => $machinename,
+    ));
+    return FALSE;
   }
   
   /**
@@ -361,19 +363,11 @@ class CronPlugin extends GenericPlugin implements EventListener {
    *   TRUE if the cron tabs were installed successfully, otherwise FALSE.
    */
   private function installCronJob(GenericDrupalEntity $site, $update = FALSE) {
-    $alias = $site->getDrushAlias();
-    if (empty($alias)) {
-      $this->error(STRING_SITE_MISSING_SETTING, array(
-        '!key' => SITE_DRUSH_ALIAS
-      ));
-      return FALSE;
-    }
-    $cron = drush_get_cron_url($alias);
-    if (empty($cron)) {
-      $this->error(STRING_ERROR_NO_CRON_URL);
-      return FALSE;
-    }
     $this->working(STRING_WORKING_CRON_SETUP);
+    $alias = $site->getDrushAlias(TRUE);
+    if (empty($alias)) { return FALSE; }
+    $cron = drush_get_cron_url($alias);
+    if (empty($cron)) { $this->error(STRING_ERROR_NO_CRON_URL); return FALSE; }
     $command = 'wget ' . escapeshellarg($cron);
     $machines = $this->getCronMachines();
     foreach ($machines as $key => $machine) {
@@ -395,8 +389,8 @@ class CronPlugin extends GenericPlugin implements EventListener {
         }
       }
     }
-    $this->success(STRING_SUCCESS_CRON_SETUP);
     $site->setSetting(SITE_CRON_MACHINES, $machines);
+    $this->success(STRING_SUCCESS_CRON_SETUP);
     return TRUE;
   }
   

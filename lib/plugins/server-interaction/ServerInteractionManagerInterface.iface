@@ -1,0 +1,74 @@
+<?php
+/**
+ * @file Defines the ServerInteractionManagerInterface interface.
+ */
+
+/**
+ * Allows plug-ins to interact with the SI plugin in a meaningful way.
+ */
+interface ServerInteractionManagerInterface extends EventDependency, OutputDependency, StringDependency {
+  
+  /**
+   * Retrieves a casted list of servers based on the variables given.
+   * 
+   * This function is used to retrieve details of different server types from
+   * the SI plug-in and have them casted using a custom event name. This 
+   * custom event should take an instance of ServerCastEvent and set an 
+   * appropriate casted object if the type matches.
+   * 
+   * @param string $serverType
+   *   The type of server to find. Care should be taken to avoid confusing
+   *   this with the server cast type.
+   * @param string $serverEvent
+   *   The event to fire in order to cast the server.
+   * @param string $typeKey
+   *   The key on the server object that contains the cast type.
+   * @param string $defaultType
+   *   The default cast type to use if one is not specified.
+   * @param boolean $useLocal
+   *   Whether or not the local server should be included by default.
+   * 
+   * @return array
+   *   An array of casted server objects, casted according to the cast type
+   *   found.
+   */
+  function getServerList($serverType, $serverEvent, $typeKey, $defaultType = NULL, $useLocal = FALSE);
+  
+  /**
+   * Casts a server based on the given type.
+   * 
+   * Most plug-ins do not want to interact directly with PhysicalServerInterface
+   * objects - instead, they wrap the server object in another class which 
+   * provides a facade of useful methods. This is usually done by firing an 
+   * object of type ServerCastEvent and allowing plug-ins to look at the
+   * cast type and provide an appropriate instance. Defaults should usually
+   * be provided for common types. 
+   * 
+   * @param PhysicalServerInterface $server
+   *   The server to cast.
+   * @param string $type
+   *   The type to cast the server to.
+   * @param string $eventName
+   *   The name of the event which is used to cast the server.
+   * 
+   * @return object
+   *   An object of the appropriate cast type.
+   */
+  function castServer(PhysicalServerInterface $server, $type, $eventName);
+      
+  /**
+   * Retrieves an array of PhysicalServerInterface objects that have been
+   * defined for the given type, plus the local object if specified.
+   * 
+   * @param string $type
+   *   The type of server to discover.
+   * @param boolean $includeLocal
+   *   Whether or not the local server should be included by default.
+   * 
+   * @return array
+   *   An array of PhysicalServerInterface objects or FALSE if there were
+   *   no objects.
+   */
+  function findServers($type, $includeLocal = FALSE);
+  
+}
