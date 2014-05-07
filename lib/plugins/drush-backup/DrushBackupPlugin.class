@@ -1,8 +1,8 @@
 <?php
+
 /**
  * @file Defines the DrushBackupPlugin class.
  */
-
 /**
  * String token for when we are unable to backup the database.
  * 
@@ -75,6 +75,8 @@ define('STRING_WORKING_DRUSH_BACKUP_ITEM', 'drush_backup.working.backup-item');
 
 /**
  * String token for when the toolkit has finished backing up all the databases
+ * 
+ * @ingroup strings
  */
 define('STRING_SUCCESS_DRUSH_BACKUP', 'drush_backup.success.backup');
 
@@ -82,6 +84,11 @@ define('STRING_SUCCESS_DRUSH_BACKUP', 'drush_backup.success.backup');
  * Responsible for database backups using drush.
  */
 class DrushBackupPlugin extends GenericPlugin implements EventListener {
+
+  private static $backupDirectory = 'backups';
+  private static $updateDirectory = 'updates';
+  private static $revertedDirectory = 'reverted';
+  private static $restoredDirectory = 'restored';
   
   public function initialize() {
     $this->events()->registerListener(array(
@@ -89,24 +96,34 @@ class DrushBackupPlugin extends GenericPlugin implements EventListener {
       EVENT_DELETE_BUILD,
       EVENT_ROLLBACK_BACKUP,
       EVENT_ROLLBACK_PHASE2,
-    ), $this);
+        ), $this);
   }
-  
+
   public function captureEvent(DtkEvent &$context, $eventType) {
     switch ($eventType) {
       case EVENT_UPDATE_TAKE_BACKUP:
         if ($context->checkExecution()) {
-          $context->setResult($this->drushBackup($context->getSite()));
+          $context->setResult($this->backupForUpdate($context->getSite()));
         }
         break;
       case EVENT_UPDATE_PREPARE_SUBSITE:
         if ($context->checkExecution()) {
-          $context->setResult($this->drushBackup($context->getSubSite()));
+          $context->setResult($this->backupForUpdate($context->getSubSite()));
+        }
+        break;
+      case EVENT_ROLLBACK_SUBSITE_PREP:
+        if ($context->checkExecution()) {
+          $context->setResult($this->backupForRollback($context->getSubSite(), $context->getVariable('currentBuild')));
         }
         break;
       case EVENT_ROLLBACK_BACKUP:
         if ($context->checkExecution()) {
           $context->setResult($this->backupForRollback($context->getSite(), $context->getVariable('currentBuild')));
+        }
+        break;
+      case EVENT_ROLLBACK_SUBSITES:
+        if ($context->checkExecution()) {
+          $context->setResult($this->restoreFromBackup($context->getSubSite(), $context->getVariable('revertBuild')));
         }
         break;
       case EVENT_ROLLBACK_PHASE2:
@@ -121,11 +138,11 @@ class DrushBackupPlugin extends GenericPlugin implements EventListener {
         break;
     }
   }
-  
+
   public function requiredPlugins() {
     return array('DrupalSitePlugin', 'DrushConfigurationPlugin', 'DatabaseConfigurationPlugin');
   }
-  
+
   /**
    * Restores all the databases from a backup.
    * 
@@ -148,7 +165,7 @@ class DrushBackupPlugin extends GenericPlugin implements EventListener {
     $this->working(STRING_WORKING_DRUSH_RESTORE);
     $keys = array(
       'default' => 'default',
-    ) + $site->getSetting(SITE_DB_CONNECTION_KEYS);
+        ) + $site->getSetting(SITE_DB_CONNECTION_KEYS);
     $backupDirectory = assemble_path($site->getBuildFolder(), 'backups', $buildID, 'updates');
     $restoredDirectory = assemble_path($site->getBuildFolder(), 'restored', $buildID, date('Ymd-his'));
     if (!is_dir($restoredDirectory)) {
@@ -176,7 +193,7 @@ class DrushBackupPlugin extends GenericPlugin implements EventListener {
           '!db' => $dbkey,
           '!alias' => $drushAlias,
           '!file' => $file,
-        ), CLOG_CRITICAL);
+            ), CLOG_CRITICAL);
         $ret = FALSE;
       }
       else {
@@ -189,22 +206,7 @@ class DrushBackupPlugin extends GenericPlugin implements EventListener {
     }
     return $ret;
   }
-  
-  /**
-   * Backups up the DB before a rollback.
-   * 
-   * @param DrupalSite $site
-   *   Site to backup.
-   * @param string $buildID
-   *   Build ID to backup.
-   * 
-   * @return boolean
-   *   TRUE if successful, otherwise FALSE.
-   */
-  private function backupForRollback(GenericDrupalEntity $site, $buildID) {
-    return $this->drushBackup($site, 'reverted', $buildID);
-  }
-  
+
   /**
    * Deletes all backups related to a given build ID.
    * 
@@ -220,7 +222,7 @@ class DrushBackupPlugin extends GenericPlugin implements EventListener {
     $this->working(STRING_WORKING_DRUSH_DELETE_BACKUPS, array(
       '!buildid' => $buildID
     ));
-    $backupDirectory = assemble_path($site->getBuildFolder(), 'backups', $buildID);
+    $backupDirectory = assemble_path($site->getBuildFolder(), self::$backupDirectory, $buildID);
     if (is_dir($backupDirectory)) {
       remove_directory($backupDirectory);
     }
@@ -233,47 +235,72 @@ class DrushBackupPlugin extends GenericPlugin implements EventListener {
     ));
     return TRUE;
   }
-  
+
+
   /**
-   * Takes a backup of a site's database using Drush.
+   * Backups the DB before a rollback.
    * 
-   * @param DrupalSite $site
-   *   The site to take a backup of.
+   * @param GenericDrupalEntity $site
+   *   Site to backup.
+   * @param string $buildID
+   *   Build ID to backup.
    * 
    * @return boolean
-   *   Whether or not the backup was successful.
+   *   TRUE if successful, otherwise FALSE.
    */
-  private function drushBackup(GenericDrupalEntity $site, $type = 'updates', $buildID = NULL) {
-    if (empty($buildID)) {
-      if ($type === 'updates') {
-        $buildID = $site->getPreviousBuildID();
-      }
-      else {
-        $buildID = $site->getBuildID();
-      }
+  private function backupForRollback(GenericDrupalEntity $site, $buildID) {
+    return $this->executeDrushBackup($site, $buildID, self::$revertedDirectory);
+  }
+  
+  /**
+   * Backups the database before an update.
+   * 
+   * @param GenericDrupalEntity $entity
+   *   The site to backup.
+   * 
+   * @return boolean
+   *   TRUE if successful, otherwise FALSE.
+   */
+  private function backupForUpdate(GenericDrupalEntity $entity) {
+    $buildID = NULL;
+    if ($entity instanceof DrupalSubSite) {
+      $buildID = $entity->getParentSite()->getPreviousBuildID();
     }
-    $drushAlias = $site->getSetting(SITE_DRUSH_ALIAS);
-    if (empty($drushAlias)) {
-      $this->error(STRING_SITE_MISSING_SETTING, array(
-        '!key' => SITE_DRUSH_ALIAS,
-      ));
-      return FALSE;
+    else {
+      $buildID = $entity->getPreviousBuildID();
     }
+    return $this->executeDrushBackup($entity, $buildID, self::$updateDirectory);
+  }
+
+  /**
+   * Executes a drush backup command.
+   * 
+   * @param GenericDrupalEntity $entity
+   *   The entity to backup.
+   * @param string $buildID
+   *   The build ID to create a backup for.
+   * @param string $targetDirectoryName
+   *   Name of the target directory.
+   * @return boolean
+   */
+  private function executeDrushBackup(GenericDrupalEntity $entity, $buildID, $targetDirectoryName) {
     $this->working(STRING_WORKING_DRUSH_BACKUP);
+    $drushAlias = $entity->getDrushAlias(TRUE);
+    if (empty($drushAlias)) { return FALSE; }
     $keys = array(
       'default' => 'default',
-    ) + $site->getSetting(SITE_DB_CONNECTION_KEYS);
-    $backupDirectory = assemble_path($site->getBuildFolder(), 'backups', $buildID, $type);
-    if (!is_dir($backupDirectory)) {
-      mkdir_all($backupDirectory);
+    ) + $entity->getSetting(SITE_DB_CONNECTION_KEYS, array());
+    $directory = assemble_path($entity->getBuildFolder(), self::$backupDirectory, $buildID, $targetDirectoryName);
+    if (!is_dir($directory)) {
+      mkdir_all($directory);
     }
     foreach ($keys as $dbkey) {
       $this->working(STRING_WORKING_DRUSH_BACKUP_ITEM, array(
         '!dbkey' => $dbkey,
       ));
-      $file = assemble_path($backupDirectory, $dbkey . '.sql');
+      $file = assemble_path($directory, $dbkey . '.sql');
       if (!drush_db_dump($drushAlias, $file, array(
-        'database' => $dbkey,
+            'database' => $dbkey,
       ))) {
         $this->error(STRING_COULD_NOT_BACKUP_DB);
         return FALSE;
@@ -281,6 +308,6 @@ class DrushBackupPlugin extends GenericPlugin implements EventListener {
     }
     $this->success(STRING_SUCCESS_DRUSH_BACKUP);
     return TRUE;
-  }  
-  
+  }
+
 }
