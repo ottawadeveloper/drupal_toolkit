@@ -129,10 +129,13 @@ define('EVENT_UPDATE_PREPARE_SUBSITE', 'update-prepare-subsite');
  */
 class DrupalSiteUpdatePlugin extends GenericPlugin implements EventListener {
   
-  public function initialize() {
+  public function __construct() {
     $this->includeFiles(dirname(__FILE__), array(
       'SiteUpdateCommand.class',
     ));
+  }
+  
+  public function initialize() {
     $this->events()->registerListener(array(
       EVENT_CORE_REGISTER_COMMANDS,
     ), $this);
@@ -142,7 +145,7 @@ class DrupalSiteUpdatePlugin extends GenericPlugin implements EventListener {
     return array('DrupalSitePlugin');
   }
   
-  public function captureEvent(&$context, $eventType) {
+  public function captureEvent(DtkEvent &$context, $eventType) {
     switch ($eventType) {
       case EVENT_CORE_REGISTER_COMMANDS:
         $this->router()->addCommand('site-update', new SiteUpdateCommand());
