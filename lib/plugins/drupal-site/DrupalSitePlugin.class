@@ -125,7 +125,7 @@ define('STRING_ERROR_SITE_INSTALLED', 'drupal_site.error.already-installed');
  */
 class DrupalSitePlugin extends GenericPlugin implements EventListener {
   
-  public function initialize() {
+  public function __construct() {
     $this->includeFiles(dirname(__FILE__), array(
       'GenericDrupalEntity.class',
       'DrupalSite.class',
@@ -133,6 +133,9 @@ class DrupalSitePlugin extends GenericPlugin implements EventListener {
       'GenericSiteCommand.class',
       'DrupalSiteEvent.class',
     ));
+  }
+  
+  public function initialize() {
     $this->config()->extendDefaultConfiguration(array(
       CONFIG_ALLOW_LOCAL_SITES => LOCAL_SITES_ALLOW,
       CONFIG_BUILD_DIRECTORY => '',
@@ -143,12 +146,11 @@ class DrupalSitePlugin extends GenericPlugin implements EventListener {
     ), $this);
   }
   
-  public function captureEvent(&$context, $eventType) {
+  public function captureEvent(DtkEvent &$context, $eventType) {
     switch ($eventType) {
       case EVENT_CLEANUP_BUILD:
-        if (empty($context->handled) || $context->success) {
-          $context->success = $this->cleanupOldBuilds($context->site);
-          $context->handled = TRUE;
+        if ($context->checkExecution()) {
+          $context->setResult($this->cleanupOldBuilds($context->getSite()));
         }
         break;
     }

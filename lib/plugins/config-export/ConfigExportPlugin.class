@@ -11,7 +11,7 @@ class ConfigExportPlugin extends GenericPlugin implements EventListener {
     ), $this);
   }
   
-  public function captureEvent(&$context, $eventType) {
+  public function captureEvent(DtkEvent &$context, $eventType) {
     switch ($eventType) {
       case EVENT_CORE_REGISTER_COMMANDS:
         $this->router()->addCommand('config-export', new ConfigExportCommand());

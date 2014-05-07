@@ -205,7 +205,7 @@ class CronPlugin extends GenericPlugin implements EventListener, ServerInteracti
     ));
   }
   
-  public function captureEvent(&$context, $eventType) {
+  public function captureEvent(DtkEvent &$context, $eventType) {
     switch($eventType) {
       case EVENT_UPDATE_PRIOR_ACTIONS:
         if ($context->checkExecution()) {

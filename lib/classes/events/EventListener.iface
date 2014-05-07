@@ -16,6 +16,6 @@ interface EventListener {
    * @param string $eventType
    *   The type of event being called.
    */
-  function captureEvent(&$context, $eventType);
+  function captureEvent(DtkEvent &$context, $eventType);
   
 }
