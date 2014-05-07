@@ -383,7 +383,9 @@ function assemble_path($path1, $path2) {
   $path = '';
   $args = func_get_args();
   foreach ($args as $piece) {
-    $path = rtrim($path, ' /\\') . DIRECTORY_SEPARATOR . trim($piece, ' /\\');
+    if (!empty($piece)) {
+      $path = rtrim($path, ' /\\') . DIRECTORY_SEPARATOR . trim($piece, ' /\\');
+    }
   }
   return trim($path);
 }

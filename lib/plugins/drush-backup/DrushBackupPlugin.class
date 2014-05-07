@@ -142,11 +142,26 @@ class DrushBackupPlugin extends GenericPlugin implements EventListener {
   public function requiredPlugins() {
     return array('DrupalSitePlugin', 'DrushConfigurationPlugin', 'DatabaseConfigurationPlugin');
   }
+  
+  /**
+   * Retrieves the list of database keys.
+   * 
+   * @param GenericDrupalEntity $entity
+   *   The entity to get database keys for.
+   * 
+   * @return array
+   *   An array of database keys to execute.
+   */
+  private function getDatabaseKeys(GenericDrupalEntity $entity) {
+    return array(
+      'default' => 'default',
+    ) + $entity->getSetting(SITE_DB_CONNECTION_KEYS, array());
+  }
 
   /**
    * Restores all the databases from a backup.
    * 
-   * @param DrupalSite $site
+   * @param GenericDrupalEntity $site
    *   The site to restore backups for.
    * @param string $buildID
    *   ID to restore from.
@@ -155,56 +170,69 @@ class DrushBackupPlugin extends GenericPlugin implements EventListener {
    *   TRUE if successful, otherwise FALSE.
    */
   public function restoreFromBackup(GenericDrupalEntity $site, $buildID) {
-    $drushAlias = $site->getSetting(SITE_DRUSH_ALIAS);
-    if (empty($drushAlias)) {
-      $this->error(STRING_SITE_MISSING_SETTING, array(
-        '!key' => SITE_DRUSH_ALIAS,
-      ));
-      return FALSE;
-    }
     $this->working(STRING_WORKING_DRUSH_RESTORE);
-    $keys = array(
-      'default' => 'default',
-        ) + $site->getSetting(SITE_DB_CONNECTION_KEYS);
-    $backupDirectory = assemble_path($site->getBuildFolder(), 'backups', $buildID, 'updates');
-    $restoredDirectory = assemble_path($site->getBuildFolder(), 'restored', $buildID, date('Ymd-his'));
-    if (!is_dir($restoredDirectory)) {
-      mkdir_all($restoredDirectory);
-    }
+    $drushAlias = $site->getSetting(SITE_DRUSH_ALIAS, NULL, TRUE);
+    if (empty($drushAlias)) { return FALSE; }
+    $keys = $this->getDatabaseKeys($site);
+    $backupDirectory = $this->getBackupDirectoryName($site, $buildID, self::$updateDirectory);
+    $restoredDirectory = $this->getBackupDirectoryName($site, $buildID, self::$restoredDirectory, date('Ymd-his'));
     $ret = TRUE;
     foreach ($keys as $dbkey) {
-      $file = assemble_path($backupDirectory, $dbkey . '.sql');
-      $this->working(STRING_WORKING_DRUSH_RESTORE_ITEM, array(
-        '!dbkey' => $dbkey,
-        '!file' => $file,
-      ));
-      if (!is_readable($file)) {
-        $this->warn(STRING_ERROR_COULD_NOT_RESTORE_BACKUP, array(
-          '!db' => $dbkey,
-          '!alias' => $drushAlias,
-          '!file' => $file,
-        ));
+      if (!$this->restoreDatabase($drushAlias, $dbkey, $backupDirectory, $restoredDirectory)) {
         $ret = FALSE;
         continue;
-      }
-      drush_drop_db($drushAlias, $dbkey);
-      if (!drush_restore_db($file, $drushAlias, $dbkey)) {
-        $this->error(STRING_ERROR_COULD_NOT_RESTORE_BACKUP, array(
-          '!db' => $dbkey,
-          '!alias' => $drushAlias,
-          '!file' => $file,
-            ), CLOG_CRITICAL);
-        $ret = FALSE;
-      }
-      else {
-        $target = assemble_path($restoredDirectory, $dbkey . '.sql');
-        rename($file, $target);
       }
     }
     if ($ret) {
       $this->success(STRING_SUCCESS_DRUSH_RESTORE);
     }
     return $ret;
+  }
+  
+  /**
+   * Restores a database for a given set of parameters.
+   * 
+   * @param string $drushAlias
+   *   The drush alias to back up databases for.
+   * @param string $dbkey
+   *   The database key to back up.
+   * @param string $backupDirectory
+   *   The directory where update backups are kept.
+   * @param string $restoreDirectory
+   *   The directory where to save the backups after they've been restored.
+   *  
+   * @return boolean
+   *   Whether or not the operation was successful.
+   */
+  private function restoreDatabase($drushAlias, $dbkey, $backupDirectory, $restoreDirectory) {
+    $file = assemble_path($backupDirectory, $drushAlias . '-' . $dbkey . '.sql');
+    $this->working(STRING_WORKING_DRUSH_RESTORE_ITEM, array(
+      '!dbkey' => $dbkey,
+      '!alias' => $drushAlias,
+      '!file' => $file,
+    ));    
+    if (!is_readable($file)) {
+      $this->warn(STRING_ERROR_COULD_NOT_RESTORE_BACKUP, array(
+        '!db' => $dbkey,
+        '!alias' => $drushAlias,
+        '!file' => $file,
+      ));
+      return FALSE;
+    }
+    drush_drop_db($drushAlias, $dbkey);
+    if (!drush_restore_db($file, $drushAlias, $dbkey)) {
+      $this->error(STRING_ERROR_COULD_NOT_RESTORE_BACKUP, array(
+        '!db' => $dbkey,
+        '!alias' => $drushAlias,
+        '!file' => $file,
+      ), CLOG_CRITICAL);
+      return FALSE;
+    }
+    else {
+      $target = assemble_path($restoreDirectory, $drushAlias . '-' . $dbkey . '.sql');
+      rename($file, $target);
+    }
+    return TRUE;
   }
 
   /**
@@ -271,6 +299,27 @@ class DrushBackupPlugin extends GenericPlugin implements EventListener {
     }
     return $this->executeDrushBackup($entity, $buildID, self::$updateDirectory);
   }
+  
+  /**
+   * Retrieves the directory name of a backup directory.
+   * 
+   * @param GenericDrupalEntity $entity
+   *   The entity to backup.
+   * @param string $buildID
+   *   The build ID to create a backup for.
+   * @param string $targetDirectoryName
+   *   Name of the target directory.
+   * 
+   * @return string
+   *   The backup directory for $targetDirectoryName.
+   */
+  private function getBackupDirectoryName(GenericDrupalEntity $entity, $buildID, $backupType, $subDirectory = NULL) {
+    $dir = assemble_path($entity->getBuildFolder(), self::$backupDirectory, $buildID, $backupType, $subDirectory);
+    if (!is_dir($dir)) {
+      mkdir_all($dir);
+    }
+    return $dir;
+  }
 
   /**
    * Executes a drush backup command.
@@ -281,24 +330,21 @@ class DrushBackupPlugin extends GenericPlugin implements EventListener {
    *   The build ID to create a backup for.
    * @param string $targetDirectoryName
    *   Name of the target directory.
+   * 
    * @return boolean
+   *   Whether or not the backup was successful.
    */
   private function executeDrushBackup(GenericDrupalEntity $entity, $buildID, $targetDirectoryName) {
     $this->working(STRING_WORKING_DRUSH_BACKUP);
     $drushAlias = $entity->getDrushAlias(TRUE);
     if (empty($drushAlias)) { return FALSE; }
-    $keys = array(
-      'default' => 'default',
-    ) + $entity->getSetting(SITE_DB_CONNECTION_KEYS, array());
-    $directory = assemble_path($entity->getBuildFolder(), self::$backupDirectory, $buildID, $targetDirectoryName);
-    if (!is_dir($directory)) {
-      mkdir_all($directory);
-    }
+    $keys = $this->getDatabaseKeys($entity);
+    $directory = $this->getBackupDirectoryName($entity, $buildID, $targetDirectoryName);
     foreach ($keys as $dbkey) {
       $this->working(STRING_WORKING_DRUSH_BACKUP_ITEM, array(
         '!dbkey' => $dbkey,
       ));
-      $file = assemble_path($directory, $dbkey . '.sql');
+      $file = assemble_path($directory, $drushAlias . '-' . $dbkey . '.sql');
       if (!drush_db_dump($drushAlias, $file, array(
             'database' => $dbkey,
       ))) {
