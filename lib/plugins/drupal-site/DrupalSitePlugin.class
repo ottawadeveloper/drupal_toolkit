@@ -167,13 +167,9 @@ class DrupalSitePlugin extends GenericPlugin implements EventListener {
    */
   private function cleanupOldBuilds(DrupalSite $site) {
     $max = $this->config()->getConfig(CONFIG_MAX_BUILDS);
-    if (extra_empty($max) || $max < 2) {
-      return TRUE;
-    }
+    if (extra_empty($max) || $max < 2) { return TRUE; }
     $builds = $site->getSetting(SITE_BUILD_IDS);
-    if (count($builds) <= $max) {
-      return TRUE;
-    }
+    if (count($builds) <= $max) { return TRUE; }
     $del = count($builds) - $max;
     $this->working(STRING_WORKING_SITE_HISTORY_CLEANUP, array(
       '!count' => $del,
