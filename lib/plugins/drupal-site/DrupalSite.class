@@ -170,6 +170,21 @@ class DrupalSite extends GenericDrupalEntity {
     return $this->cachedSubSites[$subsiteID];
   }
   
+  public function primeSubSiteCache($subsiteID, DrupalSubSite $site) {
+    if (!isset($this->cachedSubSites[$subsiteID])) {
+      $this->cachedSubSites[$subsiteID] = $site;
+    }
+  }
+  
+  public function setDeletionFlag() {
+    parent::setDeletionFlag();
+    $ids = $this->getSubSites();
+    foreach ($ids as $id) {
+      $subsite = $this->getSubSite($id);
+      $subsite->setDeletionFlag();
+    }
+  }
+  
   public function uuid() {
     return $this->getBuildName();
   }
@@ -188,13 +203,18 @@ class DrupalSite extends GenericDrupalEntity {
    *   An array of unique domains used by this site and all of it's subsites.
    */
   public function getRecursiveDomains() {
+    if ($this->isDeleted()) {
+      return array();
+    }
     $domains = $this->getSetting(SITE_SETTING_ALL_DOMAINS);
     $subsiteIDs = $this->getSubSites();
     foreach ($subsiteIDs as $subsiteID) {
       $subsite = $this->getSubSite($subsiteID);
-      foreach ($subsite->getSetting(SITE_SETTING_ALL_DOMAINS) as $domain) {
-        if (!in_array($domain, $domains)) {
-          $domains[] = $domains;
+      if (!$subsite->isDeleted()) {
+        foreach ($subsite->getSetting(SITE_SETTING_ALL_DOMAINS) as $domain) {
+          if (!in_array($domain, $domains)) {
+            $domains[] = $domains;
+          }
         }
       }
     }

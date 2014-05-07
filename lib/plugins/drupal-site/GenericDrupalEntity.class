@@ -105,6 +105,13 @@ abstract class GenericDrupalEntity {
   private $settingsLoaded = FALSE;
   
   /**
+   * Flag for whether or not this entity is about to be deleted.
+   * 
+   * @var boolean
+   */
+  private $isDeleted = FALSE;
+  
+  /**
    * Sets a token for the site.
    * 
    * @param string $token
@@ -114,6 +121,22 @@ abstract class GenericDrupalEntity {
    */
   public function setToken($token, $value) {
     $this->placeholders[$token] = $value;
+  }
+  
+  /**
+   * Call to flag this entity as being deleted.
+   */
+  public function setDeletionFlag() {
+    $this->isDeleted = TRUE;
+  }
+  
+  /**
+   * Checks to see if this entity is about to be deleted.
+   * 
+   * @return boolean
+   */
+  public function isDeleted() {
+    return $this->isDeleted;
   }
   
   /**

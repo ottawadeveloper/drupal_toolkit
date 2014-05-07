@@ -29,6 +29,7 @@ class SiteDeleteCommand extends GenericSiteCommand {
   }
   
   public function executeCommand() {
+    $this->getSite()->setDeletionFlag();
     $this->executeAllSteps($this->steps, array(
       'continue' => TRUE,
       'optional' => TRUE,

@@ -168,13 +168,32 @@ define('STRING_SUCCESS_UPDATING_HOSTS', 'hosts_config.success.updating-hosts');
 /**
  * Plugin to manage the hosts file configuration of one or more servers.
  */
-class HostsConfigurationPlugin extends GenericPlugin implements EventListener {
+class HostsConfigurationPlugin extends GenericPlugin implements EventListener, ServerInteractionDependency {
+
+  /**
+   * Dependency injection variable for the server interaction manager.
+   * 
+   * @var ServerInteractionManagerInterface
+   */
+  private $servers;
+  
+  public function setServerManager(ServerInteractionManagerInterface $servers) {
+    $this->servers = $servers;
+  }
+  
+  public function servers() {
+    return $this->servers;
+  }
+  
+  public function __construct() {
+    $this->includeFiles(dirname(__FILE__), array(
+      'HostFileManagerInterface.iface',
+      'GenericHostFileManager.class',
+      'LinuxHostFileManager.class',
+    ));
+  }
   
   public function initialize() {
-    $base = dirname(__FILE__);
-    require assemble_path($base, 'HostFileManagerInterface.iface');
-    require assemble_path($base, 'GenericHostFileManager.class');
-    require assemble_path($base, 'LinuxHostFileManager.class');
     $this->config()->extendDefaultConfiguration(array(
       CONFIG_MANAGED_HOSTS_COMPACT => FALSE,
       CONFIG_MANAGED_HOSTS_USE_LOCAL => TRUE,
@@ -191,6 +210,7 @@ class HostsConfigurationPlugin extends GenericPlugin implements EventListener {
       EVENT_FIND_MANAGED_HOST_SERVERS,
       EVENT_REMOVE_ALL,
       EVENT_SUBSITE_BUILD_PARENT_SERVER_REFRESH,
+      EVENT_REMOVE_SUBSITE_CLEANUP,
     ), $this);
   }
   
@@ -198,38 +218,25 @@ class HostsConfigurationPlugin extends GenericPlugin implements EventListener {
     return array('ServerInteractionPlugin', 'DrupalSitePlugin');
   }
   
-  public function captureEvent(&$context, $eventType) {
+  public function captureEvent(DtkEvent &$context, $eventType) {
     switch ($eventType) {
+      case EVENT_REMOVE_SUBSITE_CLEANUP:
+      case EVENT_REMOVE_ALL:
+      case EVENT_SITE_BUILD_MORE_CONFIG:
       case EVENT_SUBSITE_BUILD_PARENT_SERVER_REFRESH:
-        if (empty($context->handled) || $context->success) {
-          $context->success = $this->updateHostFile($context->subsite->getParentSite());
-          $context->handled = TRUE;
+        if ($context->checkExecution()) {
+          $context->setResult($this->updateHostFile($context->getSite()));
         }
         break;
       case EVENT_UPDATE_REFRESH_SERVER_CONFIG:
-        if ((!$context->handled) || $context->success) {
-          $context->success = $this->refreshHostFiles($context->site);
-          $context->handled = TRUE;
+        if ($context->checkExecution()) {
+          $context->setResult($this->refreshHostFiles($context->getSite()));
         }
-        break;
-      case EVENT_FIND_MANAGED_HOST_SERVERS:
-        $context->servers = array_merge($context->servers, $this->findManagedHostServers());
         break;
       case EVENT_CAST_MANAGED_HOST_SERVER:
-        $casted = $this->castManagedHostServer($context->server, $context->type);
-        if (!empty($casted)) {
-          $context->stopPropagation = TRUE;
-          $context->managedHostServer = $casted;
+        if ($context->checkExecution()) {
+          $context->setCastedServer($this->castManagedHostServer($context->server, $context->type));
         }
-        break;
-      case EVENT_SITE_BUILD_MORE_CONFIG:
-        if (empty($context->handled) || $context->success) {
-          $context->handled = TRUE;
-          $context->success = $this->updateHostFile($context->site);
-        }
-        break;
-      case EVENT_REMOVE_ALL:
-        $context->success = $this->cleanHostFiles($context->site) && $context->success;
         break;
     }
   }
@@ -250,43 +257,6 @@ class HostsConfigurationPlugin extends GenericPlugin implements EventListener {
     else {
       return TRUE;
     }
-  }
-  
-  /**
-   * Cleans up the host files.
-   * 
-   * @param DrupalSite $site
-   *   The DrupalSite to cleanup host files for.
-   * 
-   * @return boolean
-   *   TRUE if all the files were cleaned up, otherwise FALSE.
-   */
-  private function cleanHostFiles(DrupalSite $site) {
-    $hosts = $site->getSetting(SITE_HOST_FILES);
-    if (empty($hosts)) {
-      return TRUE;
-    }
-    $r = TRUE;
-    $this->working(STRING_WORKING_REMOVING_HOSTS);
-    foreach ($hosts['servers'] as $key => $host) {
-      $this->working(STRING_WORKING_REMOVING_HOSTS_ITEM, array(
-        '!name' => $key,
-      ));
-      if ($host instanceof HostFileManagerInterface) {
-        if (!$host->cleanHostEntries($hosts['map'])) {
-          $this->warn(STRING_HOST_REMOVAL_ERROR);
-          $r = FALSE;
-        }
-      }
-      else {
-        $this->warn(STRING_HOST_REMOVAL_ERROR);
-        $r = FALSE;
-      }
-    }
-    if ($r) {
-      $this->success(STRING_SUCCESS_REMOVING_HOSTS);
-    }
-    return $r;
   }
   
   /**
@@ -340,67 +310,6 @@ class HostsConfigurationPlugin extends GenericPlugin implements EventListener {
     $site->setSetting(SITE_HOST_FILES, $registry);
     $this->success(STRING_SUCCESS_UPDATING_HOSTS);
     return TRUE;
-  }
-  
-  /**
-   * Retrieves managed host servers from the ServerInteractionPlugin.
-   * 
-   * @return array
-   *   An array of managed host servers.
-   */
-  private function findManagedHostServers() {
-    $defaultType = $this->config()->getConfig(CONFIG_MANAGED_HOSTS_DEFAULT_TYPE);
-    $context = (object) array(
-      'serverType' => SERVER_TYPE_MANAGED_HOST,
-      'skipLocal' => FALSE,
-      'servers' => array(),
-    );
-    if (extra_empty($this->config()->getConfig(CONFIG_MANAGED_HOSTS_USE_LOCAL))) {
-      $context->use_local = FALSE;
-    }
-    $this->events()->fireEvent(EVENT_FIND_SERVERS, $context);    
-    $servers = array();
-    foreach ($context->servers as $server) {
-      if ($server instanceof PhysicalServerInterface) {
-        $type = $server->getSetting(SERVER_SETTING_ENVIRONMENT);
-        if (empty($type)) {
-          $type = $defaultType;
-        }
-        $managedHostServer = $this->getCastedServer($server, $type);
-        if (!empty($managedHostServer)) {
-          $servers[] = $managedHostServer;
-        }
-      }
-    }
-    return $servers;
-  }
-  
-  /**
-   * Retrieves the casted server by firing an event to find the type.
-   * 
-   * @param PhysicalServerInterface $server
-   *   The server we're casting.
-   * @param string $type
-   *   The type we're casting to.
-   * 
-   * @return HostFileManagerInterface
-   *   An appropriately casted object or NULL if none could be found.
-   */
-  private function getCastedServer(PhysicalServerInterface $server, $type) {
-    $context = (object) array(
-      'server' => $server,
-      'type' => $type,
-      'managedHostServer' => NULL,
-    );
-    $compacted = FALSE;
-    if (!extra_empty($this->config()->getConfig(CONFIG_MANAGED_HOSTS_COMPACT))) {
-      $compacted = TRUE;
-    }
-    $this->events()->fireEvent(EVENT_CAST_MANAGED_HOST_SERVER, $context);
-    if (!empty($context->managedHostServer) && ($context->managedHostServer instanceof HostFileManagerInterface)) {
-      $context->managedHostServer->setCompactHostFile($compacted);
-    }
-    return $context->managedHostServer;
   }
   
   private function castManagedHostServer(PhysicalServerInterface $server, $type) {
