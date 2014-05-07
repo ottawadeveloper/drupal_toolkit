@@ -4,6 +4,20 @@
  */
 
 /**
+ * Fired to rollback subsites.
+ * 
+ * @ingroup events
+ */
+define('EVENT_ROLLBACK_SUBSITES', 'rollback-subsites');
+
+/**
+ * Fired to prepare subsites for a rollback, eg to back up the DB.
+ * 
+ * @ingroup events
+ */
+define('EVENT_ROLLBACK_SUBSITE_PREP', 'rollbakc-prepare-subsites');
+
+/**
  * Fired so that plugins can prepare the site for rolling back to a previous 
  * update.
  * 

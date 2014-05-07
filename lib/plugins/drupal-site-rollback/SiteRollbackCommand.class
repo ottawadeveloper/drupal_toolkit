@@ -22,6 +22,10 @@ class SiteRollbackCommand extends GenericSiteCommand {
       'event' => EVENT_ROLLBACK_BACKUP,
     ),
     array(
+      'event' => EVENT_ROLLBACK_SUBSITE_PREP,
+      'type' => COMMAND_STEP_ALL_SUBSITES,
+    ),
+    array(
       'event' => EVENT_ROLLBACK_START,
       'optional' => TRUE,
     ),
@@ -32,6 +36,10 @@ class SiteRollbackCommand extends GenericSiteCommand {
     array(
       'event' => EVENT_ROLLBACK_PHASE2,
       'continue' => TRUE,
+    ),
+    array(
+      'event' => EVENT_ROLLBACK_SUBSITES,
+      'type' => COMMAND_STEP_ALL_SUBSITES,
     ),
     array(
       'event' => EVENT_ROLLBACK_PHASE3,
