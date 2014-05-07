@@ -9,11 +9,14 @@
  */
 class DrupalSiteExistsPlugin extends GenericPlugin implements EventListener {
   
-  public function initialize() {
+  public function __construct() {
     $this->includeFiles(dirname(__FILE__), array(
       'SiteExistsCommand.class',
       'SubSiteExistsCommand.class',
     ));
+  }
+  
+  public function initialize() {
     $this->events()->registerListener(array(
       EVENT_CORE_REGISTER_COMMANDS,
     ), $this);
@@ -23,7 +26,7 @@ class DrupalSiteExistsPlugin extends GenericPlugin implements EventListener {
     return array('DrupalSitePlugin');
   }
   
-  public function captureEvent(&$context, $eventType) {
+  public function captureEvent(DtkEvent &$context, $eventType) {
     switch ($eventType) {
       case EVENT_CORE_REGISTER_COMMANDS:
         $this->router()->addCommand('site-exists', new SiteExistsCommand());
