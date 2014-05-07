@@ -8,7 +8,7 @@
 /**
  * Current version of the toolkit.
  */
-define('TOOLKIT_VERSION', '0.0.3');
+define('TOOLKIT_VERSION', '0.0.4');
 
 /**
  * Location of the common directory.

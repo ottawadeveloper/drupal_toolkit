@@ -12,6 +12,64 @@ be continued whenever you work directly with DTK, as it keeps the documentation
 on key strings up to date. Never use a raw string unless you are sure you know
 what you are doing.
 
+
+### File Structure
+
+- dtk.php: This is the script file that should be used to execute DTK commands.
+- /lib: Contains all relevant files for DTK.
+- /lib/common.inc: Organizes the library files, setting up all the basic info
+  that other scripts will require.
+- /lib/functions.inc: Contains key functions that have wide usage. Includes
+  several other files that contain additional non-class functions.
+- /lib/setup.php: Initializes all the relevant core objects and triggers all
+  relevant include/setup procedures.
+- /lib/docs.inc: Doxygen comments only.
+- /lib/translations: Contains core translation files.
+- /lib/functions: Contains additional functions, organized by functional area.
+- /lib/functions/drush.inc: Functions designed to make it easier to trigger
+  drush commands from PHP.
+- /lib/functions/hosts.inc: Functions designed to work with the host file.
+- /lib/function/system.inc: Functions designed to work with the base filesystem.
+- /lib/function/terminal.inc: Functions designed to work with terminal output.
+- /lib/function/special.inc: Specialized functions that don't belong to another
+  area.
+- /lib/setup: Contains additional setup instructions.
+- /lib/config.php: Instructions to parse configuration files into the core objects.
+- /lib/plugins.php: Instructions to include and initialize all relevant plug-ins.
+- /lib/classes: Contains core classes. These classes are essential for the toolkit
+  and cannot be removed.
+- /lib/classes/args: Core classes that process and manage command-line options and
+  arguments.
+- /lib/classes/commands: Core classes that process and manage command execution.
+- /lib/classes/config: Core classes that manage DTK configuration options.
+- /lib/classes/dm: Core classes that manage dependency injection.
+- /lib/classes/events: Core classes that manage event management.
+- /lib/classes/output: Core classes that manage output.
+- /lib/classes/plugins: Core classes that support plug-in development.
+- /lib/classes/router: Core classes that support command routing.
+- /lib/classes/string: Core classes that support string translation and alteration.
+- /lib/plugins: Contains core plugins. Core plugins differ from core classes in that
+  they can be disabled if necessary (though this may break their dependencies).
+- /lib/plugins/config-export: A plugin for exporting the default configuration settings.
+- /lib/plugins/cron: A plugin for managing scheduled tasks.
+- /lib/plugins/db-config: A plugin for managing databases.
+- /lib/plugins/drupal-site: A plugin which supports managing Drupal sites.
+- /lib/plugins/drupal-site-build: A plugin which provides the "site-build" command
+  for spinning up a new codebase. Also provides a command for subsites.
+- /lib/plugins/drupal-site-delete: A plugin which provides the "site-delete" command
+  to completely remove an entire site. Also provides a command for subsites.
+- /lib/plugins/drupal-site-exists: A plugin which provides the "site-exists" command
+  to see if a site already exists. Also provides a command for subsites.
+- /lib/plugins/drupal-site-install: A plugin which provides the "site-install" command
+  to install a site. Also provides a command for subsites.
+- /lib/plugins/drupal-site-rollback: A plugin which provides the "site-rollback" command
+  which reverses an update installation. Subsites are always included in a rollback.
+- /lib/plugins/drupal-site-update: A plugin which provides the "site-update" command
+  which updates the database and provides suitable hooks for executing additional
+  functionality. Subsites are always included in an update.
+- /lib/plugins/drush-backup: A plugin which provides tools for backing up databases
+  and restoring them using Drush.
+
 ### Dependency Injection
 
 In order to properly support the plug-in system, the toolkit extensively 
