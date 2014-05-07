@@ -69,6 +69,39 @@ what you are doing.
   functionality. Subsites are always included in an update.
 - /lib/plugins/drush-backup: A plugin which provides tools for backing up databases
   and restoring them using Drush.
+- /lib/plugins/drush-config: A plugin which configures the Drush alias for a site.
+- /lib/plugins/drush-install: A plugin which installs Drupal using Drush.
+- /lib/plugins/drush-maintenance: A plugin which manages maintenance mode and
+  cache wiping using Drush.
+- /lib/plugins/drush-update: A plugin which updates the database using
+  Drush.
+- /lib/plugins/flog: A plugin for logging output to files.
+- /lib/plugins/gateway-config: A plugin for managing gateway configurations.
+- /lib/plugins/hosts-config: A plugin for managing host files.
+- /lib/plugins/http-config: A plugin for managing web server configurations.
+- /lib/plugins/pacemaker: A plugin for interacting with Pacemaker properly.
+- /lib/plugins/permissions: A plugin for managing file system permissions.
+- /lib/plugins/server-interaction: A generalized plugin for interacting with
+  one or more servers other than the local system.
+- /lib/plugins/standard-build: A plugin which manages how the build is 
+  performed.
+- /lib/plugins/standard-config: A plugin which manages how configuration
+  for a new site is managed.
+- /lib/plugins/standard-server-struct: A plugin which manages how a build's
+  server components are setup.
+- /lib/plugins/standard-site: A plugin which manages how the sites folder
+  within a Drupal site is managed.
+- /lib/plugins/standard-structure: A plugin which manages the internal 
+  structure of a build (eg file system setup, etc).
+- /lib/plugins/terminal: A plugin for interacting with the terminal.
+- /lib/plugins/upstream: A generalized plugin for interacting with an upstream
+  server.
+- /lib/plugins/upstream-db: A plugin for downloading the database from the
+  upstream server and partially or completing replacing the local database with 
+  it.
+- /lib/plugins/upstream-files: A plugin for downloading the sites/X/files 
+  directory from the upstream server and overwriting the local directory with
+  it's contents.
 
 ### Dependency Injection
 
