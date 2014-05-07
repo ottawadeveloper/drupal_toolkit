@@ -56,6 +56,12 @@ class SiteRollbackCommand extends GenericSiteCommand {
       'optional' => TRUE,
     ),
     array(
+      'event' => EVENT_ROLLBACK_SUBSITE_CLEAN,
+      'continue' => TRUE,
+      'optional' => TRUE,
+      'type' => COMMAND_STEP_ALL_SUBSITES,
+    ),
+    array(
       'event' => EVENT_ROLLBACK_COMPLETE,
       'optional' => TRUE,
       'continue' => TRUE,
