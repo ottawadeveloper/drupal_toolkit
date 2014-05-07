@@ -96,6 +96,17 @@ define('SITE_TOKEN_BUILD_NAME', 'BUILD_NAME');
 define('SITE_TOKEN_BUILD_DIR', 'BUILD_DIRECTORY');
 
 /**
+ * A token for SITE_ALL_DOMAINS of a site and all it's 
+ * child sites.
+ * 
+ * This is a dynamic token. It is generated automatically and it's value
+ * does not need to be maintained.
+ * 
+ * @ingroup site_tokens
+ */
+define('SITE_TOKEN_RECURSIVE_DOMAINS', 'RECURSIVE_DOMAINS');
+
+/**
  * Stores information about a site installation.
  */
 class DrupalSite extends GenericDrupalEntity {
@@ -161,6 +172,33 @@ class DrupalSite extends GenericDrupalEntity {
   
   public function uuid() {
     return $this->getBuildName();
+  }
+  
+  public function getDynamicTokens() {
+    $tokens = array(
+      SITE_TOKEN_RECURSIVE_DOMAINS => implode(" ", $this->getRecursiveDomains()),
+    );
+    return $tokens + parent::getDynamicTokens();
+  }
+  
+  /**
+   * Retrieves the sum of all the domains of this site and all it's subsites.
+   * 
+   * @return array
+   *   An array of unique domains used by this site and all of it's subsites.
+   */
+  public function getRecursiveDomains() {
+    $domains = $this->getSetting(SITE_SETTING_ALL_DOMAINS);
+    $subsiteIDs = $this->getSubSites();
+    foreach ($subsiteIDs as $subsiteID) {
+      $subsite = $this->getSubSite($subsiteID);
+      foreach ($subsite->getSetting(SITE_SETTING_ALL_DOMAINS) as $domain) {
+        if (!in_array($domain, $domains)) {
+          $domains[] = $domains;
+        }
+      }
+    }
+    return array_unique($domains);
   }
   
   /**

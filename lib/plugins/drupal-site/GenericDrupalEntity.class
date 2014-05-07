@@ -130,7 +130,8 @@ abstract class GenericDrupalEntity {
    * @see @ref site_tokens "Site token types"
    */
   public function replaceTokens($in) {
-    foreach ($this->placeholders as $k => $v) {
+    $replacements = $this->getDynamicTokens() + $this->placeholders;
+    foreach ($replacements as $k => $v) {
       $in = str_replace('@@' . strtoupper($k), $v, $in);
     }
     return $in;
@@ -144,6 +145,19 @@ abstract class GenericDrupalEntity {
    */
   public function getDrushAlias($required = FALSE) {
     return $this->getSetting(SITE_DRUSH_ALIAS, FALSE, $required);
+  }
+  
+  /**
+   * Child entities can use this method to specify specific tokens
+   * that have dynamic values (eg that are not set using setToken()). These
+   * tokens will always override manual tokens.
+   * 
+   * @return array
+   *   An array of tokens where the key is the token name and the value is
+   *   the replacement value.
+   */
+  protected function getDynamicTokens() {
+    return array();
   }
   
   /**
