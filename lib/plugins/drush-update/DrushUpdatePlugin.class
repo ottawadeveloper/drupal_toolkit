@@ -25,13 +25,6 @@ define('STRING_COULD_NOT_CLEAR_DRUPAL_CACHE', 'drush_update.error.cache-failure'
 define('STRING_WORKING_CACHE_WIPE', 'drush_update.working.cache-wipe');
 
 /**
- * String token for when a site is about to have it's cache wiped
- * 
- * @ingrou strings
- */
-define('STRING_WORKING_CACHE_WIPE_ITEM', 'drush_update.working.cache-wipe-item');
-
-/**
  * String token for when all the caches have been wiped successfully.
  * 
  * @ingroup strings
@@ -44,13 +37,6 @@ define('STRING_SUCCESS_CACHE_WIPE', 'drush_update.success.cache-wipe');
  * @ingroup strings
  */
 define('STRING_WORKING_DB_UPDATE', 'drush_update.working.db-update');
-
-/**
- * String token for when a database is about to be updated.
- * 
- * @ingroup strings
- */
-define('STRING_WORKING_DB_UPDATE_ITEM', 'drush_update.working.db-update-item');
 
 /**
  * String token for when all databases have been updated.
@@ -66,25 +52,29 @@ class DrushUpdatePlugin extends GenericPlugin implements EventListener {
   
   public function initialize() {
     $this->events()->registerListener(array(
-      EVENT_UPDATE_ACTIONS,
-      EVENT_UPDATE_REFRESH,
       EVENT_ROLLBACK_CLEAN,
+      EVENT_ROLLBACK_SUBSITE_CLEAN,
+      EVENT_UPDATE_ACTIONS,
+      EVENT_UPDATE_SUBSITES,
+      EVENT_UPDATE_REFRESH,
+      EVENT_UPDATE_REFRESH_SUBSITE,
     ), $this);
   }
   
-  public function captureEvent(&$context, $eventType) {
+  public function captureEvent(DtkEvent &$context, $eventType) {
     switch ($eventType) {
+      case EVENT_UPDATE_SUBSITE:
       case EVENT_UPDATE_ACTIONS:
-        if (empty($context->handled) || $context->success) {
-          $context->success = $this->drushUpdate($context->site);
-          $context->handled = TRUE;
+        if ($context->checkExecution()) {
+          $context->setResult($this->drushUpdate($context->getEntity()));
         }
         break;
+      case EVENT_ROLLBACK_SUBSITE_CLEAN:
       case EVENT_ROLLBACK_CLEAN:
       case EVENT_UPDATE_REFRESH:
-        if (empty($context->handled) || $context->success) {
-          $context->success = $this->drushCacheWipe($context->site);
-          $context->handled = TRUE;
+      case EVENT_UPDATE_REFRESH_SUBSITE:
+        if ($context->checkExecution()) {
+          $context->setResult($this->drushCacheWipe($context->getEntity()));
         }
         break;
     }
@@ -93,29 +83,21 @@ class DrushUpdatePlugin extends GenericPlugin implements EventListener {
   /**
    * Wipes all Drupal caches via Drush.
    * 
-   * @param DrupalSite $site
+   * @param GenericDrupalEntity $site
    *   The site to wipe caches for.
    *
    * @return boolean
    *   TRUE if all the caches were wiped successfully, otherwise FALSE.
    */
-  private function drushCacheWipe(DrupalSite $site) {
-    $aliases = $site->getSetting(SITE_DRUSH_ALIASES);
-    if (empty($aliases)) {
-      $this->error(STRING_SITE_MISSING_SETTING, array(
-        '!key' => SITE_DRUSH_ALIASES,
-      ));
+  private function drushCacheWipe(GenericDrupalEntity $site) {
+    $alias = $site->getDrushAlias(TRUE);
+    if (empty($alias)) { return TRUE; }
+    $this->working(STRING_WORKING_CACHE_WIPE, array(
+      '!alias' => $alias,
+    ));
+    if (!drush_cache_clear($alias)) {
+      $this->error(STRING_COULD_NOT_CLEAR_DRUPAL_CACHE);
       return FALSE;
-    }
-    $this->working(STRING_WORKING_CACHE_WIPE);
-    foreach ($aliases as $alias) {
-      $this->working(STRING_WORKING_CACHE_WIPE_ITEM, array(
-        '!alias' => $alias,
-      ));
-      if (!drush_cache_clear($alias)) {
-        $this->error(STRING_COULD_NOT_CLEAR_DRUPAL_CACHE);
-        return FALSE;
-      }
     }
     $this->working(STRING_SUCCESS_CACHE_WIPE);
     return TRUE;
@@ -124,28 +106,18 @@ class DrushUpdatePlugin extends GenericPlugin implements EventListener {
   /**
    * Responsible for updating the database.
    * 
-   * @param DrupalSite $site
+   * @param GenericDrupalEntity $site
    *   The drupal site to update.
    * 
    * @return boolean
    *   TRUE if the site was updated successfully, otherwise FALSE.
    */
-  private function drushUpdate(DrupalSite $site) {
-    $aliases = $site->getSetting(SITE_DRUSH_ALIASES);
-    if (empty($aliases)) {
-      $this->error(STRING_SITE_MISSING_SETTING, array(
-        '!key' => SITE_DRUSH_ALIASES,
-      ));
-      return FALSE;
-    }
+  private function drushUpdate(GenericDrupalEntity $site) {
+    $alias = $site->getDrushAlias(TRUE);
+    if (empty($alias)) { return TRUE; }
     $this->working(STRING_WORKING_DB_UPDATE);
-    foreach ($aliases as $alias) {
-      $this->working(STRING_WORKING_DB_UPDATE_ITEM, array(
-        '!alias' => $alias,
-      ));
-      if (!drush_updb($alias)) {
-        return FALSE;
-      }
+    if (!drush_updb($alias)) {
+      return FALSE;
     }
     $this->success(STRING_SUCCESS_DB_UPDATE);
     return TRUE;
