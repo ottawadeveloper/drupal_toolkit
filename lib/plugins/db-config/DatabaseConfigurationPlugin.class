@@ -70,7 +70,7 @@ define('DB_RANDOM_PASSWORD', '__RANDOM__');
  * 
  * @ingroup args
  */
-define('ARG_DB_NAME', 'db-name');
+define('OPTION_DB_NAME', 'db-name');
 
 /**
  * Argument to specify the database username.
@@ -80,7 +80,7 @@ define('ARG_DB_NAME', 'db-name');
  * 
  * @ingroup args
  */
-define('ARG_DB_USER', 'db-user');
+define('OPTION_DB_USER', 'db-user');
 
 /**
  * Argument to specify the database password.
@@ -90,7 +90,7 @@ define('ARG_DB_USER', 'db-user');
  * 
  * @ingroup args
  */
-define('ARG_DB_PASSWORD', 'db-pass');
+define('OPTION_DB_PASSWORD', 'db-pass');
 
 /**
  * The pattern to use for the DB username.
@@ -304,12 +304,16 @@ define('STRING_WORKING_DB_CREATE_ITEM', 'db_config.working.db-create-item');
  * @ingroup plugins
  */
 class DatabaseConfigurationPlugin extends GenericPlugin implements EventListener {
+
+  public function __construct() {
+    $this->includeFiles(dirname(__FILE__), array(
+      'DatabaseManagerInterface.iface',
+      'GenericDBM.class',
+      'MySqlDBM.class',
+    ));
+  }
   
   public function initialize() {
-    $base = dirname(__FILE__);
-    require assemble_path($base, 'DatabaseManagerInterface.iface');
-    require assemble_path($base, 'GenericDBM.class');
-    require assemble_path($base, 'MySqlDBM.class');
     $this->events()->registerListener(array(
       EVENT_SITE_BUILD_MORE_CONFIG,
       EVENT_CAST_DB_SERVER,
@@ -330,36 +334,32 @@ class DatabaseConfigurationPlugin extends GenericPlugin implements EventListener
   }
   
   public function requiredPlugins() {
-    return array('DrupalSitePlugin');
+    return array('DrupalSitePlugin', 'ServerInteractionPlugin');
   }
   
   public function captureEvent(&$context, $type) {
     switch ($type) {
-      case EVENT_SUBSITE_BUILD_SERVER_CONFIG:
-        if (empty($context->handled) || $context->success) {
-          $context->success = $this->createDatabase($context->subsite);
-          $context->handled = TRUE;
-        }
-        break;
       case EVENT_SITE_BUILD_MORE_CONFIG:
-        if ($context->success) {
-          $context->success = $this->createDatabase($context->site);
+      case EVENT_SUBSITE_BUILD_SERVER_CONFIG:
+        if ($context->checkExecution()) {
+          $context->setResults($this->createDatabase($context->getEntity()));
         }
         break;
       case EVENT_CAST_DB_SERVER:
-        $server = $this->castDatabaseServer($context->settings, $context->type);
+        $server = $this->castDatabaseServer($context->getVariable('settings'), $context->getVariable('type'));
         if (!empty($server)) {
-          $context->dbServer = $server;
-          $context->stopPropagation = TRUE;
+          $context->stopFiring();
+          $context->setVariable('db-server', $server);
         }
         break;
       case EVENT_FIND_DB_SERVERS:
-        $context->servers = array_merge($context->servers, $this->getDatabaseServers());
+        $context->addDiscoveredServers($this->getDatabaseServers());
         break;
       case EVENT_REMOVE_SUBSITE_ALL:
       case EVENT_REMOVE_ALL:
-        $context->success = $this->deleteDatabases($context->site) && $context->success;
-        $context->handled = TRUE;
+        if ($context->checkExecution()) {
+          $context->setResults($this->deleteDatabases($context->getEntity()));
+        }
         break;
     }
   }
@@ -416,6 +416,66 @@ class DatabaseConfigurationPlugin extends GenericPlugin implements EventListener
   }
   
   /**
+   * Builds the database configuration.
+   * 
+   * @param GenericDrupalEntity $site
+   *   The site to build database configuration for.
+   * 
+   * @return array
+   *   An array of configuration data.
+   */
+  private function getDatabaseConfiguration(GenericDrupalEntity $site) {
+    $config = array(
+      'host_restriction' => $this->config()->getConfig(CONFIG_SITE_DB_HOST_RESTRICTION),
+      'username' => $this->args()->getOption(OPTION_DB_USER),
+      'database' => $this->args()->getOption(OPTION_DB_NAME),
+      'password' => $this->args()->getOption(OPTION_DB_PASSWORD),
+      'prefix' => $this->config()->getConfig(CONFIG_DB_PREFIX),
+    );
+    if (empty($config['host_restriction'])) { $config['host_restriction'] = NULL; }
+    if (empty($config['username'])) {
+      $config['username'] = $site->replaceTokens($this->config()->getConfig(CONFIG_SITE_DB_USER_PATTERN));
+    }
+    if (empty($config['database'])) {
+      $config['database'] = $site->replaceTokens($this->config()->getConfig(CONFIG_SITE_DB_NAME_PATTERN));
+    }
+    if (empty($config['password'])) {
+      $config['password'] = $this->config()->getConfig(CONFIG_DB_DEFAULT_PASSWORD);
+    }
+    return $config;
+  }
+  
+  /**
+   * Retrieves all the databases.
+   * 
+   * @return array
+   *   An array of database information.
+   */
+  private function getDatabaseServerList() {
+    $event = new DtkEvent(TRUE, array(
+      'servers' => array(),
+    ));
+    $this->events()->fireEvent(EVENT_FIND_DB_SERVERS, $event);
+    return $event->getVariable('servers');
+  }
+  
+  /**
+   * Sanitizes the database configuration.
+   * 
+   * @param GenericDBM $dbm
+   *   The database manager
+   * @param array $config
+   *   The database configuration.
+   */
+  private function sanitizeDatabaseConfiguration(GenericDBM $dbm, &$config) {
+    $config['database'] = $dbm->sanitizeDatabaseName($config['database']);
+    $config['username'] = $dbm->sanitizeUsername($config['username']);
+    if ($config['password'] == DB_RANDOM_PASSWORD) {
+      $config['password'] = $dbm->randomPassword();
+    }
+  }
+  
+  /**
    * Callback for site-build-additional-config that creates a database.
    * 
    * @see DrupalSiteBuildPlugin
@@ -426,67 +486,41 @@ class DatabaseConfigurationPlugin extends GenericPlugin implements EventListener
    * @return
    */
   private function createDatabase(GenericDrupalEntity $site) {
-    $context = (object) array(
-      'servers' => array(),
-    );
-    $host = $this->config()->getConfig(CONFIG_SITE_DB_HOST_RESTRICTION);
-    if (empty($host)) {
-      $host = NULL;
-    }
-    $this->events()->fireEvent(EVENT_FIND_DB_SERVERS, $context);
-    $username = $this->args()->getOption(ARG_DB_USER);
-    if (empty($username)) {
-      $username = $site->replaceTokens($this->config()->getConfig(CONFIG_SITE_DB_USER_PATTERN));
-    }
-    $dbname = $this->args()->getOption(ARG_DB_NAME);
-    if (empty($dbname)) {
-      $dbname = $site->replaceTokens($this->config()->getConfig(CONFIG_SITE_DB_NAME_PATTERN));
-    }
-    $dbpass = $this->args()->getOption(ARG_DB_PASSWORD);
-    if (empty($dbpass)) {
-      $dbpass = $this->config()->getConfig(CONFIG_DB_DEFAULT_PASSWORD);
-    }
-    $prefix = $this->config()->getConfig(CONFIG_DB_PREFIX);
+    $this->working(STRING_WORKING_DB_CREATE);
+    $servers = $this->getDatabaseServerList();
+    $config = $this->getDatabaseConfiguration($site);
     $drupalSettings = array();
     $dbStorage = array();
     $connectionKeys = array();
-    $this->working(STRING_WORKING_DB_CREATE);
-    foreach ($context->servers as $key => $server) {
-      if ($server instanceof DatabaseManagerInterface) {
-        $dbname = $server->sanitizeDatabaseName($dbname);
-        $username = $server->sanitizeUsername($username);
-        if ($dbpass == DB_RANDOM_PASSWORD) {
-          $dbpass = $server->randomPassword();
-        }
-        $dbStorage[$key] = array(
-          'type' => $server->getSetting(DB_HOST_TYPE),
-          'dbSettings' => $server->getSettings(),
-          'username' => $username,
-          'database' => $dbname,
-          'host' => $host,
-        );
-        $connectionKeys[$server->getDatabaseCategory()] = $server->getDatabaseCategory();
-        $drupalSettings[$server->getDatabaseCategory()][$server->getDatabaseMode()] = array(
-          'driver' => $server->getDriver(),
-          'database' => $dbname,
-          'username' => $username,
-          'password' => $dbpass,
-          'host' => $server->getHost(),
-          'prefix' => extra_empty($prefix) ? '' : $prefix,
-        );
-      }
+    // sanitize all the data first.
+    foreach ($servers as $server) {
+      $this->sanitizeDatabaseConfiguration($server, $config);
     }
-    foreach ($context->servers as $key => $server) {
+    foreach ($servers as $key => $server) {
       $this->working(STRING_WORKING_DB_CREATE_ITEM, array(
-        '!name' => $dbname,
+        '!name' => $config['database'],
         '!server' => $key,
       ));
-      if ($server instanceof DatabaseManagerInterface) {
-        if (!$server->createDatabase($dbname, $username, $dbpass, $host)) {
-          $this->error(STRING_CANNOT_CREATE_DB);
-          return FALSE;
-        }
+      if (!$server->createDatabase($config['database'], $config['username'], $config['password'], $config['host_restriction'])) {
+        $this->error(STRING_CANNOT_CREATE_DB);
+        return FALSE;
       }
+      $dbStorage[$key] = array(
+        'type' => $server->getSetting(DB_HOST_TYPE),
+        'dbSettings' => $server->getSettings(),
+        'username' => $config['username'],
+        'database' => $config['database'],
+        'host' => $config['host_restriction'],
+      );
+      $drupalSettings[$server->getDatabaseCategory()][$server->getDatabaseMode()] = array(
+        'driver' => $server->getDriver(),
+        'database' => $config['database'],
+        'username' => $config['username'],
+        'password' => $config['password'],
+        'host' => $server->getHost(),
+        'prefix' => $config['prefix'],
+      );
+      $connectionKeys[$server->getDatabaseCategory()] = $server->getDatabaseCategory();
     }
     if (!$this->writeDatabaseSettings($site, $drupalSettings)) {
       $this->error(STRING_CANNOT_WRITE_SETTINGS);
@@ -613,13 +647,12 @@ class DatabaseConfigurationPlugin extends GenericPlugin implements EventListener
    *   if none was found.
    */
   private function getCastedDBServer($settings, $type) {
-    $context = (object) array(
-      'type' => $type,
+    $event = new DtkEvent(FALSE, array(
       'settings' => $settings,
-      'dbServer' => NULL,
-    );
-    $this->events()->fireEvent(EVENT_CAST_DB_SERVER, $context);
-    return $context->dbServer;
+      'type' => $type,
+    ));
+    $this->events()->fireEvent(EVENT_CAST_DB_SERVER, $event);
+    return $event->getVariable('db-server');
   }
   
 }

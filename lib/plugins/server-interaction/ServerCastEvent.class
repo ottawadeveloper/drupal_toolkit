@@ -45,6 +45,10 @@ class ServerCastEvent extends DtkEvent {
     return !empty($this->casted);
   }
   
+  public function checkContinueFiring() {
+    return empty($this->casted);
+  }
+  
   /**
    * Retrieves the server type being casted to.
    * 

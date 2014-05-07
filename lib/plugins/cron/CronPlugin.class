@@ -227,7 +227,6 @@ class CronPlugin extends GenericPlugin implements EventListener, ServerInteracti
         $server = $this->castCronMachine($context->getServer(), $context->getType());
         if (!empty($server)) {
           $context->setCastedServer($server);
-          $context->stopFiring();
         }
         break;
     }
