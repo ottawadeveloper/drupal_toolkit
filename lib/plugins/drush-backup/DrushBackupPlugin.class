@@ -92,35 +92,33 @@ class DrushBackupPlugin extends GenericPlugin implements EventListener {
     ), $this);
   }
   
-  public function captureEvent(&$context, $eventType) {
+  public function captureEvent(DtkEvent &$context, $eventType) {
     switch ($eventType) {
-      case EVENT_ROLLBACK_BACKUP:
-        if (empty($context->handled) || $context->success) {
-          $context->handled = TRUE;
-          $context->success = $this->backupForRollback($context->site, $context->currentBuild);
-        }
-        break;
-      case EVENT_ROLLBACK_PHASE2:
-        if (empty($context->handled) || $context->success) {
-          $context->handled = TRUE;
-          $context->success = $this->restoreFromBackup($context->site, $context->revertBuild);
-        }
-        break;
       case EVENT_UPDATE_TAKE_BACKUP:
-        $context->success = $this->drushBackup($context->site);
-        $context->stopPropagation = TRUE;
-        break;
-      case EVENT_DELETE_BUILD:
-        if (empty($context->handled) || $context->success) {
-          $context->success = $this->deleteBackup($context->site, $context->buildID);
-          $context->handled = TRUE;
+        if ($context->checkExecution()) {
+          $context->setResult($this->drushBackup($context->getSite()));
         }
         break;
       case EVENT_UPDATE_PREPARE_SUBSITE:
-        if (empty($context->handled) || $context->success) {
-          $context->handled = TRUE;
-          $context->success = $this->drushBackup($context->subsite);
+        if ($context->checkExecution()) {
+          $context->setResult($this->drushBackup($context->getSubSite()));
         }
+        break;
+      case EVENT_ROLLBACK_BACKUP:
+        if ($context->checkExecution()) {
+          $context->setResult($this->backupForRollback($context->getSite(), $context->getVariable('currentBuild')));
+        }
+        break;
+      case EVENT_ROLLBACK_PHASE2:
+        if ($context->checkExecution()) {
+          $context->setResult($this->restoreFromBackup($context->getSite(), $context->getVariable('revertBuild')));
+        }
+        break;
+      case EVENT_DELETE_BUILD:
+        if ($context->checkExecution()) {
+          $context->setResult($this->deleteBackup($context->getSite(), $context->getVariable('buildID')));
+        }
+        break;
     }
   }
   
