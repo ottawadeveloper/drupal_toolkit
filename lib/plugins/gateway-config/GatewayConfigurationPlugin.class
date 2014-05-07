@@ -134,7 +134,23 @@ define('STRING_SUCCESS_CONFIGURE_GATEWAY', 'gateway.success.configure');
 /**
  * Responsible for configuring any gateway servers that have been defined.
  */
-class GatewayConfigurationPlugin extends GenericPlugin implements EventListener {
+class GatewayConfigurationPlugin extends GenericPlugin implements EventListener, ServerInteractionDependency {
+
+  /**
+   * Dependency injection storage for the ServerInteractionManagerInterface 
+   * object. 
+   * 
+   * @var ServerInteractionManagerInterface
+   */
+  private $servers;
+  
+  public function setServerManager(ServerInteractionManagerInterface $servers) {
+    $this->servers = $servers;
+  }
+  
+  public function servers() {
+    return $this->servers;
+  }
   
   public function initialize() {
     $this->events()->registerListener(array(
@@ -160,27 +176,18 @@ class GatewayConfigurationPlugin extends GenericPlugin implements EventListener 
     return array('DrupalSitePlugin', 'ServerInteractionPlugin', 'HttpConfigurationPlugin');
   }
   
-  public function captureEvent(&$context, $type) {
+  public function captureEvent(DtkEvent &$context, $type) {
     switch ($type) {
+      case EVENT_SITE_BUILD_CONFIGURE_SERVER:
       case EVENT_SUBSITE_BUILD_PARENT_SERVER_REFRESH:
-        if (empty($context->handled) || $context->success) {
-          $context->success = $this->publishGatewayConfig($context->subsite->getParentSite());
-          $context->handled = TRUE;
+        if ($context->checkExecution()) {
+          $context->setResult($this->publishGatewayConfig($context->getSite()));
         }
         break;
       case EVENT_UPDATE_REFRESH_SERVER_CONFIG:
-        if (empty($context->handled) || $context->success) {
-          $context->success = $this->updateAll($context->site);
-          $context->handled = TRUE;
-        }
-        break;
-      case EVENT_FIND_GATEWAY_SERVERS:
-        $context->servers = array_merge($context->servers, $this->findGatewayServers());
-        break;
-      case EVENT_SITE_BUILD_CONFIGURE_SERVER:
-        if (empty($context->handled) || $context->success) {
-          $context->success = $this->publishGatewayConfig($context->site);
-          $context->handled = TRUE;
+      case EVENT_REMOVE_SUBSITE_CLEANUP:
+        if ($context->checkExecution()) {
+          $context->setResult($this->updateAll($context->getSite()));
         }
         break;
     }
@@ -195,9 +202,7 @@ class GatewayConfigurationPlugin extends GenericPlugin implements EventListener 
     if (extra_empty($this->config()->getConfig(CONFIG_GATEWAY_STATIC_CONFIG))) {
       return $this->publishGatewayconfig($site, TRUE);
     }
-    else {
-      return TRUE;
-    }
+    return TRUE;
   }
   
   /**
@@ -215,6 +220,7 @@ class GatewayConfigurationPlugin extends GenericPlugin implements EventListener 
     if (extra_empty($this->config()->getConfig(CONFIG_HAS_GATEWAY))) {
       return TRUE;
     }
+    $this->working(STRING_WORKING_CONFIGURE_GATEWAY);
     $c = $this->getConfig(array(
       'template' => CONFIG_GATEWAY_CONFIG_TEMPLATE,
       'fn_template' => CONFIG_GATEWAY_FILENAME_TEMPLATE,
@@ -225,38 +231,24 @@ class GatewayConfigurationPlugin extends GenericPlugin implements EventListener 
       return FALSE;
     }
     $defaultConfig = file_get_contents($c['template']);
-    $context = (object) array(
-      'servers' => array(),
+    $servers = $this->servers()->getServerList(
+        SERVER_TYPE_GATEWAY,
+        EVENT_CAST_HTTP_SERVER,
+        SERVER_SETTING_GATEWAY_TYPE,
+        $this->config()->getConfig(CONFIG_GATEWAY_TYPE),
+        !extra_empty($this->config()->getConfig(CONFIG_GATEWAY_USE_LOCAL))
     );
-    $this->events()->fireEvent(EVENT_FIND_GATEWAY_SERVERS, $context);
     $gatewayRegistry = array();
-    $this->working(STRING_WORKING_CONFIGURE_GATEWAY);
-    foreach ($context->servers as $key => $gatewayServer) {
+    foreach ($servers as $key => $gatewayServer) {
       if ($gatewayServer instanceof GenericHttpServer) {
         if ($update) {
           if (!extra_empty($gatewayServer->machine()->getSetting(SERVER_SETTING_GATEWAY_STATIC_CONFIG))) {
             continue;
           }
         }
-        $this->working(STRING_WORKING_CONFIGURE_GATEWAY_ITEM, array(
-          '!name' => $key,
-        ));
-        $config = $defaultConfig;
-        $configFile = $gatewayServer->machine()->getSetting(SERVER_SETTING_GATEWAY_CONFIG_TEMPLATE);
-        if (is_readable($configFile)) {
-          $config = file_get_contents($configFile);
-        }
-        $config = $site->replaceTokens($config);
-        $file = $gatewayServer->machine()->getSetting(SERVER_SETTING_GATEWAY_FILENAME_TMEPLATE);
-        if (empty($file)) {
-          $file = $c['fn_template'];
-        }
-        $file = $site->replaceTokens($file);
-        if (!$gatewayServer->writeConfig($file, $config)) {
-          $this->error(STRING_GATEWAY_BAD_WRITE);
+        if (!$this->writeGatewayTemplate($gatewayServer, $key, $site, $defaultConfig, $c['fn_template'])) {
           return FALSE;
         }
-        $gatewayServer->doReboot();
         $gatewayRegistry[] = array(
           'server' => $gatewayServer->machine(),
           'file' => $gatewayServer->getConfigFilePath($file),
@@ -269,64 +261,42 @@ class GatewayConfigurationPlugin extends GenericPlugin implements EventListener 
   }
   
   /**
-   * Casts a server instance into an HttpServer.
+   * Writes a configuration file to the gateway server.
    * 
-   * @param PhysicalServerInterface $server
-   *   The server to cast.
-   * @param string $type
-   *   The type of server.
-   * 
-   * @return GenericHttpServer
-   *   An HTTP server instance or NULL if none was found for $type.
-   * 
-   * @see @ref http_types "HTTP Server Types"
-   * @see GenericHttpServer
+   * @param GenericHttpServer $gatewayServer
+   *   Gateway server to write to.
+   * @param string $key
+   *   Name of the gateway server.
+   * @param DrupalSite $site
+   *   DrupalSite that is writing the configuration. Note that subsites 
+   *   rely on their parent site to write one configuration file.
+   * @param string $defaultConfig
+   *   Default configuration file contents.
+   * @param string $defaultFileTemplate
+   *   Default file template contents.
+   * @return boolean
    */
-  private function getCastedServer(PhysicalServerInterface $server, $type) {
-    $context = (object) array(
-      'httpServer' => NULL,
-      'type' => $type,
-      'server' => $server,
-    );
-    $this->events()->fireEvent(EVENT_CAST_HTTP_SERVER, $context);
-    return $context->httpServer;
-  }
-  
-  /**
-   * Finds gateway servers using ServerInteractionPlugin.
-   * 
-   * @return array
-   *   An array of GenericHttpServer objects.
-   */
-  private function findGatewayServers() {
-    $config = $this->getConfig(array(
-    ), array(
-      'use_local' => CONFIG_GATEWAY_USE_LOCAL,
-      'server_type' => CONFIG_GATEWAY_TYPE,
+  private function writeGatewayTemplate(GenericHttpServer $gatewayServer, $key, DrupalSite $site, $defaultConfig, $defaultFileTemplate) {
+    $this->working(STRING_WORKING_CONFIGURE_GATEWAY_ITEM, array(
+      '!name' => $key,
     ));
-    if (empty($config['server_type'])) {
-      return array();
+    $rawconfig = $defaultConfig;
+    $configFile = $gatewayServer->machine()->getSetting(SERVER_SETTING_GATEWAY_CONFIG_TEMPLATE);
+    if (is_readable($configFile)) {
+      $rawconfig = file_get_contents($configFile);
     }
-    $context = (object) array(
-      'serverType' => SERVER_TYPE_GATEWAY,
-      'skipLocal' => !$context['use_local'],
-      'servers' => array(),
-    );
-    $this->events()->fireEvent(EVENT_FIND_SERVERS, $context);
-    $gatewayServers = array();
-    foreach ($context->servers as $server) {
-      if ($server instanceof PhysicalServerInterface) {
-        $type = $server->getSetting(SERVER_SETTING_GATEWAY_TYPE);
-        if (empty($type)) {
-          $type = $config['server_type'];
-        }
-        $httpServer = $this->getCastedServer($server, $type);
-        if (!empty($httpServer)) {
-          $gatewayServers[] = $httpServer;
-        }
-      }
+    $rawfile = $gatewayServer->machine()->getSetting(SERVER_SETTING_GATEWAY_FILENAME_TMEPLATE);
+    if (empty($rawfile)) {
+      $rawfile = $defaultFileTemplate;
     }
-    return $gatewayServers;
+    $config = $site->replaceTokens($rawconfig);
+    $file = $site->replaceTokens($rawfile);
+    if (!$gatewayServer->writeConfig($file, $config)) {
+      $this->error(STRING_GATEWAY_BAD_WRITE);
+      return FALSE;
+    }
+    $gatewayServer->doReboot();
+    return TRUE;
   }
   
 }
