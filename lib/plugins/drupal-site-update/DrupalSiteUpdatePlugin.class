@@ -18,6 +18,13 @@ define('EVENT_UPDATE_PREPARE', 'begin-update');
 define('EVENT_UPDATE_CODEBASE', 'update-codebase');
 
 /**
+ * Fired to refresh a subsite.
+ * 
+ * @ingroup events
+ */
+define('EVENT_UPDATE_REFRESH_SUBSITE', 'update-refresh-subsite');
+
+/**
  * Fired to migrate in the site definitions.
  * 
  * @ingroup events
