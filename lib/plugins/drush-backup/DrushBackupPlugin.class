@@ -96,7 +96,10 @@ class DrushBackupPlugin extends GenericPlugin implements EventListener {
       EVENT_DELETE_BUILD,
       EVENT_ROLLBACK_BACKUP,
       EVENT_ROLLBACK_PHASE2,
-        ), $this);
+      EVENT_UPDATE_PREPARE_SUBSITE,
+      EVENT_ROLLBACK_SUBSITES,
+      EVENT_ROLLBACK_SUBSITE_PREP,
+    ), $this);
   }
 
   public function captureEvent(DtkEvent &$context, $eventType) {

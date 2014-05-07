@@ -66,20 +66,18 @@ class DrushMaintenancePlugin extends GenericPlugin implements EventListener {
     ), $this);
   }
   
-  public function captureEvent(&$context, $eventType) {
+  public function captureEvent(DtkEvent &$context, $eventType) {
     switch ($eventType) {
       case EVENT_ROLLBACK_FINISH:
       case EVENT_UPDATE_PREPARE_FOR_REFRESH:
-        if (empty($context->handled) || $context->success) {
-          $context->success = $this->setMaintenanceMode($context->site, FALSE);
-          $context->handled = TRUE;
+        if ($context->checkExecution()) {
+          $context->setResult($this->setMaintenanceMode($context->getEntity(), FALSE));
         }
         break;
       case EVENT_ROLLBACK_PREPARE:
       case EVENT_UPDATE_PREPARE_FOR_UPDATE:
-        if (empty($context->handled) || $context->success) {
-          $context->success = $this->setMaintenanceMode($context->site, TRUE);
-          $context->handled = TRUE;
+        if ($context->checkExecution()) {
+          $context->setResult($this->setMaintenanceMode($context->getEntity(), TRUE));
         }
         break;
     }
