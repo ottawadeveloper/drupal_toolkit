@@ -8,7 +8,7 @@
  * 
  * @ingroup events
  */
-define('EVENT_UPDATE_START', 'begin-update');
+define('EVENT_UPDATE_PREPARE', 'begin-update');
 
 /**
  * Fired to build the new codebase.
@@ -118,11 +118,32 @@ define('EVENT_UPDATE_REFRESH_SERVER_CONFIG', 'update-refresh-server');
 define('STRING_UPDATE_GENERIC_ERROR', 'drupal_site_update.error');
 
 /**
- * Event fired to prepare a subsite for an update
+ * Event fired to prepare a subsite for an update.
  * 
  * @ingroup events
  */
 define('EVENT_UPDATE_PREPARE_SUBSITE', 'update-prepare-subsite');
+
+/**
+ * Event fired to update a subsite.
+ * 
+ * @ingroup events
+ */
+define('EVENT_UPDATE_SUBSITE', 'update-subsites');
+
+/**
+ * Event fired to refresh a subsite's server configuration.
+ * 
+ * @ingroup events
+ */
+define('EVENT_UPDATE_REFRESH_SUBSITE_CONFIG', 'update-subsite-config');
+
+/**
+ * Event fired to prepare a server beforethe instance is refreshed.
+ * 
+ * @ingroup events
+ */
+define('EVENT_UPDATE_PREP_SUBSITE_FOR_REFRESH', 'update-subsite-prep-refresh');
 
 /**
  * Sets up the site-update command.

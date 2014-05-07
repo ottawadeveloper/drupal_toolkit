@@ -15,7 +15,7 @@ class SiteUpdateCommand extends GenericSiteCommand {
    */
   private $steps = array(
     array(
-      'event' => EVENT_UPDATE_START,
+      'event' => EVENT_UPDATE_PREPARE,
     ),
     array(
       'event' => EVENT_UPDATE_CODEBASE,
@@ -54,6 +54,12 @@ class SiteUpdateCommand extends GenericSiteCommand {
       'continue' => TRUE,
     ),
     array(
+      'event' => EVENT_UPDATE_SUBSITE,
+      'type' => COMMAND_STEP_ALL_SITES,
+      'optional' => TRUE,
+      'continue' => TRUE,
+    ),
+    array(
       'event' => EVENT_UPDATE_COMPLETE,
       'continue' => TRUE,
       'optional' => TRUE,
@@ -64,13 +70,29 @@ class SiteUpdateCommand extends GenericSiteCommand {
       'optional' => TRUE,
     ),
     array(
+      'event' => EVENT_UPDATE_REFRESH_SUBSITE_CONFIG,
+      'type' => COMMAND_STEP_ALL_SITES,
+      'optional' => TRUE,
+      'continue' => TRUE,
+    ),
+    array(
       'event' => EVENT_UPDATE_PREPARE_FOR_REFRESH,
       'continue' => TRUE,
       'optional' => TRUE,
     ),
     array(
+      'event' => EVENT_UPDATE_PREP_SUBSITE_FOR_REFRESH,
+      'continue' => TRUE,
+      'optional' => TRUE,
+      'type' => COMMAND_STEP_ALL_SUBSITES,
+    ),
+    array(
       'event' => EVENT_UPDATE_REFRESH,
       'continue' => TRUE,
+    ),
+    array(
+      'type' => COMMAND_STEP_ALL_SITES,
+      'optional' => TRUE,
     ),
     array(
       'event' => EVENT_UPDATE_CLEANUP,

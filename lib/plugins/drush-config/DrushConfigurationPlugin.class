@@ -133,7 +133,22 @@ define('CONFIG_DRUSH_ALIAS_FILE_TEMPLATE', 'drush-file-template');
 /**
  * Takes responsibility for setting up the drush alias.
  */
-class DrushConfigurationPlugin extends GenericPlugin implements EventListener {
+class DrushConfigurationPlugin extends GenericPlugin implements EventListener, ServerInteractionDependency {
+
+  /**
+   * DI variable for server interaction
+   * 
+   * @var ServerInteractionDependency
+   */
+  private $servers;
+  
+  public function setServerManager(ServerInteractionManager $servers) {
+    $this->servers = $servers;
+  }
+  
+  public function servers() {
+    return $this->servers;
+  }
   
   public function initialize() {
     $this->config()->extendDefaultConfiguration(array(
@@ -157,23 +172,18 @@ class DrushConfigurationPlugin extends GenericPlugin implements EventListener {
     return array('DrupalSitePlugin', 'ServerInteractionPlugin');
   }
   
-  public function captureEvent(&$context, $eventType) {
+  public function captureEvent(DtkEvent &$context, $eventType) {
     switch ($eventType) {
+      case EVENT_UPDATE_REFRESH_SUBSITE_CONFIG:
       case EVENT_UPDATE_REFRESH_SERVER_CONFIG:
-        if (empty($context->handled) || $context->success) {
-          $context->handled = TRUE;
-          $context->success = $this->updateAliases($context->site);
-        }
-        break;
-      case EVENT_SUBSITE_BUILD_SERVER_CONFIG:
-        if (empty($context->handled) || $context->success) {
-          $context->handled = TRUE;
-          $context->success = $this->createAliases($context->subsite);
+        if ($context->checkExecution()) {
+          $context->setResult($this->updateAliases($context->getEntity()));
         }
         break;
       case EVENT_SITE_BUILD_MORE_CONFIG:
-        if ($context->success) {
-          $context->success = $this->createAliases($context->site);
+      case EVENT_SUBSITE_BUILD_SERVER_CONFIG:
+        if ($context->checkExecution()) {
+          $context->setResult($this->createAliases($context->getEntity()));
         }
         break;
     }
@@ -214,19 +224,13 @@ class DrushConfigurationPlugin extends GenericPlugin implements EventListener {
       'default-dir' => CONFIG_DRUSH_ALIAS_DIR,
       'file-template' => CONFIG_DRUSH_ALIAS_FILE_TEMPLATE,
     ));
-    if (empty($config)) {
-      return FALSE;
-    }
-    $context = (object) array(
-      'servers' => array(),
-      'serverType' => SERVER_TYPE_DRUSH,
-      'skipLocal' => extra_empty($this->config()->getConfig(CONFIG_DRUSH_ALIAS_CREATE_FOR_LOCAL)),
-    );
-    $this->events()->fireEvent(EVENT_FIND_SERVERS, $context);
-    $defaultAlias = $this->defaultDrushTemplate();
-    $aliasList = array();
+    if (empty($config)) { return FALSE; }    
     $this->working(STRING_WORKING_DRUSH_ALIASES_SETUP);
-    foreach ($context->servers as $key => $server) {
+    $useLocal = !extra_empty($this->config()->getConfig(CONFIG_DRUSH_ALIAS_CREATE_FOR_LOCAL));
+    $servers = $this->servers()->findServers(SERVER_TYPE_DRUSH, $useLocal);
+    $aliasContent = $this->defaultDrushTemplate();
+    $aliasList = array();
+    foreach ($servers as $key => $server) {
       if ($server instanceof PhysicalServerInterface) {
         if ($update) {
           if (!extra_empty($server->getSetting(SERVER_SETTING_STATIC_ALIAS))) {
@@ -236,20 +240,14 @@ class DrushConfigurationPlugin extends GenericPlugin implements EventListener {
         $this->working(STRING_WORKING_DRUSH_ALIAS_SETUP, array(
           '!name' => $key,
         ));
-        if (!$this->writeTemplate($aliasList, $site, $server, $config['default-dir'], $config['file-template'], $defaultAlias)) {
+        if (!$this->writeTemplate($aliasList, $site, $server, $config['default-dir'], $config['file-template'], $aliasContent)) {
           return FALSE;
         }
       }
     }
     $alias = $site->replaceTokens($config['template']);
-    if (!$context->skipLocal) {
+    if ($useLocal) {
       $site->setSetting(SITE_DRUSH_ALIAS, $alias);
-      if ($site instanceof DrupalSubSite) {
-        $site->getParentSite()->appendSettingValue(SITE_DRUSH_ALIASES, $alias);
-      }
-      else {
-        $site->appendSettingValue(SITE_DRUSH_ALIASES, $alias);
-      }
     }
     $site->appendSettingValue(SITE_REMOTE_FILES, $aliasList);
     $this->success(STRING_SUCCESS_DRUSH_ALIASES_SETUP);
@@ -280,15 +278,15 @@ class DrushConfigurationPlugin extends GenericPlugin implements EventListener {
   private function writeTemplate(array &$aliasList, GenericDrupalEntity $site, PhysicalServerInterface $server, $ddir, $dfile, $dconfig) {
     $dir = $server->getSetting(SERVER_SETTING_DRUSH_DIR);
     if (empty($dir)) { $dir = $ddir; }
-    $file = $server->getSetting(SERVER_SETTING_DRUSH_FILE_TEMPLATE);
-    if (empty($file)) { $file = $dfile; }
+    $rawfile = $server->getSetting(SERVER_SETTING_DRUSH_FILE_TEMPLATE);
+    if (empty($rawfile)) { $rawfile = $dfile; }
+    $rawconfig = $dconfig;
     $configFile = $server->getSetting(SERVER_SETTING_DRUSH_CONFIG_TEMPLATE);
-    $config = $dconfig;
     if (is_readable($configFile)) {
-      $config = file_get_contents($configFile);
+      $rawconfig = file_get_contents($configFile);
     }
-    $file = $site->replaceTokens($file);
-    $config = $site->replaceTokens($config);
+    $file = $site->replaceTokens($rawfile);
+    $config = $site->replaceTokens($rawconfig);
     $fullPath = assemble_path($dir, $file);
     if (!$server->writeFile($fullPath, $config)) {
       $this->error(STRING_COULD_NOT_WRITE_DRUSH_ALIAS);
