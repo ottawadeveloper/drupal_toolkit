@@ -165,6 +165,7 @@ class DrushConfigurationPlugin extends GenericPlugin implements EventListener, S
       EVENT_UPDATE_REFRESH_SERVER_CONFIG,
       EVENT_SITE_BUILD_MORE_CONFIG,
       EVENT_SUBSITE_BUILD_SERVER_CONFIG,
+      EVENT_UPDATE_REFRESH_SUBSITE_CONFIG,
     ), $this);
   }
   
