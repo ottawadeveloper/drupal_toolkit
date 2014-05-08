@@ -36,6 +36,8 @@ abstract class GenericHostFileManager implements HostFileManagerInterface {
    */
   private $lineEnding = PHP_EOL;
   
+  private $defs = NULL;
+  
   /**
    * Constructor.
    * 
@@ -58,12 +60,32 @@ abstract class GenericHostFileManager implements HostFileManagerInterface {
     return $this->machine;
   }
   
+  public function loadHostFile() {
+    if (empty($this->defs)) {
+      $content = $this->machine()->readFile($this->hostfile);
+      if (!empty($content)) {
+        $this->defs = hosts_file_parse($content);
+      }
+    }
+    return !empty($this->defs);
+  }
+  
+  public function saveHostFile() {
+    if ($this->compact) {
+      $this->defs = hosts_file_compact($defs, TRUE);
+    }
+    $results = $this->machine()->writeFile($this->hostfile, hosts_file_build($defs, "\t", " ", $this->lineEnding));
+    if ($results) {
+      unset($this->defs);
+    }
+    return $results;
+  }
+  
   public function addHostFileEntries(array $map) {
-    $contents = $this->machine()->readFile($this->hostfile);
-    $defs = hosts_file_parse($contents);
+    $this->loadHostFile();
     $remap = array();
     foreach ($map as $host => $ip) {
-      $currentIP = hosts_file_ip_lookup($defs, $host);
+      $currentIP = hosts_file_ip_lookup($this->defs, $host);
       if (empty($currentIP) || ($ip !== $currentIP)) {
         if (!isset($remap[$ip])) {
           $remap[$ip] = array();
@@ -72,28 +94,26 @@ abstract class GenericHostFileManager implements HostFileManagerInterface {
       }
     }
     foreach ($remap as $ip => $hosts) {
-      hosts_file_add($defs, $ip, $hosts);
+      hosts_file_add($this->defs, $ip, $hosts);
     }
-    if ($this->compact) {
-      $defs = hosts_file_compact($defs, TRUE);
-    }
-    return $this->machine()->writeFile($this->hostfile, hosts_file_build($defs, "\t", " ", $this->lineEnding));
+    return TRUE;
   }
   
   public function addHostFileEntry($host, $ip) {
     return $this->addHostFileEntries(array($host => $ip));
   }
   
+  public function getHostFileEntry($domain) {
+    $this->loadHostFile();
+    return hosts_file_ip_lookup($this->defs, $domain);
+  }
+  
   public function cleanHostEntries(array $map) {
-    $contents = $this->machine()->readFile($this->hostfile);
-    $defs = hosts_file_parse($contents);
+    $this->loadHostFile();
     foreach ($map as $host => $ip) {
-      hosts_file_remove_hosts($defs, $host, $ip);
+      hosts_file_remove_hosts($this->defs, $host, $ip);
     }
-    if ($this->compact) {
-      hosts_file_compact($defs, TRUE);
-    }
-    return $this->machine()->writeFile($this->hostfile, hosts_file_build($defs, "\t", " ", $this->lineEnding));
+    return TRUE;
   }
   
 }

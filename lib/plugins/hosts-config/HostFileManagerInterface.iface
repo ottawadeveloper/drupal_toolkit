@@ -30,6 +30,20 @@ interface HostFileManagerInterface {
   function setCompactHostFile($compact);
   
   /**
+   * Loads a host file into memory.
+   */
+  function loadHostFile();
+  
+  /**
+   * Saves a host file that was loaded back into memory. This is necessary
+   * after any operations are performed in order for them to be saved.
+   * 
+   * @return boolean
+   *   TRUE if successful, otherwise FALSE.
+   */
+  function saveHostFile();
+  
+  /**
    * Adds multiple lines to the host file.
    * 
    * @param array $map
@@ -40,6 +54,17 @@ interface HostFileManagerInterface {
    *   TRUE if the host file entries are added successfully, otherwise FALSE.
    */
   function addHostFileEntries(array $map);
+  
+  /**
+   * Retrieves the current IP address for the specified domain.
+   * 
+   * @param string $domain
+   *   The specified domain.
+   * 
+   * @return string
+   *   The IP address for the current host.
+   */
+  function getHostFileEntry($domain);
   
   /**
    * The underlying machine.
