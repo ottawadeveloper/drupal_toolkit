@@ -280,11 +280,34 @@ class HttpConfigurationPlugin extends GenericPlugin implements EventListener, Se
     if (extra_empty($this->config()->getConfig(CONFIG_HTTP_STATIC_CONFIG))) {
       return $this->publishConfig($site, TRUE);
     }
-    else {
-      // TRUE indicates that we successfully did nothing in this case.
-      return TRUE;
-    }
+    // TRUE indicates that we successfully did nothing in this case.
+    return TRUE;
   }
+  
+  /**
+   * Retrieves all of the HTTP servers registered.
+   * 
+   * @return array
+   *   An array of HttpServerInterface
+   */
+  private function getAllHttpServers() {
+    $config = $this->getConfig(array(
+      'server_type' => CONFIG_HTTP_DEFAULT_SERVER_TYPE,
+    ), array(
+      'use_local' => CONFIG_HTTP_USE_LOCAL,
+    ));
+    if (empty($config)) {
+      return array();
+    }
+    return $this->servers()->getServerList(
+        SERVER_TYPE_HTTP,
+        EVENT_CAST_HTTP_SERVER,
+        SERVER_SETTING_HTTP_TYPE,
+        $config['server_type'],
+        !extra_empty($config['use_local'])
+    );
+  }
+  
   
   /**
    * Restarts all the servers.
@@ -294,16 +317,13 @@ class HttpConfigurationPlugin extends GenericPlugin implements EventListener, Se
    *   a server.
    */
   private function restartAll() {
-    $context = (object) array(
-      'servers' => array(),
-    );
     $this->working(STRING_WORKING_HTTP_RESTART);
-    $this->events()->fireEvent(EVENT_FIND_HTTP_SERVERS, $context);
-    foreach ($context->servers as $key => $httpServer) {
-      $this->working(STRING_WORKING_HTTP_RESTART_SERVER, array(
-        '!name' => $key,
-      ));
-      if ($httpServer instanceof GenericHttpServer) {
+    $servers = $this->getAllHttpServers();
+    foreach ($servers as $key => $httpServer) {
+      if ($httpServer instanceof HttpServerInterface) {
+        $this->working(STRING_WORKING_HTTP_RESTART_SERVER, array(
+          '!name' => $key,
+        ));
         $httpServer->doReboot();
       }
     }
@@ -324,20 +344,16 @@ class HttpConfigurationPlugin extends GenericPlugin implements EventListener, Se
    *   FALSE.
    */
   private function publishConfig(DrupalSite $site, $update = FALSE) {
+    $this->working(STRING_WORKING_HTTP_CONFIGURE);
     $c = $this->getConfig(array(), array(
       'template' => CONFIG_HTTP_DEFAULT_CONFIG_TEMPLATE,
       'fn_template' => CONFIG_HTTP_DEFAULT_FILENAME_TEMPLATE,
     ));
-    if (!is_readable($c['template'])) {
-      $c['template'] = NULL;
-    }
-    $context = (object) array(
-      'servers' => array(),
-    );
-    $this->events()->fireEvent(EVENT_FIND_HTTP_SERVERS, $context);
+    if (!is_readable($c['template'])) { $c['template'] = NULL; }
     $httpRegistry = array();
-    $this->working(STRING_WORKING_HTTP_CONFIGURE);
-    foreach ($context->servers as $key => $httpServer) {
+    $servers = $this->getAllHttpServers();
+    $ret = TRUE;
+    foreach ($servers as $key => $httpServer) {
       if ($httpServer instanceof GenericHttpServer) {
         if ($update) {
           // Check if we should be updating the config files.
@@ -348,50 +364,71 @@ class HttpConfigurationPlugin extends GenericPlugin implements EventListener, Se
         $this->working(STRING_WORKING_HTTP_CONFIGURE_SERVER, array(
           '!name' => $key,
         ));
-        $configFile = $httpServer->machine()->getSetting(SERVER_SETTING_HTTP_CONFIG_TEMPLATE);
-        if (empty($configFile)) {
-          $configFile = $c['template'];
+        $files = $this->writeHttpConfiguration($site, $httpServer, $c, &$httpRegistry);
+        if (empty($files)) {
+          $ret = FALSE;
         }
-        if (!is_readable($configFile)) {
-          $this->error(STRING_HTTP_NO_CONFIG);
-          return FALSE;
-        }
-        $filename = $httpServer->machine()->getSetting(SERVER_SETTING_HTTP_FILE_TEMPLATE);
-        if (empty($filename)) {
-          $filename = $c['fn_template'];
-          if (empty($filename)) {
-            $this->reror(STRING_HTTP_MISSING_TEMPLATE);
-            return FALSE;
+        else {
+          foreach ($files as $x) {
+            $httpRegistry[] = array(
+              'file' => $x,
+              'server' => $httpServer->machine(),
+            );
           }
-        }
-        $filename = $site->replaceTokens($filename);
-        $configFile = $site->replaceTokens(file_get_contents($configFile));
-        if (empty($configFile)) {
-          $this->error(STRING_HTTP_NO_CONFIG);
-          return FALSE;
-        }
-        if (!$httpServer->writeConfig($filename, $configFile)) {
-          $this->error(STRING_HTTP_BAD_WRITE);
-          return FALSE;
-        }
-        $httpServer->doReboot();
-        $httpRegistry[] = array(
-          'file' => $httpServer->getConfigFilePath($filename),
-          'server' => $httpServer->machine(),
-        );
-        // In support of apache2's sites-enabled directory.
-        $extra = $httpServer->extraFiles($filename);
-        foreach ($extra as $x) {
-          $httpRegistry[] = array(
-            'file' => $x,
-            'server' => $httpServer->machine(),
-          );
         }
       }
     }
     $site->appendSettingValue(SITE_REMOTE_FILES, $httpRegistry);
-    $this->success(STRING_SUCCESS_HTTP_CONFIGURE);
-    return TRUE;
+    if ($ret) {
+      $this->success(STRING_SUCCESS_HTTP_CONFIGURE);
+    }
+    return $ret;
+  }
+  
+  /**
+   * Writes HTTP configuration a server.
+   * 
+   * @param DrupalSite $site
+   *   The drupal site for token replacement.
+   * @param HttpServerInterface $httpServer
+   *   The server to write files to.
+   * @param array $c
+   *   Base configuration.
+   * 
+   * @return array
+   *   An array of server files if successful, otherwise FALSE.
+   */
+  private function writeHttpConfiguration(DrupalSite $site, HttpServerInterface $httpServer, $c) { 
+    $rawconfigFile = $httpServer->machine()->getSetting(SERVER_SETTING_HTTP_CONFIG_TEMPLATE);
+    if (empty($rawconfigFile)) { 
+      $rawconfigFile = $c['template']; 
+    }
+    if (!is_readable($rawconfigFile)) {
+      $this->error(STRING_HTTP_NO_CONFIG);
+      return FALSE;
+    }
+    $rawfilename = $httpServer->machine()->getSetting(SERVER_SETTING_HTTP_FILE_TEMPLATE);
+    if (empty($rawfilename)) {
+      $rawfilename = $c['fn_template'];
+      if (empty($rawfilename)) {
+        $this->error(STRING_HTTP_MISSING_TEMPLATE);
+        return FALSE;
+      }
+    }
+    $filename = $site->replaceTokens($rawfilename);
+    $configFile = $site->replaceTokens(file_get_contents($rawconfigFile));
+    if (empty($configFile)) {
+      $this->error(STRING_HTTP_NO_CONFIG);
+      return FALSE;
+    }
+    if (!$httpServer->writeConfig($filename, $configFile)) {
+      $this->error(STRING_HTTP_BAD_WRITE);
+      return FALSE;
+    }
+    $httpServer->doReboot();
+    $files = $httpServer->extraFiles($filename);
+    $files[] = $httpServer->getConfigFilePath($filename);
+    return $files;
   }
   
   /**
@@ -416,67 +453,6 @@ class HttpConfigurationPlugin extends GenericPlugin implements EventListener, Se
       default:
         return NULL;
     }
-  }
-  
-  /**
-   * Retrieves a casted server object using a hook.
-   * 
-   * @param PhysicalServerInterface $server
-   *   The server to cast
-   * @param string $type
-   *   The HTTP type, see @ref http_types "HTTP Server Types"
-   * 
-   * @return HttpServerInterface
-   *   An appropriate server interface, or NULL if none could be found.
-   */
-  private function getCastedServer(PhysicalServerInterface $server, $type) {
-    $context = (object) array(
-      'server' => $server,
-      'type' => $type,
-      'httpServer' => NULL,
-    );
-    $this->events()->fireEvent(EVENT_CAST_HTTP_SERVER, $context);
-    if (!empty($context->httpServer)) {
-      return $context->httpServer;
-    }
-    return NULL;
-  }
-  
-  /**
-   * Retrieves a list of HTTP server objects using the ServerInteractionPlugin.
-   * 
-   * @return array
-   *   An array of HTTP server objects.
-   */
-  private function getHttpServers() {
-    $config = $this->getConfig(array(
-      'server_type' => CONFIG_HTTP_DEFAULT_SERVER_TYPE,
-    ), array(
-      'use_local' => CONFIG_HTTP_USE_LOCAL,
-    ));
-    if (empty($config)) {
-      return array();
-    }
-    $context = (object) array(
-      'serverType' => SERVER_TYPE_HTTP,
-      'skipLocal' => !$config['use_local'],
-      'servers' => array(),
-    );
-    $this->events()->fireEvent(EVENT_FIND_SERVERS, $context);
-    $httpServers = array();
-    foreach ($context->servers as $key => $server) {
-      if ($server instanceof PhysicalServerInterface) {
-        $type = $server->getSetting(SERVER_SETTING_HTTP_TYPE);
-        if (empty($type)) {
-          $type = $config['server_type'];
-        }
-        $httpServer = $this->getCastedServer($server, $type);
-        if (!empty($httpServer)) {
-          $httpServers[$key] = $httpServer;
-        }
-      }
-    }
-    return $httpServers;
   }
   
 }
