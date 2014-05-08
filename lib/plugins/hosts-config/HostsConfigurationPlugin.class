@@ -235,7 +235,7 @@ class HostsConfigurationPlugin extends GenericPlugin implements EventListener, S
         break;
       case EVENT_CAST_MANAGED_HOST_SERVER:
         if ($context->checkExecution()) {
-          $context->setCastedServer($this->castManagedHostServer($context->server, $context->type));
+          $context->setCastedServer($this->castManagedHostServer($context->getServer(), $context->getType()));
         }
         break;
     }
