@@ -29,13 +29,6 @@ define('SERVER_SETTING_HTTP_CONFIG_TEMPLATE', 'http-config-template');
 define('SERVER_SETTING_HTTP_FILE_TEMPLATE', 'http-file-template');
 
 /**
- * Fired when a list of HTTP servers is needed.
- * 
- * @ingroup events
- */
-define('EVENT_FIND_HTTP_SERVERS', 'find-http-servers');
-
-/**
  * Fired when an HTTP server needs to be cast based on its type.
  * 
  * @ingroup events
@@ -198,17 +191,35 @@ define('STRING_SUCCESS_HTTP_CONFIGURE', 'http_config.success.configure');
 /**
  * Plugin to manage configuring the HTTP server for the Drupal install.
  */
-class HttpConfigurationPlugin extends GenericPlugin implements EventListener {
+class HttpConfigurationPlugin extends GenericPlugin implements EventListener, ServerInteractionDependency {
+
+  /**
+   * The dependency injection variable for server interaction.
+   * 
+   * @var ServerInteractionManagerInterface
+   */
+  private $servers;
+  
+  public function setServerManager(ServerInteractionManagerInterface $servers) {
+    $this->servers = $servers;
+  }
+  
+  public function servers() {
+    return $this->servers;
+  }
+  
+  public function __construct() {
+    $this->includeFiles(dirname(__FILE__), array(
+      'GenericHttpServer.class',
+      'Apache2Server.class',
+      'HttpdServer.class',
+      'NginxServer.class',
+    ));
+  }
   
   public function initialize() {
-    $self = dirname(__FILE__);
-    require assemble_path($self, 'GenericHttpServer.class');
-    require assemble_path($self, 'Apache2Server.class');
-    require assemble_path($self, 'HttpdServer.class');
-    require assemble_path($self, 'NginxServer.class');
     $this->events()->registerListener(array(
       EVENT_UPDATE_REFRESH_SERVER_CONFIG,
-      EVENT_FIND_HTTP_SERVERS,
       EVENT_CAST_HTTP_SERVER,
       EVENT_SITE_BUILD_CONFIGURE_SERVER,
       EVENT_UPDATE_PREPARE_SERVER,
@@ -226,39 +237,28 @@ class HttpConfigurationPlugin extends GenericPlugin implements EventListener {
     ));
   }
   
-  public function captureEvent(&$context, $eventType) {
+  public function captureEvent(DtkEvent &$context, $eventType) {
     switch ($eventType) {
       case EVENT_SUBSITE_BUILD_PARENT_SERVER_REFRESH:
-        if (empty($context->handled) || $context->success) {
-          $context->success = $this->publishConfig($context->subsite->getParentSite());
-          $context->handled = TRUE;
+      case EVENT_SITE_BUILD_CONFIGURE_SERVER:
+        if ($context->checkExecution()) {
+          $context->setResult($this->publishConfig($context->getSite()));
         }
         break;
       case EVENT_UPDATE_REFRESH_SERVER_CONFIG:
-        if (empty($context->handled) || $context->success) {
-          $context->success = $this->updateAll($context->site);
-          $context->handled = TRUE;
+        if ($context->checkExecution()) {
+          $context->setResult($this->updateAll($context->getSite()));
         }
         break;
       case EVENT_UPDATE_PREPARE_SERVER:
-        if (empty($context->handled) || $context->success) {
-          $context->success = $this->restartAll();
-          $context->handled = TRUE;
+        if ($context->checkExecution()) {
+          $context->setResult($this->restartAll());
         }
-        break;
-      case EVENT_FIND_HTTP_SERVERS:
-        $context->servers = array_merge($context->servers, $this->getHttpServers());
         break;
       case EVENT_CAST_HTTP_SERVER:
-        $cast = $this->castServer($context->server, $context->type);
-        if (!empty($cast)) {
-          $context->httpServer = $cast;
-          $context->stopPropagation = TRUE;
+        if ($context->checkExecution()) {
+          $context->setCastedServer($this->castServer($context->getServer(), $context->getType()));
         }
-        break;
-      case EVENT_SITE_BUILD_CONFIGURE_SERVER:
-        $context->success = $this->publishConfig($context->site);
-        $context->stopPropagation = TRUE;
         break;
     }
   }
