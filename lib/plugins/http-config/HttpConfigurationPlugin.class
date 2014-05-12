@@ -364,7 +364,7 @@ class HttpConfigurationPlugin extends GenericPlugin implements EventListener, Se
         $this->working(STRING_WORKING_HTTP_CONFIGURE_SERVER, array(
           '!name' => $key,
         ));
-        $files = $this->writeHttpConfiguration($site, $httpServer, $c, &$httpRegistry);
+        $files = $this->writeHttpConfiguration($site, $httpServer, $c);
         if (empty($files)) {
           $ret = FALSE;
         }
