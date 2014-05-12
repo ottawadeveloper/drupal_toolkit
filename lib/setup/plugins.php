@@ -37,8 +37,14 @@ foreach ($pluginFiles as $file) {
   $info = pathinfo($file);
   $pluginData[$info['filename']] = array(
     'path' => $file,
-  ) + parse_ini_file($file);
+  ) + parse_ini_file($file) + array(
+    'priority' => 0,
+    'files' => array(),
+    'dependencies' => array(),
+  );
 }
+
+uasort($pluginData, '_dtk_sort_plugins');
 
 // Build information on what order we should enable plugins.
 // Plugins that depend on others should be enabled later.

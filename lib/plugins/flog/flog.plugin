@@ -1,3 +1,5 @@
 plugin = FileLogPlugin
+priority = 10000000
 
 files[] = FileLog.class
+

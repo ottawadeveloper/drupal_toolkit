@@ -88,3 +88,7 @@ function _dtk_is_plugin_file($filename) {
   return ($info['extension'] === 'plugin') &&
       $info['filename'] === basename(dirname($filename));
 }
+
+function _dtk_sort_plugins($a, $b) {
+  return $b['priority'] - $a['priority'];
+}
