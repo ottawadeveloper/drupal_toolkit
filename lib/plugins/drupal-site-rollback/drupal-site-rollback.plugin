@@ -1,0 +1,5 @@
+plugin = DrupalSiteRollbackPlugin
+
+files[] = SiteRollbackCommand.class
+
+dependencies[] = drupal-site

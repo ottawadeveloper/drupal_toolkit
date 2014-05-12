@@ -1,0 +1,5 @@
+plugin = DrupalSiteUpdatePlugin
+
+files[] = SiteUpdateCommand.class
+
+dependencies[] = drupal-site

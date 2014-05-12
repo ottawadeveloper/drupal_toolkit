@@ -1,6 +1,6 @@
 plugin = DrupalSiteInstallPlugin
 
 files[] = SiteInstallCommand.class
-files[] = SubSiteInstallCommand.clsas
+files[] = SubSiteInstallCommand.class
 
 dependencies[] = drupal-site
