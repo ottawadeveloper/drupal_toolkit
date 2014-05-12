@@ -1,0 +1,10 @@
+plugin = HttpConfigurationPlugin
+
+dependencies[] = server-interaction
+dependencies[] = drupal-site
+
+files[] = HttpServerInterface.iface
+files[] = GenericHttpServer.class
+files[] = HttpdServer.class
+files[] = Apache2Server.class
+files[] = NginxServer.class

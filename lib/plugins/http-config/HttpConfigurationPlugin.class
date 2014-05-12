@@ -208,15 +208,6 @@ class HttpConfigurationPlugin extends GenericPlugin implements EventListener, Se
     return $this->servers;
   }
   
-  public function __construct() {
-    $this->includeFiles(dirname(__FILE__), array(
-      'GenericHttpServer.class',
-      'Apache2Server.class',
-      'HttpdServer.class',
-      'NginxServer.class',
-    ));
-  }
-  
   public function initialize() {
     $this->events()->registerListener(array(
       EVENT_UPDATE_REFRESH_SERVER_CONFIG,
@@ -261,10 +252,6 @@ class HttpConfigurationPlugin extends GenericPlugin implements EventListener, Se
         }
         break;
     }
-  }
-  
-  public function requiredPlugins() {
-    return array('ServerInteractionPlugin', 'DrupalSitePlugin');
   }
   
   /**

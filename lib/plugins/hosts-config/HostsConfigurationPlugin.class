@@ -185,14 +185,6 @@ class HostsConfigurationPlugin extends GenericPlugin implements EventListener, S
     return $this->servers;
   }
   
-  public function __construct() {
-    $this->includeFiles(dirname(__FILE__), array(
-      'HostFileManagerInterface.iface',
-      'GenericHostFileManager.class',
-      'LinuxHostFileManager.class',
-    ));
-  }
-  
   public function initialize() {
     $this->config()->extendDefaultConfiguration(array(
       CONFIG_MANAGED_HOSTS_COMPACT => FALSE,
@@ -212,10 +204,6 @@ class HostsConfigurationPlugin extends GenericPlugin implements EventListener, S
       EVENT_SUBSITE_BUILD_PARENT_SERVER_REFRESH,
       EVENT_REMOVE_SUBSITE_CLEANUP,
     ), $this);
-  }
-  
-  public function requiredPlugins() {
-    return array('ServerInteractionPlugin', 'DrupalSitePlugin');
   }
   
   public function captureEvent(DtkEvent &$context, $eventType) {

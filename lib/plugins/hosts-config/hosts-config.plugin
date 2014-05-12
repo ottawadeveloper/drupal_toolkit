@@ -1,0 +1,8 @@
+plugin = HostsConfigurationPlugin
+
+dependencies[] = server-interaction
+dependencies[] = drupal-site
+
+files[] = HostFileManagerInterface.iface
+files[] = GenericHostFileManager.class
+files[] = LinuxHostFileManager.class

@@ -1,0 +1,4 @@
+plugin = GatewayConfigurationPlugin
+
+dependencies[] = drupal-site
+dependencies[] = http-config

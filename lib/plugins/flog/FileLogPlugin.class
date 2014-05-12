@@ -23,13 +23,7 @@ define('STRING_MISSING_LOG_FILE', 'flog.error.no-log-file');
  * Responsible for setting up file logging if requested.
  */
 class FileLogPlugin extends GenericPlugin implements EventListener {
-  
-  public function __construct() {
-    $this->includeFiles(dirname(__FILE__), array(
-      'FileLog.class',
-    ));
-  }
-  
+    
   public function initialize() {
     $this->events()->registerListener(array(
       EVENT_CORE_REGISTER_OUTPUTS
