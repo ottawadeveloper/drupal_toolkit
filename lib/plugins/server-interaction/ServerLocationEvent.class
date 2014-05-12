@@ -39,7 +39,25 @@ class ServerLocationEvent extends DtkEvent {
   public function __construct($type, $useLocal = FALSE) {
     parent::__construct(TRUE);
     $this->serverType = $type;
-    $this->includeLocal = $useLocal;
+    $this->includeLocal = !!$useLocal;
+  }
+  
+  /**
+   * Returns the type of server to find.
+   * 
+   * @return string
+   */
+  public function getType() {
+    return $this->serverType;
+  }
+  
+  /**
+   * Whether or not to use the local server by default.
+   * 
+   * @return boolean
+   */
+  public function useLocal() {
+    return $this->includeLocal;
   }
   
   /**
