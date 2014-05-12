@@ -330,13 +330,8 @@ class DrupalSiteStandardBuildPlugin extends GenericPlugin implements EventListen
    *   TRUE if successful, otherwise FALSE.
    */
   private function saveRevertedCodebase(DrupalSite $site, $revertedID) {
-    $cbDir = $site->getSetting(SITE_CODEBASE_DIR);
-    if (empty($cbDir)) { 
-      $this->error(STRING_SITE_MISSING_SETTING, array(
-        '!key' => SITE_CODEBASE_DIR,
-      ));
-      return FALSE; 
-    }
+    $cbDir = $site->getSetting(SITE_CODEBASE_DIR, NULL, TRUE);
+    if (empty($cbDir)) { return FALSE; }
     $this->working(STRING_WORKING_BUILD_SAVE_REVERTED_CODE);
     $revertedBase = assemble_path($site->getBuildFolder(), $cbDir, $revertedID);
     $target = assemble_path($site->getBuildFolder(), 'reverted', $revertedID, 'code');
@@ -360,13 +355,9 @@ class DrupalSiteStandardBuildPlugin extends GenericPlugin implements EventListen
    *   TRUE, if the files were deleted, otherwise FALSE.
    */
   private function removeExtraFiles($buildDirectory) {
-    if (!is_dir($buildDirectory)) {
-      return TRUE;
-    }
+    if (!is_dir($buildDirectory)) { return TRUE; }
     $extraFiles = $this->config()->getConfig(CONFIG_REMOVE_BUILD_FILES);
-    if (empty($extraFiles)) {
-      return TRUE;
-    }
+    if (empty($extraFiles)) { return TRUE; }
     $this->working(STRING_WORKING_BUILD_REMOVE_EXTRAS, array(
       '!files' => implode(', ', $extraFiles),
     ));
@@ -406,13 +397,8 @@ class DrupalSiteStandardBuildPlugin extends GenericPlugin implements EventListen
    *   TRUE if the build was deleted, otherwise FALSE.
    */
   private function deleteBuild(DrupalSite $site, $buildID) {
-    $cbDir = $site->getSetting(SITE_CODEBASE_DIR);
-    if (empty($cbDir)) { 
-      $this->error(STRING_SITE_MISSING_SETTING, array(
-        '!key' => SITE_CODEBASE_DIR,
-      ));
-      return FALSE; 
-    }
+    $cbDir = $site->getSetting(SITE_CODEBASE_DIR, NULL, TRUE);
+    if (empty($cbDir)) { return FALSE; }
     $this->working(STRING_WORKING_BUILD_DELETE_CODEBASE, array(
       '!buildID' => $buildID,
     ));
@@ -439,13 +425,8 @@ class DrupalSiteStandardBuildPlugin extends GenericPlugin implements EventListen
    */
   private function updateCurrentLink(DrupalSite $site) {
     $this->working(STRING_WORKING_BUILD_CURRENT_SYMLINK);
-    $latestCodebase = $site->getSetting(SITE_SETTING_CURRENT_BUILD);
-    if (empty($latestCodebase)) {
-      $this->error(STRING_SITE_MISSING_SETTING, array(
-        '!key' => SITE_SETTING_CURRENT_BUILD,
-      ));
-      return FALSE;
-    }
+    $latestCodebase = $site->getSetting(SITE_SETTING_CURRENT_BUILD, NULL, TRUE);
+    if (empty($latestCodebase)) { return FALSE; }
     $currentLink = assemble_path($site->getBuildFolder(), 'current');
     if (is_link($currentLink)) {
       unlink($currentLink);
@@ -470,13 +451,8 @@ class DrupalSiteStandardBuildPlugin extends GenericPlugin implements EventListen
    */
   private function refreshSiteVariables(DrupalSite $site, $oldBuildID) {
     $this->working(STRING_WORKING_BUILD_REVERT_SITE_VARS);
-    $cbDir = $site->getSetting(SITE_CODEBASE_DIR);
-    if (empty($cbDir)) { 
-      $this->error(STRING_SITE_MISSING_SETTING, array(
-        '!key' => SITE_CODEBASE_DIR,
-      ));
-      return FALSE; 
-    }
+    $cbDir = $site->getSetting(SITE_CODEBASE_DIR, NULL, TRUE);
+    if (empty($cbDir)) { return FALSE; }
     $buildDir = assemble_path($site->getBuildFolder(), $cbDir, $oldBuildID);
     $site->setSetting(SITE_SETTING_CURRENT_BUILD, $buildDir);
     $this->success(STRING_SUCCESS_BUILD_REVERT_SITE_VARS);
@@ -509,12 +485,7 @@ class DrupalSiteStandardBuildPlugin extends GenericPlugin implements EventListen
       return FALSE;
     }
     $cbDir = $site->getSetting(SITE_CODEBASE_DIR);
-    if (empty($cbDir)) { 
-      $this->error(STRING_SITE_MISSING_SETTING, array(
-        '!key' => SITE_CODEBASE_DIR,
-      ));
-      return FALSE; 
-    }
+    if (empty($cbDir)) { return FALSE; }
     $newCodebase = assemble_path($site->getBuildFolder(), $cbDir, $buildID);
     if (!is_writable(dirname($newCodebase))) {
       $this->error(STRING_SITE_INVALID_CODEBASE);
@@ -538,17 +509,17 @@ class DrupalSiteStandardBuildPlugin extends GenericPlugin implements EventListen
         return FALSE;
       }
     }
-    
-    $context = (object) array(
-      'success' => TRUE,
+    $event = new DtkEvent(TRUE, array(
       'site' => $site,
-    );
+    ));
     
-    $this->events()->fireEvent(EVENT_CONTINUE_STANDARD_BUILD, $context);
+    $this->events()->fireEvent(EVENT_CONTINUE_STANDARD_BUILD, $event);
     
-    $this->success(STRING_SUCCESS_BUILD_CONSTRUCT_CODEBASE);
+    if ($event->success()) {
+      $this->success(STRING_SUCCESS_BUILD_CONSTRUCT_CODEBASE);
+    }
     
-    return $context->success;
+    return $event->success();
   }
   
   /**
