@@ -1,6 +1,6 @@
-plugin = DrupalSiteExistsPlugin
+plugin = DrupalSiteInstallPlugin
 
-files[] = SiteExistsCommand.class
-files[] = SubSiteExistsCommand.clsas
+files[] = SiteInstallCommand.class
+files[] = SubSiteInstallCommand.clsas
 
 dependencies[] = drupal-site
