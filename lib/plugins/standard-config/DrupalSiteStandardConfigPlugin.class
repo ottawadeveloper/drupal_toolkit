@@ -56,25 +56,16 @@ class DrupalSiteStandardConfigPlugin extends GenericPlugin implements EventListe
     ), $this);
   }
   
-  public function captureEvent(&$context, $type) {
+  public function captureEvent(DtkEvent &$context, $type) {
     switch ($type) {
       case EVENT_SITE_CONFIGURE:
-        if ($context->success) {
-          $context->success = $this->configureSite($context->site);
-        }
-        break;
       case EVENT_SUBSITE_BUILD_CONFIG:
-        if (empty($context->handled) || $context->success) {
-          $context->success = $this->configureSubSite($context->subsite);
+        if ($context->checkExecution()) {
+          $context->setResult($this->addEntityDomains($context->getEntity()));
         }
         break;
     }
   } 
-  
-  private function configureSubSite(DrupalSubSite $subsite) {
-    $this->addEntityDomains($subsite);
-    return TRUE;
-  }
   
   /**
    * Retrieves a list of extra URLs.
@@ -124,7 +115,8 @@ class DrupalSiteStandardConfigPlugin extends GenericPlugin implements EventListe
    *   The domain name of URL
    */
   private function fetchDomain($url) {
-    // domains that don't begin with a protocol are not handled correctly.
+    // domains that don't begin with a protocol are not handled correctly
+    // by parse_url().
     if (strpos($url, '://') === FALSE) {
       $url = 'http://' . $url;
     }
@@ -133,20 +125,6 @@ class DrupalSiteStandardConfigPlugin extends GenericPlugin implements EventListe
       return $pieces['host'];
     }
     return NULL;
-  }
-  
-  /**
-   * Responsible for configuring the site object on load.
-   * 
-   * @param DrupalSite $site
-   *   The site object to configure.
-   * 
-   * @return boolean
-   *   TRUE if the site was configured correctly, otherwise FALSE.
-   */
-  private function configureSite(DrupalSite $site) {
-    $this->addEntityDomains($site);
-    return TRUE;
   }
   
   /**
@@ -189,18 +167,7 @@ class DrupalSiteStandardConfigPlugin extends GenericPlugin implements EventListe
     }
     $entity->setSetting(SITE_SETTING_ALL_DOMAINS, $domains);
     $entity->setToken(SITE_TOKEN_ALL_DOMAINS, implode(', ', $domains));
-    $entity->setToken(SITE_TOKEN_ALL_URLS, implode(', ', $entity->getAllURLs()));
-    if ($entity instanceof DrupalSubSite) {
-      $parent = $entity->getParentSite();
-      $parentDomains = $parent->getSetting(SITE_SETTING_ALL_DOMAINS);
-      foreach ($domains as $d) {
-        if (!in_array($d, $parentDomains)) {
-          $parentDomains[] = $d;
-        }
-      }
-      $parent->setSetting(SITE_SETTING_ALL_DOMAINS, $parentDomains);
-      $parent->setToken(SITE_TOKEN_ALL_DOMAINS, implode(', ', $parentDomains));
-    }
+    return TRUE;
   }
   
 }
