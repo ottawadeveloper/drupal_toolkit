@@ -1,0 +1,3 @@
+plugin = DrupalSiteStandardConfigPlugin
+
+dependencies[] = drupal-site

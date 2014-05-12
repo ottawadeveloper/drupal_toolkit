@@ -1,0 +1,5 @@
+plugin = DrupalSiteStandardSitePlugin
+
+dependencies[] = drupal-site
+
+files[] = DrupalSettingsEvent.class 
