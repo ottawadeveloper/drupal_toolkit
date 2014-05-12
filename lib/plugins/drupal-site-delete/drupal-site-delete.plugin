@@ -1,0 +1,6 @@
+plugin = DrupalSiteDeletePlugin
+
+files[] = SiteDeleteCommand.class
+files[] = SubSiteDeleteCommand.clsas
+
+dependencies[] = drupal-site
