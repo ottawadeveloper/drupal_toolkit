@@ -68,6 +68,7 @@ class UpstreamPlugin extends GenericPlugin implements EventListener, ServerInter
   public function requiredPlugins() {
     return array(
       'DrupalSitePlugin',
+      'ServerInteractionPlugin',
     );
   }
   
