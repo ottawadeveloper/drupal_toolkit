@@ -51,21 +51,10 @@ define('STRING_INSTALL_ERROR', 'drupal_site_install.error.install-error');
  */
 class DrupalSiteInstallPlugin extends GenericPlugin implements EventListener {
   
-  public function __construct() {
-    $this->includeFiles(dirname(__FILE__), array(
-      'SiteInstallCommand.class',
-      'SubSiteInstallCommand.class',
-    ));
-  }
-  
   public function initialize() {
     $this->events()->registerListener(array(
       EVENT_CORE_REGISTER_COMMANDS,
     ), $this);
-  }
-  
-  public function requiredPlugins() {
-    return array('DrupalSitePlugin');
   }
   
   public function captureEvent(DtkEvent &$context, $eventType) {

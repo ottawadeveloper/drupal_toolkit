@@ -1,0 +1,6 @@
+plugin = DrupalSiteExistsPlugin
+
+files[] = SiteExistsCommand.class
+files[] = SubSiteExistsCommand.clsas
+
+dependencies[] = drupal-site
