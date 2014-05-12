@@ -90,21 +90,36 @@ class DrupalSiteStandardStructurePlugin extends GenericPlugin implements EventLi
     return array('DrupalSitePlugin');
   }
   
-  public function captureEvent(&$context, $type) {
+  public function captureEvent(DtkEvent &$context, $type) {
     switch ($type) {
       case EVENT_SITE_BUILD_STRUCTURE:
-        $context->success = $this->buildSite($context->site);
-        $context->stopPropagation = TRUE;
-        break;
-      case EVENT_DISCOVER_STRUCTURE_DIRS:
-        $context->dirs = array_merge($context->dirs, $this->dirDiscovery());
+        if ($context->checkExecution()) {
+          $context->setResult($this->buildSite($context->getSite()));
+        }
         break;
       case EVENT_REMOVE_ALL:
-        $context->success = $this->deleteSite($context->site) && $context->success;
+        if ($context->checkExecution()) {
+          $context->setResult($this->deleteSite($context->getSite()));
+        }
+        break;
+      case EVENT_DISCOVER_STRUCTURE_DIRS:
+        $context->setVariable('dirs', array_merge(
+            $context->getVariable('dirs'),
+            $this->dirDiscovery()
+        ));
         break;
     }
   }
   
+  /**
+   * Deletes a site entirely.
+   * 
+   * @param DrupalSite $site
+   *   The site to delete.
+   * 
+   * @return boolean
+   *   TRUE if successful, otherwise FALSE.
+   */
   private function deleteSite(DrupalSite $site) {
     $this->working(STRING_WORKING_REMOVE_SITE);
     if (!remove_directory($site->getBuildFolder())) {
@@ -140,7 +155,7 @@ class DrupalSiteStandardStructurePlugin extends GenericPlugin implements EventLi
    */
   private function buildSite(DrupalSite $site) {
     $this->working(STRING_WORKING_BUILD_STRUCTURE);
-    $context = (object) array(
+    $event = new DtkEvent(FALSE, array(
       'dirs' => array(
         '/',
         'codebases',
@@ -148,10 +163,10 @@ class DrupalSiteStandardStructurePlugin extends GenericPlugin implements EventLi
       ),
       'codebaseDir' => 'codebases',
       'sitesDir' => 'sites',
-    );
-    $this->events()->fireEvent(EVENT_DISCOVER_STRUCTURE_DIRS, $context);
+    ));
+    $this->events()->fireEvent(EVENT_DISCOVER_STRUCTURE_DIRS, $event);
     $root = $site->getBuildFolder();
-    foreach ($context->dirs as $dir) {
+    foreach ($event->getVariable('dirs') as $dir) {
       $full = assemble_path($root, $dir);
       if (!is_dir($full)) {
         mkdir($full);
@@ -163,16 +178,12 @@ class DrupalSiteStandardStructurePlugin extends GenericPlugin implements EventLi
         }
       }
     }
-    $site->setSetting(SITE_CODEBASE_DIR, $context->codebaseDir);
-    $site->setSetting(SITE_SITES_DIR, $context->sitesDir);
+    $site->setSetting(SITE_CODEBASE_DIR, $event->getVariable('codebaseDir'));
+    $site->setSetting(SITE_SITES_DIR, $event->getVariable('sitesDir'));
 
     $this->success(STRING_SUCCESS_BUILD_STRUCTURE);
     
-    $context = (object) array(
-      'success' => TRUE,
-      'site' => $site,
-    );
-    
+    $context = new DrupalSiteEvent($site, TRUE);
     $this->events()->fireEvent(EVENT_CONTINUE_STANDARD_STRUCTURE, $context);
     
     return $context->success;

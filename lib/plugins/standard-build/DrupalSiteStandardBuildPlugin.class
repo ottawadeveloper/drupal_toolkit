@@ -509,9 +509,7 @@ class DrupalSiteStandardBuildPlugin extends GenericPlugin implements EventListen
         return FALSE;
       }
     }
-    $event = new DtkEvent(TRUE, array(
-      'site' => $site,
-    ));
+    $event = new DrupalSiteEvent($site, TRUE);
     
     $this->events()->fireEvent(EVENT_CONTINUE_STANDARD_BUILD, $event);
     
