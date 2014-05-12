@@ -227,10 +227,10 @@ class PermissionsPlugin extends GenericPlugin implements EventListener {
       CONFIG_PERMISSIONS_IGNORE_SYSTEM => FALSE,
     ));
     $this->events()->registerListener(array(
-      EVENT_SITE_BUILT,
-      EVENT_UPDATE_FINISH,
-      EVENT_SUBSITE_BUILD_COMPLETE,
-      EVENT_UPDATE_CLEANUP_SUBSITE,
+      dtk_constant('EVENT_SITE_BUILT'),
+      dtk_constant('EVENT_UPDATE_FINISH'),
+      dtk_constant('EVENT_SUBSITE_BUILD_COMPLETE'),
+      dtk_constant('EVENT_UPDATE_CLEANUP_SUBSITE'),
     ), $this);
   }
   

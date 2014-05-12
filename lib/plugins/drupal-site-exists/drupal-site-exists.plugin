@@ -1,4 +1,5 @@
 plugin = DrupalSiteExistsPlugin
+priority = 10
 
 files[] = SiteExistsCommand.class
 files[] = SubSiteExistsCommand.class

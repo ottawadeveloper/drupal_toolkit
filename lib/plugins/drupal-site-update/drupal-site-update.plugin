@@ -1,4 +1,5 @@
 plugin = DrupalSiteUpdatePlugin
+priority = 10
 
 files[] = SiteUpdateCommand.class
 

@@ -1,4 +1,5 @@
 plugin = DrupalSiteDeletePlugin
+priority = 10
 
 files[] = SiteDeleteCommand.class
 files[] = SubSiteDeleteCommand.class

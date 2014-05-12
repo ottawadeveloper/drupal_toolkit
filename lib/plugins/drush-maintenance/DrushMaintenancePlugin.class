@@ -59,10 +59,10 @@ class DrushMaintenancePlugin extends GenericPlugin implements EventListener {
   
   public function initialize() {
     $this->events()->registerListener(array(
-      EVENT_UPDATE_PREPARE_FOR_UPDATE,
-      EVENT_UPDATE_PREPARE_FOR_REFRESH,
-      EVENT_ROLLBACK_FINISH,
-      EVENT_ROLLBACK_PREPARE,
+      dtk_constant('EVENT_UPDATE_PREPARE_FOR_UPDATE'),
+      dtk_constant('EVENT_UPDATE_PREPARE_FOR_REFRESH'),
+      dtk_constant('EVENT_ROLLBACK_FINISH'),
+      dtk_constant('EVENT_ROLLBACK_PREPARE'),
     ), $this);
   }
   

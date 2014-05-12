@@ -128,6 +128,7 @@ class ServerInteractionPlugin extends GenericPlugin implements EventListener {
       EVENT_REMOVE_ALL,
       EVENT_CAST_PHYSICAL_SERVER,
       EVENT_CORE_DEPENDENCY_INJECTION,
+      EVENT_REMOVE_SUBSITE_ALL,
     ), $this);
     $this->config()->extendDefaultConfiguration(array(
       CONFIG_SERVER_LIST => array(),
@@ -266,7 +267,7 @@ class ServerInteractionPlugin extends GenericPlugin implements EventListener {
           $context->addDiscoveredServers($this->loadServersOfType($context->getType(), $context->useLocal()));
         }
         break;
-      case EVENT_REMOTE_SUBSITE_ALL:
+      case EVENT_REMOVE_SUBSITE_ALL:
       case EVENT_REMOVE_ALL:
         if ($context->checkExecution()) {
           $context->setResult($this->deleteRemoteFiles($context->getEntity()));

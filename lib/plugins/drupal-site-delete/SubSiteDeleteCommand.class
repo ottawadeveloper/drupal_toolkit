@@ -15,10 +15,10 @@ class SubSiteDeleteCommand extends GenericSiteCommand {
    */
   private $steps = array(
     array(
-      'event' => EVENT_REMOTE_SUBSITE_ALL,
+      'event' => EVENT_REMOVE_SUBSITE_ALL,
     ),
     array(
-      'event' => EVENT_REMOTE_SUBSITE_CLEANUP,
+      'event' => EVENT_REMOVE_SUBSITE_CLEANUP,
       'optional' => TRUE,
     ),
   );

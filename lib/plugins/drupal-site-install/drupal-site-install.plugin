@@ -1,4 +1,5 @@
 plugin = DrupalSiteInstallPlugin
+priority = 10
 
 files[] = SiteInstallCommand.class
 files[] = SubSiteInstallCommand.class

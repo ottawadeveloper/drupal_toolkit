@@ -1,4 +1,5 @@
 plugin = DrupalSiteRollbackPlugin
+priority = 10
 
 files[] = SiteRollbackCommand.class
 

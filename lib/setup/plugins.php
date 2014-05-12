@@ -99,6 +99,10 @@ foreach ($loadPlugins as $key) {
   $out->log('Initializing plugin ['.$key.']', CLOG_DEBUG);
   $plugin = $pluginData[$key];
   $base = dirname($plugin['path']);
+  $constants = assemble_path($base, 'constants.php');
+  if (file_exists($constants)) {
+    require $constants;
+  }
   if (!empty($plugin['files'])) {
     foreach ($plugin['files'] as $file) {
       $path = assemble_path($base, $file);
@@ -107,8 +111,12 @@ foreach ($loadPlugins as $key) {
   }
   require assemble_path($base, $plugin['plugin'] . '.class');
   $plugins[$key] = new $plugin['plugin']();
-  DependencyManager::inject($plugins[$key]);
-  $plugins[$key]->initialize();
+}
+
+// Initialize plugins
+foreach ($plugins as $plugin) {
+  DependencyManager::inject($plugin);
+  $plugin->initialize();
 }
 
 $context = new DtkEvent(TRUE, array(
