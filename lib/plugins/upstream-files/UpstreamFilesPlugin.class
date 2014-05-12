@@ -53,12 +53,14 @@ class UpstreamFilesPlugin extends GenericPlugin implements EventListener {
     return array('UpstreamPlugin');
   }
   
-  public function captureEvent(&$context, $eventType) {
+  public function captureEvent(DtkEvent &$context, $eventType) {
     switch ($eventType) {
       case EVENT_UPSTREAM_PULL:
-        if (empty($context->handled) || $context->success) {
-          $context->handled = TRUE;
-          $context->sucess = $this->downloadFiles($context->site, $context->alias, $context->upstreamServer);
+        if ($context->checkExecution()) {
+          $context->setResult($this->downloadFiles(
+              $context->getDrushAlias(), 
+              $context->getUpstreamServer()
+          ));
         }
         break;
     }
@@ -67,8 +69,6 @@ class UpstreamFilesPlugin extends GenericPlugin implements EventListener {
   /**
    * Downloads all remote files to the local system.
    * 
-   * @param DrupalSite $site
-   *   The drupal site.
    * @param string $alias
    *   The drupal site alias.
    * @param PhysicalServerInterface $server
@@ -77,7 +77,7 @@ class UpstreamFilesPlugin extends GenericPlugin implements EventListener {
    * @return boolean
    *   TRUE if successful, otherwise FALSE.
    */
-  private function downloadFiles(DrupalSite $site, $alias, PhysicalServerInterface $server) {
+  private function downloadFiles($alias, PhysicalServerInterface $server) {
     $this->working(STRING_WORKING_UPSTREAM_FILES);
     $remotePath = $this->getRemoteFilePath($server, $alias);
     if (empty($remotePath)) {
