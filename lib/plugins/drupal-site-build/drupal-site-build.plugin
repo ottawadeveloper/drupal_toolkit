@@ -1,0 +1,6 @@
+plugin = DrupalSiteBuildPlugin
+
+files[] = SiteBuildCommand.class
+files[] = SubSiteBuildCommand.clsas
+
+dependencies[] = drupal-site

@@ -193,13 +193,6 @@ define('STRING_ADDITIONAL_CONFIG_ERROR', 'drupal_site_build.error.no-more-config
 
 class DrupalSiteBuildPlugin extends GenericPlugin implements EventListener {
   
-  public function __construct() {
-    $this->includeFiles(dirname(__FILE__), array(
-      'SiteBuildCommand.class',
-      'SubSiteBuildCommand.class',
-    ));
-  }
-  
   public function initialize() {
     $this->events()->registerListener(array(
       EVENT_CORE_REGISTER_COMMANDS
@@ -209,10 +202,6 @@ class DrupalSiteBuildPlugin extends GenericPlugin implements EventListener {
       CONFIG_SITE_URL_PATTERN => '@@BUILD_NAME.localhost',
       CONFIG_SITE_CLEANUP_ON_ERROR => TRUE,
     ));
-  }
-  
-  public function requiredPlugins() {
-    return array('DrupalSitePlugin');
   }
   
   public function captureEvent(DtkEvent &$context, $eventType) {
