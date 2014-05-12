@@ -304,14 +304,6 @@ define('STRING_WORKING_DB_CREATE_ITEM', 'db_config.working.db-create-item');
  * @ingroup plugins
  */
 class DatabaseConfigurationPlugin extends GenericPlugin implements EventListener {
-
-  public function __construct() {
-    $this->includeFiles(dirname(__FILE__), array(
-      'DatabaseManagerInterface.iface',
-      'GenericDBM.class',
-      'MySqlDBM.class',
-    ));
-  }
   
   public function initialize() {
     $this->events()->registerListener(array(
@@ -331,10 +323,6 @@ class DatabaseConfigurationPlugin extends GenericPlugin implements EventListener
       CONFIG_DB_PREFIX => '',
     ));
     $this->config()->extendFromOption(CONFIG_DB_PREFIX, OPTION_DB_PREFIX);
-  }
-  
-  public function requiredPlugins() {
-    return array('DrupalSitePlugin', 'ServerInteractionPlugin');
   }
   
   public function captureEvent(DtkEvent &$context, $type) {

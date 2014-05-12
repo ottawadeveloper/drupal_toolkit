@@ -1,0 +1,8 @@
+plugin = DatabaseConfigurationPlugin
+
+dependencies[] = drupal-site
+dependencies[] = server-interaction
+
+files[] = DatabaseManagerInterface.iface
+files[] = GenericDBM.class
+files[] = MySqlDBM.class
