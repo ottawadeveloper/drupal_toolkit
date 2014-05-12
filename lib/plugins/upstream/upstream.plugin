@@ -1,0 +1,5 @@
+plugin = UpstreamPlugin
+
+files[] = UpstreamPullEvent.class
+
+dependencies[] = drupal-site
