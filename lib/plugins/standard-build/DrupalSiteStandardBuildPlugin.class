@@ -286,51 +286,49 @@ class DrupalSiteStandardBuildPlugin extends GenericPlugin implements EventListen
     return array('DrupalSitePlugin');
   }
   
-  public function captureEvent(&$context, $type) {
+  public function captureEvent(DtkEvent &$context, $type) {
     switch ($type) {
       case EVENT_UPDATE_CODEBASE:
-        if (empty($context->handled) || $context->success) {
-          $context->success = $this->buildSite($context->site, $context->build_id);
-          $context->handled = TRUE;
+      case EVENT_SITE_BUILD_CODEBASE:
+        if ($context->checkExecution()) {
+          $context->setResult($this->buildSite($context->getSite(), $context->getVariable('buildID')));
         }
         break;
       case EVENT_UPDATE_PREPARE_FOR_UPDATE:
-        if (empty($context->handled) || $context->success) {
-          $context->success = $this->updateCurrentLink($context->site);
-          $context->handled = TRUE;
+      case EVENT_ROLLBACK_PHASE3:
+        if ($context->checkExecution()) {
+          $context->setResult($this->updateCurrentLink($context->getSite()));
         }
         break;
-      case EVENT_SITE_BUILD_CODEBASE:
-        $context->success = $this->buildSite($context->site, $context->build_id);
-        $context->stopPropagation = TRUE;
-        break;
       case EVENT_DELETE_BUILD:
-        if (empty($context->handled) || $context->success) {
-          $context->success = $this->deleteBuild($context->site, $context->buildID);
-          $context->handled = TRUE;
+        if ($context->checkExecution()) {
+          $context->setResult($this->deleteBuild($context->getSite(), $context->getVariable('buildID')));
         }
         break;
       case EVENT_ROLLBACK_PHASE1:
-        if (empty($context->handled) || $context->success) {
-          $context->handled = TRUE;
-          $context->success = $this->refreshSiteVariables($context->site, $context->revertBuild);
+        if ($context->checkExecution()) {
+          $context->setResult($this->refreshSiteVariables($context->getSite(), $context->getVariable('revertBuild')));
         }
         break;
       case EVENT_ROLLBACK_CLEAN:
-        if (empty($context->handled) || $context->success) {
-          $context->handled = TRUE;
-          $context->success = $this->saveRevertedCodebase($context->site, $context->currentBuild);
-        }
-        break;
-      case EVENT_ROLLBACK_PHASE3:
-        if (empty($context->handled) || $context->success) {
-          $context->handled = TRUE;
-          $context->success = $this->updateCurrentLink($context->site);
+        if ($context->checkExecution()) {
+          $context->setResult($this->saveRevertedCodebase($context->getSite(), $context->getVariable('currentBuild')));
         }
         break;
     }
   }
   
+  /**
+   * Preserves the codebase that is being rolled back.
+   * 
+   * @param DrupalSite $site
+   *   The site to preserve.
+   * @param string $revertedID
+   *   The ID of the codebase to save.
+   * 
+   * @return boolean
+   *   TRUE if successful, otherwise FALSE.
+   */
   private function saveRevertedCodebase(DrupalSite $site, $revertedID) {
     $cbDir = $site->getSetting(SITE_CODEBASE_DIR);
     if (empty($cbDir)) { 
