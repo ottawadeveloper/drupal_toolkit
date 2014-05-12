@@ -192,18 +192,21 @@ class DrupalSiteStandardServerStructurePlugin extends GenericPlugin implements E
     return TRUE;
   }
   
-  public function captureEvent(&$context, $type) {
+  public function captureEvent(DtkEvent &$context, $type) {
     switch ($type) {
       case EVENT_SITE_BUILD_SERVER_STRUCTURE:
-        $context->success = $this->initializeServerStructure($context->site);
-        $context->stopPropagation = TRUE;
+        if ($context->checkExecution()) {
+          $context->setResult($this->initializeServerStructure($context->getSite()));
+        }
         break;
       case EVENT_REMOVE_ALL:
-        $context->success = $this->deleteServerStructure($context->site) && $context->success;
+        if ($context->checkExecution()) {
+          $context->setResult($this->deleteServerStructure($context->getSite()));
+        }
         break;
       case EVENT_SUBSITE_BUILD_CONFIG:
-        if (empty($context->handled) || $context->success) {
-          $context->success = $this->configureSubsite($context->subsite);
+        if ($context->checkExecution()) {
+          $context->setResult($this->configureSubsite($context->getSubSite()));
         }
         break;
     }
