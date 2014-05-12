@@ -23,10 +23,10 @@ interface EventManagerInterface extends OutputDependency {
    * 
    * @param string $type
    *   The event type to fire.
-   * @param object $context
+   * @param DtkEvent $context
    *   A context object to pass by reference to each listener's captureEvent()
    *   method.
    */
-  function fireEvent($type, &$context = NULL);
+  function fireEvent($type, DtkEvent &$context = NULL);
   
 }
