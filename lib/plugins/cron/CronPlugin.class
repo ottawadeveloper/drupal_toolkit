@@ -174,15 +174,7 @@ define('STRING_WORKING_CRON_SETUP_ITEM', 'cron.working.setup_item');
 class CronPlugin extends GenericPlugin implements EventListener, ServerInteractionDependency {
 
   private $servers;
-  
-  public function __construct() {
-    $this->includeFiles(dirname(__FILE__), array(
-      'CronManagerInterface.iface',
-      'GenericCronManager.class',
-      'LinuxCrontab.class'
-    ));
-  }
-  
+    
   public function setServerManager(ServerInteractionManagerInterface $servers) {
     $this->servers = $servers;
   }
@@ -230,10 +222,6 @@ class CronPlugin extends GenericPlugin implements EventListener, ServerInteracti
         }
         break;
     }
-  }
-  
-  public function requiredPlugins() {
-    return array('DrupalSitePlugin', 'DrushConfigurationPlugin', 'ServerInteractionPlugin');
   }
   
   /**

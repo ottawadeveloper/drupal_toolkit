@@ -25,6 +25,43 @@ function get_system_username() {
 }
 
 /**
+ * Finds files that match a given callback.
+ * 
+ * @param callable $matching
+ *   The callback that tests a file name.
+ * @param string $directory
+ *   The directory to examine.
+ * @param boolean $recursive
+ *   Whether or not to recurse into subdirecotires
+ * @param array $skip
+ *   Recursive parameter to skip previously examined subdirectories, to
+ *   prevent recursive symlinks from destroying everything.
+ * 
+ * @return array
+ *   An array of matching files.
+ */
+function find_files(callable $matching, $directory, $recursive = TRUE, &$skip = array()) {
+  if (is_link($directory)) { $directory = realpath($directory); }
+  if (in_array($directory, $skip)) { return array(); }
+  $skip[] = $directory;
+  $handle = opendir($directory); 
+  if (empty($handle)) { return array(); }
+  $matches = array();
+  while (($file = readdir($handle)) !== FALSE) {
+    if ($file !== "." && $file !== "..") {
+      $full = assemble_path($directory, $file);
+      if (is_dir($full) && $recursive) {
+        $matches = array_merge($matches, find_files($matching, $full, $recursive, $skip));
+      }
+      elseif (call_user_func($matching, $full)) {
+        $matches[] = $full;
+      }
+    }
+  }
+  return $matches;
+}
+
+/**
  * Recursively makes directories
  * 
  * @param string $dir

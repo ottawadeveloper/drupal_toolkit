@@ -90,7 +90,7 @@ class DrupalSubSite extends GenericDrupalEntity {
     );
   }
   
-  protected function uuid() {
+  public function uuid() {
     return $this->getParentSite()->uuid() . '_' . $this->getSubSiteID();
   }
   

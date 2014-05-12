@@ -1,0 +1,4 @@
+plugin = DrushConfigurationPlugin
+
+dependencies[] = drupal-site
+dependencies[] = server-interaction

@@ -180,49 +180,10 @@ function array_unique_numeric($array) {
   return $newArray;
 }
 
-function dtk_execute_command($commandName, $exit = TRUE) {
-  global $out, $sm, $router, $events, $args;
-  if (empty($commandName)) {
-    $out->log($sm->getString(STRING_CORE_MISSING_SUBCOMMAND), CLOG_WARNING);
-    $commandName = 'help';
-  }
-  $command = $router->findCommand($commandName);
-  if ($command instanceof RouterCommand) {
-    $context = array(
-      'args' => $args,
-      'commandName' => $commandName,
-      'commandObject' => $command,
-    );
-    $events->fireEvent(EVENT_COMMAND_PRE_REQUIREMENTS, $context);
-    if (!$command->verifyRequirements()) {
-      if ($exit) { exit(1); }
-      else { return FALSE; }
-    }
-    elseif (!$command->verifyArguments()) {
-      if ($exit) { exit(1); }
-      else { return FALSE; }
-    }
-    $events->fireEvent(EVENT_COMMAND_PRE_EXECUTION, $context);
-    $command->executeCommand();
-    $events->fireEvent(EVENT_COMMAND_POST_EXECUTION, $context);
-  }
-  else {
-    $out->log($sm->getString(STRING_ERROR_NO_COMMAND, array(
-      '!command' => $commandName,
-    )), CLOG_CRITICAL);
-    if ($exit) { exit(1); }
-    else { return FALSE; }
-  }
-  return TRUE;
-}
-
-function dtk_generate_build_id() {
-  return date('Ymd-His');
-}
-
 // Additional includes.
 require "functions/system.inc";
 require "functions/special.inc";
 require "functions/drush.inc";
 require "functions/hosts.inc";
 require "functions/terminal.inc";
+require "functions/dtk.inc";

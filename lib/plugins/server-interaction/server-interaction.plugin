@@ -1,0 +1,13 @@
+plugin = ServerInteractionPlugin
+
+files[] = PhysicalServerInterface.iface
+files[] = GenericMachine.class
+files[] = LocalMachine.class
+files[] = RemoteMachine.class
+files[] = ServerCastEvent.class
+files[] = ServerLocationEvent.class
+files[] = ServerInteractionManagerInterface.iface
+files[] = ServerInteractionManager.class
+files[] = ServerInteractionDependency.iface
+
+dependencies[] = drupal-site

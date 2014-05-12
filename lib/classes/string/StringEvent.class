@@ -6,7 +6,7 @@
 /**
  * Fired to translation/replace strings.
  */
-class StringEvent {
+class StringEvent extends DtkEvent {
   
   /**
    * The lookup key.

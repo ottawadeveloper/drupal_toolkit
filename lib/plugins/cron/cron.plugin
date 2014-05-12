@@ -1,0 +1,9 @@
+plugin = CronPlugin
+
+files[] = CronManagerInterface.iface
+files[] = GenericCronManager.class
+files[] = LinuxCrontab.class
+
+dependencies[] = drupal-site
+dependencies[] = drush-config
+dependencies[] = server-interaction

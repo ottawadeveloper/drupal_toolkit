@@ -167,7 +167,7 @@ class OutputManager implements OutputManagerInterface {
         $handled = TRUE;
       }
     }
-    if ($this->defaultOutput && !$handled) {
+    if (!$handled) {
       echo $log . PHP_EOL;
     }
   }

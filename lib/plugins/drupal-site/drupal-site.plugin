@@ -1,0 +1,7 @@
+plugin = DrupalSitePlugin
+
+files[] = GenericDrupalEntity.class
+files[] = DrupalSite.class
+files[] = DrupalSubSite.class
+files[] = DrupalSiteEvent.class
+files[] = GenericSiteCommand.class

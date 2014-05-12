@@ -114,21 +114,6 @@ define('STRING_WORKING_DELETING_REMOTE_FILES_ITEM', 'server_interaction.working.
  * various plugins.
  */
 class ServerInteractionPlugin extends GenericPlugin implements EventListener {
-    
-  public function __construct() {
-    $this->includeFiles(dirname(__FILE__), array(
-      'PhysicalServerInterface.iface',
-      'GenericMachine.class',
-      'LocalMachine.class',
-      'RemoteMachine.class',
-      'ServerLocationEvent.class',
-      'ServerCastEvent.class',
-      'ServerLocationEvent.class',
-      'ServerInteractionManagerInterface.iface',
-      'ServerInteractionManager.class',
-      'ServerInteractionDependency.iface',
-    ));
-  }
   
   /**
    * An array of servers, keyed by type.

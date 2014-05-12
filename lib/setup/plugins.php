@@ -9,91 +9,105 @@ if (empty($disabled_plugins)) {
   $disabled_plugins = array();
 }
 
-// Identify all the core plugins.
-$core_plugin_root = assemble_path(TOOLKIT_COMMON_DIR, 'plugins');
-$core_plugin_list = array();
-$core_plugin_includes = array();
-foreach ($core_plugins as $core_plugin => $plugin_class) {
-  if (!in_array($core_plugin, $disabled_plugins)) {
-    $core_plugin_list[] = $plugin_class;
-    $core_plugin_includes[] = assemble_path($core_plugin_root, $core_plugin, $plugin_class . '.class');
-  }
-}
+/**
+ * Configuration setting for the location of directories containing
+ * plugins.
+ * 
+ * @ingroup config
+ */
+define('CONFIG_PLUGIN_DIRECTORIES', 'plugins');
 
-// Load the core plugins in at the beginning of the default configuration.
-// This helps the dependency system be more efficient-like, since its more
-// likely the core plugins will be required.
+// Register the core plugin directory first.
 $settings->extendDefaultConfiguration(array(
-  CONFIG_PLUGIN_INCLUDES => $core_plugin_includes,
-  CONFIG_PLUGIN_REGISTRY => $core_plugin_list,
+  CONFIG_PLUGIN_DIRECTORIES => array(
+    assemble_path(TOOLKIT_COMMON_DIR, 'plugins'),
+  ),
 ));
 
-// Include all the required include files first.
-$pluginIncludes = $settings->getConfig(CONFIG_PLUGIN_INCLUDES);
-foreach ($pluginIncludes as $include) {
-  require $include;
+// Locate all plug-in files.
+$pluginFiles = array();
+foreach ($settings->getConfig(CONFIG_PLUGIN_DIRECTORIES) as $pluginDirectory) {
+  $pluginFiles = array_merge($pluginFiles, dtk_locate_plugin_files($pluginDirectory)); 
+}
+$pluginFiles = array_unique($pluginFiles);
+
+// Build information on all plug-ins.
+$pluginData = array();
+foreach ($pluginFiles as $file) {
+  $info = pathinfo($file);
+  $pluginData[$info['filename']] = array(
+    'path' => $file,
+  ) + parse_ini_file($file);
 }
 
-// Loop through all the plugin classes we located and do some setup on them.
-$pluginKeys = $settings->getConfig(CONFIG_PLUGIN_REGISTRY);
-$pluginStubs = array();
-foreach ($pluginKeys as $plugin) {
-  $ifaces = class_implements($plugin);
-  // Only let in plugin objects.
-  if (in_array('PluginInterface', $ifaces)) {
-    $obj = new $plugin();
-    // Initial injection
-    DependencyManager::inject($obj);
-    // Verify the extra requirements first, so we can ignore
-    // objects that don't meet their dependencies.
-    if ($obj->checkExtraRequirements()) {
-      $pluginStubs[$plugin] = $obj;
-    }
-  }
-}
-
-// This section sorts the plugins by dependencies.
-// Any plugin not having all its dependencies present will be removed from
-// the list.
-$changed = !empty($pluginStubs);
-$addedPluginClasses = array();
+// Build information on what order we should enable plugins.
+// Plugins that depend on others should be enabled later.
+$loadPlugins = array();
+$changed = TRUE;
 while ($changed) {
   $changed = FALSE;
-  foreach ($pluginStubs as $key => $stub) {
-    $requirements = $stub->requiredPlugins();
-    $valid = TRUE;
-    foreach ($requirements as $requirement) {
-      if (!in_array($requirement, $addedPluginClasses)) {
-        $valid = FALSE;
-        break;
+  foreach ($pluginData as $key => $plugin) {
+    if (!in_array($key, $loadPlugins)) {
+      if (empty($plugin['dependencies'])) {
+        $changed = TRUE;
+        $loadPlugins[] = $key;
       }
-    }
-    if ($valid) {
-      $out->log('Initializing plugin ['.$key.']', CLOG_DEBUG);
-      $stub->initialize();
-      $plugins[$key] = $stub;
-      $addedPluginClasses[] = $key;
-      unset($pluginStubs[$key]);
-      $changed = TRUE;
+      else {
+        $dependenciesMet = TRUE;
+        foreach ($plugin['dependencies'] as $dependency) {
+          if (!in_array($dependency, $loadPlugins)) {
+            $dependenciesMet = FALSE;
+          }
+        }
+        if ($dependenciesMet) {
+          $changed = TRUE;
+          $loadPlugins[] = $key;
+        }
+      }
     }
   }
 }
 
-if (!empty($pluginStubs)) {
-  foreach ($pluginStubs as $key => $stub) {
-    $requirements = $stub->requiredPlugins();
-    foreach ($requirements as $requirement) {
-      if (!in_array($requirement, $addedPluginClasses)) {
-        $out->log('Unable to load plugin [' . $key . '], missing plugin [' . $requirement . ']', CLOG_ERROR);
+// Critical error when plugins are missing dependencies.
+$missing = FALSE;
+foreach ($pluginData as $key => $plugin) {
+  if (!in_array($key, $loadPlugins)) {
+    $missing = TRUE;
+    $list = array();
+    foreach ($plugin['dependencies'] as $dep) {
+      if (!in_array($dep, $loadPlugins)) {
+        $list[] = $dep;
       }
     }
+    $out->log('Unable to load plugin [' . $key . '], missing plugins [' . implode(", ", $list) . ']', CLOG_CRITICAL);
   }
-  die();
 }
 
-$context = (object) array(
+if ($missing) {
+  exit(1);
+}
+
+// Load plugins
+$plugins = array();
+foreach ($loadPlugins as $key) {
+  $out->log('Initializing plugin ['.$key.']', CLOG_DEBUG);
+  $plugin = $pluginData[$key];
+  $base = dirname($plugin['path']);
+  if (!empty($plugin['files'])) {
+    foreach ($plugin['files'] as $file) {
+      $path = assemble_path($base, $file);
+      require $path;
+    }
+  }
+  require assemble_path($base, $plugin['plugin'] . '.class');
+  $plugins[$key] = new $plugin['plugin']();
+  DependencyManager::inject($plugins[$key]);
+  $plugins[$key]->initialize();
+}
+
+$context = new DtkEvent(TRUE, array(
   'plugins' => $plugins,
-);
+));
 
 // Notify everybody that the plugins are registered.
 $events->fireEvent(EVENT_CORE_PLUGINS_REGISTERED, $context);

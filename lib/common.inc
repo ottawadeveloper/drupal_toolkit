@@ -270,6 +270,7 @@ define('STRING_ERROR_NO_COMMAND', 'core.error.no-command-found');
  */
 $files = array(
   'functions.inc',
+  'classes/events/DtkEvent.class',
   'classes/dm/DependencyManagerInterface.iface',
   'classes/dm/DependencyInjector.class',
   'classes/dm/DependencyManager.class',
@@ -294,7 +295,6 @@ $files = array(
   'classes/events/EventListener.iface',
   'classes/events/EventManager.class',
   'classes/events/EventDependency.iface',
-  'classes/events/DtkEvent.class',
   'classes/string/StringManager.class',
   'classes/router/RouterInterface.iface',
   'classes/router/RouterDependency.iface',

@@ -142,7 +142,7 @@ class DrushConfigurationPlugin extends GenericPlugin implements EventListener, S
    */
   private $servers;
   
-  public function setServerManager(ServerInteractionManager $servers) {
+  public function setServerManager(ServerInteractionManagerInterface $servers) {
     $this->servers = $servers;
   }
   
@@ -167,10 +167,6 @@ class DrushConfigurationPlugin extends GenericPlugin implements EventListener, S
       EVENT_SUBSITE_BUILD_SERVER_CONFIG,
       EVENT_UPDATE_REFRESH_SUBSITE_CONFIG,
     ), $this);
-  }
-  
-  public function requiredPlugins() {
-    return array('DrupalSitePlugin', 'ServerInteractionPlugin');
   }
   
   public function captureEvent(DtkEvent &$context, $eventType) {
