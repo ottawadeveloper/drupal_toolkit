@@ -1,0 +1,40 @@
+<?php
+
+class DrupalSettingsEvent extends DtkEvent {
+  
+  private $additionalSettings = array();
+  
+  private $forDefault = FALSE;
+  
+  private $entity = NULL;
+  
+  public function __construct(GenericDrupalEntity $entity, $forDefault = FALSE) {
+    parent::__construct(TRUE);
+    $this->forDefault = !!$forDefault;
+    $this->entity = $entity;
+  }
+  
+  public function getEntity() {
+    return $this->entity;
+  }
+  
+  public function isForDefault() {
+    return $this->forDefault;
+  }
+  
+  public function getSettings() {
+    return $this->additionalSettings;
+  }
+  
+  public function appendSettingsLine($line) {
+    $this->additionalSettings[] = $line;
+  }
+  
+  public function appendSettings(array $lines) {
+    foreach ($lines as $line) {
+      $this->appendSettingsLine($line);
+    }
+    $this->appendSettingsLine("");
+  }
+  
+}

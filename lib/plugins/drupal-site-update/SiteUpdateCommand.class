@@ -24,6 +24,10 @@ class SiteUpdateCommand extends GenericSiteCommand {
       'event' => EVENT_UPDATE_SITES,
     ),
     array(
+      'event' => EVENT_UPDATE_SUBSITE_SITES,
+      'type' => COMMAND_STEP_ALL_SITES,
+    ),
+    array(
       'event' => EVENT_UPDATE_CODEBASE_COMPLETE,
       'optional' => TRUE,
     ),

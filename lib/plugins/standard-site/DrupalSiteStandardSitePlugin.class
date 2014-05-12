@@ -243,12 +243,26 @@ define('STRING_ERROR_UNABLE_TO_CREATE_ROOT_SYMLINK', 'standard_site.error.unable
  */
 class DrupalSiteStandardSitePlugin extends GenericPlugin implements EventListener {
   
+  private static $defaultSettingsName = 'default.settings.php';
+  private static $settingsName = 'settings.php';
+  private static $defaultDirectory = 'default';
+  private static $filesDirectory = 'files';
+  private static $sitesDirectory = 'sites';
+  
+  public function __construct() {
+    $this->includeFiles(dirname(__FILE__), array(
+      'DrupalSettingsEvent.class',
+    ));
+  }
+  
   public function initialize() {
     $this->events()->registerListener(array(
       EVENT_SITE_BUILD_SITES,
       EVENT_UPDATE_SITES,
       EVENT_ROLLBACK_PHASE3,
       EVENT_SUBSITE_BUILD_CODEBASE,
+      EVENT_UPDATE_SUBSITE_SITES,
+      EVENT_ROLLBACK_SUBSITE_CLEAN,
     ), $this);
     $this->config()->extendDefaultConfiguration(array(
       CONFIG_SKIP_REDUNDANT_SYMLINKS => FALSE,
@@ -260,29 +274,44 @@ class DrupalSiteStandardSitePlugin extends GenericPlugin implements EventListene
     return array('DrupalSitePlugin');
   }
   
-  public function captureEvent(&$context, $type) {
+  public function captureEvent(DtkEvent &$context, $type) {
     switch ($type) {
-      case EVENT_SITE_BUILD_SITES:
-        $context->success = $this->initializeSites($context->site);
-        $context->stopPropagation = TRUE;
+      case EVENT_ROLLBACK_SUBSITE_CLEAN:
+      case EVENT_UPDATE_SUBSITE_SITES:
+        if ($context->checkExecution()) {
+          $context->setResult($this->refreshSubsiteSymlinks($context->getSubSite()));
+        }
         break;
       case EVENT_UPDATE_SITES:
-        $context->success = $this->updateSites($context->site);
-        $context->stopPropagation = TRUE;
+        if ($context->checkExecution()) {
+          $context->setResult($this->updateSites($context->getSite()));
+        }
+        break;
+      case EVENT_SITE_BUILD_SITES:
+        if ($context->checkExecution()) {
+          $context->setResult($this->initializeSites($context->getSite()));
+        }
         break;
       case EVENT_ROLLBACK_PHASE3:
-        if (empty($context->handled) || $context->success) {
-          $context->handled = TRUE;
-          $context->success = $this->refreshSiteSymlinks($context->site, $context->revertBuild);
+        if ($context->checkExecution()) {
+          $context->setResult($this->refreshSiteSymlinks($context->getSite(), $context->getVariable('revertBuild')));
         }
         break;
       case EVENT_SUBSITE_BUILD_CODEBASE:
-        if (empty($context->handled) || $context->success) {
-          $context->handled = TRUE;
-          $context->success = $this->initializeSubSites($context->subsite);
+        if ($context->checkExecution()) {
+          $context->setResult($this->initializeSubSites($context->getSubSite()));
         }
         break;
     }
+  }
+  
+  private function refreshSubsiteSymlinks(DrupalSubSite $subsite) {
+    $currentBase = $subsite->getSetting(SITE_SETTING_CURRENT_BUILD, NULL, TRUE);
+    if (empty($currentBase)) { return FALSE; }
+    if (!$this->createRootSymlinks($currentBase, $subsite)) {
+      return FALSE;
+    }
+    return TRUE;
   }
   
   /**
@@ -296,14 +325,9 @@ class DrupalSiteStandardSitePlugin extends GenericPlugin implements EventListene
    */
   private function updateSites(DrupalSite $site) {
     $this->working(STRING_WORKING_REMOVE_DEFAULT_SITE);
-    $defaultSite = $site->getSetting(SITE_SETTING_CURRENT_BUILD);
-    if (empty($defaultSite)) {
-      $this->error(STRING_SITE_MISSING_SETTING, array(
-        '!key' => SITE_SETTING_CURRENT_BUILD,
-      ));
-      return FALSE;
-    }
-    $defaultDirectory = assemble_path($defaultSite, 'sites', 'default');
+    $defaultSite = $site->getSetting(SITE_SETTING_CURRENT_BUILD, NULL, TRUE);
+    if (empty($defaultSite)) { return FALSE; }
+    $defaultDirectory = assemble_path($defaultSite, self::$sitesDirectory, self::$defaultDirectory);
     remove_directory($defaultDirectory);
     if (is_dir($defaultDirectory)) {
       $this->error(STRING_UNABLE_TO_DELETE_DEFAULT);
@@ -313,56 +337,206 @@ class DrupalSiteStandardSitePlugin extends GenericPlugin implements EventListene
     return $this->symlinkAllSites($site);
   }
   
-  private function initializeSubSites(DrupalSubSite $subsite) {
-    $this->working(STRING_WORKING_CREATE_SUBSITE_SITES);
-    $currentBase = $subsite->getParentSite()->getSetting(SITE_SETTING_CURRENT_BUILD);
-    if (empty($currentBase)) { 
-      $this->error(STRING_SITE_MISSING_SETTING, array(
-        '!key' => SITE_SETTING_CURRENT_BUILD,
-      ));
-      return FALSE; 
+  /**
+   * Responsible for initializing the sites upon build.
+   * 
+   * @param DrupalSite $site
+   *   The site to initialize sites for.
+   * 
+   * @return boolean
+   *   TRUE if they were initialized successfully, otherwise FALSE.
+   */
+  private function initializeSites(DrupalSite $site) {
+    $this->working(STRING_WORKING_CREATE_SITES);
+    
+    // Variable initialization
+    $currentBase = $site->getSetting(SITE_SETTING_CURRENT_BUILD, NULL, TRUE);
+    if (empty($currentBase)) { return FALSE; }
+    $structureSites = $site->getSetting(SITE_SITES_DIR, NULL, TRUE);
+    if (empty($structureSites)) { return FALSE; }
+    
+    // Move default site to where we want it to be.
+    $realDefault = assemble_path($site->getBuildFolder(), $structureSites, self::$defaultDirectory);
+    rename(assemble_path($currentBase, 'sites', self::$defaultDirectory), $realDefault);
+    
+    // Make symlinks out of all the URLs if desired
+    $makeSymlinks = extra_empty($this->config()->getConfig(CONFIG_SKIP_REDUNDANT_SYMLINKS));
+    if ($makeSymlinks) {
+      if (!$this->createRedundantSymlinks($site, self::$defaultDirectory, assemble_path($site->getBuildFolder(), $structureSites))) {
+        return FALSE;
+      }
     }
-    $structureSites = $subsite->getParentSite()->getSetting(SITE_SITES_DIR);
-    if (empty($structureSites)) { 
-      $this->error(STRING_SITE_MISSING_SETTING, array(
-        '!key' => SITE_SITES_DIR,
-      ));
+    if (!$this->createDefaultSettingsFile($site, $realDefault)) {
       return FALSE;
     }
-    $primary = $subsite->getSetting(SITE_PRIMARY_URL);
-    if (empty($primary)) {
-      $this->error(STRING_SITE_MISSING_SETTING, array(
-        '!key' => SITE_PRIMARY_URL,
-      ));
+    // Copy the settings to the real template file.
+    if (!$this->writeSettingsFile($site, assemble_path($site->getBuildFolder(), $structureSites))) {
       return FALSE;
     }
-    $primarySite = DrupalSite::convertURLToSiteName($primary);
-    $primarySiteDirectory = assemble_path($subsite->getParentSite()->getBuildFolder(), $structureSites, $primarySite);
-    mkdir($primarySiteDirectory);
-    $this->working(STRING_WORKING_CREATE_SUBSITE_SETTINGS);
-    $newSettingsFile = assemble_path($primarySiteDirectory, 'settings.php');
-    $defaultSettings = $subsite->getParentSite()->getSetting(SITE_SETTINGS_TEMPLATE);
-    copy($defaultSettings, $newSettingsFile);
-    if (!file_exists($newSettingsFile)) {
+    if (!$this->symlinkAllSites($site)) {
+      return FALSE;
+    }
+    if (!$this->createRootSymlinks($currentBase, $site)) {
+      return FALSE;
+    }
+    $this->success(STRING_SUCCESS_CREATE_SITES);
+    return TRUE;
+  }
+  
+  /**
+   * Responsible for modifying and registering the default settings.php file.
+   * 
+   * @param DrupalSite $site
+   *   The site to modify the settings.php file for.
+   * @param boolean $realDefault
+   *   The path to the sites/default folder.
+   * 
+   * @return boolean
+   *   TRUE if successful, otherwise FALSE.
+   */
+  private function createDefaultSettingsFile(DrupalSite $site, $realDefault) {
+    // Assemble the default settings.php file.
+    $this->working(STRING_WORKING_CREATE_SITE_SETTINGS);
+    $defaultSettingsFile = assemble_path($realDefault, self::$defaultSettingsName);
+    if (!file_exists($defaultSettingsFile)) {
+      $this->error(STRING_UNABLE_TO_CREATE_SETTINGS_TEMPLATE);
+      return FALSE;
+    }
+    if (!$this->appendExtraSettings($site, $defaultSettingsFile, TRUE)) {
+      return FALSE;
+    }
+    $site->setSetting(SITE_SETTINGS_TEMPLATE, $defaultSettingsFile);
+    $site->registerServerFile($defaultSettingsFile);
+    return TRUE;
+  }
+  
+  /**
+   * Writes the settings file out for the site or subsite.
+   * 
+   * @param GenericDrupalEntity $entity
+   *   The entity we're writing a file for.
+   * @param string $sitesDirectory
+   *   Path to the sites directory for the build.
+   * @param string $targetDirectory
+   *   Name of the folder underneath $sitesDirectory where a new settings.php
+   *   file is being built.
+   * 
+   * @return boolean
+   *   TRUE if successful, otherwise FALSE.
+   */
+  private function writeSettingsFile(GenericDrupalEntity $entity, $sitesDirectory, $targetDirectory = NULL) {
+    $this->working(
+        $entity instanceof DrupalSubSite ? STRING_WORKING_CREATE_SUBSITE_SETTINGS : STRING_WORKING_CREATE_SITE_SETTINGS
+    );
+    if (empty($targetDirectory)) {
+      $targetDirectory = self::$defaultDirectory;
+    }
+    $template = NULL;
+    if ($entity instanceof DrupalSubSite) {
+      $template = $entity->getParentSite()->getSetting(SITE_SETTINGS_TEMPLATE, NULL, TRUE);
+    }
+    else {
+      $template = $entity->getSetting(SITE_SETTINGS_TEMPLATE, NULL, TRUE);
+    }
+    if (empty($template)) { return FALSE; }
+    $target = assemble_path($sitesDirectory, $targetDirectory, self::$settingsName);
+    copy($template, $target);
+    if (!is_readable($target)) {
       $this->error(STRING_COULD_NOT_FIND_SETTINGS_PHP);
       return FALSE;
     }
-    $subsite->setSetting(SITE_SETTINGS_FILE, $newSettingsFile);
-    $subsite->registerSystemFile($newSettingsFile);
-    $subsite->registerServerFile(assemble_path($primarySiteDirectory, 'files'));
+    if (!$this->appendExtraSettings($entity, $target, FALSE)) {
+      return FALSE;
+    }
+    $entity->setSetting(SITE_SETTINGS_FILE, $target);
+    $entity->registerServerFile($target);
+    $entity->registerServerFile(assemble_path($sitesDirectory, $targetDirectory, self::$filesDirectory));
+    return TRUE;
+  }
+  
+  /**
+   * Adds extra settings to a settings.php or default.settings.php file.
+   * 
+   * @param GenericDrupalEntity $entity
+   *   The entity to add lines for.
+   * @param string $settingsFile
+   *   The path to the file that is being updated.
+   * @param boolean $default
+   *   Set to TRUE if this is for a default file (that will impact all subsites).
+   * 
+   * @return boolean
+   *   TRUE if successful, otherwise FALSE.
+   */
+  private function appendExtraSettings(GenericDrupalEntity $entity, $settingsFile, $default = FALSE) {
+    $event = new DrupalSettingsEvent($entity, $default);
+    $this->events()->fireEvent(EVENT_GET_EXTRA_SETTINGS, $event);
+    $settings = $event->getSettings();
+    if (!empty($settings)) {
+      if (!file_append_contents($settingsFile, implode(PHP_EOL, $settings))) {
+        $this->error(STRING_UNABLE_TO_APPEND_SETTINGS);
+        return FALSE;
+      }
+    }
+    return TRUE;
+  }
+  
+  /**
+   * Initializes a subsite's sites directories.
+   * 
+   * @param DrupalSubSite $subsite
+   *   The subsite to build sites for.
+   * 
+   * @return boolean
+   *   TRUE if successful, otherwise FALSE.
+   */
+  private function initializeSubSites(DrupalSubSite $subsite) {
+    $this->working(STRING_WORKING_CREATE_SUBSITE_SITES);
+    
+    // Variables
+    $currentBase = $subsite->getParentSite()->getSetting(SITE_SETTING_CURRENT_BUILD, NULL, TRUE);
+    if (empty($currentBase)) { return FALSE; }
+    $structureSites = $subsite->getParentSite()->getSetting(SITE_SITES_DIR, NULL, TRUE);
+    if (empty($structureSites)) { return FALSE; }
+    $primary = $subsite->getSetting(SITE_PRIMARY_URL, NULL, TRUE);
+    if (empty($primary)) { return FALSE; }
+    
+    // Build primary site folder.
+    $primarySite = DrupalSite::convertURLToSiteName($primary);
+    $primarySiteDirectory = assemble_path($subsite->getParentSite()->getBuildFolder(), $structureSites, $primarySite);
+    mkdir($primarySiteDirectory);
+    
+    // Shared functionality
+    if (!$this->writeSettingsFile(
+        $subsite, 
+        assemble_path($subsite->getParentSite()->getBuildFolder(), $structureSites), 
+        $primarySite
+    )) {
+      return FALSE;
+    }
     if (!$this->createRedundantSymlinks($subsite, $primarySite, assemble_path($subsite->getParentSite()->getBuildFolder(), $structureSites))) {
       return FALSE;
     }
-    if (!$this->symlinkAllSites($subsite->getParentSite())) {
+    if (!$this->refreshSiteSymlinks($subsite->getParentSite())) {
       return FALSE;
     }
-    if (!$this->createRootSymlinks($currentBase, $subsite)) {
+    if (!$this->refreshSubsiteSymlinks($subsite)) {
       return FALSE;
     }
     $this->success(STRING_SUCCESS_CREATE_SUBSITE_SITES);
     return TRUE;
   }
   
+  /**
+   * Creates all the necessary root symlinks for subsites and paths.
+   * 
+   * @param string $base
+   *   Current/new codebase root directory.
+   * @param GenericDrupalEntity $entity
+   *   The entity to create symlinks for.
+   * 
+   * @return boolean
+   *   TRUE if successful, otherwise FALSE.
+   */
   private function createRootSymlinks($base, GenericDrupalEntity $entity) {
     $roots = $this->getRootSymlinks($entity);
     if (empty($roots)) {
@@ -376,12 +550,14 @@ class DrupalSiteStandardSitePlugin extends GenericPlugin implements EventListene
         '!link' => $root,
       ));
       $link = assemble_path($base, $root);
-      symlink($base, $link);
       if (!is_link($link)) {
-        $this->error(STRING_ERROR_UNABLE_TO_CREATE_ROOT_SYMLINK, array(
-          '!link' => $link,
-        ));
-        $ret = FALSE;
+        symlink($base, $link);
+        if (!is_link($link)) {
+          $this->error(STRING_ERROR_UNABLE_TO_CREATE_ROOT_SYMLINK, array(
+            '!link' => $link,
+          ));
+          $ret = FALSE;
+        }
       }
     }
     if ($ret) {
@@ -390,6 +566,17 @@ class DrupalSiteStandardSitePlugin extends GenericPlugin implements EventListene
     return $ret;
   }
   
+  /**
+   * Retrieves a list of root symlinks that should exist. Note that anything
+   * returned by this function CANNOT be used as path in Drupal without
+   * messing up the symlink pattern used.
+   * 
+   * @param GenericDrupalEntity $entity
+   *   The entity to get paths for.
+   * 
+   * @return array
+   *   An array of path components that need to exist as symlinks.
+   */
   private function getRootSymlinks(GenericDrupalEntity $entity) {
     $dirs = array();
     foreach ($entity->getAllURLs() as $url) {
@@ -414,112 +601,23 @@ class DrupalSiteStandardSitePlugin extends GenericPlugin implements EventListene
   }
   
   /**
-   * Responsible for initializing the sites upon build.
+   * Refreshes all the site symlinks.
    * 
    * @param DrupalSite $site
-   *   The site to initialize sites for.
+   *   The site to update symlinks for.
    * 
    * @return boolean
-   *   TRUE if they were initialized successfully, otherwise FALSE.
+   *   TRUE if successful, otherwise FALSE;
    */
-  private function initializeSites(DrupalSite $site) {
-    $this->working(STRING_WORKING_CREATE_SITES);
-    $currentBase = $site->getSetting(SITE_SETTING_CURRENT_BUILD);
-    if (empty($currentBase)) { 
-      $this->error(STRING_SITE_MISSING_SETTING, array(
-        '!key' => SITE_SETTING_CURRENT_BUILD,
-      ));
-      return FALSE; 
-    }
-    $structureSites = $site->getSetting(SITE_SITES_DIR);
-    if (empty($structureSites)) { 
-      $this->error(STRING_SITE_MISSING_SETTING, array(
-        '!key' => SITE_SITES_DIR,
-      ));
+  private function refreshSiteSymlinks(DrupalSite $site) {
+    $currentBase = $subsite->getSetting(SITE_SETTING_CURRENT_BUILD, NULL, TRUE);
+    if (empty($currentBase)) { return FALSE; }
+    if (!$this->createRootSymlinks($currentBase, $subsite)) {
       return FALSE;
     }
-    
-    // Move default site to where we want it to be.
-    $realDefault = assemble_path($site->getBuildFolder(), $structureSites, 'default');
-    rename(assemble_path($currentBase, 'sites', 'default'), $realDefault);
-    
-    $defaultSettingsFile = assemble_path($realDefault, 'default.settings.php');
-    
-    if (!file_exists($defaultSettingsFile)) {
-      $this->error(STRING_UNABLE_TO_CREATE_SETTINGS_TEMPLATE);
-      return FALSE;
-    }
-    
-    // Make symlinks out of all the URLs if desired
-    $makeSymlinks = extra_empty($this->config()->getConfig(CONFIG_SKIP_REDUNDANT_SYMLINKS));
-    if ($makeSymlinks) {
-      if (!$this->createRedundantSymlinks($site, 'default', assemble_path($site->getBuildFolder(), $structureSites))) {
-        return FALSE;
-      }
-    }
-
-    $this->working(STRING_WORKING_CREATE_SITE_SETTINGS);
-    
-    // Allow other plugins to change the settings if needed.
-    $context = (object) array(
-      'extra_settings' => '',
-    );
-    $this->events()->fireEvent(EVENT_GET_EXTRA_SETTINGS, $context);
-    if (!empty($context->extra_settings)) {
-      if (!file_append_contents($defaultSettingsFile, $context->extra_settings)) {
-        $this->error(STRING_UNABLE_TO_APPEND_SETTINGS);
-        return FALSE;
-      }
-    }
-    
-    // Copy the settings to the real template file.
-    $settingsFile = assemble_path($realDefault, 'settings.php');
-    copy($defaultSettingsFile, $settingsFile);
-    if (!is_readable($settingsFile)) {
-      $this->error(STRING_COULD_NOT_FIND_SETTINGS_PHP);
-      return FALSE;
-    }
-    $site->setSetting(SITE_SETTINGS_FILE, $settingsFile);
-    $site->setSetting(SITE_SETTINGS_TEMPLATE, $defaultSettingsFile);
-    $site->registerServerFile($defaultSettingsFile);
-    $site->registerServerFile($settingsFile);
-    $site->registerServerFile(assemble_path($realDefault, 'files'));
     if (!$this->symlinkAllSites($site)) {
       return FALSE;
     }
-    if (!$this->createRootSymlinks($currentBase, $site)) {
-      return FALSE;
-    }
-    $this->success(STRING_SUCCESS_CREATE_SITES);
-    return TRUE;
-  }
-  
-  private function refreshSiteSymlinks(DrupalSite $site, $newBuildID) {
-    return $this->symlinkAllSites($site);
-  }
-  
-  private function createRedundantSymlinks(GenericDrupalEntity $site, $primary, $path) {
-    $this->working(STRING_WORKING_CREATE_REDUNDANT_SYMLINKS);
-    $urls = $site->getAllURLs();
-    $default = assemble_path($path, $primary);
-    foreach ($urls as $url) {
-      $name = DrupalSite::convertURLToSiteName($url);
-      if ($name !== $primary) {
-        $this->working(STRING_WORKING_CREATE_REDUNDANT_SYMLINK, array(
-          '!name' => $name,
-        ));
-        $site->appendSettingValue(SITE_EXISTING_SITES, $name);
-        $link = assemble_path($path, $name);
-        symlink($default, $link);
-        if (!is_link($link)) {
-          $this->error(STRING_COULD_NOT_SYMLINK_SITE, array(
-            '!name' => $name,
-          ));
-          return FALSE;
-        }
-      }
-    }
-    $this->success(STRING_SUCCESS_CREATE_REDUNDANT_SYMLINKS);
     return TRUE;
   }
   
@@ -560,6 +658,46 @@ class DrupalSiteStandardSitePlugin extends GenericPlugin implements EventListene
       }
     }
     $this->success(STRING_SUCCESS_SYMLINK_SITES);
+    return TRUE;
+  }
+  
+  /**
+   * Creates redundant symlinks within the sites directory. A redundant
+   * symlink provides an alternative domain and/or path by which a site
+   * can be accessed.
+   * 
+   * @param GenericDrupalEntity $site
+   *   The entity to create symlinks for.
+   * @param string $primary
+   *   The name of the primary site.
+   * @param string $path
+   *   The root path to the sites directory.
+   * 
+   * @return boolean
+   *   TRUE if successful, otherwise FALSE.
+   */
+  private function createRedundantSymlinks(GenericDrupalEntity $site, $primary, $path) {
+    $this->working(STRING_WORKING_CREATE_REDUNDANT_SYMLINKS);
+    $urls = $site->getAllURLs();
+    $default = assemble_path($path, $primary);
+    foreach ($urls as $url) {
+      $name = DrupalSite::convertURLToSiteName($url);
+      if ($name !== $primary) {
+        $this->working(STRING_WORKING_CREATE_REDUNDANT_SYMLINK, array(
+          '!name' => $name,
+        ));
+        $site->appendSettingValue(SITE_EXISTING_SITES, $name);
+        $link = assemble_path($path, $name);
+        symlink($default, $link);
+        if (!is_link($link)) {
+          $this->error(STRING_COULD_NOT_SYMLINK_SITE, array(
+            '!name' => $name,
+          ));
+          return FALSE;
+        }
+      }
+    }
+    $this->success(STRING_SUCCESS_CREATE_REDUNDANT_SYMLINKS);
     return TRUE;
   }
   
