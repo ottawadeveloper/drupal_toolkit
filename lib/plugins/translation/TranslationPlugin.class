@@ -41,12 +41,10 @@ class TranslationPlugin extends GenericPlugin implements EventListener {
     ), $this);
   }
   
-  public function captureEvent(&$context, $eventType) {
+  public function captureEvent(DtkEvent &$context, $eventType) {
     switch ($eventType) {
       case EVENT_GET_STRING:
-        if (empty($context->translation)) {
-          $context->string = $this->getTranslation($context->key);
-        }
+        $context->setTranslation($this->getTranslation($context->getKey()));
         break;
     }
   }

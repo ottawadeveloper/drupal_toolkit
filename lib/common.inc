@@ -280,6 +280,7 @@ $files = array(
   'classes/config/ConfigurationManagerInterface.iface',
   'classes/config/Configuration.class',
   'classes/config/ConfigurationDependency.iface',
+  'classes/string/StringEvent.class',
   'classes/string/StringManagerInterface.iface',
   'classes/string/StringDependency.iface',
   'classes/output/OutputHandler.iface',

@@ -54,19 +54,13 @@ class StringManager implements StringManagerInterface, EventDependency {
    *   The appropriate string if one was found, or $default if not empty, or
    *   $key itself as a last resort.
    */
-  private function findString($key, $default) {
-    $context = (object) array(
-      'key' => $key,
-      'string' => NULL,
-    );
-    $this->events()->fireEvent(EVENT_GET_STRING, $context);
-    if (empty($context->string)) {
-      if (empty($default)) {
-        return $key;
-      }
-      return $default;
+  private function findString($key, $default = NULL) {
+    $event = new StringEvent($key);
+    $this->events()->fireEvent(EVENT_GET_STRING, $event);
+    if ($event->success()) {
+      return $event->getTranslation();
     }
-    return $context->string;
+    return empty($default) ? $key : $default;
   }
   
 }

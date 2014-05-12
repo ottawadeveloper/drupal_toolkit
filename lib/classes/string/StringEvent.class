@@ -1,0 +1,70 @@
+<?php
+/**
+ * Defines the StringEvent class.
+ */
+
+/**
+ * Fired to translation/replace strings.
+ */
+class StringEvent {
+  
+  /**
+   * The lookup key.
+   * 
+   * @var string
+   */
+  private $key = NULL;
+  
+  /**
+   * The translated version.
+   * 
+   * @var string
+   */
+  private $translation = NULL;
+  
+  /**
+   * 
+   * @param string $key
+   *   The lookup key.
+   */
+  public function __construct($key) {
+    $this->key = $key;
+  }
+  
+  public function success() {
+    return !empty($this->translation);
+  }
+  
+  /**
+   * Sets the translation of this key.
+   * 
+   * @param string $translation
+   *   The translation of the key.
+   */
+  public function setTranslation($translation) {
+    if (!empty($translation)) {
+      $this->translation = $translation;
+    }
+  }
+  
+  /**
+   * Retrieves the key for the lookup.
+   * 
+   * @return string
+   *   The key.
+   */
+  public function getKey() {
+    return $this->key;
+  }
+  
+  /**
+   * Retrieves the translated value.
+   * 
+   * @return string
+   *   Translated text.
+   */
+  public function getTranslation() {
+    return $this->translation;
+  }
+  
+}
