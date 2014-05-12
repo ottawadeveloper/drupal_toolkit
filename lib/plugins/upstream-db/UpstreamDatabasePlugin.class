@@ -387,24 +387,23 @@ class UpstreamDatabasePlugin extends GenericPlugin implements EventListener {
     return array('UpstreamPlugin');
   }
   
-  public function captureEvent(&$context, $eventType) {
+  public function captureEvent(DtkEvent &$context, $eventType) {
     switch ($eventType) {
       case EVENT_UPSTREAM_DATABASE_PRESERVE_STATE:
-        if (empty($context->handled) || $context->success) {
-          $context->handled = TRUE;
-          $context->success = $this->preserveVariablesTable($context->alias, $context->state);
+        if ($context->checkExecution()) {
+          $state = $context->getVariable('state');
+          $context->setResult($this->preserveVariablesTable($context->getVariable('alias'), $state));
+          $context->setVariable('state', $state);
         }
         break;
       case EVENT_UPSTREAM_DATABASE_RESTORE_STATE:
-        if (empty($context->handled) || $context->success) {
-          $context->handled = TRUE;
-          $context->success = $this->restoreVariablesTable($context->alias, $context->state);
+        if ($context->checkExecution()) {
+          $context->setResult($this->restoreVariablesTable($context->getVariable('alias'), $context->getVariable('state')));
         }
         break;
       case EVENT_UPSTREAM_PULL:
-        if (empty($context->handled) || $context->success) {
-          $context->handled = TRUE;
-          $context->success = $this->syncUpstreamDatabases($context->site, $context->alias, $context->upstreamServer);
+        if ($context->checkExecution()) {
+          $context->setResult($this->syncUpstreamDatabases($context->getEntity(), $context->getUpstreamServer()));
         }
         break;
     }
@@ -415,6 +414,7 @@ class UpstreamDatabasePlugin extends GenericPlugin implements EventListener {
    * 
    * @param string $alias
    *   The drush alias of the site.
+    unlink($upstreamDumpFile);
    * @param array $state
    *   The state array from the preserve state event.
    * 
@@ -527,17 +527,19 @@ class UpstreamDatabasePlugin extends GenericPlugin implements EventListener {
    * 
    * This can include preserving some of the local data as well.
    * 
-   * @param DrupalSite $site
+   * @param GenericDrupalEntity $site
    *   The site to sync.
+   * @param PhysicalServerInterface $server
    * 
    * @return boolean
    *   TRUE if the sync was successful, otherwise FALSE.
    */
-  private function syncUpstreamDatabases(DrupalSite $site, $drushAlias, PhysicalServerInterface $server) {
+  private function syncUpstreamDatabases(GenericDrupalEntity $site, PhysicalServerInterface $server) {
     $this->working(STRING_WORKING_SYNC_DB);
     $keys = array(
       'default' => 'default',
     ) + $site->getSetting(SITE_DB_CONNECTION_KEYS);
+    $drushAlias = $site->getDrushAlias(TRUE);
     foreach ($keys as $key) {
       $backup = $this->backupOriginalDatabase($drushAlias, $key);
       if (empty($backup)) {
@@ -589,17 +591,15 @@ class UpstreamDatabasePlugin extends GenericPlugin implements EventListener {
       unlink($upstreamDumpFile);
       return FALSE;
     }
-    $context = (object) array(
+    $context = new DtkEvent(TRUE, array(
       'alias' => $localAlias,
       'database' => $localDBKey,
       'remoteServer' => $server,
       'state' => array(),
-      'handled' => FALSE,
-      'success' => TRUE,
-    );
+    ));
     $this->working(STRING_WORKING_UPSTREAM_PRESERVE_STATE);
     $this->events()->fireEvent(EVENT_UPSTREAM_DATABASE_PRESERVE_STATE, $context);
-    if (empty($context->success)) {
+    if (!$context->success()) {
       $this->error(STRING_UPSTREAM_UNABLE_TO_PRESERVE_STATE);
       unlink($upstreamDumpFile);
       unlink($localDumpFile);
@@ -629,19 +629,22 @@ class UpstreamDatabasePlugin extends GenericPlugin implements EventListener {
       }
     }
     $this->working(STRING_WORKING_UPSTREAM_RESTORE_STATE);
-    $context->handled = FALSE;
-    $context->success = TRUE;
-    $this->events()->fireEvent(EVENT_UPSTREAM_DATABASE_RESTORE_STATE, $context);
-    if (empty($context->success)) {
+    $context2 = new DtkEvent(TRUE, array(
+      'alias' => $localAlias,
+      'database' => $localDBKey,
+      'remoteServer' => $server,
+      'state' => $context->getVariable('state', array()),
+    ));
+    $this->events()->fireEvent(EVENT_UPSTREAM_DATABASE_RESTORE_STATE, $context2);
+    if (!$context2->success()) {
       $this->error(STRING_UPSTREAM_UNABLE_TO_RESTORE_STATE);
-      unlink($upstreamDumpFile);
-      unlink($localDumpFile);
-      return FALSE;
     }
-    unlink($upstreamDumpFile);
-    unlink($localDumpFile);
-    $this->success(STRING_SUCCESS_SYNC_DB_ITEM);
-    return TRUE;
+    else {
+      $this->success(STRING_SUCCESS_SYNC_DB_ITEM);
+      unlink($localDumpFile);
+      unlink($upstreamDumpFile);
+    }
+    return $context2->success();
   }
   
   /**
