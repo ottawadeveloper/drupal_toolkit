@@ -1,35 +1,98 @@
 <?php
+/**
+ * @file Defines the DrupalSettingsEvent class.
+ */
 
+/**
+ * This object is fired as event context when retrieving additional settings
+ * for the settings.php or default.settings.php file.
+ */
 class DrupalSettingsEvent extends DtkEvent {
   
+  /**
+   * Additional settings.
+   * 
+   * @var array
+   */
   private $additionalSettings = array();
   
+  /**
+   * Whether or not this event is being fired for the default settings.php
+   * file.
+   * 
+   * @var boolena
+   */
   private $forDefault = FALSE;
   
+  /**
+   * The entity being processed by the sites plugin.
+   * 
+   * @var GenericDrupalEntity
+   */
   private $entity = NULL;
   
+  /**
+   * @param GenericDrupalEntity $entity
+   *   The entity being processed.
+   * @param boolean $forDefault
+   *   Set to TRUE if default settings are being requested.
+   */
   public function __construct(GenericDrupalEntity $entity, $forDefault = FALSE) {
     parent::__construct(TRUE);
     $this->forDefault = !!$forDefault;
     $this->entity = $entity;
   }
   
+  /**
+   * The entity being processed.
+   * 
+   * @return GenericDrupalEntity
+   *   The entity being processed.
+   */
   public function getEntity() {
     return $this->entity;
   }
   
+  /**
+   * Check if this event is requesting default settings or not.
+   * 
+   * @return boolean
+   *   Whether or not boolean settings are being requested.
+   */
   public function isForDefault() {
     return $this->forDefault;
   }
   
+  /**
+   * Retrieves an array of additional settings.
+   * 
+   * Returned as an array so that the line ending is not enforced.
+   * 
+   * @return array
+   *   An array of settings.
+   */
   public function getSettings() {
     return $this->additionalSettings;
   }
   
+  /**
+   * Appends an additional line to the settings.
+   * 
+   * Settings should be appended without line breaks so that 
+   * 
+   * @param string $line
+   *   An additional line to append to the settings file.
+   */
   public function appendSettingsLine($line) {
     $this->additionalSettings[] = $line;
   }
   
+  /**
+   * Appends an array of settings.
+   * 
+   * @param array $lines
+   *   An array of lines to add to the settings.
+   */
   public function appendSettings(array $lines) {
     foreach ($lines as $line) {
       $this->appendSettingsLine($line);
