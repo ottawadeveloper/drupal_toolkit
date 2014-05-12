@@ -141,10 +141,6 @@ class DrushBackupPlugin extends GenericPlugin implements EventListener {
         break;
     }
   }
-
-  public function requiredPlugins() {
-    return array('DrupalSitePlugin', 'DrushConfigurationPlugin', 'DatabaseConfigurationPlugin');
-  }
   
   /**
    * Retrieves the list of database keys.

@@ -1,0 +1,3 @@
+plugin = DrushInstallPlugin
+
+dependencies[] = drupal-site
