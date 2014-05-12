@@ -23,12 +23,12 @@ function dtk_execute_command($commandName, $exit = TRUE) {
   }
   $command = $router->findCommand($commandName);
   if ($command instanceof RouterCommand) {
-    $context = array(
+    $event = new DtkEvent(TRUE, array(
       'args' => $args,
       'commandName' => $commandName,
       'commandObject' => $command,
-    );
-    $events->fireEvent(EVENT_COMMAND_PRE_REQUIREMENTS, $context);
+    ));
+    $events->fireEvent(EVENT_COMMAND_PRE_REQUIREMENTS, $event);
     if (!$command->verifyRequirements()) {
       if ($exit) { exit(1); }
       else { return FALSE; }
@@ -37,9 +37,9 @@ function dtk_execute_command($commandName, $exit = TRUE) {
       if ($exit) { exit(1); }
       else { return FALSE; }
     }
-    $events->fireEvent(EVENT_COMMAND_PRE_EXECUTION, $context);
+    $events->fireEvent(EVENT_COMMAND_PRE_EXECUTION, $event);
     $command->executeCommand();
-    $events->fireEvent(EVENT_COMMAND_POST_EXECUTION, $context);
+    $events->fireEvent(EVENT_COMMAND_POST_EXECUTION, $event);
   }
   else {
     $out->log($sm->getString(STRING_ERROR_NO_COMMAND, array(
