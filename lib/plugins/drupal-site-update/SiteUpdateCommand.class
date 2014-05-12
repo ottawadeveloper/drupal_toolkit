@@ -54,6 +54,12 @@ class SiteUpdateCommand extends GenericSiteCommand {
       'optional' => TRUE,
     ),
     array(
+      'event' => EVENT_UPDATE_PRIOR_SUBSITE_ACTIONS,
+      'continue' => TRUE,
+      'optional' => TRUE,
+      'type' => COMMAND_STEP_ALL_SITES,
+    ),
+    array(
       'event' => EVENT_UPDATE_ACTIONS,
       'continue' => TRUE,
     ),

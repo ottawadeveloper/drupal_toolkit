@@ -1,0 +1,23 @@
+<?php
+
+class UpstreamPullEvent extends DrupalSiteEvent {
+  
+  private $drushAlias = NULL;
+  
+  private $upstreamServer = NULL;
+  
+  public function __construct(GenericDrupalEntity $entity, $alias, PhysicalServerInterface $upstream) {
+    parent::__construct($entity, TRUE);
+    $this->drushAlias = $alias;
+    $this->upstreamServer = $upstream;
+  }
+  
+  public function getUpstreamServer() {
+    return $this->upstreamServer;
+  }
+  
+  public function getDrushAlias() {
+    return $this->drushAlias;
+  }
+  
+}

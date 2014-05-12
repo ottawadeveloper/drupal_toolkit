@@ -53,7 +53,23 @@ define('STRING_SUCCESS_PULL_UPSTREAM', 'upstream.success.pull');
 /**
  * Generic plugin that supports the concept of upstream servers.
  */
-class UpstreamPlugin extends GenericPlugin implements EventListener {
+class UpstreamPlugin extends GenericPlugin implements EventListener, ServerInteractionDependency {
+  
+  private $servers;
+  
+  public function setServerManager(ServerInteractionManagerInterface $servers) {
+    $this->servers = $servers;
+  }
+  
+  public function servers() {
+    return $this->servers;
+  }
+  
+  public function requiredPlugins() {
+    return array(
+      'DrupalSitePlugin',
+    );
+  }
   
   public function initialize() {
     $this->config()->extendDefaultConfiguration(array(
@@ -61,15 +77,16 @@ class UpstreamPlugin extends GenericPlugin implements EventListener {
     ));
     $this->events()->registerListener(array(
       EVENT_UPDATE_PRIOR_ACTIONS,
+      EVENT_UPDATE_PRIOR_SUBSITE_ACTIONS,
     ), $this);
   }
   
-  public function captureEvent(&$context, $eventType) {
+  public function captureEvent(DtkEvent &$context, $eventType) {
     switch ($eventType) {
+      case EVENT_UPDATE_PRIOR_SUBSITE_ACTIONS:
       case EVENT_UPDATE_PRIOR_ACTIONS:
-        if (empty($context->handled) || $context->success) {
-          $context->success = $this->triggerUpstreamPull($context->site);
-          $context->handled = TRUE;
+        if ($context->checkExecution()) {
+          $context->setResult($this->triggerUpstreamPull($context->getEntity()));
         }
         break;
     }
@@ -82,31 +99,23 @@ class UpstreamPlugin extends GenericPlugin implements EventListener {
    *   The upstream server that is in use, or NULL if there is not one.
    */
   private function getUpstreamServer() {
-    $context = (object) array(
-      'serverType' => SERVER_TYPE_UPSTREAM_SERVER,
-      'skipLocal' => TRUE,
-      'servers' => array(),
-    );
-    $this->events()->fireEvent(EVENT_FIND_SERVERS, $context);
-    $server = NULL;
-    foreach ($context->servers as $srv) {
-      if ($srv instanceof PhysicalServerInterface) {
-        $server = $srv;
-      }
+    $servers = $this->servers()->findServers(SERVER_TYPE_UPSTREAM_SERVER, FALSE);
+    if (!empty($servers)) {
+      return end($servers);
     }
-    return $server;
+    return NULL;
   }
   
   /**
    * Fires an event that triggers the upstream pull.
    * 
-   * @param DrupalSite $site
+   * @param GenericDrupalEntity $site
    *   The DrupalSite to pull from upstream.
    * 
    * @return boolean
    *   TRUE if upstream pull was successful.
    */
-  private function triggerUpstreamPull(DrupalSite $site) {
+  private function triggerUpstreamPull(GenericDrupalEntity $site) {
     if (!extra_empty($this->config()->getConfig(CONFIG_IGNORE_UPSTREAM))) {
       return TRUE;
     }
@@ -117,25 +126,14 @@ class UpstreamPlugin extends GenericPlugin implements EventListener {
       $this->error(STRING_MISSING_UPSTREAM_SERVER);
       return FALSE;
     }
-    $drushAlias = $site->getSetting(SITE_DRUSH_ALIAS);
-    if (empty($drushAlias)) {
-      $this->error(STRING_SITE_MISSING_SETTING, array(
-        '!key' => SITE_DRUSH_ALIAS,
-      ));
-      return FALSE;
-    }
-    $context = (object) array(
-      'site' => $site,
-      'alias' => $drushAlias,
-      'upstreamServer' => $server,
-      'success' => FALSE,
-      'handled' => FALSE,
-    );
-    $this->events()->fireEvent(EVENT_UPSTREAM_PULL, $context);
-    if ($context->success) {
+    $drushAlias = $site->getDrushAlias(TRUE);
+    if (empty($drushAlias)) { return FALSE; }
+    $event = new UpstreamPullEvent($site, $drushAlias, $server);
+    $this->events()->fireEvent(EVENT_UPSTREAM_PULL, $event);
+    if ($event->success()) {
       $this->success(STRING_SUCCESS_PULL_UPSTREAM);
     }
-    return $context->success;
+    return $event->success();
   }
   
 }

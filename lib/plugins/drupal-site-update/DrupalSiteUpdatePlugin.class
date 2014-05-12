@@ -4,6 +4,13 @@
  */
 
 /**
+ * Fired for prior actions for subsites.
+ * 
+ * @ingroup events
+ */
+define('EVENT_UPDATE_PRIOR_SUBSITE_ACTIONS', 'update-subsites-prior-actions');
+
+/**
  * Fired to refresh subsite site directories.
  * 
  * @ingroup events
