@@ -383,10 +383,6 @@ class UpstreamDatabasePlugin extends GenericPlugin implements EventListener {
     ), $this);
   }
   
-  public function requiredPlugins() {
-    return array('UpstreamPlugin');
-  }
-  
   public function captureEvent(DtkEvent &$context, $eventType) {
     switch ($eventType) {
       case EVENT_UPSTREAM_DATABASE_PRESERVE_STATE:

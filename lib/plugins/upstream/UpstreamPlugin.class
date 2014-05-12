@@ -65,19 +65,6 @@ class UpstreamPlugin extends GenericPlugin implements EventListener, ServerInter
     return $this->servers;
   }
   
-  public function requiredPlugins() {
-    return array(
-      'DrupalSitePlugin',
-      'ServerInteractionPlugin',
-    );
-  }
-  
-  public function __construct() {
-    $this->includeFiles(dirname(__FILE__), array(
-      'UpstreamPullEvent.class',
-    ));
-  }
-  
   public function initialize() {
     $this->config()->extendDefaultConfiguration(array(
       CONFIG_IGNORE_UPSTREAM => TRUE,
