@@ -38,7 +38,7 @@ if (!extra_empty($settings->getConfig(CONFIG_DEBUG))) {
 }
 
 // Initialize the output object.
-$out = new OutputManager(TRUE);
+$out = new OutputManager($debugLevel >= DEBUG_LEVEL_VERBOSE);
 DependencyManager::inject($out);
 DependencyManager::register('OutputDependency', 'setOutput', 'output', 'OutputManagerInterface');
 DependencyManager::setObject('output', $out);
