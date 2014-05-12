@@ -1,23 +1,42 @@
 <?php
+/**
+ * @file Defines the UpstreamPullEvent class.
+ */
 
+/**
+ * Event fired to trigger upstream events.
+ */
 class UpstreamPullEvent extends DrupalSiteEvent {
   
-  private $drushAlias = NULL;
-  
+  /**
+   * Upstream server.
+   * 
+   * @var PhysicalServerInterface
+   */
   private $upstreamServer = NULL;
   
-  public function __construct(GenericDrupalEntity $entity, $alias, PhysicalServerInterface $upstream) {
+  /**
+   * 
+   * @param GenericDrupalEntity $entity
+   *   The entity to pull for.
+   * @param string $alias
+   *   The alias to pull.
+   * @param PhysicalServerInterface $upstream
+   *   The upstream server.
+   */
+  public function __construct(GenericDrupalEntity $entity, PhysicalServerInterface $upstream) {
     parent::__construct($entity, TRUE);
-    $this->drushAlias = $alias;
     $this->upstreamServer = $upstream;
   }
   
+  /**
+   * The physical server reference for the upstream server.
+   * 
+   * @return PhysicalServerInterface
+   *   The upstream server.
+   */
   public function getUpstreamServer() {
     return $this->upstreamServer;
-  }
-  
-  public function getDrushAlias() {
-    return $this->drushAlias;
   }
   
 }

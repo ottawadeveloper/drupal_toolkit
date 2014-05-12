@@ -58,7 +58,7 @@ class UpstreamFilesPlugin extends GenericPlugin implements EventListener {
       case EVENT_UPSTREAM_PULL:
         if ($context->checkExecution()) {
           $context->setResult($this->downloadFiles(
-              $context->getDrushAlias(), 
+              $context->getEntity(), 
               $context->getUpstreamServer()
           ));
         }
@@ -69,15 +69,17 @@ class UpstreamFilesPlugin extends GenericPlugin implements EventListener {
   /**
    * Downloads all remote files to the local system.
    * 
-   * @param string $alias
-   *   The drupal site alias.
+   * @param GenericDrupalEntity $entity
+   *   The drupal site.
    * @param PhysicalServerInterface $server
    *   The upstream server.
    * 
    * @return boolean
    *   TRUE if successful, otherwise FALSE.
    */
-  private function downloadFiles($alias, PhysicalServerInterface $server) {
+  private function downloadFiles(GenericDrupalEntity $entity, PhysicalServerInterface $server) {
+    // alias is verified by the upstream core plugin.
+    $alias = $entity->getDrushAlias(TRUE);
     $this->working(STRING_WORKING_UPSTREAM_FILES);
     $remotePath = $this->getRemoteFilePath($server, $alias);
     if (empty($remotePath)) {

@@ -128,7 +128,7 @@ class UpstreamPlugin extends GenericPlugin implements EventListener, ServerInter
     }
     $drushAlias = $site->getDrushAlias(TRUE);
     if (empty($drushAlias)) { return FALSE; }
-    $event = new UpstreamPullEvent($site, $drushAlias, $server);
+    $event = new UpstreamPullEvent($site, $server);
     $this->events()->fireEvent(EVENT_UPSTREAM_PULL, $event);
     if ($event->success()) {
       $this->success(STRING_SUCCESS_PULL_UPSTREAM);
