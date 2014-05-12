@@ -97,8 +97,10 @@ class SiteUpdateCommand extends GenericSiteCommand {
       'type' => COMMAND_STEP_ALL_SUBSITES,
     ),
     array(
-      'type' => COMMAND_STEP_ALL_SITES,
+      'event' => EVENT_UPDATE_CLEANUP_SUBSITE,
       'optional' => TRUE,
+      'continue' => TRUE,
+      'type' => COMMAND_STEP_ALL_SUBSITES,
     ),
     array(
       'event' => EVENT_UPDATE_CLEANUP,

@@ -54,6 +54,11 @@ which Drush is merely a part of. Specifically, we aim to support:
 - subsite-install: not implemented
 - subsite-delete: not implemented
 
+## 2014-05-12
+
+Work is ongoing to update to the new event model. Pacemaker work put on hold
+due to us switching away from it.
+
 ## 2014-04-27
 
 Currently this project is undergoing some significant tweaks to support

@@ -229,7 +229,8 @@ class PermissionsPlugin extends GenericPlugin implements EventListener {
     $this->events()->registerListener(array(
       EVENT_SITE_BUILT,
       EVENT_UPDATE_FINISH,
-      EVENT_INSTALL_TASK,
+      EVENT_SUBSITE_BUILD_COMPLETE,
+      EVENT_UPDATE_CLEANUP_SUBSITE,
     ), $this);
   }
   
@@ -279,15 +280,15 @@ class PermissionsPlugin extends GenericPlugin implements EventListener {
       $this->error(STRING_PERMISSIONS_NO_GROUP);
       return FALSE;
     }
-    $access = $this->config()->getConfig('permissions-' . $permissionType . '-access');
-    if (empty($access)) {
-      $access = $this->config()->getConfig(CONFIG_PERMISSIONS_DEFAULT_ACCESS);
+    $rawaccess = $this->config()->getConfig('permissions-' . $permissionType . '-access');
+    if (empty($rawaccess)) {
+      $rawaccess = $this->config()->getConfig(CONFIG_PERMISSIONS_DEFAULT_ACCESS);
     }
-    if (empty($access)) {
+    if (empty($rawaccess)) {
       $this->error(STRING_PERMISSIONS_NO_ACCESS);
       return FALSE;
     }
-    $access = octdec($access);
+    $access = octdec($rawaccess);
     if (!is_array($target)) {
       $target = array($target);
     }
@@ -297,7 +298,7 @@ class PermissionsPlugin extends GenericPlugin implements EventListener {
         '!file' => $tfile,
         '!user' => $user,
         '!group' => $group,
-        '!access' => decoct($access),
+        '!access' => $rawaccess,
         '!recursion' => $recursive ? ' recursively' : '',
       ));
       $failures += chmog($tfile, $user, $group, $access, $recursive);
@@ -311,16 +312,17 @@ class PermissionsPlugin extends GenericPlugin implements EventListener {
     return TRUE;
   }
   
-  public function captureEvent(&$context, $type) {
+  public function captureEvent(DtkEvent &$context, $type) {
     switch ($type) {
       case EVENT_SITE_BUILT:
       case EVENT_UPDATE_FINISH:
-      case EVENT_INSTALL_TASK:
-        $site = $context->site;
-        if ($site instanceof DrupalSite) {
-          $this->applyPermissions($site->getBuildFolder(), PERMISSION_TYPE_BUILD, TRUE);
-          $this->applyPermissions($site->getServerFiles(), PERMISSION_TYPE_SERVER, TRUE);
-          $this->applyPermissions($site->getSystemFiles(), PERMISSION_TYPE_SYSTEM, TRUE);
+      case EVENT_SUBSITE_BUILD_COMPLETE:
+      case EVENT_UPDATE_CLEANUP_SUBSITE:
+        if ($context->checkExecution()) {
+          $site = $context->getEntity();
+          $context->setResult($this->applyPermissions($site->getBuildFolder(), PERMISSION_TYPE_BUILD, TRUE));
+          $context->setResult($this->applyPermissions($site->getServerFiles(), PERMISSION_TYPE_SERVER, TRUE));
+          $context->setResult($this->applyPermissions($site->getSystemFiles(), PERMISSION_TYPE_SYSTEM, TRUE));
         }
         break;
     }

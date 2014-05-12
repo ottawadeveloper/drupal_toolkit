@@ -68,6 +68,13 @@ define('EVENT_UPDATE_PREPARE_SERVER', 'update-server-prep');
 define('EVENT_UPDATE_PRIOR_ACTIONS', 'update-prior-actions');
 
 /**
+ * Fired for subsites to clean-up their stuff.
+ * 
+ * @ingroup events
+ */
+define('EVENT_UPDATE_CLEANUP_SUBSITE', 'update-cleanup-subsites');
+
+/**
  * Fired to allow plugins to provide actions that must take place on the
  * site.
  * 

@@ -61,6 +61,14 @@ define('PACEMAKER_MODE_DC_ONLY', 'dc');
 define('PACEMAKER_MODE_ONLINE_ONLY', 'online');
 
 /**
+ * This @ref pacemaker_modes "pacemaker mode" indicates to only write to 
+ * active nodes.
+ * 
+ * @ingroup pacemaker_modes
+ */
+define('PACEMAKER_MODE_ACTIVE_ONLY', 'active');
+
+/**
  * This @ref pacemaker_modes "pacemaker mode" indicates to talk to all defined
  * servers in SERVER_SETTING_PACEMAKER_CLUSTER. If one is not online, it is
  * considered an error.
