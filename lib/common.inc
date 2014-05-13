@@ -346,49 +346,6 @@ $runtime_settings = array(
   CONFIG_YAML_FILES => array('long' => ARG_YAML_FILES),
 );
 
-/**
- * These are core plugins that will be loaded unless specifically disabled.
- * 
- * Core plugins are stored in 
- * 
- * plugins/$key/$value.class
- */
-$core_plugins = array(
-  'translation' => 'TranslationPlugin',
-  'terminal' => 'TerminalPlugin',
-  'flog' => 'FileLogPlugin',
-  'drupal-site' => 'DrupalSitePlugin',
-  'drupal-site-build' => 'DrupalSiteBuildPlugin',
-  'drupal-site-install' => 'DrupalSiteInstallPlugin',
-  'drupal-site-delete' => 'DrupalSiteDeletePlugin',
-  'drupal-site-exists' => 'DrupalSiteExistsPlugin',
-  'drupal-site-update' => 'DrupalSiteUpdatePlugin',
-  'drupal-site-rollback' => 'DrupalSiteRollbackPlugin',
-  'standard-config' => 'DrupalSiteStandardConfigPlugin',
-  'standard-build' => 'DrupalSiteStandardBuildPlugin',
-  'standard-structure' => 'DrupalSiteStandardStructurePlugin',
-  'standard-site' => 'DrupalSiteStandardSitePlugin',
-  'standard-server-struct' => 'DrupalSiteStandardServerStructurePlugin',
-  'server-interaction' => 'ServerInteractionPlugin',
-  'http-config' => 'HttpConfigurationPlugin',
-  'hosts-config' => 'HostsConfigurationPlugin',
-  'gateway-config' => 'GatewayConfigurationPlugin',
-  'db-config' => 'DatabaseConfigurationPlugin',
-  'drush-config' => 'DrushConfigurationPlugin',
-  'drush-install' => 'DrushInstallPlugin',
-  'drush-backup' => 'DrushBackupPlugin',
-  'drush-maintenance' => 'DrushMaintenancePlugin',
-  'drush-update' => 'DrushUpdatePlugin',
-  'drush-backup' => 'DrushBackupPlugin',
-  'permissions' => 'PermissionsPlugin',
-  //'pacemaker' => 'PacemakerPlugin',
-  'upstream' => 'UpstreamPlugin',
-  'upstream-db' => 'UpstreamDatabasePlugin',
-  'upstream-files' => 'UpstreamFilesPlugin',
-  'cron' => 'CronPlugin',
-  'config-export' => 'ConfigExportPlugin',
-);
-
 /*
  * If there is a HOME directory available, we can use the user's configuration
  * file.

@@ -72,7 +72,7 @@ class DrupalSiteEvent extends DtkEvent {
    * 
    * @param OutputManagerInterface $out
    *   DI for output.
-   * @param EventsManagerInterface $events
+   * @param EventManagerInterface $events
    *   DI for event management.
    * @param type $context
    *   A context array with some or all of the following keys:
@@ -88,7 +88,7 @@ class DrupalSiteEvent extends DtkEvent {
    * @return boolean
    *   TRUE if successful, FALSE if otherwise and continue was set in $context.
    */
-  public static function fireSiteEvent(OutputManagerInterface $out, EventsManagerInterface $events, $context) {
+  public static function fireSiteEvent(OutputManagerInterface $out, EventManagerInterface $events, $context) {
     $event = new DrupalSiteEvent(
         $context['entity'], 
         isset($context['optional']) ? $context['optional'] : FALSE, 

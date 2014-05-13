@@ -31,6 +31,10 @@ foreach ($settings->getConfig(CONFIG_PLUGIN_DIRECTORIES) as $pluginDirectory) {
 }
 $pluginFiles = array_unique($pluginFiles);
 
+// @todo Add a mechanism to disable plugins which will remove the
+// entries from $pluginFiles at this point so that dependencies will
+// fail appropriately.
+
 // Build information on all plug-ins.
 $pluginData = array();
 foreach ($pluginFiles as $file) {
@@ -44,6 +48,7 @@ foreach ($pluginFiles as $file) {
   );
 }
 
+// Sort plugins by priority to let the terminal go first.
 uasort($pluginData, '_dtk_sort_plugins');
 
 // Build information on what order we should enable plugins.
@@ -88,7 +93,6 @@ foreach ($pluginData as $key => $plugin) {
     $out->log('Unable to load plugin [' . $key . '], missing plugins [' . implode(", ", $list) . ']', CLOG_CRITICAL);
   }
 }
-
 if ($missing) {
   exit(1);
 }
@@ -119,11 +123,10 @@ foreach ($plugins as $plugin) {
   $plugin->initialize();
 }
 
+// Notify everybody that the plugins are registered.
 $context = new DtkEvent(TRUE, array(
   'plugins' => $plugins,
 ));
-
-// Notify everybody that the plugins are registered.
 $events->fireEvent(EVENT_CORE_PLUGINS_REGISTERED, $context);
 
 // Fire a specific event telling plugins to register their dependency 
