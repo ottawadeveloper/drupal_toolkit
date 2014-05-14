@@ -6,7 +6,7 @@
 /**
  * Generalized support for HTTP servers.
  */
-abstract class GenericHttpServer {
+abstract class GenericHttpServer implements HttpServerInterface {
   
   /**
    * The physical machine that's wrapped by this object.
@@ -93,7 +93,7 @@ abstract class GenericHttpServer {
     return TRUE;
   }
   
-  public function extraFiles() {
+  public function extraFiles($configFile) {
     return array();
   }
   

@@ -64,7 +64,7 @@ class ServerCastEvent extends DtkEvent {
    * @return PhysicalServerInstance
    */
   public function getServer() {
-    return $this-server;
+    return $this->server;
   }
   
   /**

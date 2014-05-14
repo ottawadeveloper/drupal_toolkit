@@ -264,7 +264,7 @@ class ServerInteractionPlugin extends GenericPlugin implements EventListener {
         break;
       case EVENT_FIND_SERVERS:
         if ($context->checkExecution()) {
-          $context->addDiscoveredServers($this->loadServersOfType($context->getType(), $context->useLocal()));
+          $context->addDiscoveredServers($this->loadServersOfType($context->getType(), extra_empty($context->useLocal())));
         }
         break;
       case EVENT_REMOVE_SUBSITE_ALL:

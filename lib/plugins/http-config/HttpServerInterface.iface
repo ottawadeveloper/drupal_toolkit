@@ -54,17 +54,23 @@ interface HttpServerInterface {
   /**
    * Retrieves the path to the configuration file.
    * 
+   * @param string $configFile
+   *   The configuration file name.
+   * 
    * @return string
    *   The complete path to the configuration file.
    */
-  function getConfigFilePath();
+  function getConfigFilePath($configFile);
   
   /**
    * Retrieves any extra files that need to be deleted.
    * 
+   * @param string $configFile
+   *   The configuration file name.
+   * 
    * @return array
    *   An array of extra files.
    */
-  function extraFiles();
+  function extraFiles($configFile);
 
 }
