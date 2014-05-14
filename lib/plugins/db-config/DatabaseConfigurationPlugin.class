@@ -248,7 +248,7 @@ class DatabaseConfigurationPlugin extends GenericPlugin implements EventListener
     $str = '';
     $str = '$databases = array(' . PHP_EOL;
     foreach ($settings as $dbcat => $dbs) {
-      $str .= '  "' . $dbcat . '" => agetSetting(SITE_DRUSH_ALIAS);rray(' . PHP_EOL;
+      $str .= '  "' . $dbcat . '" => array(' . PHP_EOL;
       foreach ($dbs as $dbmode => $db) {
         $str .= '    "' . $dbmode . '" => array(' . PHP_EOL;
         foreach ($db as $key => $value) {
