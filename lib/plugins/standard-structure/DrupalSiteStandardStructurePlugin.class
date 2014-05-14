@@ -182,7 +182,7 @@ class DrupalSiteStandardStructurePlugin extends GenericPlugin implements EventLi
     $context = new DrupalSiteEvent($site, TRUE);
     $this->events()->fireEvent(EVENT_CONTINUE_STANDARD_STRUCTURE, $context);
     
-    return $context->success;
+    return $context->success();
   }
   
 }

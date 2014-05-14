@@ -44,7 +44,7 @@ class DatabaseConfigurationPlugin extends GenericPlugin implements EventListener
       case EVENT_SITE_BUILD_MORE_CONFIG:
       case EVENT_SUBSITE_BUILD_SERVER_CONFIG:
         if ($context->checkExecution()) {
-          $context->setResults($this->createDatabase($context->getEntity()));
+          $context->setResult($this->createDatabase($context->getEntity()));
         }
         break;
       case EVENT_CAST_DB_SERVER:
@@ -60,7 +60,7 @@ class DatabaseConfigurationPlugin extends GenericPlugin implements EventListener
       case EVENT_REMOVE_SUBSITE_ALL:
       case EVENT_REMOVE_ALL:
         if ($context->checkExecution()) {
-          $context->setResults($this->deleteDatabases($context->getEntity()));
+          $context->setResult($this->deleteDatabases($context->getEntity()));
         }
         break;
     }

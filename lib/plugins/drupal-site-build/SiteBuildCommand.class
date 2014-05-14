@@ -25,10 +25,12 @@ class SiteBuildCommand extends GenericSiteCommand {
   private $steps = array(
     array(
       'event' => EVENT_SITE_BUILD_START,
+      'optional' => TRUE,
     ),
     array(
       'event' => EVENT_SITE_CONFIGURE,
       'error' => STRING_COULD_NOT_CONFIGURE_SITE,
+      'optional' => TRUE,
     ),
     array(
       'event' => EVENT_SITE_BUILD_STRUCTURE,
@@ -45,13 +47,16 @@ class SiteBuildCommand extends GenericSiteCommand {
     array(
       'event' => EVENT_SITE_BUILD_SERVER_STRUCTURE,
       'error' => STRING_COULD_NOT_STRUCTURE_SERVER,
+      'optional' => TRUE,
     ),
     array(
       'event' => EVENT_SITE_BUILD_CONFIGURE_SERVER,
       'error' => STRING_COULD_NOT_CONFIGURE_SERVER,
+      'optional' => TRUE,
     ),
     array(
       'event' => EVENT_SITE_BUILT,
+      'optional' => TRUE,
     )
   );
   
@@ -81,6 +86,7 @@ class SiteBuildCommand extends GenericSiteCommand {
    */
   private function fireEvent($event, $error, $optional = FALSE, $vars = array()) {
     if (!$this->executeSiteCommandStep($event, $optional, 0, $error, $vars)) {
+      $this->error($error);
       if ($this->cleanup) {
         $this->executeSiteCommandStep(EVENT_REMOVE_ALL, FALSE, 0, STRING_UNABLE_TO_REMOVE, array(
           'fromBuild' => TRUE,

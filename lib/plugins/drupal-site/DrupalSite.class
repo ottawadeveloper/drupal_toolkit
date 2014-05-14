@@ -207,13 +207,18 @@ class DrupalSite extends GenericDrupalEntity {
       return array();
     }
     $domains = $this->getSetting(SITE_SETTING_ALL_DOMAINS);
+    if (empty($domains)) {
+      return array();
+    }
     $subsiteIDs = $this->getSubSites();
-    foreach ($subsiteIDs as $subsiteID) {
-      $subsite = $this->getSubSite($subsiteID);
-      if (!$subsite->isDeleted()) {
-        foreach ($subsite->getSetting(SITE_SETTING_ALL_DOMAINS) as $domain) {
-          if (!in_array($domain, $domains)) {
-            $domains[] = $domains;
+    if (!empty($subsiteIDs)) {
+      foreach ($subsiteIDs as $subsiteID) {
+        $subsite = $this->getSubSite($subsiteID);
+        if (!$subsite->isDeleted()) {
+          foreach ($subsite->getSetting(SITE_SETTING_ALL_DOMAINS) as $domain) {
+            if (!in_array($domain, $domains)) {
+              $domains[] = $domains;
+            }
           }
         }
       }
