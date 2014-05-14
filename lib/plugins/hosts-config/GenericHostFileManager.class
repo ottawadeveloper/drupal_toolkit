@@ -36,6 +36,11 @@ abstract class GenericHostFileManager implements HostFileManagerInterface {
    */
   private $lineEnding = PHP_EOL;
   
+  /**
+   * The definitions as loaded.
+   * 
+   * @var array
+   */
   private $defs = NULL;
   
   /**
@@ -71,10 +76,13 @@ abstract class GenericHostFileManager implements HostFileManagerInterface {
   }
   
   public function saveHostFile() {
-    if ($this->compact) {
-      $this->defs = hosts_file_compact($defs, TRUE);
+    if (empty($this->defs)) {
+      return TRUE;
     }
-    $results = $this->machine()->writeFile($this->hostfile, hosts_file_build($defs, "\t", " ", $this->lineEnding));
+    if ($this->compact) {
+      $this->defs = hosts_file_compact($this->defs, TRUE);
+    }
+    $results = $this->machine()->writeFile($this->hostfile, hosts_file_build($this->defs, "\t", " ", $this->lineEnding));
     if ($results) {
       unset($this->defs);
     }
