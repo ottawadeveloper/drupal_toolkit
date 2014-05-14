@@ -244,7 +244,7 @@ class DrupalSite extends GenericDrupalEntity {
    *   An array of subsite IDs.
    */
   public function getSubSites() {
-    return $this->getSetting(SITE_SUBSITE_LIST);
+    return $this->getSetting(SITE_SUBSITE_LIST, array());
   }
     
   /**
