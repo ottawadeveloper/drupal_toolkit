@@ -386,7 +386,6 @@ class DrupalSiteStandardSitePlugin extends GenericPlugin implements EventListene
    */
   private function createDefaultSettingsFile(DrupalSite $site, $realDefault) {
     // Assemble the default settings.php file.
-    $this->working(STRING_WORKING_CREATE_SITE_SETTINGS);
     $defaultSettingsFile = assemble_path($realDefault, self::$defaultSettingsName);
     if (!file_exists($defaultSettingsFile)) {
       $this->error(STRING_UNABLE_TO_CREATE_SETTINGS_TEMPLATE);

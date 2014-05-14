@@ -62,8 +62,21 @@ define('SITE_TOKEN_UUID', 'SITE_UUID');
 /**
  * Provides common tools required by both Sites and Subsites.
  */
-abstract class GenericDrupalEntity {
-   
+abstract class GenericDrupalEntity implements OutputDependency, StringDependency {
+
+  /**
+   * String manager DI variable.
+   * 
+   * @var StringManagerInterface
+   */
+  private $strings;
+  
+  /**
+   * Output manager DI variable.
+   * @var OutputManagerInterface
+   */
+  private $out;
+  
   /**
    * Settings for the site. Plugins may extend these.
    * @var array
@@ -110,6 +123,37 @@ abstract class GenericDrupalEntity {
    * @var boolean
    */
   private $isDeleted = FALSE;
+  
+  public function setOutput(OutputManagerInterface $out) {
+    $this->out = $out;
+  }
+  
+  public function setStringManager(StringManagerInterface $sm) {
+    $this->strings = $sm;
+  }
+  
+  public function strings() {
+    return $this->strings;
+  }
+  
+  public function out() {
+    return $this->out;
+  }
+  
+  /**
+   * Fires an error using string translation.
+   * 
+   * @param string $message
+   *   The message token to look-up a string.
+   * @param array $args
+   *   A list of substitution variables.
+   * @param int $level
+   *   The level of error.
+   */
+  public function error($message, $args = array(), $level = CLOG_ERROR) {
+    $message = $this->strings()->getString($message, $args);
+    $this->out()->log($message, $level);
+  }
   
   /**
    * Sets a token for the site.

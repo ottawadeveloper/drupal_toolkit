@@ -70,6 +70,8 @@ class DrupalSiteEvent extends DtkEvent {
   /**
    * Fires an event with appropriate handling of error conditions
    * 
+   * @param StringManagerInterface $strings
+   *   DI for string management.
    * @param OutputManagerInterface $out
    *   DI for output.
    * @param EventManagerInterface $events
@@ -88,7 +90,7 @@ class DrupalSiteEvent extends DtkEvent {
    * @return boolean
    *   TRUE if successful, FALSE if otherwise and continue was set in $context.
    */
-  public static function fireSiteEvent(OutputManagerInterface $out, EventManagerInterface $events, $context) {
+  public static function fireSiteEvent(StringManagerInterface $strings, OutputManagerInterface $out, EventManagerInterface $events, $context) {
     $event = new DrupalSiteEvent(
         $context['entity'], 
         isset($context['optional']) ? $context['optional'] : FALSE, 
@@ -97,7 +99,13 @@ class DrupalSiteEvent extends DtkEvent {
     $events->fireEvent($context['name'], $event);
     if (!$event->success()) {
       if (!empty($context['error'])) {
-        $out->log($context['error'], CLOG_ERROR);
+        if (empty($context['error args'])) {
+          $context['error args'] = array();
+        }
+        $context['error args'] += array(
+          'event' => $context['name'],
+        );
+        $out->log($strings->getString($context['error'], $context['error args']), CLOG_ERROR);
       }
       if (!empty($context['continue'])) {
         die(isset($context['code']) ? $context['code'] : 1);

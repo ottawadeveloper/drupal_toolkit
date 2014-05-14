@@ -235,11 +235,8 @@ class DrushInstallPlugin extends GenericPlugin implements EventListener {
    *   TRUE if the site was installed successfully, otherwise FALSE.
    */
   private function installSite(GenericDrupalEntity $site) {
-    $drushAlias = $site->getSetting(SITE_DRUSH_ALIAS);
-    if (empty($drushAlias)) {
-      $this->error(STRING_NO_LOCAL_ALIAS);
-      return FALSE;
-    }
+    $drushAlias = $site->getDrushAlias(TRUE);
+    if (empty($drushAlias)) { return FALSE; }
     $this->working(STRING_WORKING_INSTALL_DRUPAL);
     if (!$this->installDrupal($drushAlias)) {
       $this->error(STRING_COULD_NOT_INSTALL);

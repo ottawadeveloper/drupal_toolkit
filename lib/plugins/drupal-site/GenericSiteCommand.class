@@ -360,7 +360,7 @@ abstract class GenericSiteCommand extends GenericCommand {
     );
     $success = TRUE;
     foreach ($steps as $step) {
-      array_extend($step, $defaults);
+      $step += $defaults;
       switch ($step['type']) {
         case COMMAND_STEP_ALL_SUBSITES:
           $success = $this->executeAllSubSiteCommandStep(
@@ -424,7 +424,7 @@ abstract class GenericSiteCommand extends GenericCommand {
       'continue' => !empty($die),
       'code' => empty($die) ? 1 : $die,
     );
-    return DrupalSiteEvent::fireSiteEvent($this->out(), $this->events(), $context);
+    return DrupalSiteEvent::fireSiteEvent($this->strings(), $this->out(), $this->events(), $context);
   }
     
   /**
@@ -456,7 +456,7 @@ abstract class GenericSiteCommand extends GenericCommand {
       'continue' => !empty($die),
       'code' => empty($die) ? 1 : $die,
     );
-    return DrupalSiteEvent::fireSiteEvent($this->out(), $this->events(), $context);
+    return DrupalSiteEvent::fireSiteEvent($this->strings(), $this->out(), $this->events(), $context);
   }
   
   /**
@@ -492,7 +492,7 @@ abstract class GenericSiteCommand extends GenericCommand {
     $site = $this->getSite();
     foreach ($site->getSubSites() as $id) {
       $context['entity'] = $site->getSubSite($id);
-      $success = DrupalSiteEvent::fireSiteEvent($this->out(), $this->events(), $context) && $success;
+      $success = DrupalSiteEvent::fireSiteEvent($this->strings(), $this->out(), $this->events(), $context) && $success;
     }
     return $success;
   }
@@ -559,7 +559,7 @@ abstract class GenericSiteCommand extends GenericCommand {
    */
   private function saveEntityConfiguration(GenericDrupalEntity $entity, $die = TRUE) {
     if (!$entity->saveConfiguration()) {
-      $this->out->log(STRING_COULD_NOT_SAVE_SITE);
+      $this->error(STRING_COULD_NOT_SAVE_SITE);
       if ($die) {
         exit(1);
       }

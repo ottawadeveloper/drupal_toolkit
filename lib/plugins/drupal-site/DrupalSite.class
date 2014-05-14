@@ -174,6 +174,7 @@ class DrupalSite extends GenericDrupalEntity {
     if (!isset($this->cachedSubSites[$subsiteID])) {
       $this->cachedSubSites[$subsiteID] = $site;
     }
+    DependencyManager::inject($site);
   }
   
   public function setDeletionFlag() {
@@ -393,7 +394,9 @@ class DrupalSite extends GenericDrupalEntity {
     if (!$isLocal) {
       $path = assemble_path($path, $name);
     }
-    return new DrupalSite($name, $path, $isLocal);
+    $site = new DrupalSite($name, $path, $isLocal);
+    DependencyManager::inject($site);
+    return $site;
   }
   
 }
