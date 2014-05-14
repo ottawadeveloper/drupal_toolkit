@@ -39,18 +39,18 @@ class CronPlugin extends GenericPlugin implements EventListener, ServerInteracti
     switch($eventType) {
       case EVENT_UPDATE_PRIOR_ACTIONS:
         if ($context->checkExecution()) {
-          $context->setResults($this->updateAll($context->getSite()));
+          $context->setResult($this->updateAll($context->getSite()));
         }
         break;
       case EVENT_REMOVE_SUBSITE_ALL:
       case EVENT_REMOVE_ALL:
         if ($context->checkExecution()) {
-          $context->setResults($this->deleteCronTasks($context->getEntity()));
+          $context->setResult($this->deleteCronTasks($context->getEntity()));
         }
         break;
       case EVENT_INSTALL_EXTRAS:
         if ($context->checkExecution()) {
-          $context->setResults($this->installCronJob($context->getEntity()));
+          $context->setResult($this->installCronJob($context->getEntity()));
         }
         break;
       case EVENT_CAST_CRON_SERVER:
@@ -129,10 +129,11 @@ class CronPlugin extends GenericPlugin implements EventListener, ServerInteracti
     $alias = $site->getSetting(SITE_DRUSH_ALIAS, NULL, TRUE);
     if (empty($alias)) { return FALSE; }
     $machines = $site->getSetting(SITE_CRON_MACHINES);
+    if (empty($machines)) { return TRUE; }
     $ret = TRUE;
     foreach ($machines as $key => $machine) {
       $this->working(STRING_WORKING_CRON_DELETE_ITEM, array(
-        '!name' => $machinename,
+        '!name' => $key,
       ));
       if (!$this->deleteCronTask($key, $machine, $alias, $site->uuid())) {
         $ret = FALSE;

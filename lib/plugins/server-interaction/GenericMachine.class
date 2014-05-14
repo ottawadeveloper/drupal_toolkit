@@ -46,12 +46,14 @@ abstract class GenericMachine implements PhysicalServerInterface {
     $this->sleep();
     return serialize(array(
       'parent::vars' => $this->vars,
+      'namekey' => $this->nameKey,
     ));
   }
   
   public function unserialize($serialized) {
     $str = unserialize($serialized);
     $this->vars = $str['parent::vars'];
+    $this->nameKey = $str['namekey'];
   }
   
   public function sleep() {
