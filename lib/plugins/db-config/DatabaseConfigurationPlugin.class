@@ -55,7 +55,8 @@ class DatabaseConfigurationPlugin extends GenericPlugin implements EventListener
         }
         break;
       case EVENT_FIND_DB_SERVERS:
-        $context->addDiscoveredServers($this->getDatabaseServers());
+        $servers = array_merge($context->getVariable('servers'), $this->getDatabaseServers());
+        $context->setVariable('servers', $servers);
         break;
       case EVENT_REMOVE_SUBSITE_ALL:
       case EVENT_REMOVE_ALL:
