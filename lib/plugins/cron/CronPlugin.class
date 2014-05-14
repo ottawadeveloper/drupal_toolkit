@@ -95,7 +95,7 @@ class CronPlugin extends GenericPlugin implements EventListener, ServerInteracti
         EVENT_CAST_CRON_SERVER,
         SERVER_SETTING_CRON_TYPE,
         $type,
-        FALSE
+        TRUE
     );
   }
   
@@ -125,11 +125,11 @@ class CronPlugin extends GenericPlugin implements EventListener, ServerInteracti
    *   TRUE if success, otherwise FALSE.
    */
   private function deleteCronTasks(GenericDrupalEntity $site) {
+    $machines = $site->getSetting(SITE_CRON_MACHINES);
+    if (empty($machines)) { return TRUE; }
     $this->working(STRING_WORKING_CRON_DELETE);
     $alias = $site->getSetting(SITE_DRUSH_ALIAS, NULL, TRUE);
     if (empty($alias)) { return FALSE; }
-    $machines = $site->getSetting(SITE_CRON_MACHINES);
-    if (empty($machines)) { return TRUE; }
     $ret = TRUE;
     foreach ($machines as $key => $machine) {
       $this->working(STRING_WORKING_CRON_DELETE_ITEM, array(

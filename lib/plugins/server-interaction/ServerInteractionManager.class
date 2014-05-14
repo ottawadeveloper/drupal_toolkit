@@ -98,7 +98,11 @@ class ServerInteractionManager implements ServerInteractionManagerInterface {
       ));
       return FALSE;
     }
-    return $event->getCastedServer();
+    $server = $event->getCastedServer();
+    if (!empty($server)) {
+      DependencyManager::inject($server);
+    }
+    return $server;
   }
   
   public function findServers($type, $includeLocal = FALSE) {
