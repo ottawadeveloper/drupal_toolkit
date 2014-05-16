@@ -72,6 +72,8 @@ define('COMMAND_STEP_SUBSITE', 'subsite');
 
 define('COMMAND_STEP_ALL_SUBSITES', 'subsites-all');
 
+define('COMMAND_STEP_ALL_INSTALLED_SUBSITES', 'subsites-all-installed');
+
 define('STRING_ERROR_STEP_GENERIC', 'drupal_site.error.generic-step');
 
 define('STRING_WORKING_SAVE_CONFIG', 'drupal_site.working.save-config');
@@ -366,6 +368,16 @@ abstract class GenericSiteCommand extends GenericCommand {
     foreach ($steps as $step) {
       $step += $defaults;
       switch ($step['type']) {
+        case COMMAND_STEP_ALL_INSTALLED_SUBSITES:
+          $success = $this->executeAllSubSiteCommandStep(
+              $step['event'],
+              !empty($step['optional']),
+              empty($step['die']) ? 0 : $step['die'],
+              isset($step['error']) ? $step['error'] : NULL,
+              $step['vars'],
+              TRUE
+          ) && $success;
+          break;
         case COMMAND_STEP_ALL_SUBSITES:
           $success = $this->executeAllSubSiteCommandStep(
               $step['event'],
@@ -477,12 +489,14 @@ abstract class GenericSiteCommand extends GenericCommand {
    *   a message.
    * @param array $vars
    *   An array of extra variables.
+   * @param boolean $installedOnly
+   *   Limit actions to subsites that have been installed.
    * 
    * @return boolean
    *   TRUE if successful (or optional and not handled), FALSE if die is empty
    *   otherwise.
    */
-  protected function executeAllSubSiteCommandStep($event, $optional = FALSE, $die = 1, $error = NULL, $vars = array()) {
+  protected function executeAllSubSiteCommandStep($event, $optional = FALSE, $die = 1, $error = NULL, $vars = array(), $installedOnly = FALSE) {
     $context = array(
       'entity' => NULL,
       'name' => $event,
@@ -496,6 +510,9 @@ abstract class GenericSiteCommand extends GenericCommand {
     $site = $this->getSite();
     foreach ($site->getSubSites() as $id) {
       $context['entity'] = $site->getSubSite($id);
+      if ($installedOnly && (extra_empty($context['entity']->getSetting(SITE_IS_INSTALLED)))) {
+        continue;
+      }
       $success = DrupalSiteEvent::fireSiteEvent($this->strings(), $this->out(), $this->events(), $context) && $success;
     }
     return $success;

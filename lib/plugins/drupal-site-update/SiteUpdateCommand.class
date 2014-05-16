@@ -26,7 +26,7 @@ class SiteUpdateCommand extends GenericSiteCommand {
     ),
     array(
       'event' => EVENT_UPDATE_SUBSITE_SITES,
-      'type' => COMMAND_STEP_ALL_SUBSITES,
+      'type' => COMMAND_STEP_ALL_INSTALLED_SUBSITES,
     ),
     array(
       'event' => EVENT_UPDATE_CODEBASE_COMPLETE,
@@ -37,7 +37,7 @@ class SiteUpdateCommand extends GenericSiteCommand {
     ),
     array(
       'event' => EVENT_UPDATE_PREPARE_SUBSITE,
-      'type' => COMMAND_STEP_ALL_SUBSITES,
+      'type' => COMMAND_STEP_ALL_INSTALLED_SUBSITES,
       'optional' => TRUE,
     ),
     array(
@@ -58,7 +58,7 @@ class SiteUpdateCommand extends GenericSiteCommand {
       'event' => EVENT_UPDATE_PRIOR_SUBSITE_ACTIONS,
       'continue' => TRUE,
       'optional' => TRUE,
-      'type' => COMMAND_STEP_ALL_SUBSITES,
+      'type' => COMMAND_STEP_ALL_INSTALLED_SUBSITES,
     ),
     array(
       'event' => EVENT_UPDATE_ACTIONS,
@@ -66,7 +66,7 @@ class SiteUpdateCommand extends GenericSiteCommand {
     ),
     array(
       'event' => EVENT_UPDATE_SUBSITE,
-      'type' => COMMAND_STEP_ALL_SUBSITES,
+      'type' => COMMAND_STEP_ALL_INSTALLED_SUBSITES,
       'optional' => TRUE,
       'continue' => TRUE,
     ),
@@ -82,7 +82,7 @@ class SiteUpdateCommand extends GenericSiteCommand {
     ),
     array(
       'event' => EVENT_UPDATE_REFRESH_SUBSITE_CONFIG,
-      'type' => COMMAND_STEP_ALL_SUBSITES,
+      'type' => COMMAND_STEP_ALL_INSTALLED_SUBSITES,
       'optional' => TRUE,
       'continue' => TRUE,
     ),
@@ -95,7 +95,7 @@ class SiteUpdateCommand extends GenericSiteCommand {
       'event' => EVENT_UPDATE_PREP_SUBSITE_FOR_REFRESH,
       'continue' => TRUE,
       'optional' => TRUE,
-      'type' => COMMAND_STEP_ALL_SUBSITES,
+      'type' => COMMAND_STEP_ALL_INSTALLED_SUBSITES,
     ),
     array(
       'event' => EVENT_UPDATE_REFRESH,
@@ -105,13 +105,13 @@ class SiteUpdateCommand extends GenericSiteCommand {
       'event' => EVENT_UPDATE_REFRESH_SUBSITE,
       'continue' => TRUE,
       'optional' => TRUE,
-      'type' => COMMAND_STEP_ALL_SUBSITES,
+      'type' => COMMAND_STEP_ALL_INSTALLED_SUBSITES,
     ),
     array(
       'event' => EVENT_UPDATE_CLEANUP_SUBSITE,
       'optional' => TRUE,
       'continue' => TRUE,
-      'type' => COMMAND_STEP_ALL_SUBSITES,
+      'type' => COMMAND_STEP_ALL_INSTALLED_SUBSITES,
     ),
     array(
       'event' => EVENT_UPDATE_CLEANUP,

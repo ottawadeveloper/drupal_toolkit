@@ -46,7 +46,9 @@ class SiteInstallCommand extends GenericSiteCommand {
       'error' => STRING_INSTALL_ERROR,
       'type' => COMMAND_STEP_SITE,
     ));
-    $this->getSite()->setSetting(SITE_IS_INSTALLED, "1");
+    $site = $this->getSite();
+    $site->setSetting(SITE_IS_INSTALLED, "1");
+    $site->setSetting(SITE_LAST_SUBSITE_INSTALL_BUILD, $site->getBuildID());
     $this->saveSiteConfiguration();
   }
   

@@ -23,7 +23,7 @@ class SiteRollbackCommand extends GenericSiteCommand {
     ),
     array(
       'event' => EVENT_ROLLBACK_SUBSITE_PREP,
-      'type' => COMMAND_STEP_ALL_SUBSITES,
+      'type' => COMMAND_STEP_ALL_INSTALLED_SUBSITES,
     ),
     array(
       'event' => EVENT_ROLLBACK_START,
@@ -39,7 +39,7 @@ class SiteRollbackCommand extends GenericSiteCommand {
     ),
     array(
       'event' => EVENT_ROLLBACK_SUBSITES,
-      'type' => COMMAND_STEP_ALL_SUBSITES,
+      'type' => COMMAND_STEP_ALL_INSTALLED_SUBSITES,
     ),
     array(
       'event' => EVENT_ROLLBACK_PHASE3,
@@ -59,7 +59,7 @@ class SiteRollbackCommand extends GenericSiteCommand {
       'event' => EVENT_ROLLBACK_SUBSITE_CLEAN,
       'continue' => TRUE,
       'optional' => TRUE,
-      'type' => COMMAND_STEP_ALL_SUBSITES,
+      'type' => COMMAND_STEP_ALL_INSTALLED_SUBSITES,
     ),
     array(
       'event' => EVENT_ROLLBACK_COMPLETE,
@@ -76,6 +76,10 @@ class SiteRollbackCommand extends GenericSiteCommand {
     $lastBuild = $site->getPreviousBuildID();
     if (empty($lastBuild)) {
       $this->error(STRING_ROLLBACK_REQUIRES_TWO_BUILDS);
+      return FALSE;
+    }
+    if ($site->getBuildID() === $site->getSetting(SITE_LAST_SUBSITE_INSTALL_BUILD, NULL, TRUE)) {
+      $this->error(STRING_ROLLBACK_REQUIRES_TWO_BUILDS_AFTER_SUBSITE);
       return FALSE;
     }
     return parent::verifyRequirements();

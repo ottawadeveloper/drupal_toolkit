@@ -296,7 +296,7 @@ class DrupalSiteStandardSitePlugin extends GenericPlugin implements EventListene
   }
   
   private function refreshSubsiteSymlinks(DrupalSubSite $subsite) {
-    $currentBase = $subsite->getSetting(SITE_SETTING_CURRENT_BUILD, NULL, TRUE);
+    $currentBase = $subsite->getParentSite()->getSetting(SITE_SETTING_CURRENT_BUILD, NULL, TRUE);
     if (empty($currentBase)) { return FALSE; }
     if (!$this->createRootSymlinks($currentBase, $subsite)) {
       return FALSE;
@@ -493,6 +493,7 @@ class DrupalSiteStandardSitePlugin extends GenericPlugin implements EventListene
     $primarySite = DrupalSite::convertURLToSiteName($primary);
     $primarySiteDirectory = assemble_path($subsite->getParentSite()->getBuildFolder(), $structureSites, $primarySite);
     mkdir($primarySiteDirectory);
+    mkdir(assemble_path($primarySiteDirectory, 'files'));
     
     // Shared functionality
     if (!$this->writeSettingsFile(

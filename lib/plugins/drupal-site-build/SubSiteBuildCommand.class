@@ -28,6 +28,11 @@ class SubSiteBuildCommand extends GenericSiteCommand {
       'continue' => TRUE,
     ),
     array(
+      'event' => EVENT_SUBSITE_BUILD_PARENT_SERVER_REFRESH,
+      'optional' => TRUE,
+      'continue' => TRUE,
+    ),
+    array(
       'event' => EVENT_SUBSITE_BUILD_EXTRAS,
       'optional' => TRUE,
       'continue' => TRUE,
@@ -53,7 +58,10 @@ class SubSiteBuildCommand extends GenericSiteCommand {
       'error' => STRING_SUBSITE_BUILD_GENERIC_ERROR,
       'type' => COMMAND_STEP_SUBSITE,
     ));
+    $site = $this->getSubSite()->getParentSite();
+    $site->registerSubSite($this->getSubSite());
     $this->saveSubSiteConfiguration();
+    $this->saveSiteConfiguration();
   }
   
 }

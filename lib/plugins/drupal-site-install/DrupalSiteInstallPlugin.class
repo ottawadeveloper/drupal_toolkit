@@ -4,13 +4,6 @@
  */
 
 /**
- * String token for when the subsite has already been installed.
- * 
- * @ingroup strings
- */
-define('STRING_ERROR_SUBSITE_INSTALLED', 'drupal_site.error.subsite-already-installed.');
-
-/**
  * Fired before the install process begins.
  * 
  * @ingroup events
@@ -45,6 +38,8 @@ define('EVENT_INSTALL_EXTRAS', 'drupal-install-extras');
  * @ingroup strings
  */
 define('STRING_INSTALL_ERROR', 'drupal_site_install.error.install-error');
+
+define('SITE_LAST_SUBSITE_INSTALL_BUILD', 'subsite-last-install-build');
 
 /**
  * Sets up the site-install command.

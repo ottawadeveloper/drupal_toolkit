@@ -62,6 +62,7 @@ class DrushUpdatePlugin extends GenericPlugin implements EventListener {
   }
   
   public function captureEvent(DtkEvent &$context, $eventType) {
+    echo 'CHECKING EVENT ' . $eventType . PHP_EOL;
     switch ($eventType) {
       case EVENT_UPDATE_SUBSITE:
       case EVENT_UPDATE_ACTIONS:
@@ -73,6 +74,7 @@ class DrushUpdatePlugin extends GenericPlugin implements EventListener {
       case EVENT_ROLLBACK_CLEAN:
       case EVENT_UPDATE_REFRESH:
       case EVENT_UPDATE_REFRESH_SUBSITE:
+        echo 'IN METHOD with EVENT ' . $eventType . PHP_EOL;
         if ($context->checkExecution()) {
           $context->setResult($this->drushCacheWipe($context->getEntity()));
         }
@@ -115,7 +117,9 @@ class DrushUpdatePlugin extends GenericPlugin implements EventListener {
   private function drushUpdate(GenericDrupalEntity $site) {
     $alias = $site->getDrushAlias(TRUE);
     if (empty($alias)) { return FALSE; }
-    $this->working(STRING_WORKING_DB_UPDATE);
+    $this->working(STRING_WORKING_DB_UPDATE, array(
+      '!alias' => $alias,
+    ));
     if (!drush_updb($alias)) {
       return FALSE;
     }

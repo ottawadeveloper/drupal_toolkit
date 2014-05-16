@@ -189,13 +189,13 @@ class DrushConfigurationPlugin extends GenericPlugin implements EventListener, S
   /**
    * Updates the drush aliases, if applicable.
    * 
-   * @param DrupalSite $site
+   * @param GenericDrupalEntity $site
    *   Site to update aliases for.
    * 
    * @return boolean
    *   TRUE if successful, otherwise FALSE.
    */
-  private function updateAliases(DrupalSite $site) {
+  private function updateAliases(GenericDrupalEntity $site) {
     if (extra_empty($this->config()->getConfig(CONFIG_DRUSH_ALIAS_STATIC))) {
       return $this->createAliases($site, TRUE);
     }

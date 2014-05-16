@@ -8,6 +8,13 @@
  */
 
 /**
+ * String token for when the subsite is not installed.
+ * 
+ * @ingroup strings
+ */
+define('STRING_ERROR_SUBSITE_NOT_INSTALLED', 'drupal_site.error.subsite-not-installed');
+
+/**
  * Config setting for the default build directory for non-local sites.
  * 
  * @ingroup config
@@ -56,6 +63,13 @@ define('ARG_IS_LOCAL', 'local');
  * @ingroup strings
  */
 define('STRING_SITE_MISSING_SETTING', 'drupal_site.error.no-setting');
+
+/**
+ * String token for when the subsite has already been installed.
+ * 
+ * @ingroup strings
+ */
+define('STRING_ERROR_SUBSITE_INSTALLED', 'drupal_site.error.subsite-already-installed');
 
 /**
  * Config key for the maximum number of builds to keep.

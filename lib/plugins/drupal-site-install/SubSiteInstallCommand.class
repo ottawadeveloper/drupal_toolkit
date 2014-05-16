@@ -46,10 +46,13 @@ class SubSiteInstallCommand extends GenericSiteCommand {
   public function executeCommand() {
     $this->executeAllSteps($this->steps, array(
       'error' => STRING_INSTALL_ERROR,
-      'type' => COMMAND_TYPE_SUBSITE,
+      'type' => COMMAND_STEP_SUBSITE,
     ));
     $this->getSubSite()->setSetting(SITE_IS_INSTALLED, "1");
+    $parent = $this->getSubSite()->getParentSite();
+    $parent->setSetting(SITE_LAST_SUBSITE_INSTALL_BUILD, $parent->getBuildID());
     $this->saveSubSiteConfiguration();
+    $this->saveSiteConfiguration();
   }
   
 }

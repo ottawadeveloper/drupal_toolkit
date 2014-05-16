@@ -69,6 +69,16 @@ class EventManager implements EventManagerInterface,
     return TRUE;
   }
   
+  public function dump() {
+    foreach ($this->registry as $key => $list) {
+      $listeners = array();
+      foreach ($list as $listener) {
+        $listeners[] = get_class($listener);
+      }
+      echo $key . ': ' . implode(",", $listeners) . PHP_EOL;
+    }
+  }
+  
   public function fireEvent($type, DtkEvent &$context = NULL) {
     $this->out->debug('Firing event [' . $type . '].');
     if (empty($context)) {

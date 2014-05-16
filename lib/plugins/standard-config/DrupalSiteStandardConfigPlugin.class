@@ -66,8 +66,8 @@ class DrupalSiteStandardConfigPlugin extends GenericPlugin implements EventListe
           $context->setResult($this->setUpdateVariables($context->getEntity(), $context->getVariable('buildID')));
         }
         break;
-      case EVENT_SITE_CONFIGURE:
       case EVENT_SUBSITE_BUILD_CONFIG:
+      case EVENT_SITE_CONFIGURE:
         if ($context->checkExecution()) {
           $context->setResult($this->addEntityDomains($context->getEntity()));
         }

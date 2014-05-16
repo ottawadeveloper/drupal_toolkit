@@ -4,6 +4,14 @@
  */
 
 /**
+ * String token for when a site has not been updated since the last time
+ * a subsite was installed.
+ * 
+ * @ingroup strings
+ */
+define('STRING_ROLLBACK_REQUIRES_TWO_BUILDS_AFTER_SUBSITE', 'drupal_site.error.two-subsite-builds');
+
+/**
  * Fired to rollback subsites.
  * 
  * @ingroup events
