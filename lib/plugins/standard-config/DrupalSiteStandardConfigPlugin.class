@@ -30,14 +30,14 @@ define('CONFIG_SUBSITE_URL_PATTERN', 'subsite-url-pattern');
  * 
  * @ingroup args
  */
-define('ARG_SITE_URLS', 'site-extra-urls');
+define('OPTION_SITE_URLS', 'site-extra-urls');
 
 /**
  * Argument to specify the site's primary URL.
  * 
  * @ingroup args
  */
-define('ARG_SITE_URL', 'site-url');
+define('OPTION_SITE_URL', 'site-url');
 
 /**
  * Responsible for some basic configuratino settings that everyone is likely
@@ -98,7 +98,7 @@ class DrupalSiteStandardConfigPlugin extends GenericPlugin implements EventListe
    */
   protected function getExtraURLs() {
     $urls = array();
-    $fromArg = $this->args()->getOption(ARG_SITE_URLS);
+    $fromArg = $this->args()->getOption(OPTION_SITE_URLS);
     if (!empty($fromArg)) {
       $urls = array_merge($urls, explode(DEFAULT_SPLIT_CHARACTER, $fromArg));
     }
@@ -115,7 +115,7 @@ class DrupalSiteStandardConfigPlugin extends GenericPlugin implements EventListe
    *   The primary URL or null if we cannot figure out one.
    */
   private function getSiteURL(GenericDrupalEntity $site) {
-    $fromArg = $this->args()->getOption(ARG_SITE_URL);
+    $fromArg = $this->args()->getOption(OPTION_SITE_URL);
     if (!empty($fromArg)) {
       return $fromArg;
     }

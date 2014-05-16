@@ -218,3 +218,22 @@ function terminal_color_string($string, $foreground = NULL, $background = NULL) 
   $pieces[] = "\033[0m";
   return implode("", $pieces);
 }
+
+function terminal_word_wrap_line($string, $prefix, $maxLength = 80, $skipFirstPrefix = FALSE) {
+  $splitLength = $maxLength - $prefix;
+  $pieces = array();
+  $first = TRUE;
+  while (strlen($string) > $splitLength) {
+    if ($first && $skipFirstPrefix) {
+      $first = FALSE;
+      $pieces[] = substr($string, 0, $maxLength);
+      $string = substr($string, $maxLength);
+    }
+    else {
+      $pieces[] = $prefix . substr($string, 0, $splitLength);
+      $string = substr($string, $splitLength);
+    }
+  }
+  $pieces[] = $prefix . $string;
+  return implode($pieces, PHP_EOL);
+}

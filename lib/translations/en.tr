@@ -22,6 +22,8 @@ types.log.notice = 'Notice'
 types.log.info = 'Info'
 types.log.debug = 'Debug'
 
+help.error.no-commands = 'No help commands have been defined.'
+
 plugin.error.missing-config = 'Plugin requires configuration setting [!key].'
 
 db_config.error.cannot-create-db = Unable to create database.

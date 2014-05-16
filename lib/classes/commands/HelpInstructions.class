@@ -1,0 +1,88 @@
+<?php
+
+class HelpInstructions {
+  
+  private $command = NULL;
+  
+  private $aliases = array();
+  
+  private $arguments = array();
+  
+  private $options = array();
+  
+  private $optionAliases = array();
+  
+  private $description = NULL;
+  
+  private $usageExamples = array();
+  
+  private $category = NULL;
+  
+  public function __construct($category, $command, $description, $aliases = array()) {
+    $this->category = $category;
+    $this->command = $command;
+    $this->aliases = $aliases;
+    $this->description = $description;
+  }
+  
+  public function defineArgument($position, $description) {
+    $this->arguments[$position] = $description;
+  }
+  
+  public function defineOption($option, $description, $aliases = array()) {
+    $this->options[$option] = $description;
+    $this->optionAliases[$option] = $aliases;
+  }
+  
+  public function defineUsageExample($command, $description) {
+    $this->usageExamples[$command] = $description;
+  }
+  
+  public function getCommandName() {
+    return $this->command;
+  }
+  
+  public function getCategory() {
+    return $this->category;
+  }
+  
+  public function getDisplayText() {
+    $text = array();
+    $text[] = $this->command;
+    $text[] = terminal_word_wrap_line($this->description, '  ');
+    $text[] = '';
+    if (!empty($this->arguments)) {
+      ksort($this->arguments);
+      $text[] = '  Arguments';
+      foreach ($this->arguments as $pos => $description) {
+        $text[] = terminal_word_wrap_line('  #' . $pos . ': ' . $description, '    ', 80, TRUE);
+      }
+      $text[] = '';
+    }
+    if (!empty($this->options)) {
+      ksort($this->options);
+      $text[] = '  Options';
+      foreach ($this->options as $option => $desc) {
+        $text[] = '  ' . $option;
+        $text[] = terminal_word_wrap_line($desc, '    ');
+        if (!empty($this->optionAliases[$option])) {
+          $text[] = terminal_word_wrap_line('    Aliases: ' . implode(', ', $this->optionAliases[$option]), '    ', 80, TRUE);
+        }
+      }
+      $text[] = '';
+    }
+    if (!empty($this->usageExamples)) {
+      $text[] = '  Usages';
+      foreach ($this->usageExamples as $command => $example) {
+        $text[] = '  ' . $command;
+        $text[] = terminal_word_wrap_line($example, '    ');
+        $text[] = '';
+      }
+      $text[] = '';
+    }
+    return implode(PHP_EOL, $text);
+  }
+  
+  
+  
+}

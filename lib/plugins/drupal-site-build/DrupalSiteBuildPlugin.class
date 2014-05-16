@@ -191,6 +191,20 @@ define('STRING_COULD_NOT_CONFIGURE_SERVER', 'drupal_site_build.error.no-server-c
  */
 define('STRING_ADDITIONAL_CONFIG_ERROR', 'drupal_site_build.error.no-more-config');
 
+
+
+define('STRING_HELP_DSM_CATEGORY', 'help.category.drupal-site-management');
+
+define('STRING_HELP_SITE_NAME', 'help.arg.site-name');
+
+define('STRING_HELP_SUBSITE_NAME', 'help.arg.subsite-name');
+
+
+
+define('STRING_HELP_SITE_BUILD_DESCRIPTION', 'help.command-desc.site-build');
+
+define('STRING_HELP_SUBSITE_BUILD_DESCRIPTION', 'help.command-desc.subsite-build');
+
 class DrupalSiteBuildPlugin extends GenericPlugin implements EventListener {
   
   public function initialize() {

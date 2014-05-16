@@ -4,6 +4,20 @@
  */
 
 /**
+ * Fired to find help instructions.
+ * 
+ * @ingroup events
+ */
+define('EVENT_FIND_HELP_INSTRUCTIONS', 'find-help-instructions');
+
+/**
+ * String token for when there are no help commands defined.
+ * 
+ * @ingroup strings
+ */
+define('STRING_ERROR_NO_HELP_COMMANDS', 'help.error.no-commands');
+
+/**
  * Basic command that provides help output.
  * 
  * @ingroup commands
@@ -11,9 +25,31 @@
 class HelpCommand extends GenericCommand {
     
   public function executeCommand() {
-    $this->error(STRING_ROUTER_NO_IMPLEMENTATION, array(
-      '!command' => 'help',
-    ));
+    $event = new HelpInstructionsEvent();
+    $this->events()->fireEvent(EVENT_FIND_HELP_INSTRUCTIONS, $event);
+    $categorized = array();
+    foreach ($event->getInstructions() as $instruction) {
+      if ($instruction instanceof HelpInstructions) {
+        $category = $instruction->getCategory();
+        if (!isset($categorized[$category])) {
+          $categorized[$category] = array();
+        }
+        $categorized[$category][$instruction->getCommandName()] = $instruction;
+      }
+    }
+    if (empty($categorized)) {
+      $this->error(STRING_ERROR_NO_HELP_COMMANDS, array(), CLOG_WARNING);
+    }
+    else {
+      ksort($categorized);
+      foreach ($categorized as $category => $list) {
+        echo $category . PHP_EOL . '--------------------' . PHP_EOL;
+        foreach ($list as $command) {
+          echo $command->getDisplayText() . PHP_EOL;
+        }
+        echo '--------------------' . PHP_EOL;
+      }
+    }
   }
   
 }

@@ -8,7 +8,7 @@
 /**
  * Current version of the toolkit.
  */
-define('TOOLKIT_VERSION', '0.0.4');
+define('TOOLKIT_VERSION', '0.0.5');
 
 /**
  * Location of the common directory.
@@ -303,6 +303,8 @@ $files = array(
   'classes/plugins/PluginInterface.iface',
   'classes/plugins/GenericPlugin.class',
   'classes/commands/GenericCommand.class',
+  'classes/commands/HelpInstructions.class',
+  'classes/commands/HelpInstructionsEvent.class',
   'classes/commands/HelpCommand.class',
 );
 

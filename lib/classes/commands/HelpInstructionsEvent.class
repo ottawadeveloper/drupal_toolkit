@@ -1,0 +1,15 @@
+<?php
+
+class HelpInstructionsEvent extends DtkEvent {
+  
+  private $instructions = array();
+  
+  public function registerInstruction(HelpInstructions $instructions) {
+    $this->instructions[$instructions->getCommandName()] = $instructions;
+  }
+  
+  public function getInstructions() {
+    return $this->instructions;
+  }
+  
+}
