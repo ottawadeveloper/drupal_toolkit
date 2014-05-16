@@ -103,7 +103,7 @@ class DrupalSiteEvent extends DtkEvent {
           $context['error args'] = array();
         }
         $context['error args'] += array(
-          'event' => $context['name'],
+          '!event' => $context['name'],
         );
         $out->log($strings->getString($context['error'], $context['error args']), CLOG_ERROR);
       }

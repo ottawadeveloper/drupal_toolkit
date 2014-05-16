@@ -72,6 +72,8 @@ define('COMMAND_STEP_SUBSITE', 'subsite');
 
 define('COMMAND_STEP_ALL_SUBSITES', 'subsites-all');
 
+define('STRING_ERROR_STEP_GENERIC', 'drupal_site.error.generic-step');
+
 /**
  * Provides a base for commands that need to work with sites.
  */
@@ -354,7 +356,7 @@ abstract class GenericSiteCommand extends GenericCommand {
     $defaults += array(
       'optional' => FALSE,
       'die' => 1,
-      'error' => NULL,
+      'error' => STRING_ERROR_STEP_GENERIC,
       'type' => COMMAND_STEP_SITE,
       'vars' => array(),
     );

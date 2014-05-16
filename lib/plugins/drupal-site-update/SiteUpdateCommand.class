@@ -16,6 +16,7 @@ class SiteUpdateCommand extends GenericSiteCommand {
   private $steps = array(
     array(
       'event' => EVENT_UPDATE_PREPARE,
+      'optional' => TRUE,
     ),
     array(
       'event' => EVENT_UPDATE_CODEBASE,
