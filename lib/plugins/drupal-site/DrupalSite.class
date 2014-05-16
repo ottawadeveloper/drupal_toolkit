@@ -289,6 +289,8 @@ class DrupalSite extends GenericDrupalEntity {
   public function deleteBuildID($buildID) {
     $ids = $this->getSetting(SITE_BUILD_IDS);
     $this->setSetting(SITE_BUILD_IDS, array());
+    $this->setSetting(SITE_LAST_BUILD_ID, NULL);
+    $this->setSetting(SITE_LATEST_BUILD_ID, NULL);
     foreach ($ids as $id) {
       if ($id !== $buildID) {
         $this->registerNewBuildID($id);
@@ -313,7 +315,6 @@ class DrupalSite extends GenericDrupalEntity {
    *   The previous build ID.
    */
   public function getPreviousBuildID() {
-    var_dump($this->getSetting(SITE_BUILD_IDS));
     return $this->getSetting(SITE_LAST_BUILD_ID);
   }
   

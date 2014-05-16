@@ -129,7 +129,7 @@ class DrupalSitePlugin extends GenericPlugin implements EventListener {
     $this->config()->extendDefaultConfiguration(array(
       CONFIG_ALLOW_LOCAL_SITES => LOCAL_SITES_ALLOW,
       CONFIG_BUILD_DIRECTORY => '',
-      CONFIG_MAX_BUILDS => 2,
+      CONFIG_MAX_BUILDS => 10,
     ));
     $this->events()->registerListener(array(
       EVENT_CLEANUP_BUILD,
