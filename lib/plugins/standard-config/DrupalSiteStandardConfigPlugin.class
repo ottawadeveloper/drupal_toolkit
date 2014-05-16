@@ -53,11 +53,17 @@ class DrupalSiteStandardConfigPlugin extends GenericPlugin implements EventListe
     $this->events()->registerListener(array(
       EVENT_SITE_CONFIGURE,
       EVENT_SUBSITE_BUILD_CONFIG,
+      EVENT_UPDATE_PREPARE,
     ), $this);
   }
   
   public function captureEvent(DtkEvent &$context, $type) {
     switch ($type) {
+      case EVENT_UPDATE_PREPARE:
+        if ($context->checkExecution()) {
+          $context->setResult($this->setUpdateVariables($context->getEntity(), $context->getVariable('buildID')));
+        }
+        break;
       case EVENT_SITE_CONFIGURE:
       case EVENT_SUBSITE_BUILD_CONFIG:
         if ($context->checkExecution()) {
@@ -66,6 +72,22 @@ class DrupalSiteStandardConfigPlugin extends GenericPlugin implements EventListe
         break;
     }
   } 
+  
+  /**
+   * Set any variables that need to be set on update.
+   * 
+   * @param GenericDrupalEntity $entity
+   *   The entity being updated.
+   * @param string $buildID
+   *   The new build ID.
+   * 
+   * @return boolean
+   *   TRUE if successful, otherwise FALSE.
+   */
+  private function setUpdateVariables(GenericDrupalEntity $entity, $buildID) {
+    $entity->registerNewBuildID($buildID);
+    return TRUE;
+  }
   
   /**
    * Retrieves a list of extra URLs.

@@ -63,6 +63,8 @@ class DrushMaintenancePlugin extends GenericPlugin implements EventListener {
       dtk_constant('EVENT_UPDATE_PREPARE_FOR_REFRESH'),
       dtk_constant('EVENT_ROLLBACK_FINISH'),
       dtk_constant('EVENT_ROLLBACK_PREPARE'),
+      dtk_constant('EVENT_UPDATE_PREPARE_SUBSITE'),
+      dtk_constant('EVENT_UPDATE_PREP_SUBSITE_FOR_REFRESH'),
     ), $this);
   }
   
@@ -70,12 +72,14 @@ class DrushMaintenancePlugin extends GenericPlugin implements EventListener {
     switch ($eventType) {
       case EVENT_ROLLBACK_FINISH:
       case EVENT_UPDATE_PREPARE_FOR_REFRESH:
+      case EVENT_UPDATE_PREP_SUBSITE_FOR_REFRESH:
         if ($context->checkExecution()) {
           $context->setResult($this->setMaintenanceMode($context->getEntity(), FALSE));
         }
         break;
       case EVENT_ROLLBACK_PREPARE:
       case EVENT_UPDATE_PREPARE_FOR_UPDATE:
+      case EVENT_UPDATE_PREPARE_SUBSITE:
         if ($context->checkExecution()) {
           $context->setResult($this->setMaintenanceMode($context->getEntity(), TRUE));
         }
@@ -95,32 +99,25 @@ class DrushMaintenancePlugin extends GenericPlugin implements EventListener {
    *   TRUE if the maintenance mode was correctly set on all aliases, otherwise
    *   FALSE.
    */
-  private function setMaintenanceMode(DrupalSite $site, $on = TRUE) {
-    $aliases = $site->getSetting(SITE_DRUSH_ALIASES);
+  private function setMaintenanceMode(GenericDrupalEntity $site, $on = TRUE) {
+    $alias = $site->getDrushAlias(TRUE);
+    if (empty($alias)) { return FALSE; }
     if ($on) {
-      $this->working(STRING_WORKING_MAINTENANCE_MODE_ENGAGE);
+      $this->working(STRING_WORKING_MAINTENANCE_MODE_ENGAGE_ITEM, array(
+        '!alias' => $alias,
+      ));
     }
     else {
-      $this->working(STRING_WORKING_MAINTENANCE_MODE_DISENGAGE);
+      $this->working(STRING_WORKING_MAINTENANCE_MODE_DISENGAGE_ITEM, array(
+        '!alias' => $alias,
+      ));
     }
-    foreach ($aliases as $alias) {
-      if ($on) {
-        $this->working(STRING_WORKING_MAINTENANCE_MODE_ENGAGE_ITEM, array(
-          '!alias' => $alias,
-        ));
-      }
-      else {
-        $this->working(STRING_WORKING_MAINTENANCE_MODE_DISENGAGE_ITEM, array(
-          '!alias' => $alias,
-        ));
-      }
-      if (!drush_maintenance_mode(!!$on, $alias)) {
-        $this->error(STRING_MAINTENANCE_MODE_FAILURE, array(
-          '!state' => $on ? 1 : 0,
-          '!alias' => $alias,
-        ));
-        return FALSE;
-      }
+    if (!drush_maintenance_mode(!!$on, $alias)) {
+      $this->error(STRING_MAINTENANCE_MODE_FAILURE, array(
+        '!state' => $on ? 1 : 0,
+        '!alias' => $alias,
+      ));
+      return FALSE;
     }
     if ($on) {
       $this->working(STRING_SUCCESS_MAINTENANCE_MODE_ENGAGE);

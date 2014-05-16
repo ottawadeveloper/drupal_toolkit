@@ -141,10 +141,11 @@ class SiteUpdateCommand extends GenericSiteCommand {
   }
   
   public function executeCommand() {
+    $newID = dtk_generate_build_id();
     $this->executeAllSteps($this->steps, array(
       'type' => COMMAND_STEP_SITE,
       'vars' => array(
-        'buildID' => dtk_generate_build_id(),
+        'buildID' => $newID,
       ),
     ));
     $this->saveSiteConfiguration();
