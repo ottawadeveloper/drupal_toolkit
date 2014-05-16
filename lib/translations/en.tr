@@ -34,6 +34,7 @@ db_config.working.db-create-item = 'Creating database !name on [!server].'
 db_config.success.db-delete = 'All databases deleted.'
 db_config.success.db-create = 'All databases created.'
 
+drupal_site.working.save-config = 'Saving configuration file...'
 drupal_site.error.no-site = 'Could not build a site object.'
 drupal_site.error.old-site = 'This site is too old to use with this command, update it first.'
 drupal_site.error.missing-site = 'No site with the given name exists.'

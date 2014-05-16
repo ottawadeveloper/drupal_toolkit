@@ -313,6 +313,7 @@ class DrupalSite extends GenericDrupalEntity {
    *   The previous build ID.
    */
   public function getPreviousBuildID() {
+    var_dump($this->getSetting(SITE_BUILD_IDS));
     return $this->getSetting(SITE_LAST_BUILD_ID);
   }
   

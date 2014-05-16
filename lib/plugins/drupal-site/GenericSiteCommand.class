@@ -74,6 +74,8 @@ define('COMMAND_STEP_ALL_SUBSITES', 'subsites-all');
 
 define('STRING_ERROR_STEP_GENERIC', 'drupal_site.error.generic-step');
 
+define('STRING_WORKING_SAVE_CONFIG', 'drupal_site.working.save-config');
+
 /**
  * Provides a base for commands that need to work with sites.
  */
@@ -560,6 +562,7 @@ abstract class GenericSiteCommand extends GenericCommand {
    *   Whether or not the site configuration was saved.
    */
   private function saveEntityConfiguration(GenericDrupalEntity $entity, $die = TRUE) {
+    $this->out()->message($this->strings()->getString(STRING_WORKING_SAVE_CONFIG));
     if (!$entity->saveConfiguration()) {
       $this->error(STRING_COULD_NOT_SAVE_SITE);
       if ($die) {

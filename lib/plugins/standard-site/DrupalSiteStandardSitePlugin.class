@@ -599,9 +599,9 @@ class DrupalSiteStandardSitePlugin extends GenericPlugin implements EventListene
    *   TRUE if successful, otherwise FALSE;
    */
   private function refreshSiteSymlinks(DrupalSite $site) {
-    $currentBase = $subsite->getSetting(SITE_SETTING_CURRENT_BUILD, NULL, TRUE);
+    $currentBase = $site->getSetting(SITE_SETTING_CURRENT_BUILD, NULL, TRUE);
     if (empty($currentBase)) { return FALSE; }
-    if (!$this->createRootSymlinks($currentBase, $subsite)) {
+    if (!$this->createRootSymlinks($currentBase, $site)) {
       return FALSE;
     }
     if (!$this->symlinkAllSites($site)) {
