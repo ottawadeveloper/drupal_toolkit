@@ -65,11 +65,14 @@ class DrushMaintenancePlugin extends GenericPlugin implements EventListener {
       dtk_constant('EVENT_ROLLBACK_PREPARE'),
       dtk_constant('EVENT_UPDATE_PREPARE_SUBSITE'),
       dtk_constant('EVENT_UPDATE_PREP_SUBSITE_FOR_REFRESH'),
+      dtk_constant('EVENT_ROLLBACK_SUBSITE_PREP'),
+      dtk_constant('EVENT_ROLLBACK_SUBSITE_FINISH'),
     ), $this);
   }
   
   public function captureEvent(DtkEvent &$context, $eventType) {
     switch ($eventType) {
+      case EVENT_ROLLBACK_SUBSITE_FINISH:
       case EVENT_ROLLBACK_FINISH:
       case EVENT_UPDATE_PREPARE_FOR_REFRESH:
       case EVENT_UPDATE_PREP_SUBSITE_FOR_REFRESH:
@@ -77,6 +80,7 @@ class DrushMaintenancePlugin extends GenericPlugin implements EventListener {
           $context->setResult($this->setMaintenanceMode($context->getEntity(), FALSE));
         }
         break;
+      case EVENT_ROLLBACK_SUBSITE_PREP:
       case EVENT_ROLLBACK_PREPARE:
       case EVENT_UPDATE_PREPARE_FOR_UPDATE:
       case EVENT_UPDATE_PREPARE_SUBSITE:

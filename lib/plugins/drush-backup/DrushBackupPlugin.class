@@ -169,9 +169,11 @@ class DrushBackupPlugin extends GenericPlugin implements EventListener {
    *   TRUE if successful, otherwise FALSE.
    */
   public function restoreFromBackup(GenericDrupalEntity $site, $buildID) {
-    $this->working(STRING_WORKING_DRUSH_RESTORE);
     $drushAlias = $site->getSetting(SITE_DRUSH_ALIAS, NULL, TRUE);
     if (empty($drushAlias)) { return FALSE; }
+    $this->working(STRING_WORKING_DRUSH_RESTORE, array(
+      '!alias' => $drushAlias,
+    ));
     $keys = $this->getDatabaseKeys($site);
     $backupDirectory = $this->getBackupDirectoryName($site, $buildID, self::$updateDirectory);
     $restoredDirectory = $this->getBackupDirectoryName($site, $buildID, self::$restoredDirectory, date('Ymd-his'));

@@ -101,6 +101,13 @@ define('EVENT_ROLLBACK_COMPLETE', 'rollback-complete');
 define('STRING_ROLLBACK_STANDARD_ERROR', 'drupal_site_rollback.error.generic');
 
 /**
+ * Event fired to finish off the rollback procedure for subsites.
+ * 
+ * @ingroup events
+ */
+define('EVENT_ROLLBACK_SUBSITE_FINISH', 'rollback-subsite-finish');
+
+/**
  * Event fired to clean up the subsites.
  * 
  * @ingroup events
