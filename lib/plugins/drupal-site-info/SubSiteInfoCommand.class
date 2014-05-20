@@ -1,0 +1,15 @@
+<?php
+/**
+ * @file Defines the SubSiteInfoCommand class.
+ */
+
+/**
+ * Displays information about the specified subsite.
+ */
+class SubSiteInfoCommand extends GenericSiteCommand {
+  
+  public function executeCommand() {
+    
+  }
+  
+}

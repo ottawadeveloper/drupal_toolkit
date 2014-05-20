@@ -6,7 +6,7 @@
 /**
  * Allows the user to generate doxygen documentation against the build.
  */
-class SiteDoxygenCommand extends GenericCommand {
+class SiteDoxygenCommand extends GenericSiteCommand {
   
   public function executeCommand() {
     

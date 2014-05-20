@@ -1,0 +1,6 @@
+plugin = DrupalSiteInfoPlugin
+
+files[] = SiteInfoCommand.class
+files[] = SubSiteInfoCommand.class
+
+dependencies[] = drupal-site

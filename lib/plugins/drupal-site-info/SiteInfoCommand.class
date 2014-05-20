@@ -1,0 +1,15 @@
+<?php
+/**
+ * @file Defines the SiteInfoCommand class.
+ */
+
+/**
+ * Displays information about the specified site.
+ */
+class SiteInfoCommand extends GenericSiteCommand {
+  
+  public function executeCommand() {
+    
+  }
+  
+}
