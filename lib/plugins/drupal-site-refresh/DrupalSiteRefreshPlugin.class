@@ -1,0 +1,26 @@
+<?php
+/**
+ * @file Defines the DrupalSiteRefreshPlugin.
+ */
+
+/**
+ * Responsible for registering SiteRefreshCommand and SubSiteRefreshCommand.
+ */
+class DrupalSiteRefreshPlugin extends GenericPlugin implements EventListener {
+  
+  public function initialize() {
+    $this->events()->registerListener(array(
+      EVENT_CORE_REGISTER_COMMANDS
+    ), $this);
+  }
+  
+  public function captureEvent(DtkEvent $event, $type) {
+    switch ($type) {
+      case EVENT_CORE_REGISTER_COMMANDS:
+        $this->router()->addCommand('site-refresh', new SiteRefreshCommand());
+        $this->router()->addCommand('subsite-refresh', new SubSiteRefreshCommand());
+        break;
+    }
+  }
+  
+}

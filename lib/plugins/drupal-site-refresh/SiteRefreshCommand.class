@@ -1,0 +1,15 @@
+<?php
+/**
+ * @file Defines the SiteRefreshCommand class.
+ */
+
+/**
+ * Refreshes the configuration on a site.
+ */
+class SiteRefreshCommand extends GenericSiteCommand {
+  
+  public function executeCommand() {
+    
+  }
+  
+}

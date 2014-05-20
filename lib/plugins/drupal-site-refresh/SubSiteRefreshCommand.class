@@ -1,0 +1,15 @@
+<?php
+/**
+ * @file Defines the SubSiteRefreshCommand class.
+ */
+
+/**
+ * Refreshes the configuration of a subsite.
+ */
+class SubSiteRefreshCommand extends GenericSiteCommand {
+  
+  public function executeCommand() {
+    
+  }
+  
+}

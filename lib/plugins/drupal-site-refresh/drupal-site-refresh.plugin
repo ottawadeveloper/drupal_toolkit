@@ -1,0 +1,6 @@
+plugin = DrupalSiteRefreshPlugin
+
+files[] = SiteRefreshCommand.class
+files[] = SubSiteRefreshCommand.class
+
+dependencies[] = drupal-site
