@@ -3,27 +3,6 @@
  * @file Contains additional setup routines revolving around the plugin system.
  */
 
-// Find all the disabled core plugins.
-$disabled_plugins = $settings->getConfig(CONFIG_DISABLED_CORE_PLUGINS);
-if (empty($disabled_plugins)) {
-  $disabled_plugins = array();
-}
-
-/**
- * Configuration setting for the location of directories containing
- * plugins.
- * 
- * @ingroup config
- */
-define('CONFIG_PLUGIN_DIRECTORIES', 'plugins');
-
-// Register the core plugin directory first.
-$settings->extendDefaultConfiguration(array(
-  CONFIG_PLUGIN_DIRECTORIES => array(
-    assemble_path(TOOLKIT_COMMON_DIR, 'plugins'),
-  ),
-));
-
 // Locate all plug-in files.
 $pluginFiles = array();
 foreach ($settings->getConfig(CONFIG_PLUGIN_DIRECTORIES) as $pluginDirectory) {

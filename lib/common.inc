@@ -263,6 +263,13 @@ define('STRING_CORE_MISSING_SUBCOMMAND', 'core.error.missing-subcommand');
  */
 define('STRING_ERROR_NO_COMMAND', 'core.error.no-command-found');
 
+/**
+ * Configuration setting for the location of directories containing
+ * plugins.
+ * 
+ * @ingroup config
+ */
+define('CONFIG_PLUGIN_DIRECTORIES', 'plugins');
 
 /**
  * A list of files, relative to TOOLKIT_COMMON_DIR, that must be
@@ -314,8 +321,9 @@ $files = array(
  * $key => $value syntax.
  */
 $default_settings = array(
-  CONFIG_PLUGIN_INCLUDES => array(),
-  CONFIG_PLUGIN_REGISTRY => array(),
+  CONFIG_PLUGIN_DIRECTORIES => array(
+    TOOLKIT_COMMON_DIR . '/plugins',
+  ),
   CONFIG_DISABLED_CORE_PLUGINS => array(),
   CONFIG_DEBUG => FALSE,
   CONFIG_VERBOSE => FALSE,
