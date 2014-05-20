@@ -1,0 +1,5 @@
+plugin = DrupalSiteMetricsPlugin
+
+dependencies[] = drupal-site
+
+files[] = SiteMetricsCommand.class

@@ -1,0 +1,15 @@
+<?php
+/**
+ * @file Defines the SiteMetricsCommand class.
+ */
+
+/**
+ * Allows the user to generate different forms of metrics.
+ */
+class SiteMetricsCommand extends GenericSiteCommand {
+  
+  public function executeCommand() {
+    
+  }
+  
+}
