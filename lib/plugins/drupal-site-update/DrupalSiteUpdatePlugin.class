@@ -4,6 +4,20 @@
  */
 
 /**
+ * Fired for sites to do actions after the main actions.
+ * 
+ * @ingroup events
+ */
+define('EVENT_UPDATE_POST_ACTIONS', 'update-post-actions');
+
+/**
+ * Fired for subsites to do actions after the main actions.
+ * 
+ * @ingroup events
+ */
+define('EVENT_UPDATE_SUBSITE_POST_ACTIONS', 'update-subsites-post-actions');
+
+/**
  * Fired for prior actions for subsites.
  * 
  * @ingroup events
