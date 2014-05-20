@@ -8,6 +8,27 @@
  */
 
 /**
+ * Help category name for drupal site management commands.
+ * 
+ * @ingroup strings
+ */
+define('STRING_HELP_DSM_CATEGORY', 'help.category.drupal-site-management');
+
+/**
+ * Help description for the site name argument.
+ * 
+ * @ingroup strings
+ */
+define('STRING_HELP_SITE_NAME', 'help.arg.site-name');
+
+/**
+ * Help description for the subsite name argument.
+ * 
+ * @ingroup strings
+ */
+define('STRING_HELP_SUBSITE_NAME', 'help.arg.subsite-name');
+
+/**
  * String token for when the subsite is not installed.
  * 
  * @ingroup strings

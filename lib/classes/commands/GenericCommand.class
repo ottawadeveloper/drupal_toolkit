@@ -120,8 +120,14 @@ abstract class GenericCommand implements RouterCommand {
    *   Fallback message should one not be found.
    */
   protected function error($key, $args = array(), $level = CLOG_ERROR, $default = NULL) {
-    $message = $this->strings()->getString($key, $args, $default);
-    $this->out()->log($message, $level);
+    $this->out()->log($this->str($key, $args, $default), $level);
+  }
+  
+  /**
+   * Wrapper around StringManagerInterface::getString().
+   */
+  protected function str($key, $args = array(), $default = NULL) {
+    return $this->strings()->getString($key, $args, $default);
   }
   
   /**

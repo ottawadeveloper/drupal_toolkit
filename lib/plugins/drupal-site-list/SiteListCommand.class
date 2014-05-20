@@ -1,0 +1,65 @@
+<?php
+/**
+ * @file Defines the SiteListCommand class.
+ */
+
+/**
+ * Responsible for displaying a list of relevant information about the
+ * sites installed to the build directory.
+ */
+class SiteListCommand extends GenericCommand {
+  
+  public function executeCommand() {
+    $sites = DrupalSite::findSites($this->config());
+    $entries = array();
+    $longest = array();
+    foreach ($sites as $key => $site) {
+      $entries[$key] = array(
+        'name' => $site->getBuildName(),
+        'alias' => $site->getDrushAlias(),
+        'primary' => $site->getSetting(SITE_PRIMARY_URL),
+      );
+      $ids = $site->getSubSites();
+      foreach ($ids as $id) {
+        $subsite = $site->getSubSite($id);
+        if ($subsite->exists()) {
+          $subsite->loadSettings();
+          $entries[$key . '_' . $id] = array(
+            'name' => '- ' . $subsite->getBuildName(),
+            'alias' => $subsite->getDrushAlias(),
+            'primary' => $subsite->getSetting(SITE_PRIMARY_URL),
+          );
+        }
+      }
+    }
+    foreach ($entries as $set) {
+      foreach ($set as $k => $v) {
+        if (empty($longest[$k]) || $longest[$k] < strlen($v)) {
+          $longest[$k] = strlen($v);
+        }
+      }
+    }
+    echo PHP_EOL;
+    echo PHP_EOL;
+    $header = '';
+    $header .= str_pad($this->strings()->getString(STRING_DISPLAY_BUILD_NAME), $longest['name']);
+    $header .= ' | ';
+    $header .= str_pad($this->strings()->getString(STRING_DISPLAY_DRUSH_ALIAS), $longest['alias']);
+    $header .= ' | ';
+    $header .= $this->strings()->getString(STRING_DISPLAY_PRIMARY_URL);
+    $header .= PHP_EOL;
+    echo terminal_color_string($header, TERMINAL_FOREGROUND_COLOR_WHITE);
+    echo str_pad('', array_sum($longest) + 20, '-') . PHP_EOL;
+    foreach ($entries as $entry) {
+      echo str_pad($entry['name'], $longest['name']);
+      echo ' | ';
+      echo str_pad($entry['alias'], $longest['alias']);
+      echo ' | ';
+      echo 'http://' . $entry['primary'];
+      echo PHP_EOL;
+    }
+    echo PHP_EOL;
+    echo PHP_EOL;
+  }
+  
+}

@@ -401,4 +401,35 @@ class DrupalSite extends GenericDrupalEntity {
     return $site;
   }
   
+  /**
+   * Retrieves an array of sites that exist in CONFIG_BUILD_DIRECTORY.
+   * 
+   * @param Configuration $config
+   *   Configuration object to determine the build directory path.
+   * 
+   * @return array
+   *   An array of valid DrupalSites.
+   */
+  public static function findSites(Configuration $config) {
+    $sites = array();
+    $path = $config->getConfig(CONFIG_BUILD_DIRECTORY);
+    $path = expand_path($path);
+    $handle = opendir($path);
+    if (!empty($handle)) {
+      while (($file = readdir($handle)) !== FALSE) {
+        if ($file != "." && $file != "..") {
+          $p = assemble_path($path, $file);
+          $site = new DrupalSite($file, $p);
+          if ($site->exists()) {
+            $site->loadSettings();
+            $sites[$file] = $site;
+          }
+        }
+      }
+      closedir($handle);
+    }
+    ksort($sites);
+    return $sites;
+  }
+  
 }

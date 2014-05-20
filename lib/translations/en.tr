@@ -284,3 +284,18 @@ drupal_site_build.error.subsite-generic = "An error occured while building a sub
 drupal_site.working.history-cleanup = 'Removing up to !count old builds.'
 drupal_site.success.history-cleanup = 'Build history has been pruned.'
 drupal_site.working.history-cleanup-item = 'Removing old build !buildID.'
+
+
+help.category.drupal-site-management = 'Drupal Site Management'
+help.command-desc.site-delete = 'Removes all components of the site and its subsites that the installer created.'
+help.command-desc.subsite-delete = 'Removes all components of the subsite that the installer created.'
+help.command-desc.site-build = 'Creates a new Drupal installation.'
+help.command-desc.subsite-build = 'Adds a new subsite to an existing Drupal installation.'
+help.arg.site-name = 'The build name of a site.'
+help.arg.subsite-name = 'The build name of a subsite.'
+help.option.site-url = 'The primary URL for the site, without the protocol.'
+help.option.site-extra-urls = 'Any additional URLs for a site separated by a command. Do not include the protocol.'
+
+drupal-site-list.display.build-name = 'Build Name'
+drupal-site-list.display.drush-alias = 'Drush Alias'
+drupal-site-list.display.primary-url = 'Primary URL'

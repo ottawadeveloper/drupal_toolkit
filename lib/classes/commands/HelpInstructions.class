@@ -48,7 +48,7 @@ class HelpInstructions {
   
   public function getDisplayText() {
     $text = array();
-    $text[] = $this->command;
+    $text[] = terminal_color_string($this->command, TERMINAL_FOREGROUND_COLOR_BROWN);
     $text[] = terminal_word_wrap_line($this->description, '  ');
     $text[] = '';
     if (!empty($this->arguments)) {
@@ -63,8 +63,8 @@ class HelpInstructions {
       ksort($this->options);
       $text[] = '  Options';
       foreach ($this->options as $option => $desc) {
-        $text[] = '  ' . $option;
-        $text[] = terminal_word_wrap_line($desc, '    ');
+        $text[] = '    ' . terminal_color_string($option, TERMINAL_FOREGROUND_COLOR_LIGHT_GRAY);
+        $text[] = terminal_word_wrap_line($desc, '      ');
         if (!empty($this->optionAliases[$option])) {
           $text[] = terminal_word_wrap_line('    Aliases: ' . implode(', ', $this->optionAliases[$option]), '    ', 80, TRUE);
         }
@@ -74,8 +74,8 @@ class HelpInstructions {
     if (!empty($this->usageExamples)) {
       $text[] = '  Usages';
       foreach ($this->usageExamples as $command => $example) {
-        $text[] = '  ' . $command;
-        $text[] = terminal_word_wrap_line($example, '    ');
+        $text[] = '    ' . $command;
+        $text[] = terminal_word_wrap_line($example, '      ');
         $text[] = '';
       }
       $text[] = '';

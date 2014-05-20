@@ -185,7 +185,7 @@ define('TERMINAL_BACKGROUND_COLOR_LIGHT_GRAY', '47');
  * Colours a string to be displayed to the terminal. If support is not present 
  * for this, or no colours are specified, then the string will be returned.
  * 
- * @todo support colours on DOS systems? support HTML colours?
+ * @todo support colours on DOS systems?
  * 
  * @param type $string
  * @param type $foreground
@@ -219,20 +219,29 @@ function terminal_color_string($string, $foreground = NULL, $background = NULL) 
   return implode("", $pieces);
 }
 
-function terminal_word_wrap_line($string, $prefix, $maxLength = 80, $skipFirstPrefix = FALSE) {
+function terminal_word_wrap_line($string, $prefix, $maxLength = NULL, $skipFirstPrefix = FALSE) {
+  if (empty($maxLength)) {
+    $maxLength = 80;
+  }
   $splitLength = $maxLength - $prefix;
   $pieces = array();
   $first = TRUE;
   while (strlen($string) > $splitLength) {
+    $splitAt = $splitLength;
     if ($first && $skipFirstPrefix) {
       $first = FALSE;
-      $pieces[] = substr($string, 0, $maxLength);
-      $string = substr($string, $maxLength);
+      $splitAt = $maxLength;
+    }
+    $location = strrpos($string, ' ', $splitAt - strlen($string));
+    $next = $splitAt;
+    if (empty($location)) {
+      $location = $splitAt;
     }
     else {
-      $pieces[] = $prefix . substr($string, 0, $splitLength);
-      $string = substr($string, $splitLength);
+      $next = $location + 1;
     }
+    $pieces[] = $prefix . substr($string, 0, $location);
+    $string = substr($string, $next);
   }
   $pieces[] = $prefix . $string;
   return implode($pieces, PHP_EOL);

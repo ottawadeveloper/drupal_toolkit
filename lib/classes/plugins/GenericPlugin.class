@@ -96,6 +96,14 @@ abstract class GenericPlugin implements PluginInterface {
     return $this->dm;
   }
   
+  /**
+   * Wrapper around StringManagerInterface::getString().
+   */
+  protected function str($key, $args = array(), $default = NULL) {
+    return $this->strings()->getString($key, $args, $default);
+  }
+  
+  
   public function strings() { return $this->sm; }
   
   public function args() { return $this->args; }

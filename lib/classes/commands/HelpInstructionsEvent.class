@@ -12,4 +12,17 @@ class HelpInstructionsEvent extends DtkEvent {
     return $this->instructions;
   }
   
+  /**
+   * 
+   * @param string $commandName
+   * 
+   * @return HelpInstructions
+   */
+  public function findInstructions($commandName) {
+    if (isset($this->instructions[$commandName])) {
+      return $this->instructions[$commandName];
+    }
+    return NULL;
+  }
+  
 }

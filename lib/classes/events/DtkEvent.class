@@ -57,6 +57,14 @@ class DtkEvent {
   }
   
   /**
+   * Resets some key variables so that this event can be executed again.
+   */
+  public function reset() {
+    $this->success = FALSE;
+    $this->propagate = TRUE;
+  }
+  
+  /**
    * Checks to see if the event handlers should keep firing.
    * 
    * @return boolean

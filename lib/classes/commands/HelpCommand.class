@@ -18,6 +18,13 @@ define('EVENT_FIND_HELP_INSTRUCTIONS', 'find-help-instructions');
 define('STRING_ERROR_NO_HELP_COMMANDS', 'help.error.no-commands');
 
 /**
+ * Fired to allow other modules to alter help instructions.
+ * 
+ * @ingroup events
+ */
+define('EVENT_ALTER_HELP_INSTRUCTIONS', 'alter-help-instructions');
+
+/**
  * Basic command that provides help output.
  * 
  * @ingroup commands
@@ -27,6 +34,8 @@ class HelpCommand extends GenericCommand {
   public function executeCommand() {
     $event = new HelpInstructionsEvent();
     $this->events()->fireEvent(EVENT_FIND_HELP_INSTRUCTIONS, $event);
+    $event->reset();
+    $this->events()->fireEvent(EVENT_ALTER_HELP_INSTRUCTIONS, $event);
     $categorized = array();
     foreach ($event->getInstructions() as $instruction) {
       if ($instruction instanceof HelpInstructions) {
