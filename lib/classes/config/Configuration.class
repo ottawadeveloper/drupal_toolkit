@@ -110,12 +110,10 @@ class Configuration implements ConfigurationManagerInterface {
   
   public function appendIniFile($file) {
     if (!is_readable($file)) {
-      echo '1';
       return FALSE;
     }
     $ini = parse_ini_file($file);
     if ($ini === FALSE) {
-      echo '2';
       return FALSE;
     }
     $this->extendConfiguration($ini);

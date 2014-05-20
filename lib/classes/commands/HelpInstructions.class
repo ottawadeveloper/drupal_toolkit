@@ -46,10 +46,17 @@ class HelpInstructions {
     return $this->category;
   }
   
+  public function getShortDisplayText() {
+    $text = array();
+    $text[] = terminal_color_string($this->command, TERMINAL_FOREGROUND_COLOR_BROWN);
+    $text[] = terminal_word_wrap_line($this->description, '    ');
+    return implode(PHP_EOL, $text);
+  }
+  
   public function getDisplayText() {
     $text = array();
     $text[] = terminal_color_string($this->command, TERMINAL_FOREGROUND_COLOR_BROWN);
-    $text[] = terminal_word_wrap_line($this->description, '  ');
+    $text[] = terminal_word_wrap_line($this->description, '    ');
     $text[] = '';
     if (!empty($this->arguments)) {
       ksort($this->arguments);
@@ -63,6 +70,12 @@ class HelpInstructions {
       ksort($this->options);
       $text[] = '  Options';
       foreach ($this->options as $option => $desc) {
+        if (strlen($option) > 0) {
+          $option = '--' . $option;
+        }
+        else {
+          $option = '-' . $option;
+        }
         $text[] = '    ' . terminal_color_string($option, TERMINAL_FOREGROUND_COLOR_LIGHT_GRAY);
         $text[] = terminal_word_wrap_line($desc, '      ');
         if (!empty($this->optionAliases[$option])) {

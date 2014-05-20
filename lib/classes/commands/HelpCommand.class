@@ -24,6 +24,14 @@ define('STRING_ERROR_NO_HELP_COMMANDS', 'help.error.no-commands');
  */
 define('EVENT_ALTER_HELP_INSTRUCTIONS', 'alter-help-instructions');
 
+define('OPTION_HELP_COMMAND', 'command');
+
+define('STRING_HELP_CORE_CATEGORY', 'string.category.core');
+
+define('STRING_HELP_COMMAND_DESC_HELP', 'string.command-desc.help');
+
+define('STRING_HELP_OPTION_HELP_COMMAND_DESC', 'string.option.command');
+
 /**
  * Basic command that provides help output.
  * 
@@ -33,6 +41,9 @@ class HelpCommand extends GenericCommand {
     
   public function executeCommand() {
     $event = new HelpInstructionsEvent();
+    $help = new HelpInstructions($this->str(STRING_HELP_CORE_CATEGORY), 'help', $this->str(STRING_HELP_COMMAND_DESC_HELP));
+    $help->defineOption(OPTION_HELP_COMMAND, $this->str(STRING_HELP_OPTION_HELP_COMMAND_DESC));
+    $event->registerInstruction($help);
     $this->events()->fireEvent(EVENT_FIND_HELP_INSTRUCTIONS, $event);
     $event->reset();
     $this->events()->fireEvent(EVENT_ALTER_HELP_INSTRUCTIONS, $event);
@@ -46,18 +57,29 @@ class HelpCommand extends GenericCommand {
         $categorized[$category][$instruction->getCommandName()] = $instruction;
       }
     }
-    if (empty($categorized)) {
-      $this->error(STRING_ERROR_NO_HELP_COMMANDS, array(), CLOG_WARNING);
-    }
-    else {
-      ksort($categorized);
-      foreach ($categorized as $category => $list) {
-        echo $category . PHP_EOL . '--------------------' . PHP_EOL;
-        foreach ($list as $command) {
-          echo $command->getDisplayText() . PHP_EOL;
+    $found = FALSE;
+    ksort($categorized);
+    $requested = $this->args()->getOption(OPTION_HELP_COMMAND);
+    foreach ($categorized as $category => $list) {
+      if (empty($requested) || isset($list[$requested])) {
+        echo PHP_EOL;
+        echo terminal_color_string($category, TERMINAL_FOREGROUND_COLOR_WHITE) . PHP_EOL . '--------------------' . PHP_EOL;
+        foreach ($list as $key => $command) {
+          if (empty($requested) || $key === $requested) {
+            if (!empty($requested)) {
+              echo $command->getDisplayText() . PHP_EOL;
+            }
+            else {
+              echo $command->getShortDisplayText() . PHP_EOL;
+            }
+            $found = TRUE;
+          }
         }
-        echo '--------------------' . PHP_EOL;
+        echo PHP_EOL;
       }
+    }
+    if (!$found) {
+      echo $this->strings()->getString(STRING_ERROR_NO_HELP_COMMANDS) . PHP_EOL;
     }
   }
   
