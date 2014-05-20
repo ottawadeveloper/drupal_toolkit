@@ -1,5 +1,11 @@
 <?php
+/**
+ * @file Defines the DrupalSiteListPlugin class.
+ */
 
+/**
+ * Responsible for registering the SiteListCommand object.
+ */
 class DrupalSiteListPlugin extends GenericPlugin implements EventListener {
   
   public function initialize() {
