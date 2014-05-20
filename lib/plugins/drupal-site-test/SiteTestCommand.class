@@ -1,0 +1,15 @@
+<?php
+/**
+ * @file Defines the SiteTestCommand class.
+ */
+
+/**
+ * Allows the user to execute SimpleTest cases
+ */
+class SiteTestCommand extends GenericSiteCommand {
+  
+  public function executeCommand() {
+    
+  }
+  
+}

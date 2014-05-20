@@ -1,0 +1,5 @@
+plugin = DrupalSiteTestPlugin
+
+dependencies[] = drupal-site
+
+files[] = SiteTestCommand.class
