@@ -107,4 +107,30 @@ interface ConfigurationManagerInterface extends ArgsDependency {
    */
   function appendIniFile($configFile);
   
+  /**
+   * Sets a stateful variable that other plugins can read and infer information
+   * from. 
+   * 
+   * @param string $key
+   *   The key to set.
+   * @param mixed $value
+   *   Value to set for $key.
+   */
+  function setState($key, $value);
+  
+  /**
+   * Retrieves the state that was previously set, or $default if no state
+   * was previously defined.
+   * 
+   * @param string $key
+   *   The key to retrieve.
+   * @param mixed $default
+   *   The default value to return if $key has not been set.
+   * 
+   * @return mixed
+   *   The value set by setState() or $default if no call has been made to 
+   *   setState() yet.
+   */
+  function getState($key, $default = NULL);
+  
 }

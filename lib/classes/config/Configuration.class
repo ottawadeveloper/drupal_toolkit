@@ -38,6 +38,13 @@ class Configuration implements ConfigurationManagerInterface {
   private $args;
   
   /**
+   * State variables.
+   * 
+   * @var array
+   */
+  private $state;
+  
+  /**
    * Constructor
    * 
    * @param array $defaults
@@ -135,6 +142,16 @@ class Configuration implements ConfigurationManagerInterface {
     return TRUE;
   }
   
+  public function setState($key, $value) {
+    $this->state[$key] = $value;
+  }
+  
+  public function getState($key, $default = NULL) {
+    if (isset($this->state[$key])) {
+      return $this->state[$key];
+    }
+    return $default;
+  }
   
 }
 
