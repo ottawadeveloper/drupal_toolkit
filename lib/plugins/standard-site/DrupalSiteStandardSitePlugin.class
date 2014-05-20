@@ -460,7 +460,7 @@ class DrupalSiteStandardSitePlugin extends GenericPlugin implements EventListene
     $event = new DrupalSettingsEvent($entity, $default);
     $this->events()->fireEvent(EVENT_GET_EXTRA_SETTINGS, $event);
     $settings = $event->getSettings();
-    if (!empty($settings)) {
+    if ((!empty($settings)) && (count($settings) > 0)) {
       if (!file_append_contents($settingsFile, implode(PHP_EOL, $settings))) {
         $this->error(STRING_UNABLE_TO_APPEND_SETTINGS);
         return FALSE;

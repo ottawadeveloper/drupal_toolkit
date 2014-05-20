@@ -494,6 +494,7 @@ function execute_system_command($command, array $args = array(), &$output = arra
  *   TRUE if successful, otherwise FALSE.
  */
 function file_append_contents($filename, $content) {
+  if (empty($content)) { return TRUE; }
   $handle = fopen($filename, 'a');
   if (empty($handle)) { return FALSE; }
   if (is_array($content)) {
@@ -501,5 +502,5 @@ function file_append_contents($filename, $content) {
   }
   $res = fwrite($handle, $content);
   fclose($handle);
-  return ($res !== FALSE) && $res > 0;
+  return ($res !== FALSE) && ($res > 0);
 }

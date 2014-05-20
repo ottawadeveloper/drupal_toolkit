@@ -94,6 +94,7 @@ class DrupalSettingsEvent extends DtkEvent {
    *   An array of lines to add to the settings.
    */
   public function appendSettings(array $lines) {
+    if (empty($lines)) { return; }
     foreach ($lines as $line) {
       $this->appendSettingsLine($line);
     }
