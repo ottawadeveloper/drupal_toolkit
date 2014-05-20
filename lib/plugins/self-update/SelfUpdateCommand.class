@@ -1,0 +1,15 @@
+<?php
+/**
+ * @file Defines the SelfUpdateCommand class.
+ */
+
+/**
+ * Allows the user to update the toolkit from the latest build.
+ */
+class SelfUpdateCommand extends GenericSiteCommand {
+  
+  public function executeCommand() {
+    
+  }
+  
+}

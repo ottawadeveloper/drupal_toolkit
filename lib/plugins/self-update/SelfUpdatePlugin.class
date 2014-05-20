@@ -1,0 +1,25 @@
+<?php
+/**
+ * @file Defines the SelfUpdatePlugin class.
+ */
+
+/**
+ * Responsible for registering SelfUpdateCommand.
+ */
+class SelfUpdatePlugin extends GenericPlugin implements EventListener {
+  
+  public function initialize() {
+    $this->events()->register(array(
+      EVENT_CORE_REGISTER_COMMANDS,
+    ), $this);
+  }
+  
+  public function captureEvent(DtkEvent &$event, $type) {
+    switch ($type) {
+      case EVENT_CORE_REGISTER_COMMANDS:
+        $this->router()->addCommand('self-update', new SelfUpdateCommand());
+        break;
+    }
+  }
+  
+}

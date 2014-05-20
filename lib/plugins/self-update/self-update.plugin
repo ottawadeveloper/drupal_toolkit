@@ -1,0 +1,3 @@
+plugin = SelfUpdatePlugin
+
+files[] = SelfUpdateCommand.class
