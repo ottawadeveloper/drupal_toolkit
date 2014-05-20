@@ -46,6 +46,12 @@ foreach ($pluginFiles as $file) {
     'files' => array(),
     'dependencies' => array(),
   );
+  // Constants are included here so that they are available
+  // even if the plug-in is disabled.
+  $constants = assemble_path(dirname($file), 'constants.php');
+  if (file_exists($constants)) {
+    require $constants;
+  }
 }
 
 // Sort plugins by priority to let the terminal go first.
@@ -103,10 +109,6 @@ foreach ($loadPlugins as $key) {
   $out->log('Initializing plugin ['.$key.']', CLOG_DEBUG);
   $plugin = $pluginData[$key];
   $base = dirname($plugin['path']);
-  $constants = assemble_path($base, 'constants.php');
-  if (file_exists($constants)) {
-    require $constants;
-  }
   if (!empty($plugin['files'])) {
     foreach ($plugin['files'] as $file) {
       $path = assemble_path($base, $file);
