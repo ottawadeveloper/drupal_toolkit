@@ -1,0 +1,15 @@
+<?php
+/**
+ * @file Defines the SiteRollbackAllCommand class.
+ */
+
+/**
+ * Allows the user to rollback all of the sites at once.
+ */
+class SiteRollbackAllCommand extends GenericCommand {
+  
+  public function executeCommand() {
+    
+  }
+  
+}

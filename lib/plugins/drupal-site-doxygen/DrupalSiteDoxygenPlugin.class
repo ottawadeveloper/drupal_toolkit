@@ -1,0 +1,25 @@
+<?php
+/**
+ * @file Defines the DrupalSiteDoxygenPlugin class.
+ */
+
+/**
+ * Responsible for registering the SiteDoxygenCommand command.
+ */
+class DrupalSiteDoxygenPlugin extends GenericPlugin implements EventListener {
+  
+  public function initialize() {
+    $this->events()->register(array(
+      EVENT_CORE_REGISTER_COMMANDS,
+    ), $this);
+  }
+  
+  public function captureEvent(DtkEvent &$event, $type) {
+    switch ($type) {
+      case EVENT_CORE_REGISTER_COMMANDS:
+        $this->router()->addCommand('site-doxygen', new SiteDoxygenCommand());
+        break;
+    }
+  }
+  
+}

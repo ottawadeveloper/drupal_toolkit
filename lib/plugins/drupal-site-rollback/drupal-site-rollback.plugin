@@ -2,5 +2,6 @@ plugin = DrupalSiteRollbackPlugin
 priority = 10
 
 files[] = SiteRollbackCommand.class
+files[] = SiteRollbackAllCommand.class
 
 dependencies[] = drupal-site

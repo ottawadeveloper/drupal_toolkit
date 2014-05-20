@@ -1,0 +1,15 @@
+<?php
+/**
+ * @file Defines the SiteUpdateAllCommand class.
+ */
+
+/**
+ * Allows the user to update all of the sites at once.
+ */
+class SiteUpdateAllCommand extends GenericCommand {
+  
+  public function executeCommand() {
+    
+  }
+  
+}

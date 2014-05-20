@@ -1,0 +1,15 @@
+<?php
+/**
+ * @file Defines the SiteDoxygenCommand class.
+ */
+
+/**
+ * Allows the user to generate doxygen documentation against the build.
+ */
+class SiteDoxygenCommand extends GenericCommand {
+  
+  public function executeCommand() {
+    
+  }
+  
+}
