@@ -481,3 +481,25 @@ function execute_system_command($command, array $args = array(), &$output = arra
   }
   return $result;
 }
+
+/**
+ * Appends text to the end of a file
+ * 
+ * @param string $filename
+ *   The file to append content to.
+ * @param string|array $content
+ *   The content to append. If an array, will be imploded using EOL characters.
+ * 
+ * @return boolean
+ *   TRUE if successful, otherwise FALSE.
+ */
+function file_append_contents($filename, $content) {
+  $handle = fopen($filename, 'a');
+  if (empty($handle)) { return FALSE; }
+  if (is_array($content)) {
+    $content = implode(PHP_EOL, $content);
+  }
+  $res = fwrite($handle, $content);
+  fclose($handle);
+  return ($res !== FALSE) && $res > 0;
+}
