@@ -23,7 +23,9 @@ class SiteRefreshCommand extends GenericSiteCommand {
   }
   
   public function executeCommand() {
-    
+    $this->executeAllSteps($this->steps, array(
+      'type' => COMMAND_STEP_SITE,
+    ));
   }
   
 }
