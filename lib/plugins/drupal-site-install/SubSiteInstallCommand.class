@@ -7,6 +7,8 @@
  * Responsible for the command that installs a subsite. This proceeds in
  * a similar fashion to installing the site itself, except that different
  * variables may be used.
+ * 
+ * @ingroup commands
  */
 class SubSiteInstallCommand extends GenericSiteCommand {
   

@@ -5,6 +5,11 @@
 
 /**
  * Allows the user to update all of the sites at once.
+ * 
+ * This works by executing the update command (with optional branch parameter)
+ * on all the sites in sequence.
+ * 
+ * @ingroup commands
  */
 class SiteUpdateAllCommand extends GenericCommand {
   

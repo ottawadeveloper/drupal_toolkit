@@ -4,12 +4,15 @@
  */
 
 /**
- * Allows the user to execute SimpleTest cases
+ * Allows the user to execute test cases against a site.
+ * 
+ * @ingroup commands
  */
 class SiteTestCommand extends GenericSiteCommand {
   
   public function executeCommand() {
-    
+    //@todo implement
+    exit(1);
   }
   
 }

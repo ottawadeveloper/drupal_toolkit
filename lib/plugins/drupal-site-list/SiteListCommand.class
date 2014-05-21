@@ -6,6 +6,8 @@
 /**
  * Responsible for displaying a list of relevant information about the
  * sites installed to the build directory.
+ * 
+ * @ingroup commands
  */
 class SiteListCommand extends GenericCommand {
   

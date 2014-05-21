@@ -5,6 +5,8 @@
 
 /**
  * This provides the site-rollback command to the toolkit.
+ * 
+ * @ingroup plugins
  */
 class DrupalSiteRollbackPlugin extends GenericPlugin implements EventListener {
     

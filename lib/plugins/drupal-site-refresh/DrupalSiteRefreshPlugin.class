@@ -5,6 +5,8 @@
 
 /**
  * Responsible for registering SiteRefreshCommand and SubSiteRefreshCommand.
+ * 
+ * @ingroup plugins
  */
 class DrupalSiteRefreshPlugin extends GenericPlugin implements EventListener {
   

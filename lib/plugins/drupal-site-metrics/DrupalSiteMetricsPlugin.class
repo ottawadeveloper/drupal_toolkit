@@ -5,6 +5,7 @@
 
 /**
  * Responsible for registering the SiteMetricsCommand command.
+ * @ingroup plugins
  */
 class DrupalSiteMetricsPlugin extends GenericPlugin implements EventListener {
   

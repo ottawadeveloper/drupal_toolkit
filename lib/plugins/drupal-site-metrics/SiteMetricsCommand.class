@@ -5,11 +5,14 @@
 
 /**
  * Allows the user to generate different forms of metrics.
+ * 
+ * @ingroup commands
  */
 class SiteMetricsCommand extends GenericSiteCommand {
   
   public function executeCommand() {
-    
+    // @todo implement this method
+    exit(1);
   }
   
 }

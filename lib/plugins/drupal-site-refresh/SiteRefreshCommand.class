@@ -5,9 +5,16 @@
 
 /**
  * Refreshes the configuration on a site.
+ * 
+ * @ingroup commands
  */
 class SiteRefreshCommand extends GenericSiteCommand {
 
+  /**
+   * An array of steps to execute for this command.
+   * 
+   * @var array
+   */
   private $steps = array(
     array(
       'event' => EVENT_SITE_REFRESH_CONFIGURATION,

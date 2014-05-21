@@ -5,6 +5,8 @@
 
 /**
  * The rollback command undoes what was done in the update command.
+ * 
+ * @ingroup commands
  */
 class SiteRollbackCommand extends GenericSiteCommand {
   

@@ -5,6 +5,8 @@
 
 /**
  * Responsible for registering the SiteTestCommand command.
+ * 
+ * @ingroup plugins
  */
 class DrupalSiteTestPlugin extends GenericPlugin implements EventListener {
   

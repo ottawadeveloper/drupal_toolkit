@@ -5,6 +5,8 @@
 
 /**
  * Responsible for installing a Drupal site.
+ * 
+ * @ingroup commands
  */
 class SiteInstallCommand extends GenericSiteCommand {
   

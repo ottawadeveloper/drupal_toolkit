@@ -5,6 +5,11 @@
 
 /**
  * Allows the user to rollback all of the sites at once.
+ * 
+ * This works by executing the SiteRollbackCommand for all sites in
+ * sequence.
+ * 
+ * @ingroup commands
  */
 class SiteRollbackAllCommand extends GenericCommand {
   

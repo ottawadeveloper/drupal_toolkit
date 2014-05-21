@@ -5,9 +5,15 @@
 
 /**
  * Refreshes the configuration of a subsite.
+ * 
+ * @ingroup commands
  */
 class SubSiteRefreshCommand extends GenericSiteCommand {
   
+  /**
+   * An array of steps to execute for this command.
+   * @var type 
+   */
   private $steps = array(
     array(
       'event' => EVENT_SUBSITE_REFRESH_CONFIGURATION,

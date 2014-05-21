@@ -4,45 +4,9 @@
  */
 
 /**
- * Fired before the install process begins.
- * 
- * @ingroup events
- */
-define('EVENT_INSTALL_START', 'drupal-install-start');
-
-/**
- * Fired after the install process is done.
- * 
- * @ingroup events
- */
-define('EVENT_INSTALL_DONE', 'drupal-install-done');
-
-/**
- * Fired to install the site, which one plugin must take responsibility for
- * for the task to succeed.
- * 
- * @ingroup events
- */
-define('EVENT_INSTALL_TASK', 'drupal-install-task');
-
-/**
- * Fired for extra install tasks.
- * 
- * @ingroup events
- */
-define('EVENT_INSTALL_EXTRAS', 'drupal-install-extras');
-
-/**
- * String token for the generic error message should the install fail.
- * 
- * @ingroup strings
- */
-define('STRING_INSTALL_ERROR', 'drupal_site_install.error.install-error');
-
-define('SITE_LAST_SUBSITE_INSTALL_BUILD', 'subsite-last-install-build');
-
-/**
  * Sets up the site-install command.
+ * 
+ * @ingroup plugins
  */
 class DrupalSiteInstallPlugin extends GenericPlugin implements EventListener {
   

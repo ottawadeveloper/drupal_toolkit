@@ -5,6 +5,8 @@
 
 /**
  * Responsible for updating a Drupal site.
+ * 
+ * @ingroup commands
  */
 class SiteUpdateCommand extends GenericSiteCommand {
   

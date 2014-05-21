@@ -5,6 +5,8 @@
 
 /**
  * Responsible for registering the SiteListCommand object.
+ * 
+ * @ingroup plugins
  */
 class DrupalSiteListPlugin extends GenericPlugin implements EventListener {
   

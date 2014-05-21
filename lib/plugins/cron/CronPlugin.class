@@ -8,6 +8,8 @@
 
 /**
  * Responsible for installing cron tasks for Drupal.
+ * 
+ * @ingroup plugins
  */
 class CronPlugin extends GenericPlugin implements EventListener, ServerInteractionDependency {
 
