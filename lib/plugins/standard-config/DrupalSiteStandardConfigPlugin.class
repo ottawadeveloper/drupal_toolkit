@@ -4,52 +4,10 @@
  */
 
 /**
- * Config setting to specify a prefix for all created URLs.
- * 
- * Usually the non-prefixed versions will be created as well.
- * 
- * @ingroup config
- */
-define('CONFIG_SITE_URL_PREFIX', 'site-url-prefix');
-
-/**
- * Config setting to specify a pattern for the primary URL.
- * 
- * @see DrupalSite::replaceTokens().
- * @ingroup config
- */
-define('CONFIG_SITE_URL_PATTERN', 'site-url-pattern');
-
-/**
- * Config setting to specify a pattern for a subsite's primary URL.
- */
-define('CONFIG_SUBSITE_URL_PATTERN', 'subsite-url-pattern');
-
-/**
- * Argument to provide extra URLs for the site.
- * 
- * @ingroup args
- */
-define('OPTION_SITE_URLS', 'site-extra-urls');
-
-/**
- * Argument to specify the site's primary URL.
- * 
- * @ingroup args
- */
-define('OPTION_SITE_URL', 'site-url');
-
-define('STRING_HELP_OPTION_SITE_URL', 'help.option.site-url');
-
-define('STRING_HELP_OPTION_SITE_URLS', 'help.option.site-extra-urls');
-
-define('STRING_INFO_PRIMARY', 'drupal_site_config.info.primary-url');
-
-define('STRING_INFO_LOGIN', 'drupal_site_config.info.login-url');
-
-/**
  * Responsible for some basic configuratino settings that everyone is likely
  * to need with this tool.
+ * 
+ * @ingroup plugins
  */
 class DrupalSiteStandardConfigPlugin extends GenericPlugin implements EventListener {
   

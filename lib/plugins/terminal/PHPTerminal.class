@@ -69,6 +69,11 @@ class PHPTerminal implements Writer, Logger, Messenger {
    */
   private $sm;
   
+  /**
+   * Provides a list of colours used to colour the output.
+   * 
+   * @var array
+   */
   private static $typeColours = array(
     MESSAGE_WORKING => TERMINAL_FOREGROUND_COLOR_LIGHT_PURPLE,
     MESSAGE_FAILURE => TERMINAL_FOREGROUND_COLOR_LIGHT_RED,
@@ -79,6 +84,11 @@ class PHPTerminal implements Writer, Logger, Messenger {
     CLOG_CRITICAL => TERMINAL_FOREGROUND_COLOR_WHITE,
   );
   
+  /**
+   * Provides a list of background colors.
+   * 
+   * @var array
+   */
   private static $typeBackgroundColours = array(
     CLOG_CRITICAL => TERMINAL_BACKGROUND_COLOR_RED,
   );

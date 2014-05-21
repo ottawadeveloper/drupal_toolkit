@@ -6,6 +6,8 @@
 /**
  * This object is fired as event context when retrieving additional settings
  * for the settings.php or default.settings.php file.
+ * 
+ * @ingroup event_objects
  */
 class DrupalSettingsEvent extends DtkEvent {
   
