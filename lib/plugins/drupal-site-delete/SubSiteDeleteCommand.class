@@ -5,6 +5,8 @@
 
 /**
  * Responsible for organizing the deletion of a subsite.
+ * 
+ * @ingroup commands
  */
 class SubSiteDeleteCommand extends GenericSiteCommand {
   

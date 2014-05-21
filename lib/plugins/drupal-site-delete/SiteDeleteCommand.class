@@ -5,9 +5,16 @@
 
 /**
  * Responsible for handling the site-delete command.
+ * 
+ * @ingroup commands
  */
 class SiteDeleteCommand extends GenericSiteCommand {
   
+  /**
+   * An array of steps to execute.
+   * 
+   * @var array
+   */
   private $steps = array(
     array(
       'event' => EVENT_REMOVE_SUBSITE_ALL,
