@@ -7,28 +7,6 @@
  */
 
 /**
- * The setting that holds the main identifier.
- * 
- * @ingroup subsite_settings
- */
-define('SUBSITE_IDENTIFIER', 'subsite-id');
-
-/**
- * The site token that holds the subsite ID. Only available to subsites.
- * 
- * @ingroup site_tokens
- */
-define('SITE_TOKEN_SUBSITE_ID', 'SUBSITE_ID');
-
-/**
- * The site token that holds the subsite's parent BUILD_NAME. Only available to
- * subsites.
- * 
- * @ingroup site_tokens
- */
-define('SITE_TOKEN_SUBSITE_PARENT_ID', 'SUBSITE_PARENT_ID');
-
-/**
  * Contains all the relevant information for a Drupal subsite 
  * definition.
  */

@@ -3,6 +3,11 @@
  * @file Defines the SubSiteBuildCommand class
  */
 
+/**
+ * Responsible for building a subsite.
+ * 
+ * @ingroup commands
+ */
 class SubSiteBuildCommand extends GenericSiteCommand {
   
   /**

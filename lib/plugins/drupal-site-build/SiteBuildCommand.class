@@ -7,6 +7,8 @@
  * Manages the creation of a new site. Plugins that want to do something should
  * capture one of the events and possibly disable some core plugins if you want
  * to override some of the one-step processes.
+ * 
+ * @ingroup commands
  */
 class SiteBuildCommand extends GenericSiteCommand {
     

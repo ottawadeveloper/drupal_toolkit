@@ -3,6 +3,11 @@
  * @file Defines all the constants used by this plugin.
  */
 
+/**
+ * String token for printing out the database connection information.
+ * 
+ * @ingroup strings
+ */
 define('STRING_INFO_DB', 'db_config.info.db-info');
 
 /**

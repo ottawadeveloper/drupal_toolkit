@@ -4,81 +4,6 @@
  */
 
 /**
- * String token for when the site object could not be built.
- * 
- * @ingroup strings
- */  
-define('STRING_ERROR_NO_SITE', 'drupal_site.error.no-site');
-
-/**
- * String token for when the site object is out of date.
- * 
- * @ingroup strings
- */
-define('STRING_ERROR_OLD_SITE', 'drupal_site.error.old-site');
-
-/**
- * String token for when a site does not exist (and one is required).
- * 
- * @ingroup strings
- */
-define('STRING_ERROR_MISSING_SITE', 'drupal_site.error.missing-site');
-
-/**
- * String token for when a site exists (and we don't want to overwrite it).
- * 
- * @ingroup strings
- */
-define('STRING_ERROR_ALREADY_SITE', 'drupal_site.error.site-exists');
-
-/**
- * String token for if the site's configuration file could not be saved.
- * 
- * @ingroup strings
- */
-define('STRING_COULD_NOT_SAVE_SITE', 'drupal_site.error.no-save');
-
-/**
- * String token for when the subsite object could not be built.
- * 
- * @ingroup strings
- */
-define('STRING_ERROR_NO_SUBSITE', 'drupal_site.error.no-subsite');
-
-/**
- * String token for when the subsite exists and we don't want to overwrite it.
- * 
- * @ingroup strings
- */
-define('STRING_ERROR_OLD_SUBSITE', 'drupal_site.error.old-subsite');
-
-/**
- * String token for when the subsite does not exist.
- * 
- * @ingroup strings
- */
-define('STRING_ERROR_MISSING_SUBSITE', 'drupal_site.error.missing-subsite');
-
-/**
- * String token for when the subsite already exists and it should not.
- * 
- * @ingroup strings
- */
-define('STRING_ERROR_ALREADY_SUBSITE', 'drupal_site.error.already-subsite');
-
-define('COMMAND_STEP_SITE', 'site');
-
-define('COMMAND_STEP_SUBSITE', 'subsite');
-
-define('COMMAND_STEP_ALL_SUBSITES', 'subsites-all');
-
-define('COMMAND_STEP_ALL_INSTALLED_SUBSITES', 'subsites-all-installed');
-
-define('STRING_ERROR_STEP_GENERIC', 'drupal_site.error.generic-step');
-
-define('STRING_WORKING_SAVE_CONFIG', 'drupal_site.working.save-config');
-
-/**
  * Provides a base for commands that need to work with sites.
  */
 abstract class GenericSiteCommand extends GenericCommand {
@@ -580,9 +505,13 @@ abstract class GenericSiteCommand extends GenericCommand {
    *   Whether or not the site configuration was saved.
    */
   private function saveEntityConfiguration(GenericDrupalEntity $entity, $die = TRUE) {
-    $this->out()->message($this->strings()->getString(STRING_WORKING_SAVE_CONFIG));
+    $this->out()->message($this->strings()->getString(STRING_WORKING_SAVE_CONFIG, array(
+      '!uuid' => $entity->uuid(),
+    )));
     if (!$entity->saveConfiguration()) {
-      $this->error(STRING_COULD_NOT_SAVE_SITE);
+      $this->error(STRING_COULD_NOT_SAVE_SITE, array(
+        '!uuid' => $entity->uuid(),
+      ));
       if ($die) {
         exit(1);
       }

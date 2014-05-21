@@ -4,62 +4,6 @@
  */
 
 /**
- * The primary URL for the site.
- * 
- * @ingroup site_settings
- */
-define('SITE_PRIMARY_URL', 'primary_url');
-
-/**
- * Extra URLs for the site.
- * 
- * @ingroup site_settings
- */
-define('SITE_EXTRA_URLS', 'extra_urls');
-
-/**
- * Site token for the Primary URL.
- * 
- * @ingroup site_tokens
- */
-define('SITE_TOKEN_PRIMARY_URL', 'SITE_PRIMARY_URL');
-
-/**
- * Site token for all the URLs.
- *
- * @ingroup site_tokens
- */
-define('SITE_TOKEN_ALL_URLS', 'SITE_ALL_URLS');
-
-/**
- * Site token for the primary domain.
- * 
- * @ingroup site_tokens
- */
-define('SITE_TOKEN_PRIMARY_DOMAIN', 'SITE_DOMAIN');
-
-/**
- * Site token for all the domains
- * 
- * @ingroup site_tokens
- */
-define('SITE_TOKEN_ALL_DOMAINS', 'SITE_ALL_DOMAINS');
-
-/**
- * Site setting for an array of all the domains
- * 
- * @ingroup site_settings
- */
-define('SITE_SETTING_ALL_DOMAINS', 'all-domains');
-
-/**
- * Site token for a unique identifier.
- * 
- * @ingroup site_tokens
- */
-define('SITE_TOKEN_UUID', 'SITE_UUID');
-
-/**
  * Provides common tools required by both Sites and Subsites.
  */
 abstract class GenericDrupalEntity implements OutputDependency, StringDependency {
