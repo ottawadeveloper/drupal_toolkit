@@ -5,6 +5,8 @@
 
 /**
  * Allows the user to update the toolkit from the latest build.
+ * 
+ * @ingroup commands
  */
 class SelfUpdateCommand extends GenericCommand {
   

@@ -11,6 +11,8 @@
  * 
  * See ServerInteractionManagerInterface for more details on interacting with
  * the SI plug-in.
+ * 
+ * @ingroup di_dependency_interfaces
  */
 interface ServerInteractionDependency {
   

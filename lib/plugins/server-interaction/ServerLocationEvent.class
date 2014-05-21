@@ -5,6 +5,8 @@
 
 /**
  * An event that is fired in order to locate a set of servers.
+ * 
+ * @ingroup event_objects
  */
 class ServerLocationEvent extends DtkEvent {
   

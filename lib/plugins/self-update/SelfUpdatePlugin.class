@@ -5,6 +5,8 @@
 
 /**
  * Responsible for registering SelfUpdateCommand.
+ * 
+ * @ingroup plugins
  */
 class SelfUpdatePlugin extends GenericPlugin implements EventListener {
   

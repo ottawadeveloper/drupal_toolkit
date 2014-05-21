@@ -5,6 +5,8 @@
 
 /**
  * Allows plug-ins to interact with the SI plugin in a meaningful way.
+ * 
+ * @ingroup di_interfaces
  */
 interface ServerInteractionManagerInterface extends EventDependency, OutputDependency, StringDependency {
   

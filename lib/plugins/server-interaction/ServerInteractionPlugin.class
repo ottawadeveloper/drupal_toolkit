@@ -20,98 +20,10 @@
  */
 
 /**
- * Fired when a list of servers are needed.
- * 
- * @ingroup events
- */
-define('EVENT_FIND_SERVERS', 'find-servers');
-
-/**
- * Config key for the list of servers.
- * 
- * This key must be defined via YAML and be a list of @ref server_types 
- * "server types". 
- * 
- * @ingroup config
- */
-define('CONFIG_SERVER_LIST', 'si-servers');
-
-/**
- * String token for when there is an error connecting to the server.
- * 
- * @ingroup strings
- */
-define('STRING_SERVER_INTERACTION_NO_SERVER', 'server_interaction.error.could-not-init');
-
-/**
- * Site setting for external files.
- * 
- * This is an array of files managed through PhysicalServerInterface objects
- * that should be tied to this Drupal site (eg deleted).
- * 
- * @ingroup site_settings
- */
-define('SITE_REMOTE_FILES', 'remote-files');
-
-/**
- * Server setting for the type of remote server object to build.
- * 
- * @ingroup server_settings
- */
-define('SERVER_SETTING_TYPE', 'server-implementation');
-
-/**
- * Generic server implementation - this is the default.
- * 
- * @ingroup server_implementation_types
- */
-define('SERVER_IMPLEMENTATION_GENERIC', 'generic');
-
-/**
- * Fired when we need a physical server type.
- * 
- * @ingroup events
- */
-define('EVENT_CAST_PHYSICAL_SERVER', 'cast-physical-server');
-
-/**
- * String token for when we are unable to delete a managed remote file.
- * 
- * @ingroup strings
- */
-define('STRING_UNABLE_TO_DELETE_REMOTE_FILE', 'server_interaction.error.could-not-delete-remote-file');
-
-/**
- * String token for when the server could not be cast.
- * 
- * @ingroup strings
- */
-define('STRING_UNABLE_TO_CAST_SERVER', 'server_interaction.error.unable-to-cast');
-
-/**
- * String token for when the server is done deleting remote files.
- * 
- * @ingroup strings
- */
-define('STRING_SUCCESS_DELETING_REMOTE_FILES', 'server_interaction.success.remote-delete');
-
-/**
- * String token for when the server is about to delete some remote files.
- * 
- * @ingroup strings
- */
-define('STRING_WORKING_DELETING_REMOTE_FILES', 'server_interaction.working.remote-delete');
-
-/**
- * String token for when the server is deleting a specific remote file.
- * 
- * @ingroup strings
- */
-define('STRING_WORKING_DELETING_REMOTE_FILES_ITEM', 'server_interaction.working.remote-delete-item');
-
-/**
  * Manages the list of the different types of servers that can be used by
  * various plugins.
+ * 
+ * @ingroup plugins
  */
 class ServerInteractionPlugin extends GenericPlugin implements EventListener {
   

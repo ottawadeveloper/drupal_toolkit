@@ -5,6 +5,8 @@
 
 /**
  * An event that is used to cast servers.
+ * 
+ * @ingroup event_objects
  */
 class ServerCastEvent extends DtkEvent {
   

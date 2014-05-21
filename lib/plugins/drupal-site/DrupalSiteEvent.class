@@ -6,6 +6,8 @@
 /**
  * Handles much of the wrapper work around working with site and subsite
  * events.
+ * 
+ * @ingroup event_objects
  */
 class DrupalSiteEvent extends DtkEvent {
   
