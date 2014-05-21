@@ -31,9 +31,14 @@ class SiteInfoCommand extends GenericSiteCommand {
       }
     }
     $longestKey += 3;
+    echo PHP_EOL;
+    echo terminal_color_string($this->str(STRING_INFO_HEADER), TERMINAL_FOREGROUND_COLOR_WHITE) . PHP_EOL;
+    echo '--------------------------------------------------------------------' . PHP_EOL;
     foreach ($info as $key => $data) {
       echo str_pad($key . ':', $longestKey, ' ') . $data . PHP_EOL;
     }
+    echo '--------------------------------------------------------------------' . PHP_EOL;
+    echo PHP_EOL;
   }
   
 }

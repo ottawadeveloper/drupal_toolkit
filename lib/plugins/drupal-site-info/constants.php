@@ -9,3 +9,10 @@
  * @ingroup events
  */
 define('EVENT_GET_INFO', 'info-get');
+
+/**
+ * String token for the header above the information block.
+ * 
+ * @ingroup strings
+ */
+define('STRING_INFO_HEADER', 'drupal_site_info.info.header');

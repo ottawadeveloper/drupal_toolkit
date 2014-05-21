@@ -311,3 +311,6 @@ standard_build.info.branch = 'Branch'
 drupal_site_config.info.primary-url = 'Primary URL'
 drupal_site_config.info.login-url = 'Login URL'
 db_config.info.db-info = 'Database Connection'
+
+drush_config.info.drush-alias = 'Drush Alias'
+drupal_site_info.info.header = 'Build / Install Information'

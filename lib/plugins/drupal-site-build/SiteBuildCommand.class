@@ -123,5 +123,7 @@ class SiteBuildCommand extends GenericSiteCommand {
       }
       exit(1);
     }
+    echo PHP_EOL;
+    dtk_execute_command('site-info');
   }
 }

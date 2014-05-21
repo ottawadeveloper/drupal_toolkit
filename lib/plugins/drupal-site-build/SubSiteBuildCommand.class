@@ -62,6 +62,8 @@ class SubSiteBuildCommand extends GenericSiteCommand {
     $site->registerSubSite($this->getSubSite());
     $this->saveSubSiteConfiguration();
     $this->saveSiteConfiguration();
+    echo PHP_EOL;
+    dtk_execute_command('subsite-info');
   }
   
 }

@@ -130,6 +130,8 @@ define('STRING_WORKING_DRUSH_ALIAS_SETUP', 'drush_config.working.setup-alias');
  */
 define('CONFIG_DRUSH_ALIAS_FILE_TEMPLATE', 'drush-file-template');
 
+define('STRING_INFO_DRUSH_ALIAS', 'drush_config.info.drush-alias');
+
 /**
  * Takes responsibility for setting up the drush alias.
  */
@@ -166,11 +168,16 @@ class DrushConfigurationPlugin extends GenericPlugin implements EventListener, S
       EVENT_SITE_BUILD_MORE_CONFIG,
       EVENT_SUBSITE_BUILD_SERVER_CONFIG,
       EVENT_UPDATE_REFRESH_SUBSITE_CONFIG,
+      EVENT_GET_INFO,
     ), $this);
   }
   
   public function captureEvent(DtkEvent &$context, $eventType) {
     switch ($eventType) {
+      case EVENT_GET_INFO:
+        $entity = $context->getEntity();
+        $context->appendInfo($this->str(STRING_INFO_DRUSH_ALIAS), '@' . $entity->getSetting(SITE_DRUSH_ALIAS));
+        break;
       case EVENT_UPDATE_REFRESH_SUBSITE_CONFIG:
       case EVENT_UPDATE_REFRESH_SERVER_CONFIG:
         if ($context->checkExecution()) {
