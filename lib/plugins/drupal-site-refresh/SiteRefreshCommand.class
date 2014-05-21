@@ -7,6 +7,20 @@
  * Refreshes the configuration on a site.
  */
 class SiteRefreshCommand extends GenericSiteCommand {
+
+  private $steps = array(
+    array(
+      'event' => EVENT_SITE_REFRESH_CONFIGURATION,
+      'optional' => TRUE,
+    ),
+  );
+  
+  public function verifyArguments() {
+    if (!$this->requireSite()) {
+      return FALSE;
+    }
+    return parent::verifyArguments();
+  }
   
   public function executeCommand() {
     

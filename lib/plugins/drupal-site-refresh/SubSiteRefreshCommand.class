@@ -8,8 +8,24 @@
  */
 class SubSiteRefreshCommand extends GenericSiteCommand {
   
+  private $steps = array(
+    array(
+      'event' => EVENT_SUBSITE_REFRESH_CONFIGURATION,
+      'optional' => TRUE,
+    ),
+  );
+  
+  public function verifyArguments() {
+    if (!$this->requireSubSite()) {
+      return FALSE;
+    }
+    return parent::verifyArguments();
+  }
+  
   public function executeCommand() {
-    
+    $this->executeAllSteps($this->steps, array(
+      'type' => COMMAND_STEP_SUBSITE,
+    ));
   }
   
 }
