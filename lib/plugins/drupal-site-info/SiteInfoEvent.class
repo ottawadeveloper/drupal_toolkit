@@ -23,18 +23,43 @@ class SiteInfoEvent extends DtkEvent {
    */
   private $entity;
   
+  /**
+   * 
+   * @param GenericDrupalEntity $entity
+   *   The entity that info is being requested for.
+   */
   public function __construct(GenericDrupalEntity $entity) {
     $this->entity = $entity;
   }
   
+  /**
+   * Returns the entity that information is being requested for.
+   * 
+   * @return GenericDrupalEntity
+   *   The entity that information is being requested for.
+   */
   public function getEntity() {
     return $this->entity;
   }
   
+  /**
+   * Sets a piece of information about the entity.
+   * 
+   * @param string $key
+   *   Translated label for the piece of information.
+   * @param string $info
+   *   Information.
+   */
   public function appendInfo($key, $info) {
     $this->info[$key] = $info;
   }
   
+  /**
+   * Retrieves all information set about the entity.
+   * 
+   * @return array
+   *   An array of key-value pairs about the entity.
+   */
   public function getInfo() {
     return $this->info;
   }

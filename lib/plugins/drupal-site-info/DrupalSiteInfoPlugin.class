@@ -5,6 +5,8 @@
 
 /**
  * Responsible for registering SiteInfoCommand and SubSiteInfoCommand.
+ * 
+ * @ingroup plugins
  */
 class DrupalSiteInfoPlugin extends GenericPlugin implements EventListener {
   

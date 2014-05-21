@@ -4,7 +4,9 @@
  */
 
 /**
- * Responsible for handling the subsite-exists command.
+ * Responsible for handling the subsite-exists command.\
+ * 
+ * @ingroup commands
  */
 class SubSiteExistsCommand extends GenericSiteCommand {
  

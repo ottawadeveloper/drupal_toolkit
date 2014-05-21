@@ -5,6 +5,8 @@
 
 /**
  * Responsible for handling the site-exists command.
+ * 
+ * @ingroup commands
  */
 class SiteExistsCommand extends GenericSiteCommand {
  

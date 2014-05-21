@@ -5,6 +5,8 @@
 
 /**
  * Displays information about the specified site.
+ * 
+ * @ingroup commands
  */
 class SiteInfoCommand extends GenericSiteCommand {
   

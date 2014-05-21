@@ -6,6 +6,8 @@
 /**
  * Responsible for registering the SiteExistsCommand object and its
  * configuration, etc.
+ * 
+ * @ingroup plugins
  */
 class DrupalSiteExistsPlugin extends GenericPlugin implements EventListener {
 

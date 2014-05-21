@@ -5,6 +5,8 @@
 
 /**
  * Displays information about the specified subsite.
+ * 
+ * @ingroup commands
  */
 class SubSiteInfoCommand extends SiteInfoCommand {
   
