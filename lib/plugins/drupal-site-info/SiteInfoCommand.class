@@ -8,8 +8,32 @@
  */
 class SiteInfoCommand extends GenericSiteCommand {
   
+  public function verifyArguments() {
+    if (!$this->requireSite()) {
+      return FALSE;
+    }
+    return parent::verifyArguments();
+  }
+  
   public function executeCommand() {
-    
+    $this->displayInformation($this->getSite());
+  }
+  
+  protected function displayInformation(GenericDrupalEntity $entity) {
+    $event = new SiteInfoEvent($entity);
+    $this->events()->fireEvent(EVENT_GET_INFO, $event);
+    $info = $event->getInfo();
+    $longestKey = 0;
+    foreach (array_keys($info) as $key) {
+      $len = strlen($key);
+      if ($len > $longestKey) {
+        $longestKey = $len;
+      }
+    }
+    $longestKey += 3;
+    foreach ($info as $key => $data) {
+      echo str_pad($key . ':', $longestKey, ' ') . $data . PHP_EOL;
+    }
   }
   
 }

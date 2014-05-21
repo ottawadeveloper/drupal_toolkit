@@ -159,6 +159,8 @@ define('STRING_ERROR_SITE_NOT_INSTALLED', 'drupal_site.error.not-installed');
  */
 define('STRING_ERROR_SITE_INSTALLED', 'drupal_site.error.already-installed');
 
+define('STRING_INFO_IDENTIFIER', 'drupal_site.info.identifier');
+
 /**
  * Basic plugin that provides some useful classes and configuration settings
  * for working with Drupal sites. Most plugins that rely on the DrupalSite 
@@ -176,11 +178,18 @@ class DrupalSitePlugin extends GenericPlugin implements EventListener {
     ));
     $this->events()->registerListener(array(
       EVENT_CLEANUP_BUILD,
+      EVENT_GET_INFO,
     ), $this);
   }
   
   public function captureEvent(DtkEvent &$context, $eventType) {
     switch ($eventType) {
+      case EVENT_GET_INFO:
+        if ($context->checkExecution() && ($context instanceof SiteInfoEvent)) {
+          $entity = $context->getEntity();
+          $context->appendInfo($this->str(STRING_INFO_IDENTIFIER), $entity->getBuildName());
+        }
+        break;
       case EVENT_CLEANUP_BUILD:
         if ($context->checkExecution()) {
           $context->setResult($this->cleanupOldBuilds($context->getSite()));

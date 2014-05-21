@@ -3,6 +3,8 @@
  * @file Defines all the constants used by this plugin.
  */
 
+define('STRING_INFO_DB', 'db_config.info.db-info');
+
 /**
  * DB server type constant for MySQL servers.
  * 

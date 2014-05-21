@@ -43,6 +43,10 @@ define('STRING_HELP_OPTION_SITE_URL', 'help.option.site-url');
 
 define('STRING_HELP_OPTION_SITE_URLS', 'help.option.site-extra-urls');
 
+define('STRING_INFO_PRIMARY', 'drupal_site_config.info.primary-url');
+
+define('STRING_INFO_LOGIN', 'drupal_site_config.info.login-url');
+
 /**
  * Responsible for some basic configuratino settings that everyone is likely
  * to need with this tool.
@@ -61,11 +65,17 @@ class DrupalSiteStandardConfigPlugin extends GenericPlugin implements EventListe
       EVENT_UPDATE_PREPARE,
       EVENT_SITE_BUILD_START,
       EVENT_ALTER_HELP_INSTRUCTIONS,
+      EVENT_GET_INFO,
     ), $this);
   }
   
   public function captureEvent(DtkEvent &$context, $type) {
     switch ($type) {
+      case EVENT_GET_INFO:
+        $entity = $context->getEntity();
+        $context->appendInfo($this->str(STRING_INFO_PRIMARY), 'http://' . $entity->getSetting(SITE_PRIMARY_URL));
+        $context->appendInfo($this->str(STRING_INFO_LOGIN), 'http://' . $entity->getSetting(SITE_PRIMARY_URL) . '/user');
+        break;
       case EVENT_ALTER_HELP_INSTRUCTIONS:
         if ($context instanceof HelpInstructionsEvent) {
           $instruction = $context->findInstructions('site-build');

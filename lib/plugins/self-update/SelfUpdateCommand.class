@@ -6,7 +6,7 @@
 /**
  * Allows the user to update the toolkit from the latest build.
  */
-class SelfUpdateCommand extends GenericSiteCommand {
+class SelfUpdateCommand extends GenericCommand {
   
   public function executeCommand() {
     

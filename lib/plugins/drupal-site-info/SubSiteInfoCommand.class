@@ -6,10 +6,17 @@
 /**
  * Displays information about the specified subsite.
  */
-class SubSiteInfoCommand extends GenericSiteCommand {
+class SubSiteInfoCommand extends SiteInfoCommand {
+  
+  public function verifyArguments() {
+    if (!$this->requireSubSite()) {
+      return FALSE;
+    }
+    return parent::verifyArguments();
+  }
   
   public function executeCommand() {
-    
+    $this->displayInformation($this->getSubSite());
   }
   
 }

@@ -1,5 +1,6 @@
 plugin = DrupalSiteInfoPlugin
 
+files[] = SiteInfoEvent.class
 files[] = SiteInfoCommand.class
 files[] = SubSiteInfoCommand.class
 

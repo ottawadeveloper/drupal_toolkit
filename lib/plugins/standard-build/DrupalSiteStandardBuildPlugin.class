@@ -249,7 +249,9 @@ define('STRING_WORKING_BUILD_DRUSH_MAKE', 'standard_build.working.drush-make');
  */
 define('STRING_SUCCESS_BUILD_CONSTRUCT_CODEBASE', 'standard_build.success.construct-codebase');
 
+define('STRING_INFO_BUILD', 'standard_build.info.build-path');
 
+define('STRING_INFO_BRANCH', 'standard_build.info.branch');
 /**
  * Responsible for building a new codebase on demand.
  * 
@@ -268,6 +270,7 @@ class DrupalSiteStandardBuildPlugin extends GenericPlugin implements EventListen
       EVENT_UPDATE_PREPARE_FOR_UPDATE,
       EVENT_ROLLBACK_PHASE1,
       EVENT_ROLLBACK_PHASE3,
+      EVENT_GET_INFO,
     ), $this);
     $this->config()->extendDefaultConfiguration(array(
       CONFIG_GIT_REPO_ROOT => '',
@@ -284,6 +287,11 @@ class DrupalSiteStandardBuildPlugin extends GenericPlugin implements EventListen
   
   public function captureEvent(DtkEvent &$context, $type) {
     switch ($type) {
+      case EVENT_GET_INFO:
+        $entity = $context->getEntity();
+        $context->appendInfo($this->str(STRING_INFO_BUILD), $entity->getSetting(SITE_BUILD_DIR));
+        $context->appendInfo($this->str(STRING_INFO_BRANCH), $entity->getSetting(SITE_SETTING_CLONED_BRANCH));
+        break;
       case EVENT_UPDATE_CODEBASE:
       case EVENT_SITE_BUILD_CODEBASE:
         if ($context->checkExecution()) {

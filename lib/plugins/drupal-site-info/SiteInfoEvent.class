@@ -1,0 +1,43 @@
+<?php
+/**
+ * @file Defines the SiteInfoEvent class.
+ */
+
+/**
+ * Allows other plug-ins to add info to the site-info and subsite-info 
+ * commands.
+ */
+class SiteInfoEvent extends DtkEvent {
+  
+  /**
+   * An array of strings to be displayed to the user, one per line.
+   * 
+   * @var array
+   */
+  private $info = array();
+  
+  /**
+   * The entity that info is being requested for.
+   * 
+   * @var GenericDrupalEntity
+   */
+  private $entity;
+  
+  public function __construct(GenericDrupalEntity $entity) {
+    $this->entity = $entity;
+  }
+  
+  public function getEntity() {
+    return $this->entity;
+  }
+  
+  public function appendInfo($key, $info) {
+    $this->info[$key] = $info;
+  }
+  
+  public function getInfo() {
+    return $this->info;
+  }
+  
+}
+
