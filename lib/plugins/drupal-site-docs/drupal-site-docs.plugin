@@ -1,0 +1,5 @@
+plugin = DrupalSiteDocumentationPlugin
+
+dependencies[] = drupal-site
+
+files[] = SiteDocumentationCommand.class

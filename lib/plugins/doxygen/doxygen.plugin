@@ -1,0 +1,3 @@
+plugin = DoxygenPlugin
+
+dependencies[] = drupal-site

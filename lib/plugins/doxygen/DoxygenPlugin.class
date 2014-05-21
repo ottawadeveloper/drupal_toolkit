@@ -1,0 +1,72 @@
+<?php
+/**
+ * @file Defines the DoxygenPlugin class.
+ */
+
+/**
+ * Responsible for generating doxygen documentation for a site.
+ * 
+ * @ingroup plugins
+ */
+class DoxygenPlugin extends GenericPlugin implements EventListener {
+  
+  public function initialize() {
+    $this->events()->registerListener(array(
+      EVENT_GENERATE_DOCUMENTATION,
+      EVENT_DISCOVER_STRUCTURE_DIRS,
+    ), $this);
+  }
+  
+  public function captureEvent(DtkEvent &$event, $type) {
+    switch ($type) {
+      case EVENT_DISCOVER_STRUCTURE_DIRS:
+        $dir = $this->config()->getConfig(CONFIG_DOXYGEN_DIR);
+        if (!empty($dir)) {
+          $event->extendVariable('dirs', $dir);
+        }
+        break;
+      case EVENT_GENERATE_DOCUMENTATION:
+        if ($event->checkExecution()) {
+          $event->setResult($this->generateDoxygenDocs($event->getSite()));
+        }
+        break;
+    }
+  }
+  
+  /**
+   * Generates doxygen documentation for the site.
+   * 
+   * @param DrupalSite $site
+   *   The site to generate documentation for.
+   * 
+   * @return boolean
+   *   TRUE if successful, otherwise FALSE.
+   */
+  private function generateDoxygenDocs(DrupalSite $site) {
+    $this->working(STRING_WORKING_DOXYGEN_GENERATE);
+    if (!shell_command_available('doxygen')) {
+      $this->error(STRING_ROUTER_NO_COMMAND, array(
+        '!command' => 'doxygen'
+      ));
+      return FALSE;
+    }
+    $target = $site->getSetting(SITE_SETTING_CURRENT_BUILD, NULL, TRUE);
+    if (empty($target)) { return FALSE; }
+    $file = $this->config()->getConfig(CONFIG_DOXY_FILE);
+    $return = FALSE;
+    if (!empty($file)) {
+      $return = doxygen_generate($target, $file);
+    }
+    else {
+      $return = doxygen_generate($target);
+    }
+    if ($return) {
+      $this->success(STRING_SUCCESS_DOXYGEN_GENERATE);
+    }
+    else {
+      $this->failure(STRING_FAILURE_DOXYGEN_GENERATE);
+    }
+    return $return;
+  }
+  
+}

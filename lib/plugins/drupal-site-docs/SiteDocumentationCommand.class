@@ -1,0 +1,28 @@
+<?php
+/**
+ * @file Defines the SiteDoxygenCommand class.
+ */
+
+/**
+ * Allows the user to generate doxygen documentation against the build.
+ */
+class SiteDoxygenCommand extends GenericSiteCommand {
+  
+  /**
+   * Steps to execute.
+   * 
+   * @var array
+   */
+  private $steps = array(
+    array(
+      'event' => EVENT_GENERATE_DOCUMENTATION,
+    )
+  );
+  
+  public function executeCommand() {
+    $this->executeAllSteps($this->steps, array(
+      'type' => COMMAND_STEP_SITE,
+    ));
+  }
+  
+}

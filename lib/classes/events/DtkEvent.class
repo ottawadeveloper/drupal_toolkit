@@ -115,6 +115,38 @@ class DtkEvent {
   }
   
   /**
+   * Extends a variable with more data. Should only be used if the firing
+   * class expects the data to be an array.
+   * 
+   * @param string $key
+   *   The variable key to update.
+   * @param array|mixed $value
+   *   A value to append to the array OR an array of values to append.
+   * @param mixed $arrayKey
+   *   If $value is not an array, use this parameter to specify a key in the
+   *   array for the value (if $value is an array, it's keys are used). 
+   *   Empty or numeric keys are ignored and an incremental int key is used.
+   */
+  public function extendVariable($key, $value, $arrayKey = NULL) {
+    if (!isset($this->variables[$key])) {
+      $this->variables[$key] = array();
+    }
+    elseif (!is_array($this->variables[$key])) {
+      $this->variables[$key] = array($this->variables[$key]);
+    }
+    if (is_array($value)) {
+      array_extend($this->variables[$key], $value);
+      return;
+    }
+    if (empty($arrayKey) || is_numeric($arrayKey)) {
+      $this->variables[$key][] = $value;
+    }
+    else {
+      $this->variables[$key][$arrayKey] = $value;
+    }
+  }
+  
+  /**
    * Sets whether or not a plug-in's attempt to deal with an event was
    * successful or not.
    * 

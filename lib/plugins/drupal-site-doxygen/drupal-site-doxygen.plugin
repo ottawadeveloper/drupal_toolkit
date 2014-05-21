@@ -1,5 +1,0 @@
-plugin = DrupalSiteDoxygenPlugin
-
-dependencies[] = drupal-site
-
-files[] = SiteDoxygenCommand.class

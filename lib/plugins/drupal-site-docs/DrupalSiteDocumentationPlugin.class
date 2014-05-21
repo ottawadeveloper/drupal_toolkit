@@ -17,7 +17,7 @@ class DrupalSiteDoxygenPlugin extends GenericPlugin implements EventListener {
   public function captureEvent(DtkEvent &$event, $type) {
     switch ($type) {
       case EVENT_CORE_REGISTER_COMMANDS:
-        $this->router()->addCommand('site-doxygen', new SiteDoxygenCommand());
+        $this->router()->addCommand('site-doc', new SiteDocumentationCommand());
         break;
     }
   }
