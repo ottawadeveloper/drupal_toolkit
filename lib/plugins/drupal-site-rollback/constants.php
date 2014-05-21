@@ -4,6 +4,34 @@
  */
 
 /**
+ * String token for when starting to rollback sites.
+ * 
+ * @ingroup strings
+ */
+define('STRING_WORKING_ROLLBACK_ALL_SITES', 'drupal_site_rollback.working.all-sites');
+
+/**
+ * String token for when there was an error rolling back a site.
+ * 
+ * @ingroup strings
+ */
+define('STRING_ERROR_ROLLBACK_ALL_SITE', 'drupal_site_rollback.error.all-site');
+
+/**
+ * String token for when there was an error on any site.
+ * 
+ * @ingroup strings
+ */
+define('STRING_ERROR_ROLLBACK_ALL_SITES', 'drupal_site_rollback.error.all-sites');
+
+/**
+ * String token for when all sites were rolled back successfully.
+ * 
+ * @ingroup strings
+ */
+define('STRING_SUCCESS_ROLLBACK_ALL_SITES', 'drupal_site_rollback.success.all-sites');
+
+/**
  * String token for when a site has not been updated since the last time
  * a subsite was installed.
  * 

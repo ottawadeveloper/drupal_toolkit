@@ -8,6 +8,14 @@
  */
 
 /**
+ * Config setting for where DTK is located. If not specified, assumed to be
+ * in the path settings.
+ * 
+ * @ingroup config
+ */
+define('CONFIG_DTK_LOCATION', 'dtk-location');
+
+/**
  * Help category name for drupal site management commands.
  * 
  * @ingroup strings

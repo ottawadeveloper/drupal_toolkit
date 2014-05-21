@@ -9,7 +9,34 @@
 class SiteRollbackAllCommand extends GenericCommand {
   
   public function executeCommand() {
-    
+    $command = $this->config()->getConfig(CONFIG_DTK_LOCATION);
+    if (empty($command)) {
+      $command = 'dtk';
+    }
+    $command .= ' rollback !site';
+    $sites = array_keys(DrupalSite::findSites($this->config()));
+    $errored = array();
+    foreach ($sites as $sitekey) {
+      $return = 0;
+      execute_system_command($command, array(
+        '!site' => $sitekey,
+      ), $out, $return);
+      if (!empty($return)) {
+        $errored[$sitekey] = $sitekey;
+      }
+    }
+    if (!empty($errored)) {
+      foreach ($errored as $key) {
+        $this->error(STRING_ERROR_ROLLBACK_ALL_SITE, array(
+          '!name' => $key,
+        ));
+      }
+      $this->error(STRING_ERROR_ROLLBACK_ALL_SITES);
+      exit(1);
+    }
+    else {
+      $this->success(STRING_SUCCESS_ROLLBACK_ALL_SITES);
+    }
   }
   
 }

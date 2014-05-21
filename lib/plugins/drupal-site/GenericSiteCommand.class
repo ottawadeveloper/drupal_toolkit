@@ -367,6 +367,7 @@ abstract class GenericSiteCommand extends GenericCommand {
     $success = TRUE;
     foreach ($steps as $step) {
       $step += $defaults;
+      
       switch ($step['type']) {
         case COMMAND_STEP_ALL_INSTALLED_SUBSITES:
           $success = $this->executeAllSubSiteCommandStep(
