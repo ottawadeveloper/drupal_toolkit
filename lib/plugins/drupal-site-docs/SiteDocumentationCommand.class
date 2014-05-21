@@ -15,6 +15,10 @@ class SiteDoxygenCommand extends GenericSiteCommand {
    */
   private $steps = array(
     array(
+      'event' => EVENT_PRE_DOCUMENTATION,
+      'optional' => TRUE,
+    ),
+    array(
       'event' => EVENT_GENERATE_DOCUMENTATION,
     )
   );
