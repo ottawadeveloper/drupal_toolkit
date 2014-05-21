@@ -9,6 +9,8 @@
  * along with a callback class that performs the action.
  * 
  * Note that the primary commandName always overrides aliases.
+ * 
+ * @ingroup di_interfaces
  */
 interface RouterInterface extends DependencyManagerDependency {
   

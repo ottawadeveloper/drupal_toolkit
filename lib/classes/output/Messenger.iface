@@ -4,27 +4,6 @@
  */
 
 /**
- * Denotes a success message.
- * 
- * @ingroup message_type
- */
-define('MESSAGE_SUCCESS', 's');
-
-/**
- * Denotes a message notifying that the user is doing something.
- * 
- * @ingroup message_type
- */
-define('MESSAGE_WORKING', 'w');
-
-/**
- * Denotes a failure message.
- * 
- * @ingroup message_type
- */
-define('MESSAGE_FAILURE', 'f');
-
-/**
  * Tags classes that can message the user of what's happening in the system.
  */
 interface Messenger extends OutputHandler, StringDependency {

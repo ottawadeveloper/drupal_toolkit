@@ -5,6 +5,8 @@
 
 /**
  * Fired to translation/replace strings.
+ * 
+ * @ingroup event_objects
  */
 class StringEvent extends DtkEvent {
   
@@ -31,10 +33,6 @@ class StringEvent extends DtkEvent {
     $this->key = $key;
   }
   
-  public function success() {
-    return !empty($this->translation);
-  }
-  
   /**
    * Sets the translation of this key.
    * 
@@ -44,6 +42,7 @@ class StringEvent extends DtkEvent {
   public function setTranslation($translation) {
     if (!empty($translation)) {
       $this->translation = $translation;
+      $this->setResult(TRUE);
     }
   }
   

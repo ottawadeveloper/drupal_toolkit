@@ -1,10 +1,12 @@
 <?php
 /**
- * @file Defines the EventManagerInterface
+ * @file Defines the EventManagerInterface interface.
  */
 
 /**
  * Event managers handle the firing of events.
+ * 
+ * @ingroup di_interfaces
  */
 interface EventManagerInterface extends OutputDependency {
   

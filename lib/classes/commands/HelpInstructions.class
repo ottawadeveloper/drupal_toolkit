@@ -1,23 +1,83 @@
 <?php
+/**
+ * @file Defines the HelpInstructions class.
+ */
 
+/**
+ * Provides help instructions for a given command.
+ */
 class HelpInstructions {
   
+  /**
+   * The name of the command that these instructions apply to.
+   * 
+   * @var string
+   */
   private $command = NULL;
   
+  /**
+   * Aliases for the command.
+   * 
+   * @var array
+   */
   private $aliases = array();
   
+  /**
+   * Arguments that the command takes. The key should be the position, starting
+   * from 1, and the value is a description for it.
+   * 
+   * @var array
+   */
   private $arguments = array();
   
+  /**
+   * Options that the command takes. The key is the option name, the value is
+   * a description for it.
+   * 
+   * @var array
+   */
   private $options = array();
   
+  /**
+   * Aliases for options. Key is the option name, value is an array of
+   * aliases.
+   * 
+   * @var array
+   */
   private $optionAliases = array();
   
+  /**
+   * Description of the command.
+   * 
+   * @var string
+   */
   private $description = NULL;
   
+  /**
+   * An array of usage examples.
+   * 
+   * @var array
+   */
   private $usageExamples = array();
   
+  /**
+   * A category to group the command under.
+   * 
+   * @var string
+   */
   private $category = NULL;
   
+  /**
+   * 
+   * @param string $category
+   *   The category of the command.
+   * @param string $command
+   *   The name of the command.
+   * @param string $description
+   *   A description of the commands.
+   * @param array $aliases
+   *   An array of aliases, if applicable.
+   */
   public function __construct($category, $command, $description, $aliases = array()) {
     $this->category = $category;
     $this->command = $command;
@@ -25,27 +85,71 @@ class HelpInstructions {
     $this->description = $description;
   }
   
+  /**
+   * Defines an argument to the command.
+   * 
+   * @param int $position
+   *   The position of the argument, starting from 1.
+   * @param string $description
+   *   A description of the argument.
+   */
   public function defineArgument($position, $description) {
     $this->arguments[$position] = $description;
   }
   
+  /**
+   * Defines an option to the command.
+   * 
+   * @param string $option
+   *   The name of the option.
+   * @param string $description
+   *   A description of the option.
+   * @param array $aliases
+   *   An array of aliases for the option, if applicable.
+   */
   public function defineOption($option, $description, $aliases = array()) {
     $this->options[$option] = $description;
     $this->optionAliases[$option] = $aliases;
   }
   
+  /**
+   * Defines a usage example.
+   * 
+   * @param string $command
+   *   An example of how to use the command.
+   * @param string $description
+   *   A description of what $command would do.
+   */
   public function defineUsageExample($command, $description) {
     $this->usageExamples[$command] = $description;
   }
   
+  /**
+   * Retrieves the command name.
+   * 
+   * @return string
+   *   The command name.
+   */
   public function getCommandName() {
     return $this->command;
   }
   
+  /**
+   * Retrieves the category name.
+   * 
+   * @return string
+   *   The category name.
+   */
   public function getCategory() {
     return $this->category;
   }
   
+  /**
+   * Builds a shorten version of the display text, suitable for a big list.
+   * 
+   * @return string
+   *   Short display text suitable for terminal display in a list.
+   */
   public function getShortDisplayText() {
     $text = array();
     $text[] = terminal_color_string($this->command, TERMINAL_FOREGROUND_COLOR_BROWN);
@@ -53,6 +157,12 @@ class HelpInstructions {
     return implode(PHP_EOL, $text);
   }
   
+  /**
+   * Builds a longer version of the display text, suitable for a single entry.
+   * 
+   * @return string
+   *   Longer display text, suitable for a single entry display in terminal.
+   */
   public function getDisplayText() {
     $text = array();
     $text[] = terminal_color_string($this->command, TERMINAL_FOREGROUND_COLOR_BROWN);

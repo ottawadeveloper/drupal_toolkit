@@ -21,6 +21,8 @@
  * 
  * To leverage DI in your own classes, you must make sure they are instatiated
  * in a way that calls the dependency injector. 
+ * 
+ * @ingroup di_interfaces
  */
 interface DependencyManagerInterface {
   

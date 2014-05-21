@@ -5,6 +5,8 @@
 
 /**
  * Used to tag the object as requiring a reference to the dependency manager.
+ * 
+ * @ingroup di_dependency_interfaces
  */
 interface DependencyManagerDependency {
   

@@ -1,5 +1,14 @@
 <?php
+/**
+ * @file Defines the ArgsInterface interface.
+ */
 
+/**
+ * Classes that implement this interface are able to interact with the  
+ * arguments and options provided to the command line.
+ * 
+ * @ingroup di_interfaces
+ */
 interface ArgsInterface {
   
   /**

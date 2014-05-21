@@ -10,21 +10,24 @@ foreach ($settings->getConfig(CONFIG_PLUGIN_DIRECTORIES) as $pluginDirectory) {
 }
 $pluginFiles = array_unique($pluginFiles);
 
-// @todo Add a mechanism to disable plugins which will remove the
-// entries from $pluginFiles at this point so that dependencies will
-// fail appropriately.
+// List of plugins to ignore.
+$skip = $settings->getConfig(CONFIG_SKIP_PLUGINS);
+if (empty($skip)) { $skip = array(); }
 
 // Build information on all plug-ins.
 $pluginData = array();
 foreach ($pluginFiles as $file) {
   $info = pathinfo($file);
-  $pluginData[$info['filename']] = array(
-    'path' => $file,
-  ) + parse_ini_file($file) + array(
-    'priority' => 0,
-    'files' => array(),
-    'dependencies' => array(),
-  );
+  // Skip registering the plugin if it is disabled.
+  if (!in_array($info['filename'], $skip)) {
+    $pluginData[$info['filename']] = array(
+      'path' => $file,
+    ) + parse_ini_file($file) + array(
+      'priority' => 0,
+      'files' => array(),
+      'dependencies' => array(),
+    );
+  }
   // Constants are included here so that they are available
   // even if the plug-in is disabled.
   $constants = assemble_path(dirname($file), 'constants.php');

@@ -1,27 +1,58 @@
 <?php
+/**
+ * @file Defines the HelpInstructionsEvent class.
+ */
 
+/**
+ * An event that is fired to retrieve help instructions.
+ * 
+ * @ingroup event_objects
+ */
 class HelpInstructionsEvent extends DtkEvent {
   
+  /**
+   * An array of HelpInstruction objects.
+   * 
+   * @var array
+   */
   private $instructions = array();
   
+  /**
+   * Registers a HelpInstruction object with the event.
+   * 
+   * @param HelpInstructions $instructions
+   *   The instruction to register.
+   */
   public function registerInstruction(HelpInstructions $instructions) {
     $this->instructions[$instructions->getCommandName()] = $instructions;
+    $this->setResult(TRUE);
   }
   
+  /**
+   * Retrieves an array of all instructions.
+   * 
+   * @return array
+   *   An array of HelpInstruction objects.
+   */
   public function getInstructions() {
     return $this->instructions;
   }
   
   /**
+   * Retrieves a single instruction object by name.
    * 
    * @param string $commandName
+   *   The primary name of the command.
    * 
    * @return HelpInstructions
+   *   A help instruction object associated with the command, or NULL if
+   *   none was found.
    */
   public function findInstructions($commandName) {
     if (isset($this->instructions[$commandName])) {
       return $this->instructions[$commandName];
     }
+    // @todo look through the aliases and return one if it matches $commandName
     return NULL;
   }
   

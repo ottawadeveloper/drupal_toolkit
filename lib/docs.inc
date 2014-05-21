@@ -36,4 +36,15 @@
  * These placeholders are used to get strings from the translation matrix.
  * @see StringManagerInterface
  * @see TranslationPlugin
+ * 
+ * @defgroup event_objects "Event Objects"
+ * These objects are used as context objects when events are fired.
+ * 
+ * @defgroup di_interfaces "Dependency Object Interfaces"
+ * These interfaces are used to interact with objects that can be injected
+ * via dependency injection.
+ * 
+ * @defgroup di_dependency_interfaces "Dependent Object Interfaces"
+ * These interfaces can be used by objects to declare their dependencies
+ * on certain @ref di_dependency_interfaces "Dependency Object Interfaces".
  */

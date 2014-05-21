@@ -4,35 +4,6 @@
  */
 
 /**
- * Fired to find help instructions.
- * 
- * @ingroup events
- */
-define('EVENT_FIND_HELP_INSTRUCTIONS', 'find-help-instructions');
-
-/**
- * String token for when there are no help commands defined.
- * 
- * @ingroup strings
- */
-define('STRING_ERROR_NO_HELP_COMMANDS', 'help.error.no-commands');
-
-/**
- * Fired to allow other modules to alter help instructions.
- * 
- * @ingroup events
- */
-define('EVENT_ALTER_HELP_INSTRUCTIONS', 'alter-help-instructions');
-
-define('OPTION_HELP_COMMAND', 'command');
-
-define('STRING_HELP_CORE_CATEGORY', 'string.category.core');
-
-define('STRING_HELP_COMMAND_DESC_HELP', 'string.command-desc.help');
-
-define('STRING_HELP_OPTION_HELP_COMMAND_DESC', 'string.option.command');
-
-/**
  * Basic command that provides help output.
  * 
  * @ingroup commands

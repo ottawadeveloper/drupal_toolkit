@@ -4,17 +4,9 @@
  */
 
 /**
- * String token for when an event is fired.
- * 
- * @ingroup strings
- */
-define('STRING_EVENT_FIRING', 'events.message.firing');
-
-/**
  * Implements the EventManagerInterface.
  */
-class EventManager implements EventManagerInterface,
-        StringDependency {
+class EventManager implements EventManagerInterface, StringDependency {
   
   /**
    * An array of event listeners keyed by event type.
@@ -37,8 +29,7 @@ class EventManager implements EventManagerInterface,
    */
   private $sm;
   
-  public function __construct() {
-  }
+  public function __construct() {}
   
   public function setOutput(OutputManagerInterface $out) {
     $this->out = $out;
@@ -67,16 +58,6 @@ class EventManager implements EventManagerInterface,
       $this->registry[$type][] = $listener;
     }
     return TRUE;
-  }
-  
-  public function dump() {
-    foreach ($this->registry as $key => $list) {
-      $listeners = array();
-      foreach ($list as $listener) {
-        $listeners[] = get_class($listener);
-      }
-      echo $key . ': ' . implode(",", $listeners) . PHP_EOL;
-    }
   }
   
   public function fireEvent($type, DtkEvent &$context = NULL) {

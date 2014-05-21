@@ -5,6 +5,8 @@
 
 /**
  * Tags the class as requiring access to string translation mechanisms.
+ * 
+ * @ingroup di_dependency_interface
  */
 interface StringDependency {
   

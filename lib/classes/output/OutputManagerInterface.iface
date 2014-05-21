@@ -8,6 +8,8 @@
  * 
  * Has its own handler system so that other types of output can be registered
  * as needed.
+ * 
+ * @ingroup di_interfaces
  */
 interface OutputManagerInterface extends DependencyManagerDependency {
   

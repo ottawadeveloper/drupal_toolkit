@@ -5,6 +5,8 @@
 
 /**
  * Provides a base framework for event handling.
+ * 
+ * @ingroup event_objects
  */
 class DtkEvent {
   

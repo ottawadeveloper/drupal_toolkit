@@ -4,13 +4,6 @@
  */
 
 /**
- * String token for when a plugin is missing configuration.
- * 
- * @ingroup strings
- */
-define('STRING_PLUGIN_NO_CONFIG', 'plugin.error.missing-config');
-
-/**
  * Provides a generic plugin that can be easily extended as needed.
  */
 abstract class GenericPlugin implements PluginInterface {
@@ -117,10 +110,6 @@ abstract class GenericPlugin implements PluginInterface {
   public function router() { return $this->router; }
 
   public function requiredPlugins() { return array(); }
-  
-  public function translate() {
-    
-  }
   
   public function checkExtraRequirements() {
     return TRUE;

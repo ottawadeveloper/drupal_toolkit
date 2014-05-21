@@ -5,6 +5,8 @@
 
 /**
  * Used to tag classes that have a dependency on producing output.
+ * 
+ * @ingroup di_dependency_interfaces
  */
 interface OutputDependency {
   

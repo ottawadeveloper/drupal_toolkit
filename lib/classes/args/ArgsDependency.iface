@@ -6,6 +6,8 @@
 /**
  * Denotes that this class requires a reference to command line arguments and
  * options.
+ * 
+ * @inground di_dependency_interfaces
  */
 interface ArgsDependency {
   

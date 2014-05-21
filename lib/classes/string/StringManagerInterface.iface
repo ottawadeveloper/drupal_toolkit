@@ -5,6 +5,8 @@
 
 /**
  * Manages user-facing strings.
+ * 
+ * @ingroup di_interfaces
  */
 interface StringManagerInterface {
   

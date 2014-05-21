@@ -219,6 +219,21 @@ function terminal_color_string($string, $foreground = NULL, $background = NULL) 
   return implode("", $pieces);
 }
 
+/**
+ * Wraps a line into a given maximum length.
+ * 
+ * @param string $string
+ *   The string to wrap.
+ * @param string $prefix
+ *   A prefix to prepend to each line.
+ * @param int $maxLength
+ *   The maxmimum line length. If not specified, defaults to 80.
+ * @param boolean $skipFirstPrefix
+ *   If set to TRUE, $prefix will not be added to the first line.
+ * 
+ * @return string
+ *   The wrapped string.
+ */
 function terminal_word_wrap_line($string, $prefix, $maxLength = NULL, $skipFirstPrefix = FALSE) {
   if (empty($maxLength)) {
     $maxLength = 80;

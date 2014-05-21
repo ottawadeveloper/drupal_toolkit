@@ -5,6 +5,8 @@
 
 /**
  * Tags the class as having a router dependency.
+ * 
+ * @ingroup di_dependency_interfaces
  */
 interface RouterDependency {
   

@@ -4,60 +4,47 @@
  */
 
 /**
- * String token for when a system command is missing.
- * 
- * @ingroup strings
- */
-define('STRING_ROUTER_NO_COMMAND', 'router.error.missing-command');
-
-/**
- * String token for when not enough arguments were provided.
- * 
- * @ingroup strings
- */
-define('STRING_ROUTER_NO_ARGUMENT', 'router.error.missing-argument');
-
-/**
- * String token for when a configuration setting is missing.
- * 
- * @ingroup strings
- */
-define('STRING_ROUTER_NO_CONFIG', 'router.error.missing-config');
-
-/**
- * String token for when a PHP function is missing.
- * 
- * @ingroup strings
- */
-define('STRING_ROUTER_NO_FUNCTION', 'router.error.missing-function');
-
-/**
- * String token for when a command is not implemented.
- * 
- * @ingroup strings
- */
-define('STRING_ROUTER_NO_IMPLEMENTATION', 'router.error.command-not-implemented');
-
-
-/**
  * Provides a basic implementation for commands, supporting most of the 
  * basic dependency injection functionality.
  */
 abstract class GenericCommand implements RouterCommand {
   
+  /**
+   * DI for output.
+   * 
+   * @var OutputManagerInterface
+   */
   private $output = NULL;
   
+  /**
+   * DI for arguments.
+   * 
+   * @var ArgsInterface
+   */
   private $args = NULL;
   
+  /**
+   * DI for configuration.
+   * 
+   * @var ConfigurationManagerInterface
+   */
   private $config = NULL;
   
+  /**
+   * DI for events.
+   * 
+   * @var EventManagerInterface
+   */
   private $events = NULL;
   
+  /**
+   * DI for strings.
+   * 
+   * @var StringManagerInterface
+   */
   private $sm = NULL;
   
-  public function __construct() {
-    
-  }
+  public function __construct() {}
   
   public function setStringManager(StringManagerInterface $sm) {
     $this->sm = $sm;

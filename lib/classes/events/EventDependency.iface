@@ -5,6 +5,8 @@
 
 /**
  * Dependency injection interface for interfaces.
+ * 
+ * @ingroup di_dependency_interfaces
  */
 interface EventDependency {
   

@@ -89,10 +89,31 @@ function _dtk_is_plugin_file($filename) {
       $info['filename'] === basename(dirname($filename));
 }
 
+/**
+ * Callback to sort plugins in order of priority.
+ * 
+ * @param array $a
+ *   Plugin entry A.
+ * @param array $b
+ *   Plugin entry B.
+ * 
+ * @return int
+ */
 function _dtk_sort_plugins($a, $b) {
   return $b['priority'] - $a['priority'];
 }
 
+/**
+ * Retrieves the value of a constant with a better error message if
+ * it is not designed. Should be used by plugins that depend on other
+ * plugins which may not be present (eg non-core plugins).
+ * 
+ * @param string $name
+ *   The name of the constant, as a string.
+ * 
+ * @return mixed
+ *   The value of the constant or $name if not present.
+ */
 function dtk_constant($name) {
   global $out;
   if (defined($name)) {

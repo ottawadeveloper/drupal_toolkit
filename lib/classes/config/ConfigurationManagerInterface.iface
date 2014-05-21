@@ -17,6 +17,8 @@
  * However, if an array is present, the values are extended (numeric keys
  * are appended at the end, which changes the keys, associative keys 
  * replace/extend their values as appropriate). 
+ * 
+ * @ingroup di_interfaces
  */
 interface ConfigurationManagerInterface extends ArgsDependency {
   
