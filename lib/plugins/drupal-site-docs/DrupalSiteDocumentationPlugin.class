@@ -6,7 +6,7 @@
 /**
  * Responsible for registering the SiteDoxygenCommand command.
  */
-class DrupalSiteDoxygenPlugin extends GenericPlugin implements EventListener {
+class DrupalSiteDocumentationPlugin extends GenericPlugin implements EventListener {
   
   public function initialize() {
     $this->events()->registerListener(array(
