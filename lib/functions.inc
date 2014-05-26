@@ -182,6 +182,7 @@ function array_unique_numeric($array) {
 
 // Additional includes.
 require "functions/system.inc";
+require "functions/git.inc";
 require "functions/special.inc";
 require "functions/drush.inc";
 require "functions/hosts.inc";
