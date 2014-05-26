@@ -15,11 +15,13 @@ class SelfUpdateCommand extends GenericCommand {
     $this->events()->fireEvent(EVENT_SELF_UPDATE_CORE, $coreUpdateEvent);
     if (!$coreUpdateEvent->success()) {
       $this->error(STRING_SELF_UPDATE_ERROR);
+      exit(1);
     }
-    $extrasUpdateEvent = new DtkEvent(FALSE);
+    $extrasUpdateEvent = new DtkEvent(TRUE);
     $this->events()->fireEvent(EVENT_SELF_UPDATE_EXTRAS, $extrasUpdateEvent);
     if (!$extrasUpdateEvent->success()) {
       $this->error(STRING_SELF_UPDATE_ERROR);
+      exit(1);
     }
   }
   
