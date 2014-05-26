@@ -37,7 +37,15 @@ class SelfUpdatePlugin extends GenericPlugin implements EventListener {
    *    TRUE if successful, otherwise FALSE.
    */
   private function selfUpdate() {
-    return git_pull(TOOLKIT_ABSOLUTE_ROOT);
+    $this->working(STRING_WORKING_PULLING_DTK);
+    $ret = git_pull(TOOLKIT_ABSOLUTE_ROOT);
+    if ($ret) {
+      $this->success(STRING_SUCCESS_PULLING_DTK);
+    }
+    else {
+      $this->failure(STRING_FAILURE_PULLING_DTK);
+    }
+    return $ret;
   }
   
 }

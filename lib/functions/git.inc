@@ -60,6 +60,7 @@ function git_clone($server, $repository, $targetFolder = NULL, $branch = NULL) {
 function git_pull($targetFolder, $remoteName = NULL, $branch = NULL) {
   $current = getcwd();
   if (!chdir($targetFolder)) {
+    trigger_error('Unable to chdir to ' . $targetFolder);
     return FALSE;
   }
   $command = 'git pull';
@@ -77,5 +78,5 @@ function git_pull($targetFolder, $remoteName = NULL, $branch = NULL) {
   if (!empty($current)) {
     chdir($current);
   }
-  return !extra_empty($exit);
+  return extra_empty($exit);
 }
