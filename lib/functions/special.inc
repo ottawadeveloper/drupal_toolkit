@@ -29,3 +29,31 @@ function doxygen_generate($directory, $doxygenFile = NULL) {
   ), $out, $exit);
   return extra_empty($exit);
 }
+
+/**
+ * Generates PHPLOC data.
+ * 
+ * @param string $target
+ *   The directory to generate phploc data for
+ * @param array $options
+ *   An array of additional options to pass to the phploc command.
+ * @param string $output
+ *   The result of the operation.
+ * 
+ * @return boolean
+ *   TRUE on success, otherwise FALSE.
+ */
+function generate_phploc($target, $options = array(), &$output = NULL) {
+  $command = 'phploc';
+  $args = array(
+    '!target' => $target,
+  );
+  foreach ($options as $long => $value) {
+    $command .= ' --' . $long . '=!' . $long;
+    $args['!' . $long] = $value;
+  }
+  $command .= ' !target';
+  $exit = 0;
+  execute_system_command($command, $args, $output, $exit);
+  return extra_empty($exit);
+}

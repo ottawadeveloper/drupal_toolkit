@@ -71,7 +71,9 @@ function mkdir_all($dir) {
   if (!is_dir(dirname($dir))) {
     mkdir_all(dirname($dir));
   }
-  mkdir($dir);
+  if (!is_dir($dir)) {
+    mkdir($dir);
+  }
 }
 
 /**

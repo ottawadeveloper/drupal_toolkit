@@ -15,12 +15,11 @@ class DrushSimpleTestPlugin extends GenericPlugin implements EventListener {
    * 
    * @var string
    */
-  private static $simpleTestXmlOutputDirectory = 'test_output';
+  private static $simpleTestXmlOutputDirectory = 'simpletest';
   
   public function initialize() {
     $this->events()->registerListener(array(
       EVENT_GENERATE_TESTS,
-      EVENT_DISCOVER_STRUCTURE_DIRS,
     ), $this);
     $this->config()->extendDefaultConfiguration(array(
       CONFIG_SIMPLETEST_DIRTY => FALSE,
@@ -30,9 +29,6 @@ class DrushSimpleTestPlugin extends GenericPlugin implements EventListener {
   
   public function captureEvent(DtkEvent &$event, $type) {
     switch ($type) {
-      case EVENT_DISCOVER_STRUCTURE_DIRS:
-        $event->extendVariable('dirs', array(self::$simpleTestXmlOutputDirectory));
-        break;
       case EVENT_GENERATE_TESTS:
         if ($event->checkExecution()) {
           $event->setResult($this->runSimpleTest($event->getSite()));
@@ -59,11 +55,16 @@ class DrushSimpleTestPlugin extends GenericPlugin implements EventListener {
     }
     $alias = $site->getDrushAlias(TRUE);
     if (empty($alias)) { return FALSE; }
+    $path = assemble_path($site->getBuildFolder(), self::$simpleTestXmlOutputDirectory);
+    if (is_dir($path)) {
+      remove_directory($path);
+    }
+    mkdir_all($path);
     $context = array(
       'tests' => array(),
       'methods' => array(),
       'skip-cleanup' => FALSE,
-      'junit-output' => assemble_path($site->getSetting(SITE_SETTING_CURRENT_BUILD), self::$simpleTestXmlOutputDirectory),
+      'junit-output' => $path,
     );
     if ($this->args()->hasOption(OPTION_SIMPLETEST_CASES)) {
       $context['tests'] = explode(",", $this->args()->getOption(OPTION_SIMPLETEST_CASES));

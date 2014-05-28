@@ -10,9 +10,29 @@
  */
 class SiteMetricsCommand extends GenericSiteCommand {
   
+  /**
+   * Steps to execute in order to generate metrics.
+   * 
+   * @var array
+   */
+  private $steps = array(
+    array(
+      'event' => EVENT_GENERATE_METRICS,
+      'optional' => TRUE,
+    ),
+  );
+  
+  public function verifyArguments() {
+    if (!$this->requireSite()) {
+      return FALSE;
+    }
+    return parent::verifyArguments();
+  }
+  
   public function executeCommand() {
-    // @todo implement this method
-    exit(1);
+    $this->executeAllSteps($this->steps, array(
+      'type' => COMMAND_STEP_SITE,
+    ));
   }
   
 }

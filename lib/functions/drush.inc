@@ -97,19 +97,20 @@ define('DRUSH_DIRECTORY_PRIVATE', 'private');
  * @param type $options
  * @return type
  */
-function drush_simple_test($alias = NULL, $options = array()) {
+function drush_simple_test($alias = NULL, $extras = array()) {
   // check for simpletest and install it first.
   if (!drush_check_module('simpletest', $alias)) {
     if (!drush_install_modules(array('simpletest'), $alias)) {
       return FALSE;
     }
   }
-  array_extend($options, array(
+  $options = array(
     'tests' => array(),
     'methods' => array(),
     'skip-cleanup' => FALSE,
     'junit-output' => NULL,
-  ));
+  );
+  array_extend($options, $extras);
   $command = 'test-run';
   $args = array();
   if (empty($options['tests'])) {
@@ -546,8 +547,8 @@ function drush_restore_db($sqlFile, $alias = NULL, $database = NULL) {
  * 
  * @see http://drush.ws/#sql-dump
  */
-function drush_db_dump($alias = NULL, $destination = NULL, $options = array()) {
-  array_extend($options, array(
+function drush_db_dump($alias = NULL, $destination = NULL, $extras = array()) {
+  $options = array(
     'data-only' => FALSE,
     'database' => NULL,
     'db-url' => NULL,
@@ -558,7 +559,8 @@ function drush_db_dump($alias = NULL, $destination = NULL, $options = array()) {
     'structure-tables-key' => NULL,
     'tables-key' => NULL,
     'tables-list' => array(),
-  ));
+  );
+  array_extend($options, $extras);
   $cmd = 'sql-dump';
   $args = array();
   foreach ($options as $key => $value) {

@@ -98,12 +98,16 @@ foreach ($loadPlugins as $key) {
     }
   }
   require assemble_path($base, $plugin['plugin'] . '.class');
-  $plugins[$key] = new $plugin['plugin']();
+  $plugin = new $plugin['plugin']();
+  $plugins[$key] = $plugin;
 }
 
 // Initialize plugins
 foreach ($plugins as $plugin) {
   DependencyManager::inject($plugin);
+  if (!$plugin->checkExtraRequirements()) {
+    die();
+  }
   $plugin->initialize();
 }
 

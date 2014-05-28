@@ -1,0 +1,79 @@
+<?php
+/**
+ * @file Defines the PhpLocPlugin class.
+ */
+
+/**
+ * Responsible for generating phploc data.
+ * 
+ * @ingroup plugins
+ */
+class PhpLocPlugin extends GenericPlugin implements EventListener {
+  
+  /**
+   * The directory in which phploc data is stored
+   * 
+   * @var string
+   */
+  private static $phpLocDirectory = 'metrics';
+  
+  private static $phpLocFile = 'phploc.csv';
+
+  public function checkExtraRequirements() {
+    if (!shell_command_available('phploc')) {
+      $this->error(STRING_ROUTER_NO_COMMAND);
+      return FALSE;
+    }
+    return parent::checkExtraRequirements();
+  }
+  
+  public function initialize() {
+    $this->events()->registerListener(array(
+      EVENT_GENERATE_METRICS,
+    ), $this);
+    $this->config()->extendDefaultConfiguration(array(
+      CONFIG_PHPLOC_FILES => array('*.php', '*.inc', '*.module', '*.install'),
+    ));
+  }
+  
+  public function captureEvent(DtkEvent &$event, $type) {
+    switch ($type) {
+      case EVENT_GENERATE_METRICS:
+        if ($event->checkExecution()) {
+          $event->checkExecution($this->generatePHPLOC($event->getSite()));
+        }
+        break;
+    }
+  }
+  
+  /**
+   * Responsible for generating phploc data.
+   * 
+   * @param DrupalSite $site
+   *   The site to generate data for.
+   * 
+   * @return boolean
+   *   TRUE if successful, otherwise FALSE.
+   */
+  private function generatePHPLOC(DrupalSite $site) {
+    $this->working(STRING_WORKING_PHPLOC);
+    $path = assemble_path($site->getBuildFolder(), self::$phpLocDirectory, self::$phpLocFile);
+    if (file_exists($path)) {
+      unlink($path);
+    }
+    mkdir_all(dirname($path));
+    $options = array(
+      'names' => implode(',', $this->config()->getConfig(CONFIG_PHPLOC_FILES)),
+      'log-csv' => $path,
+    );
+    $res = generate_phploc($site->getSetting(SITE_SETTING_CURRENT_BUILD), $options);
+    if ($res) {
+      $this->success(STRING_SUCCESS_PHPLOC);
+    }
+    else {
+      $this->failure(STRING_FAILURE_PHPLOC);
+    }
+    return $res;
+  }
+  
+}
