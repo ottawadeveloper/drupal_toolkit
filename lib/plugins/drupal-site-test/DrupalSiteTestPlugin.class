@@ -11,7 +11,7 @@
 class DrupalSiteTestPlugin extends GenericPlugin implements EventListener {
   
   public function initialize() {
-    $this->events()->register(array(
+    $this->events()->registerListener(array(
       EVENT_CORE_REGISTER_COMMANDS,
     ), $this);
   }

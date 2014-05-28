@@ -1,0 +1,85 @@
+<?php
+/**
+ * @file Defines the DrushSimpleTestPlugin class.
+ */
+
+/**
+ * Responsible for executing SimpleTest cases.
+ * 
+ * @ingroup plugins
+ */
+class DrushSimpleTestPlugin extends GenericPlugin implements EventListener {
+      
+  /**
+   * The directory where the SimpleTest XML output will be stored.
+   * 
+   * @var string
+   */
+  private static $simpleTestXmlOutputDirectory = 'test_output';
+  
+  public function initialize() {
+    $this->events()->registerListener(array(
+      EVENT_GENERATE_TESTS,
+      EVENT_DISCOVER_STRUCTURE_DIRS,
+    ), $this);
+    $this->config()->extendDefaultConfiguration(array(
+      CONFIG_SIMPLETEST_DIRTY => FALSE,
+    ));
+    $this->config()->extendFromOption(CONFIG_SIMPLETEST_DIRTY, OPTION_SIMPLETEST_DIRTY);
+  }
+  
+  public function captureEvent(DtkEvent &$event, $type) {
+    switch ($type) {
+      case EVENT_DISCOVER_STRUCTURE_DIRS:
+        $event->extendVariable('dirs', array(self::$simpleTestXmlOutputDirectory));
+        break;
+      case EVENT_GENERATE_TESTS:
+        if ($event->checkExecution()) {
+          $event->setResult($this->runSimpleTest($event->getSite()));
+        }
+        break;
+    }
+  }
+  
+  /**
+   * Executes Drupal SimpleTest cases based on configuration and run-time
+   * options.
+   * 
+   * @param DrupalSite $site
+   *   The site to execute test cases against
+   * 
+   * @return boolean
+   *   TRUE upon success, otherwise FALSE.
+   */
+  private function runSimpleTest(DrupalSite $site) {
+    $this->working(STRING_WORKING_SIMPLE_TEST);
+    if (extra_empty($site->getSetting(SITE_IS_INSTALLED))) {
+      $this->error(STRING_ERROR_SITE_NOT_INSTALLED);
+      return FALSE;
+    }
+    $alias = $site->getDrushAlias(TRUE);
+    if (empty($alias)) { return FALSE; }
+    $context = array(
+      'tests' => array(),
+      'methods' => array(),
+      'skip-cleanup' => FALSE,
+      'junit-output' => assemble_path($site->getSetting(SITE_SETTING_CURRENT_BUILD), self::$simpleTestXmlOutputDirectory),
+    );
+    if ($this->args()->hasOption(OPTION_SIMPLETEST_CASES)) {
+      $context['tests'] = explode(",", $this->args()->getOption(OPTION_SIMPLETEST_CASES));
+    }
+    if ($this->args()->hasOption(OPTION_SIMPLETEST_METHODS)) {
+      $context['methods'] = explode(",", $this->args()->getOption(OPTION_SIMPLETEST_METHODS));
+    }
+    $context['skip-cleanup'] = !extra_empty($this->config()->getConfig(CONFIG_SIMPLETEST_DIRTY));
+    $res = drush_simple_test($alias, $context);
+    if (empty($res)) {
+      $this->failure(STRING_FAILURE_SIMPLE_TEST);
+    }
+    else {
+      $this->success(STRING_SUCCESS_SIMPLE_TEST);
+    }
+    return $res;
+  }
+  
+}

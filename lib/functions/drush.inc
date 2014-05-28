@@ -90,6 +90,53 @@ define('DRUSH_DIRECTORY_FILES', 'files');
 define('DRUSH_DIRECTORY_PRIVATE', 'private');
 
 /**
+ * Executes Drupal simple tests via Drush.
+ * 
+ * @param string $alias
+ *   The alias of the site to use
+ * @param type $options
+ * @return type
+ */
+function drush_simple_test($alias = NULL, $options = array()) {
+  // check for simpletest and install it first.
+  if (!drush_check_module('simpletest', $alias)) {
+    if (!drush_install_modules(array('simpletest'), $alias)) {
+      return FALSE;
+    }
+  }
+  array_extend($options, array(
+    'tests' => array(),
+    'methods' => array(),
+    'skip-cleanup' => FALSE,
+    'junit-output' => NULL,
+  ));
+  $command = 'test-run';
+  $args = array();
+  if (empty($options['tests'])) {
+    $command .= ' --all';
+  }
+  else {
+    $command .= ' !targets';
+    $args['!targets'] = implode(',', $options['tests']);
+    if (count($options['tests']) === 1) {
+      if (!empty($options['methods'])) {
+        $command .= ' --methods=!methods';
+        $args['!methods'] = implode(',', $options['methods']);
+      }
+    }
+  }
+  if (!empty($options['skip-cleanup'])) {
+    $command .= ' --dirty';
+  }
+  if (!empty($options['junit-output'])) {
+    $command .= ' --xml=!xml';
+    $args['!xml'] = $options['junit-output'];
+  }
+  drush_command($command, $alias, $args, $out, $exit);
+  return extra_empty($exit);
+}
+
+/**
  * Installs an array of Drupal modules.
  * 
  * @param array $modules
@@ -104,7 +151,7 @@ function drush_install_modules(array $modules, $alias = NULL) {
   if (empty($modules)) {
     return TRUE;
   }
-  drush_command('pm-enable !modules', $alias, array(
+  drush_command('pm-enable -y !modules', $alias, array(
     '!modules' => implode(',', $modules),
   ));
   foreach ($modules as $module) {
