@@ -111,6 +111,64 @@ abstract class GenericCommand implements RouterCommand {
   }
   
   /**
+   * Shows a working message to the user.
+   * 
+   * @param string $messageKey
+   *   The message.
+   * @param array $args
+   *   Arguments to pass to the translation engine.
+   */
+  protected function showWork($messageKey, array $args = array()) {
+    $this->out()->message($this->strings()->getString($messageKey, $args), MESSAGE_WORKING);
+  }
+  
+  /**
+   * Alias of GenericPlugin::showWork().
+   */
+  protected function working($messageKey, array $args = array()) {
+    return $this->showWork($messageKey, $args);
+  }
+  
+  /**
+   * Shows a success message to the user.
+   * 
+   * @param string $messageKey
+   *   The message.
+   * @param array $args
+   *   Arguments to pass to the translation engine.
+   */
+  protected function showSuccess($messageKey, array $args = array()) {
+    $this->out()->message($this->strings()->getString($messageKey, $args), MESSAGE_SUCCESS);
+  }
+  
+  
+  /**
+   * Alias of GenericPlugin::showSuccess().
+   */
+  protected function success($messageKey, array $args = array()) {
+    return $this->showSuccess($messageKey, $args);
+  }
+  
+  /**
+   * Shows a failure message to the user.
+   * 
+   * @param string $messageKey
+   *   The message.
+   * @param array $args
+   *   Arguments to pass to the translation engine.
+   */
+  protected function showFailure($messageKey, array $args = array()) {
+    $this->out()->message($this->strings()->getString($messageKey, $args), MESSAGE_FAILURE);
+  }
+  
+  /**
+   * Alias of GenericPlugin::showFailure().
+   */
+  protected function failure($messageKey, array $args = array()) {
+    return $this->showFailure($messageKey, $args);
+  }
+  
+  /**
    * Wrapper around StringManagerInterface::getString().
    */
   protected function str($key, $args = array(), $default = NULL) {
