@@ -1,3 +1,29 @@
+## Installation
+
+1. Download or clone this repository to /usr/lib/php/drupal_toolkit.
+2. Create a symlink from /usr/bin/dtk to /usr/lib/php/drupal_toolkit/dtk.php.
+3. Download the Sypc YAML library from https://github.com/mustangostang/spyc/ 
+   to /usr/lib/php/spyc (you can change this path in the config too).
+4. To add plug-ins, create the directory /usr/lib/php/dtk_plugins and download
+   the plugin files to it (other paths can also be added).
+5. Test your installation by running the command "dtk help". This should show
+   a list of available commands.
+
+## Requirements
+
+### Core Requirements
+- PHP 5.3 or newer (older versions may work at the moment)
+- Your CLI PHP must allow the exec() command
+- Ubuntu 12 LTS or similar
+
+### Plugin Requirements
+- Interactions with MySQL require the mysql command to be installed.
+- Interactions with a local HTTP server require the service command.
+- Text colouring requires the tput command.
+- Interactions with git require that the git command be installed.
+- Interactions with any Drupal site requires that the drush command be 
+  installed.
+
 ## Overview
 
 Drupal ToolKit (DTK) is a PHP command line tool that aims to simplify managing
@@ -41,37 +67,31 @@ which Drush is merely a part of. Specifically, we aim to support:
 - Streamlining the update procedure to be automated with good failure protection
 - Streamlining the deletion procedure to ensure all relevant files are removed
 
-## Command Status
+## Change Notes
 
-- site-build: working
-- site-exists: working
-- site-install: working
-- site-update: working (site only)
-- site-rollback: working (site only)
-- site-delete: ??
-- subsite-build: working
-- subsite-exists: working
-- subsite-install: not implemented
-- subsite-delete: not implemented
+### 2014-06-11
 
-## 2014-05-12
+Much of the functionality is now complete. The project is now moving into a 
+testing phase to ensure it is all working properly.
+
+### 2014-05-12
 
 Work is ongoing to update to the new event model. Pacemaker work put on hold
 due to us switching away from it.
 
-## 2014-04-27
+### 2014-04-27
 
 Currently this project is undergoing some significant tweaks to support
 sub-sites as well as proper Drupal sites. These subsites follow the 
 documentation provided for creating subsites (see 
 https://drupal.org/documentation/install/multi-site).
 
-## 2014-03-04
+### 2014-03-04
 
 Confirmed the six original commands work with default settings on
 Ubuntu 12 LTS.
 
-## 2014-02-27
+### 2014-02-27
 
 This is a status update on the progress of the toolkit.
 
@@ -105,7 +125,7 @@ The following features are now supported for various commands above:
 - Log output to a file.
 - Sets up cron tasks via dropping a file in /etc/cron.d
 
-## Original
+### Original
 
 Work in progress.
 
