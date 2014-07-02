@@ -44,6 +44,7 @@ function find_files(callable $matching, $directory, $recursive = TRUE, &$skip = 
   if (is_link($directory)) { $directory = realpath($directory); }
   if (in_array($directory, $skip)) { return array(); }
   $skip[] = $directory;
+  if (!file_exists($directory)) { return array(); }
   $handle = opendir($directory); 
   if (empty($handle)) { return array(); }
   $matches = array();
