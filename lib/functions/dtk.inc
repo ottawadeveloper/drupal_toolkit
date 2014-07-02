@@ -85,6 +85,9 @@ function dtk_locate_plugin_files($directory) {
  */
 function _dtk_is_plugin_file($filename) {
   $info = pathinfo($filename);
+  if (empty($info['extension']) || empty($info['filename'])) {
+    return FALSE;
+  }
   return ($info['extension'] === 'plugin') &&
       $info['filename'] === basename(dirname($filename));
 }
