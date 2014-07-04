@@ -21,7 +21,9 @@ class PhpLocPlugin extends GenericPlugin implements EventListener {
 
   public function checkExtraRequirements() {
     if (!shell_command_available('phploc')) {
-      $this->error(STRING_ROUTER_NO_COMMAND);
+      $this->error(STRING_ROUTER_NO_COMMAND, array(
+        '!command' => 'phploc',
+      ));
       return FALSE;
     }
     return parent::checkExtraRequirements();
