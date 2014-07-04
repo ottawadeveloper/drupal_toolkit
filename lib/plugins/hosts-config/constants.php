@@ -72,6 +72,13 @@ define('EVENT_FIND_MANAGED_HOST_SERVERS', 'find-managed-host-servers');
 define('SERVER_SETTING_ENVIRONMENT', 'managed-host-type');
 
 /**
+ * Allows the user to override the location of the host file.
+ * 
+ * @ingroup server_settings
+ */
+define('SERVER_SETTING_HOSTS_FILE', 'managed-host-file');
+
+/**
  * Server setting to prevent the hosts file from being updated during the 
  * update process.
  * 

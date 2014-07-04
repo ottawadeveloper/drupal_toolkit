@@ -52,7 +52,7 @@ abstract class GenericHostFileManager implements HostFileManagerInterface {
    *   The location of the host file for this machine.
    */
   public function __construct(PhysicalServerInterface $server, $hostfile, $lineEnding = PHP_EOL) {
-    $this->hostfile = $hostfile;
+    $this->hostfile = $server->getSetting(SERVER_SETTING_HOSTS_FILE, $hostfile);
     $this->machine = $server;
     $this->lineEnding = $lineEnding;
   }
