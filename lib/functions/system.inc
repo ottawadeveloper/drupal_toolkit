@@ -27,7 +27,7 @@ function get_system_username() {
 /**
  * Finds files that match a given callback.
  * 
- * @param callable $matching
+ * @param mixed $matching
  *   The callback that tests a file name.
  * @param string $directory
  *   The directory to examine.
@@ -40,7 +40,7 @@ function get_system_username() {
  * @return array
  *   An array of matching files.
  */
-function find_files(callable $matching, $directory, $recursive = TRUE, &$skip = array()) {
+function find_files($matching, $directory, $recursive = TRUE, &$skip = array()) {
   if (is_link($directory)) { $directory = realpath($directory); }
   if (in_array($directory, $skip)) { return array(); }
   $skip[] = $directory;
