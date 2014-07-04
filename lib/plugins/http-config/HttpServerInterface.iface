@@ -72,5 +72,21 @@ interface HttpServerInterface {
    *   An array of extra files.
    */
   function extraFiles($configFile);
+  
+  /**
+   * Retrieves the configuration directory.
+   * 
+   * @return string
+   *   The configuration directory.
+   */
+  function getConfigDirectory();
+  
+  /**
+   * Checks whether or not this server should be performing a reboot.
+   * 
+   * @return boolean
+   *   TRUE if reboots are a thing, otherwise FALSE.
+   */
+  function checkReboot();
 
 }

@@ -69,13 +69,21 @@ abstract class GenericHttpServer implements HttpServerInterface {
   protected abstract function available();
     
   public function doReboot() {
-    $checkFlag = $this->machine()->getSetting('http-skip-remote-reboot');
+   if ($this->checkReboot()) {
+     return $this->reboot();
+   }
+   return FALSE;
+  }
+  
+  public function checkReboot() {
+     $checkFlag = $this->machine()->getSetting('http-skip-reboot');
     if (empty($checkFlag)) {
       if ($this->available() && $this->testConfig()) {
-        return $this->reboot();
+        return TRUE;
       }
+      return FALSE;
     }
-    return FALSE;
+    return NULL;
   }
   
   public function isAvailable() {
@@ -95,6 +103,10 @@ abstract class GenericHttpServer implements HttpServerInterface {
   
   public function extraFiles($configFile) {
     return array();
+  }
+  
+  public function getConfigDirectory() {
+    return $this->configDirectory;
   }
   
 }

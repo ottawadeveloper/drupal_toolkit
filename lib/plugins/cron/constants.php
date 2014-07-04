@@ -4,6 +4,13 @@
  */
 
 /**
+ * Overrides the crontab frequency specified in CONFIG_CRONTAB_FREQUENCY.
+ * 
+ * @ingroup args
+ */
+define('OPTION_CRONTAB_FREQUENCY', 'crontab-frequency');
+
+/**
  * Configure the setting that will be passed to crontab implementations.
  * 
  * This should be five values separated by spaces in the following order:
