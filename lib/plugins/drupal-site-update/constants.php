@@ -4,6 +4,20 @@
  */
 
 /**
+ * Fired when the update-all command is about to begin.
+ * 
+ * @ingroup events
+ */
+define('EVENT_UPDATE_ALL_START', 'update-all-start');
+
+/**
+ * Fired when the update-all command has successfully completed.
+ * 
+ * @ingroup events
+ */
+define('EVENT_UPDATE_ALL_FINISH', 'update-all-finish');
+
+/**
  * String token for when starting to update all sites.
  * 
  * @ingroup strings

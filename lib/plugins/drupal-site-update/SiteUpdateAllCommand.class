@@ -14,6 +14,9 @@
 class SiteUpdateAllCommand extends GenericCommand {
   
   public function executeCommand() {
+    $e = new DtkEvent(TRUE);
+    $e->setVariable('complete', FALSE);
+    $e->setVariable('errored', FALSE);
     $command = $this->config()->getConfig(CONFIG_DTK_LOCATION);
     if (empty($command)) {
       $command = 'dtk';
@@ -25,6 +28,7 @@ class SiteUpdateAllCommand extends GenericCommand {
     }
     $sites = array_keys(DrupalSite::findSites($this->config()));
     $errored = array();
+    $this->events()->fireEvent(EVENT_UPDATE_ALL_START, $e);
     foreach ($sites as $sitekey) {
       $return = 0;
       execute_system_command($command, array(
@@ -34,6 +38,9 @@ class SiteUpdateAllCommand extends GenericCommand {
         $errored[$sitekey] = $sitekey;
       }
     }
+    $e->setVariable('complete', TRUE);
+    $e->setVariable('errored', !empty($errored));
+    $this->events()->fireEvent(EVENT_UPDATE_ALL_FINISH, $e);
     if (!empty($errored)) {
       foreach ($errored as $key) {
         $this->error(STRING_ERROR_UPDATE_ALL_SITE, array(
