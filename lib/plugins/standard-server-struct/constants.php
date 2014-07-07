@@ -1,7 +1,35 @@
 <?php
 /**
  * @file Defines useful constants for this plugin.
+ * 
+ * @defgroup dtk_file_flags "Toolkit File Flags"
+ * A list of constants that can be written to CONFIG_SERVER_GLOBAL_FLAG_FILE
+ * which denote certain runtime conditions that Drupal installs may care
+ * about.
  */
+
+/**
+ * Denotes that an update-all operation is currently happening.
+ * 
+ * @ingroup dtk_file_flags
+ */
+define('DTK_FILE_FLAG_UPDATE', 'update');
+
+/**
+ * Denotes that nothing is currently happening.
+ * 
+ * @ingroup dtk_file_flags
+ */
+define('DTK_FILE_FLAG_NOTHING', '');
+
+/**
+ * Config key that defines the path to a file that will be used to mark
+ * when certain operations are happening. This file can act as a semaphore
+ * within Drupal for detecting it's current status.
+ * 
+ * @ingroup config
+ */
+define('CONFIG_SERVER_GLOBAL_FLAG_FILE', 'flag-file');
 
 /**
  * Config key for the server sites directory.

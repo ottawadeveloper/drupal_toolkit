@@ -20,10 +20,60 @@ class DrupalSiteStandardServerStructurePlugin extends GenericPlugin implements E
       EVENT_REMOVE_ALL,
       EVENT_UPDATE_PREPARE_SERVER,
       EVENT_SUBSITE_BUILD_CONFIG,
+      EVENT_UPDATE_ALL_START,
+      EVENT_UPDATE_ALL_FINISH,
     ), $this);
     $this->config()->extendDefaultConfiguration(array(
       CONFIG_SERVER_SITES_DIR => '',
+      CONFIG_SERVER_GLOBAL_FLAG_FILE => FALSE,
     ));
+  }
+  
+  public function captureEvent(DtkEvent &$context, $type) {
+    switch ($type) {
+      case EVENT_SITE_BUILD_SERVER_STRUCTURE:
+        if ($context->checkExecution()) {
+          $context->setResult($this->initializeServerStructure($context->getSite()));
+        }
+        break;
+      case EVENT_REMOVE_ALL:
+        if ($context->checkExecution()) {
+          $context->setResult($this->deleteServerStructure($context->getSite()));
+        }
+        break;
+      case EVENT_SUBSITE_BUILD_CONFIG:
+        if ($context->checkExecution()) {
+          $context->setResult($this->configureSubsite($context->getSubSite()));
+        }
+        break;
+      case EVENT_UPDATE_ALL_START:
+        $this->writeToFlagFile(DTK_FILE_FLAG_UPDATE);
+        break;
+      case EVENT_UPDATE_ALL_FINISH:
+        $this->writeToFlagFile(DTK_FILE_FLAG_NOTHING);
+        break;
+    }
+  }
+  
+  /**
+   * Writes the appropriate flag out to the global flag file, if specified.
+   * 
+   * @param string $token
+   *   The flag to write.
+   * 
+   * @return boolean
+   *   TRUE on success, otherwise FALSE.
+   */
+  private function writeToFlagFile($token) {
+    $file = $this->config()->getConfig(CONFIG_SERVER_GLOBAL_FLAG_FILE);
+    if (extra_empty($file)) {
+      return TRUE;
+    }
+    if (!is_writable($file)) {
+      if (file_exists($file)) { return FALSE; }
+      if (!is_writable(dirname($file))) { return FALSE; }
+    }
+    return file_put_contents($file, $token) !== FALSE;
   }
   
   /**
@@ -122,26 +172,6 @@ class DrupalSiteStandardServerStructurePlugin extends GenericPlugin implements E
     $subsite->setSetting(SITE_SETTING_DOCROOT, $subsite->getParentSite()->getSetting(SITE_SETTING_DOCROOT));
     $subsite->setToken(SITE_TOKEN_DOCROOT, $subsite->getParentSite()->getSetting(SITE_SETTING_DOCROOT));
     return TRUE;
-  }
-  
-  public function captureEvent(DtkEvent &$context, $type) {
-    switch ($type) {
-      case EVENT_SITE_BUILD_SERVER_STRUCTURE:
-        if ($context->checkExecution()) {
-          $context->setResult($this->initializeServerStructure($context->getSite()));
-        }
-        break;
-      case EVENT_REMOVE_ALL:
-        if ($context->checkExecution()) {
-          $context->setResult($this->deleteServerStructure($context->getSite()));
-        }
-        break;
-      case EVENT_SUBSITE_BUILD_CONFIG:
-        if ($context->checkExecution()) {
-          $context->setResult($this->configureSubsite($context->getSubSite()));
-        }
-        break;
-    }
   }
   
 }
