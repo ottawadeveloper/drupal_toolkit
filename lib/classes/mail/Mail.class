@@ -1,0 +1,160 @@
+<?php
+/**
+ * @file Helper class for sending mail.
+ */
+
+/**
+ * Sends mail via the PHP mail() functionality but more nice.
+ */
+class Mail {
+  
+  /**
+   * Addresses to send to.
+   * 
+   * @var array
+   */
+  private $to = array();
+  
+  /**
+   * The subject of the message.
+   * 
+   * @var string
+   */
+  private $subject = NULL;
+  
+  /**
+   * The content of the message.
+   * 
+   * @var string
+   */
+  private $message = NULL;
+  
+  /**
+   * Additional headers for the message.
+   * 
+   * @var array
+   */
+  private $headers = array();
+  
+  /**
+   * Creates a message object and prepares it for sending.
+   * 
+   * @param array|string $to
+   *   The email address(es) to send the message to.
+   * @param string $subject
+   *   The subject of the message.
+   * @param string $message
+   *   The message content.
+   * @param boolean $isHTML
+   *   Set to TRUE if sending HTML mail.
+   */
+  public function __construct($to, $subject, $message, $isHTML = FALSE) {
+    $this->to = is_array($to) ? $to : array($to);
+    $this->subject = $subject;
+    $this->message = $message;
+    $this->headers['Content-type'] = 'textplain; charset=utf-8';
+    $this->headers['X-Mailer'] = 'PHP/' . phpversion() . '/DTK';
+    $this->headers['MIME-Version'] = '1.0';
+    if ($isHTML) {
+      $this->markAsHtml();
+    }
+  }
+  
+  /**
+   * Specifies the from address.
+   * 
+   * @param string $from
+   *   Whom the email is from.
+   */
+  public function from($from) {
+    $this->headers['From'] = $from;
+  }
+  
+  /**
+   * Specifies the reply-to address.
+   * 
+   * @param string $to
+   *   The address people will be replying to.
+   */
+  public function replyTo($to) {
+    $this->headers['Reply-To'] = $to;
+  }
+  
+  /**
+   * Adds an additional email to the To field.
+   * 
+   * @param string $to
+   *   An address to send this email to.
+   */
+  public function sendTo($to) {
+    $this->to[] = $to;
+  }
+  
+  /**
+   * Adds an additional email to the CC field.
+   * 
+   * @param string $to
+   *   An address to CC this email to.
+   */
+  public function carbonCopyTo($to) {
+    if (!isset($this->headers['Cc'])) {
+      $this->headers['Cc'] = array();
+    }
+    $this->headers['Cc'][] = $to;
+  }
+  
+  /**
+   * Adds an additional email to the BCC field.
+   * 
+   * @param string $to
+   *   An address to BCC this email to.
+   */
+  public function blindCarbonCopyTo($to) {
+    if (!isset($this->headers['Bcc'])) {
+      $this->headers['Bcc'] = array();
+    }
+    $this->headers['Bcc'][] = $to;
+  }
+  
+  /**
+   * Marks this email as containing HTML content.
+   */
+  public function markAsHtml() {
+    $this->headers['Content-type'] = 'text/html; charset=utf-8';
+  }
+  
+  /**
+   * Sends the email using PHP's mail() function.
+   * 
+   * @return boolean
+   *   The result of the mail() function.
+   */
+  public function sendMail() {
+    return mail(
+        implode(",", $this->to), 
+        $this->message,
+        $this->compileHeaders()
+    );
+  }
+  
+  /**
+   * Compiles the email headers into a string that mail() will like.
+   * 
+   * @return string
+   *   Email headers as a string.
+   */
+  private function compileHeaders() {
+    $head = array();
+    foreach ($this->headers as $key => $value) {
+      if (is_array($value)) {
+        $head[] = $key . ': ' . implode(",", $value);
+      }
+      else {
+        $head[] = $key . ': ' . $value;
+      }
+    }
+    return implode(PHP_EOL, $head);
+  }
+  
+  
+}

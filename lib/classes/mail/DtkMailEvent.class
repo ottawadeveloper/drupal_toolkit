@@ -1,0 +1,38 @@
+<?php
+/**
+ * @file Defines the DtkMailEvent class.
+ */
+
+/**
+ * Fired to send an email.
+ */
+class DtkMailEvent extends DtkEvent {
+  
+  /**
+   * The mailer object.
+   * 
+   * @var Mail
+   */
+  private $mail;
+  
+  /**
+   * Constructs the event.
+   * 
+   * @param Mail $mail
+   *   The mailer object.
+   */
+  public function __construct(Mail $mail) {
+    $this->mail = $mail;
+  }
+  
+  /**
+   * Retrieves the mailer object.
+   * 
+   * @return Mail
+   *   The mailer object.
+   */
+  public function getMail() {
+    return $this->mail;
+  }
+  
+}

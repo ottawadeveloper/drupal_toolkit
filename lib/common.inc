@@ -48,6 +48,8 @@ $files = array(
   'classes/commands/HelpInstructions.class',
   'classes/commands/HelpInstructionsEvent.class',
   'classes/commands/HelpCommand.class',
+  'classes/mail/Mail.class',
+  'classes/mail/DtkMailEvent.class',
 );
 
 /**

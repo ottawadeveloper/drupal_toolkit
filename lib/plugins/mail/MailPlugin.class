@@ -1,0 +1,64 @@
+<?php
+/**
+ * @file Defines the MailPlugin class.
+ */
+
+/**
+ * Responsible for managing mail defaults and executing the mail send.
+ * 
+ * @ingroup plugins
+ */
+class MailPlugin extends GenericPlugin implements EventListener {
+  
+  public function initialize() {
+    $this->config()->extendDefaultConfiguration(array(
+      CONFIG_MAIL_BCC => array(),
+      CONFIG_MAIL_FROM => NULL,
+      CONFIG_MAIL_REPLY => NULL,
+    ));
+    $this->events()->registerListener(array(
+      EVENT_DTK_MAIL,
+    ), $this);
+  }
+  
+  public function captureEvent(DtkEvent &$context, $eventType) {
+    switch ($eventType) {
+      case EVENT_DTK_MAIL:
+        if ($context->checkExecution()) {
+          $context->setResult($this->sendMail($context->getMail()));
+        }
+        break;
+    }
+  }
+  
+  /**
+   * Responsible for setting all the defaults on the email and sending it.
+   * 
+   * @param Mail $mail
+   *   The mail object being sent.
+   * 
+   * @return boolean
+   *   TRUE if the mail object was successfully sent for delivery, otherwise 
+   *   FALSE.
+   */
+  private function sendMail(Mail $mail) {
+    $config = $this->getConfig(array(), array(
+      'bcc' => CONFIG_MAIL_BCC,
+      'from' => CONFIG_MAIL_FROM,
+      'reply' => CONFIG_MAIL_REPLY,
+    ));
+    if (!empty($config['from'])) {
+      $mail->from($config['from']);
+    }
+    if (!empty($config['reply'])) {
+      $mail->replyTo($config['reply']);
+    }
+    if (!empty($config['bcc'])) {
+      foreach ($config['bcc'] as $bcc) {
+        $mail->blindCarbonCopyTo($bcc);
+      }
+    }
+    return !!$mail->sendMail();
+  }
+  
+}

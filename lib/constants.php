@@ -6,7 +6,7 @@
 /**
  * Current version of the toolkit.
  */
-define('TOOLKIT_VERSION', '0.0.6');
+define('TOOLKIT_VERSION', '0.0.7');
 
 /**
  * Location of the common directory.
@@ -229,6 +229,13 @@ define('EVENT_COMMAND_PRE_EXECUTION', 'command-preexecute');
  * @ingroup events
  */
 define('EVENT_COMMAND_POST_EXECUTION', 'command-postexecute');
+
+/**
+ * Fired to send email.
+ * 
+ * @ingroup events
+ */
+define('EVENT_DTK_MAIL', 'dtk-mail');
 
 /**
  * Fired when a string is needed.

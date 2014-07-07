@@ -5,6 +5,33 @@
  */
 
 /**
+ * Sends mail.
+ * 
+ * @param array $data
+ *   An array of mail data.
+ */
+function dtk_send_mail($data) {
+  global $events;
+  $mail = new Mail($data['to'], $data['subject'], $data['message']);
+  if (!extra_empty($data['html'])) {
+    $mail->markAsHtml();
+  }
+  if (!extra_empty($data['cc'])) {
+    foreach ($data['cc'] as $cc) {
+      $mail->carbonCopyTo($cc);
+    }
+  }
+  if (!extra_empty($data['bcc'])) {
+    foreach ($data['bcc'] as $bcc) {
+      $mail->blindCarbonCopyTo($bcc);
+    }
+  }
+  $event = new DtkMailEvent($mail);
+  $events->fireEvent(EVENT_DTK_MAIL, $event);
+  return $event->success();
+}
+
+/**
  * Executes a command for the Drupal Toolkit.
  * 
  * @param string $commandName
