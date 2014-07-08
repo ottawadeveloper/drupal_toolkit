@@ -4,22 +4,6 @@
  */
 
 /**
- * Config setting to skip the redundant symlinks.
- * 
- * If set, symlinks for the default domains won't be created.
- * 
- * @ingroup config
- */
-define('CONFIG_SKIP_REDUNDANT_SYMLINKS', 'skip-redundant-symlinks');
-
-/**
- * Option to override CONFIG_SKIP_REDUNDANT_SYMLINKS.
- * 
- * @ingroup args
- */
-define('OPTION_SKIP_REDUNDANT_SYMLINKS', 'skip-redundant-symlinks');
-
-/**
  * String token for if the settings.php file was not found.
  * 
  * @ingroup strings

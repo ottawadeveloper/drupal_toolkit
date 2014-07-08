@@ -62,10 +62,6 @@ class DrupalSiteStandardSitePlugin extends GenericPlugin implements EventListene
       EVENT_UPDATE_SUBSITE_SITES,
       EVENT_ROLLBACK_SUBSITE_CLEAN,
     ), $this);
-    $this->config()->extendDefaultConfiguration(array(
-      CONFIG_SKIP_REDUNDANT_SYMLINKS => FALSE,
-    ));
-    $this->config()->extendFromOption(CONFIG_SKIP_REDUNDANT_SYMLINKS, OPTION_SKIP_REDUNDANT_SYMLINKS);
   }
     
   public function captureEvent(DtkEvent &$context, $type) {
@@ -153,16 +149,14 @@ class DrupalSiteStandardSitePlugin extends GenericPlugin implements EventListene
     $realDefault = assemble_path($site->getBuildFolder(), $structureSites, self::$defaultDirectory);
     rename(assemble_path($currentBase, 'sites', self::$defaultDirectory), $realDefault);
     
-    // Make symlinks out of all the URLs if desired
-    $makeSymlinks = extra_empty($this->config()->getConfig(CONFIG_SKIP_REDUNDANT_SYMLINKS));
-    if ($makeSymlinks) {
-      if (!$this->createRedundantSymlinks($site, self::$defaultDirectory, assemble_path($site->getBuildFolder(), $structureSites))) {
-        return FALSE;
-      }
+    if (!$this->createRedundantSymlinks($site, self::$defaultDirectory, assemble_path($site->getBuildFolder(), $structureSites))) {
+      return FALSE;
     }
+    
     if (!$this->createDefaultSettingsFile($site, $realDefault)) {
       return FALSE;
     }
+    
     // Copy the settings to the real template file.
     if (!$this->writeSettingsFile($site, assemble_path($site->getBuildFolder(), $structureSites))) {
       return FALSE;

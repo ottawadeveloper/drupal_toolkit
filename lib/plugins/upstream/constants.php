@@ -9,7 +9,7 @@
  * 
  * @ingroup config
  */
-define('CONFIG_IGNORE_UPSTREAM', 'upstream-db-ignore');
+define('CONFIG_IGNORE_UPSTREAM', 'upstream-ignore');
 
 /**
  * Specifies a server type for the upstream server. Used by the server-interaction
