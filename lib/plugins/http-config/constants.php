@@ -19,7 +19,7 @@ define('SERVER_SETTING_HTTP_CONFIG_DIR', 'http-config-dir');
 define('SERVER_SETTING_HTTP_CONFIG_TEMPLATE', 'http-config-template');
 
 /**
- * Server setting to override the location of the HTTP file template.
+ * Server setting to override the template for the HTTP config filename.
  * 
  * @ingroup server_settings
  */
@@ -81,13 +81,6 @@ define('CONFIG_HTTP_DEFAULT_FILENAME_TEMPLATE', 'http-config-filename-template')
 define('SERVER_TYPE_HTTP', 'http');
 
 /**
- * Set to TRUE to prevent the local server from being used as an HTTP server.
- * 
- * @ingroup config
- */
-define('CONFIG_DISABLE_LOCAL_HTTP', 'si-disable-local-http');
-
-/**
  * HTTP server type for apache2 servers.
  * 
  * @ingroup http_types
@@ -120,7 +113,7 @@ define('SERVER_SETTING_HTTP_TYPE', 'http-type');
  * 
  * @ingroup server_settings
  */
-define('SERVER_SETTING_HTTP_STATIC', 'http-no-refresh');
+define('SERVER_SETTING_HTTP_STATIC', 'http-static-config');
 
 /**
  * String token for when there is no template file defined.
@@ -184,3 +177,10 @@ define('STRING_WORKING_HTTP_CONFIGURE_SERVER', 'http_config.working.configure-se
  * @ingroup strings
  */
 define('STRING_SUCCESS_HTTP_CONFIGURE', 'http_config.success.configure');
+
+/**
+ * Set to TRUE to prevent HTTP server from restarting.
+ * 
+ * @ingroup server_settings
+ */
+define('SERVER_SETTING_SKIP_REBOOT', 'http-skip-reboot');

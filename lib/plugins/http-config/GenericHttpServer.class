@@ -76,7 +76,7 @@ abstract class GenericHttpServer implements HttpServerInterface {
   }
   
   public function checkReboot() {
-     $checkFlag = $this->machine()->getSetting('http-skip-reboot');
+     $checkFlag = $this->machine()->getSetting(SERVER_SETTING_SKIP_REBOOT);
     if (empty($checkFlag)) {
       if ($this->available() && $this->testConfig()) {
         return TRUE;

@@ -62,7 +62,7 @@ $default_settings = array(
     TOOLKIT_COMMON_DIR . '/plugins',
     '/usr/lib/php/dtk_plugins',
   ),
-  CONFIG_DISABLED_CORE_PLUGINS => array(),
+  CONFIG_SKIP_PLUGINS => array(),
   CONFIG_DEBUG => FALSE,
   CONFIG_VERBOSE => FALSE,
   CONFIG_SILENT => FALSE,

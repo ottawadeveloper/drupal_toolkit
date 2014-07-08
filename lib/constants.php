@@ -87,28 +87,6 @@ define('EVENT_CORE_DEPENDENCY_INJECTION', 'core-dependency-injection');
 define('EVENT_CORE_PLUGINS_REGISTERED', 'core-plugins-registered');
 
 /**
- * Config setting for the list of files to include for plugins.
- * 
- * @ingroup config
- */
-define('CONFIG_PLUGIN_INCLUDES', 'plugin-includes');
-
-/**
- * Config setting for the list of plugin class names to instantiate.
- * 
- * @ingroup config
- */
-define('CONFIG_PLUGIN_REGISTRY', 'plugin-registry');
-
-/**
- * Config setting for the list of plugin names to disable from the core
- * list.
- * 
- * @ingroup config
- */
-define('CONFIG_DISABLED_CORE_PLUGINS', 'core-disabled-plugins');
-
-/**
  * Config setting to enable debug mode.
  * 
  * @ingroup config

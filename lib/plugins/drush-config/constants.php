@@ -8,14 +8,14 @@
  * 
  * @ingroup config
  */
-define('CONFIG_DRUSH_ALIAS_TEMPLATE', 'drush-alias-file-template');
+define('CONFIG_DRUSH_ALIAS_TEMPLATE', 'drush-alias-template');
 
 /**
  * Config key for the default drush configuration.
  * 
  * @ingroup config
  */
-define('CONFIG_DRUSH_CONFIG_TEMPLATE', 'drush-alias-config-template-file');
+define('CONFIG_DRUSH_CONFIG_TEMPLATE', 'drush-alias-template-file');
 
 /**
  * Config key for the drush alias default directory.
@@ -128,7 +128,7 @@ define('STRING_WORKING_DRUSH_ALIAS_SETUP', 'drush_config.working.setup-alias');
  * 
  * @ingroup config
  */
-define('CONFIG_DRUSH_ALIAS_FILE_TEMPLATE', 'drush-file-template');
+define('CONFIG_DRUSH_ALIAS_FILE_TEMPLATE', 'drush-alias-file-template');
 
 /**
  * String token for displaying the drush alias.

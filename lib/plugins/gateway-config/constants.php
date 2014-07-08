@@ -53,13 +53,6 @@ define('CONFIG_GATEWAY_STATIC_CONFIG', 'gateway-config-static');
 define('SERVER_TYPE_GATEWAY', 'gateway');
 
 /**
- * Set to TRUE to prevent the local server from being used as an gateway server.
- * 
- * @ingroup config
- */
-define('CONFIG_DISABLE_LOCAL_GATEWAY', 'si-disable-local-gateway');
-
-/**
  * Server setting to override the default gateway filename template.
  * 
  * @ingroup server_settings
