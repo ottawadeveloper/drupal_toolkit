@@ -210,6 +210,7 @@ class DatabaseConfigurationPlugin extends GenericPlugin implements EventListener
     foreach ($servers as $server) {
       $this->sanitizeDatabaseConfiguration($server, $config);
     }
+    $ret = TRUE;
     foreach ($servers as $key => $server) {
       $this->working(STRING_WORKING_DB_CREATE_ITEM, array(
         '!name' => $config['database'],
@@ -217,7 +218,8 @@ class DatabaseConfigurationPlugin extends GenericPlugin implements EventListener
       ));
       if (!$server->createDatabase($config['database'], $config['username'], $config['password'], $config['host_restriction'])) {
         $this->error(STRING_CANNOT_CREATE_DB);
-        return FALSE;
+        $ret = FALSE;
+        break;
       }
       $dbStorage[$key] = array(
         'type' => $server->getSetting(DB_HOST_TYPE),
@@ -238,12 +240,14 @@ class DatabaseConfigurationPlugin extends GenericPlugin implements EventListener
     }
     if (!$this->writeDatabaseSettings($site, $drupalSettings)) {
       $this->error(STRING_CANNOT_WRITE_SETTINGS);
-      return FALSE;
+      $ret = FALSE;
     }
     $site->setSetting(SITE_DB_CONNECTION_KEYS, $connectionKeys);
     $site->setSetting(SITE_DATABASE_LIST, $dbStorage);
-    $this->success(STRING_SUCCESS_DB_CREATE);
-    return TRUE;
+    if ($ret) {
+      $this->success(STRING_SUCCESS_DB_CREATE);
+    }
+    return ret;
   }
   
   /**
