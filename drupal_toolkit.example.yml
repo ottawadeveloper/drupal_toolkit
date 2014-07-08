@@ -179,7 +179,7 @@
 
 ## Specify the repo branch to clone (defaults to master)
 ## Can override with --branch=master
-#default-branch=master
+#default-branch: master
 
 ## Limit the branches that can be specified via the command line.
 #branch-whitelist:
