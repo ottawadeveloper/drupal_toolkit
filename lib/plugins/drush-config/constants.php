@@ -124,11 +124,12 @@ define('STRING_SUCCESS_DRUSH_ALIASES_SETUP', 'drush_config.success.setup');
 define('STRING_WORKING_DRUSH_ALIAS_SETUP', 'drush_config.working.setup-alias');
 
 /**
- * Configuration setting for the Drush file alias template.
+ * Config setting to change the pattern by which filenames are generated
+ * for drush aliases.
  * 
  * @ingroup config
  */
-define('CONFIG_DRUSH_ALIAS_FILE_TEMPLATE', 'drush-alias-file-template');
+define('CONFIG_DRUSH_ALIAS_FILE_TEMPLATE', 'drush-alias-filename-template');
 
 /**
  * String token for displaying the drush alias.
