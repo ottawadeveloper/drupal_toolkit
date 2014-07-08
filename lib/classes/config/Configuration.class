@@ -98,6 +98,9 @@ class Configuration implements ConfigurationManagerInterface {
   public function extendFromOption($key, $long = NULL, $short = NULL, $split = FALSE) {
     if ($long === TRUE) { $long = $key; }
     if ($split === TRUE) { $split = DEFAULT_SPLIT_CHARACTER; }
+    if (!$this->args->hasOption($long, $short)) {
+      return;
+    }
     $arg = $this->args->getOption($long, $short);
     if (!empty($split)) {
       $arg = explode($split, $arg);
