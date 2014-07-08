@@ -294,7 +294,7 @@
 #drush-alias-filename-template: @@SITE_UUID.alias.drushrc.php
 
 ## Specify the template for the file that stores the alias information.
-#drush-alias-file-template:
+#drush-alias-template-file: 
 
 ## Uncomment to change the directory in which drush alias files will be stored
 #drush-alias-default-dir: /etc/drush
