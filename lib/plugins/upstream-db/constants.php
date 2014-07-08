@@ -48,7 +48,7 @@ define('CONFIG_UPSTREAM_GZIP_SUPPORT', 'upstream-gzip');
  *   paths, this variable is not overridden.
  * - background_process_token: Specific to the background process module,
  *   this token should not be changed between installations.
- * - background-process_derived_default_host: Similar reasoning to the token.
+ * - background_process_derived_default_host: Similar reasoning to the token.
  * 
  * Developers who know what they're doing can override these values directly
  * in this file if needed.
