@@ -97,7 +97,7 @@ class ServerInteractionPlugin extends GenericPlugin implements EventListener {
       }
       if (!$noLocal) {
         $settings = $this->config()->getConfig('si-local-' . $type);
-        if (!(!isset($settings['disabled']) || extra_empty($settings['disabled']))) {
+        if ((!isset($settings['disabled']) || extra_empty($settings['disabled']))) {
           $servers['auto-localhost'] = new LocalMachine($settings);
         }
       }
