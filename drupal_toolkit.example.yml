@@ -19,65 +19,65 @@
 ## checked for configuration in YAML format, use the syntax
 ## below as an example.
 #yaml-files:
-#- /etc/drupal_toolkit.yml
+#  - /etc/drupal_toolkit.yml
 
 ## If you would like to specify additional files that will be
 ## checked for configuration in PHP INI format, use the syntax
 ## below as an example.
 #config-files:
-#- /etc/drupal_toolkit.cfg
+#  - /etc/drupal_toolkit.cfg
 
 ## If you would like to specify additional folders that will be
 ## scanned for plugins, use the syntax below as an example.
 #plugins:
-#- /usr/lib/php/dtk_plugins
+#  - /usr/lib/php/dtk_plugins
 
 ## If you would like to disable plugins from being executed, 
 ## use this structure to do so. Some common plugins that can
 ## cause problems are disabled by default.
 #disabled-plugins:
-#- config-export
-#- cron
-#- db-config
-#- doxygen
-#- drupal-site
-#- drupal-site-build
-#- drupal-site-delete
-#- drupal-site-docs
-#- drupal-site-exists
-#- drupal-site-info
-#- drupal-site-install
-#- drupal-site-list
-#- drupal-site-metrics
-#- drupal-site-refresh
-#- drupal-site-rollback
-#- drupal-site-test
-#- drupal-site-update
-#- drush-backup
-#- drush-config
-#- drush-install
-#- drush-maintenance
-#- drush-simpletest
-#- drush-update
-#- flog
-#- gateway-config
-#- hosts-config
-#- http-config
-#- mail
-#- permissions
-#- phploc
-#- self-update
-#- server-interaction
-#- standard-build
-#- standard-config
-#- standard-server-struct
-#- standard-site
-#- standard-structure
-#- terminal
-#- translation
-#- upstream
-#- upstream-db
-#- upstream-files
+#  - config-export
+#  - cron
+#  - db-config
+#  - doxygen
+#  - drupal-site
+#  - drupal-site-build
+#  - drupal-site-delete
+#  - drupal-site-docs
+#  - drupal-site-exists
+#  - drupal-site-info
+#  - drupal-site-install
+#  - drupal-site-list
+#  - drupal-site-metrics
+#  - drupal-site-refresh
+#  - drupal-site-rollback
+#  - drupal-site-test
+#  - drupal-site-update
+#  - drush-backup
+#  - drush-config
+#  - drush-install
+#  - drush-maintenance
+#  - drush-simpletest
+#  - drush-update
+#  - flog
+#  - gateway-config
+#  - hosts-config
+#  - http-config
+#  - mail
+#  - permissions
+#  - phploc
+#  - self-update
+#  - server-interaction
+#  - standard-build
+#  - standard-config
+#  - standard-server-struct
+#  - standard-site
+#  - standard-structure
+#  - terminal
+#  - translation
+#  - upstream
+#  - upstream-db
+#  - upstream-files
 
 
 ####################
@@ -126,7 +126,7 @@
 ## !language will be replaced by the value of the above language 
 ## configuration key.
 #language-file-pattern:
-#- /home/example/dtk_translations/!language.tr
+#  - /home/example/dtk_translations/!language.tr
 
 
 ##########################
@@ -174,8 +174,8 @@
 ## Specify an array of options to be passed to the drush make command.
 ## You should omit leading hyphens. By default "prepare-install" is used.
 #drush-make-options:
-#- working-copy
-#- no-gitinfofile
+#  - working-copy
+#  - no-gitinfofile
 
 ## Specify the repo branch to clone (defaults to master)
 ## Can override with --branch=master
@@ -183,13 +183,13 @@
 
 ## Limit the branches that can be specified via the command line.
 #branch-whitelist:
-#- master
-#- dev
+#  - master
+#  - dev
 
 ## An array of files to be removed from the build after completion.
 #remove-build-files:
-#- CHANGELOG.txt
-#- INSTALL.txt
+#  - CHANGELOG.txt
+#  - INSTALL.txt
 
 ## A prefix to insert before every URL used in the site. Both prefix and 
 ## non-prefixed versions will be valid and will point to the same site.
@@ -341,8 +341,8 @@
 ## Command line option to override: --install-modules="simpletest,devel"
 #install-modules:
 ## enables the simpletest and devel modules
-#- simpletest 
-#- devel
+#  - simpletest 
+#  - devel
 
 ## Additional form arguments for the installer, one per line
 ## Command line option to override: --install-settings="install_configure_form.site_default_country=FR,install_configure_form.other_setting=value"
@@ -354,7 +354,7 @@
 ## Command line option to override: --install-options="clean-url=0"
 #install-site-options:
 ## disable clean urls as an example (note that prefix hyphens are omitted here).
-# - clean-url=0 
+#  - clean-url=0 
 
 
 ######################################
@@ -442,7 +442,7 @@
 
 ## Add emails to this array in order to have them BCC'd on all outgoing emails.
 #mail-bcc:
-#- admin@example.com
+#  - admin@example.com
 
 
 #################################
@@ -491,10 +491,10 @@
 ## Controls which files are examined by PHPloc for code
 ## quality review.
 #phploc-file-patterns: 
-#- *.php
-#- *.inc
-#- *.module
-#- *.install
+#  - *.php
+#  - *.inc
+#  - *.module
+#  - *.install
 
 
 #####################
@@ -506,12 +506,12 @@
 
 ## Specify an array of table names to avoid downloading.
 #upstream-ignore-upstream-tables-key:
-#- cache
-#- cache_form
+#  - cache
+#  - cache_form
 
 ## Specify an array of table names to preserve locally.
 #upstream-local-tables-key:
-#- cache_form
+#  - cache_form
 
 ## Uncomment if the upstream server supports gzip
 #upstream-gzip: yes
@@ -521,11 +521,11 @@
 ## The specified Drupal variables will have their old
 ## value restored after the update has taken place.
 #preserve-local-variables:
-#- cron_key
-#- drupal_private_key
-#- file_temporary_path
-#- background_process_token
-#- background_process_derived_default_host
+#  - cron_key
+#  - drupal_private_key
+#  - file_temporary_path
+#  - background_process_token
+#  - background_process_derived_default_host
 
 
 ###################################
