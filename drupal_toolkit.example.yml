@@ -1,0 +1,619 @@
+###################################
+### CORE CONFIGURATION SETTINGS ###
+###################################
+
+## Uncomment this to enable debugging mode on every DTK call.
+#debug: yes
+
+## Uncomment this to enable verbose mode on every DTK call.
+#verbose: yes
+
+## Uncomment this to enable silent mode on every DTK call.
+#silent: yes
+
+## If you need to change the path to where Spyc is installed, 
+## uncomment this line and alter the path as needed.
+#spyc-location: /usr/lib/php/spyc/Spyc.php
+
+## If you would like to specify additional files that will be
+## checked for configuration in YAML format, use the syntax
+## below as an example.
+#yaml-files:
+#- /etc/drupal_toolkit.yml
+
+## If you would like to specify additional files that will be
+## checked for configuration in PHP INI format, use the syntax
+## below as an example.
+#config-files:
+#- /etc/drupal_toolkit.cfg
+
+## If you would like to specify additional folders that will be
+## scanned for plugins, use the syntax below as an example.
+#plugins:
+#- /usr/lib/php/dtk_plugins
+
+## If you would like to disable plugins from being executed, 
+## use this structure to do so. Some common plugins that can
+## cause problems are disabled by default.
+#disabled-plugins:
+#- config-export
+#- cron
+#- db-config
+#- doxygen
+#- drupal-site
+#- drupal-site-build
+#- drupal-site-delete
+#- drupal-site-docs
+#- drupal-site-exists
+#- drupal-site-info
+#- drupal-site-install
+#- drupal-site-list
+#- drupal-site-metrics
+#- drupal-site-refresh
+#- drupal-site-rollback
+#- drupal-site-test
+#- drupal-site-update
+#- drush-backup
+#- drush-config
+#- drush-install
+#- drush-maintenance
+#- drush-simpletest
+#- drush-update
+#- flog
+#- gateway-config
+#- hosts-config
+#- http-config
+#- mail
+#- permissions
+#- phploc
+#- self-update
+#- server-interaction
+#- standard-build
+#- standard-config
+#- standard-server-struct
+#- standard-site
+#- standard-structure
+#- terminal
+#- translation
+#- upstream
+#- upstream-db
+#- upstream-files
+
+
+####################
+### FILE LOGGING ###
+####################
+
+## Specifies the location of a log file to send output to. Optional.
+#log-file=/var/log/dtk/dtk.log
+
+
+#######################
+### TERMINAL OUTPUT ###
+#######################
+
+## Uncomment to disable the timestamp next to output messages.
+#cli-use-timestamp: no
+
+## Uncomment to disable the message type next to output messages.
+#cli-show-types: no
+
+## Set the size of the padding of the type + timestamps.
+#cli-type-padding: 20
+
+## Normally, the padding is automatically expanded when a type
+## comes through that is longer than the padding. Uncomment this
+## to disable this behaviour.
+#cli-auto-flex-padding: no
+
+## Set the format of the timestamp. Should be a valid PHP date() format.
+#cli-timestamp-format: "H:i"
+
+## Uncomment to not show WORKING messages.
+#cli-write-non-critical-messages: no
+
+
+##########################
+### STRING TRANSLATION ###
+##########################
+
+## Specify the language code you want to use. The default is "en".
+#language: en
+
+## Specify one or more additional patterns for where to search for
+## language files. By default this searches for files matching
+## TOOLKIT_DIRECTORY/translations/!language.tr
+## !language will be replaced by the value of the above language 
+## configuration key.
+#language-file-pattern:
+#- /home/example/dtk_translations/!language.tr
+
+
+##########################
+### DRUPAL SITE CONFIG ###
+##########################
+
+## Change this if DTK is not available as a command without
+## an explict path.
+#dtk-location: /usr/bin/dtk
+
+## Change this to where you want DTK to create builds that
+## are not local.
+#build-directory: /var/www/.dtk_builds
+
+## Controls how local sites are treated. Uncomment to change.
+## - allow: allows the creation of local sites with -l
+## - never: prevent local sites from being created
+## - force: always create local sites.
+#local-sites: allow
+
+## Controls the maximum number of builds that will be kept
+## for rollbacks. Set below 2 to prevent older builds from
+## being kept.
+#max-builds: 10
+
+## Uncomment to prevent DTK from deleting a site that failed
+## to build.
+#site-cleanup-on-error: no
+
+
+##################################
+### DRUPAL BUILD CONFIGURATION ###
+##################################
+
+## Specify the prefix before any repository that needs to be cloned.
+#git-repository-root: "myserver:"
+
+## Specify the repository that your make file appears in
+#drush-make-repository: mymake
+
+## Specify the name of your make file within your make repository (should
+## be in the root of the repo).
+#drush-make-file: project.make
+
+## Specify an array of options to be passed to the drush make command.
+## You should omit leading hyphens. By default "prepare-install" is used.
+#drush-make-options:
+#- working-copy
+#- no-gitinfofile
+
+## Specify the repo branch to clone (defaults to master)
+## Can override with --branch=master
+#default-branch=master
+
+## Limit the branches that can be specified via the command line.
+#branch-whitelist:
+#- master
+#- dev
+
+## An array of files to be removed from the build after completion.
+#remove-build-files:
+#- CHANGELOG.txt
+#- INSTALL.txt
+
+## A prefix to insert before every URL used in the site. Both prefix and 
+## non-prefixed versions will be valid and will point to the same site.
+#site-url-prefix: dev
+
+## The pattern for creating site URLs.
+## This can be overridden using --site-url=example.com
+## Additional URLs for the site can be specified using
+## --site-extral-urls="qa.example.com,prod.example.com"
+#site-url-pattern: "@@BUILD_NAME.localhost"
+
+## The pattern for creating subsite URLs.
+## The same options can be used as for site-url-pattern.
+#subsite-url-pattern: "@@SUBSITE_PARENT_ID.localhost/@@SUBSITE_UID"
+
+## Specifies where symlinks to the current version of each build
+## will be kept. This is the path used in configuration files.
+#server-sites-dir: /var/www
+
+
+###################################
+### DRUPAL UPDATE CONFIGURATION ###
+###################################
+
+## If specified, a flag will be written to this file on update-all
+## and erased after the update is complete.
+#flag-file: /var/www/drupal_flag.flag
+
+
+############################
+### CRON CONFIG SETTINGS ###
+############################
+
+## Uncomment this line to change the frequency for cron jobs created
+## by the toolkit.
+#crontab-frequency: @daily
+
+## Uncomment this line to change the default cron job type created. Current
+## options are:
+## - crontab: Linux-style cron jobs created in /etc/cron.d
+#crontab-type-default: crontab
+
+## Uncomment this line to prevent cron jobs from being updated with
+## the rest of the site.
+#cron-static-config: yes
+
+
+################################
+### DATABASE CONFIG SETTINGS ###
+################################
+
+## Uncomment to change the pattern for building DB usernames
+#site-db-username-pattern: @@SITE_UUID
+
+## Uncomment to change the pattern for building DB names
+#site-db-name-pattern: @@SITE_UUID
+
+## Uncomment to change the host restrictions on new users
+#site-db-host-limit: "localhost"
+
+## Uncomment to change the default password for new users.
+## Default is "__RANDOM__" which generates a random password
+## for the database.
+#db-default-new-password: __RANDOM__
+
+## Uncomment to specify a database prefix as per Drupal.
+#db-prefix: ""
+
+## Specify an array of database servers. Each server gets
+## a database and user created for Drupal created, and then
+## this is used to build the $database array in settings.php
+#db-servers:
+## This is an example implementation of a MySQL server.
+#  primary:
+#    type: mysql
+#    host: example.db
+#    drupal-category: default
+#    drupal-mode: default
+#    user: root
+#    password: rootpassword # note that this is the password for installs, not the new user
+
+
+#############################
+### DOXYGEN CONFIGURATION ###
+#############################
+
+## Specifies the name of the directory underneath the build in which to store doxygen docs.
+#doxygen-dir-name: ""
+
+## Specify the path of the Doxyfile. Defaults to allowing doxygen to figure it out.
+#doxygen-doxyfile: ""
+
+
+#################################
+### DRUSH ALIAS CONFIGURATION ###
+#################################
+
+## Uncomment to change the template for the drush alias.
+#drush-alias-template: @@SITE_UUID
+
+## Uncomment to change the template for the name of the file that stores the alias information.
+#drush-alias-filename-template: @@SITE_UUID.alias.drushrc.php
+
+## Specify the template for the file that stores the alias information.
+#drush-alias-file-template:
+
+## Uncomment to change the directory in which drush alias files will be stored
+#drush-alias-default-dir: /etc/drush
+
+## Uncomment to prevent a local alias from being created.
+#drush-alias-local: no
+
+## Uncomment to prevent the update routine from updating the drush alias files.
+#drush-alias-static: yes
+
+
+###################################
+### DRUSH INSTALL CONFIGURATION ###
+###################################
+
+## Many of these options can also be set using command line options.
+## The option is noted where this is applicable.
+
+## Controls which install profile is used, defaults to standard
+## Command line option to override: --install-profile=standard
+#install-profile: standard
+
+## Controls the email address for user 1
+## Command line option to override: --install-email="admin@example.com"
+#install-email: admin@example.com
+
+## Controls the name of user 1. Leave empty to use the default.
+## Command line option to override: --install-user="admin"
+#install-user: admin
+
+## Controls the default password for user 1. Leave empty to randomly generate a password.
+## Command line option to override: --install-password="password"
+#install-password: password
+
+## Controls the site email address. Leave empty to default to the user 1 email address.
+## Command line option to override: --site-email="admin@example.com"
+#install-site-email: admin@example.com
+
+## Controls the site name. Leave empty to default to "Development Site"
+## Command line option to override: --site-name="admin@example.com"
+#install-site-name: Development Site
+
+## Additional modules to enable after the install process.
+## Command line option to override: --install-modules="simpletest,devel"
+#install-modules:
+## enables the simpletest and devel modules
+#- simpletest 
+#- devel
+
+## Additional form arguments for the installer, one per line
+## Command line option to override: --install-settings="install_configure_form.site_default_country=FR,install_configure_form.other_setting=value"
+#install-settings:
+## example of how to set the default country on install
+#  - install_configure_form.site_default_country=FR 
+
+## Additional flags/options to pass to the drush site-install command. Usually not needed.
+## Command line option to override: --install-options="clean-url=0"
+#install-site-options:
+## disable clean urls as an example (note that prefix hyphens are omitted here).
+# - clean-url=0 
+
+
+######################################
+### DRUSH SIMPLETEST CONFIGURATION ###
+######################################
+
+## Uncomment to prevent cleaning up databases on test case failure.
+#simple-test-dirty: yes
+
+
+####################################
+### GATEWAY SERVER CONFIGURATION ###
+####################################
+
+## Uncomment to use this plug-in.
+#has-gateways: yes
+
+## Uncomment to use the local server as a gateway server.
+#gateway-local: yes
+
+## Sets the default gateway server type. This can be one of
+## apache2, nginx, or httpd at the moment. Additional types 
+## can be added by plugins.
+#gateway-server-type: nginx
+
+## Path to the default gateway server configuration file template
+#gateway-config-template: /home/example/dtk_templates/gateway.tpl
+
+## Template for how the server config filename is built
+#gateway-config-filename-template: @@BUILD_NAME
+
+## Uncomment to prevent gateway config files from being updated
+#gateway-config-static: yes
+
+
+#################################
+### HTTP SERVER CONFIGURATION ###
+#################################
+
+## Controls the type of HTTP server (nginx, apache2, httpd)
+#http-server-type: apache2
+
+## Uncomment to stop the local server from being used as an HTTP server
+#http-local: no
+
+## Specify the location of the default template file for HTTP configuration
+#http-config-template: /home/example/dtk_templates/http.tpl
+
+## Uncomment to prevent HTTP server config from being automatically updated.
+#http-static-config: yes
+
+## Controls the template for naming the configuration file.
+#http-config-filename-template: @@BUILD_NAME
+
+
+##########################################
+### HOST FILE MANAGEMENT CONFIGURATION ###
+##########################################
+
+## Uncomment to prevent the local server from having it's host file updated.
+#managed-host-local: no
+
+## Controls the type of managed host file (mostly for line endings). Options: linux.
+#managed-host-default-type: linux
+
+## Set the IP address that should be used when managing host files for installations.
+#managed-host-ip-address: 10.1.1.10
+
+## Uncomment to prevent host files from being managed on update.
+#managed-host-static: yes
+
+## Uncomment to allow DTK to compact host files when writing them.
+#compact-hosts-file: yes
+
+
+##########################
+### MAIL CONFIGURATION ###
+##########################
+
+## Control the From address on outgoing emails.
+#mail-from: admin@example.com
+
+## Control the Reply-To address on outgoing emails.
+#mail-reply-to: admin@example.com
+
+## Add emails to this array in order to have them BCC'd on all outgoing emails.
+#mail-bcc:
+#- admin@example.com
+
+
+#################################
+### PERMISSIONS CONFIGURATION ###
+#################################
+
+## Uncomment to prevent any permissions from being applied.
+#permissions-ignore-all: yes
+
+## These are the default permissions that will be applied to
+## any file managed by DTK if no other setting is specified.
+#permissions-default-owner: # owner will default to the current user
+#permissions-default-group: # group will default to the primary group of the current user
+#permissions-default-access: 755 # access strings should be three octal numbers
+
+## These permissions apply to any build file not marked as server 
+## or system. Owner/group default to the default ones above.
+#permissions-build-owner:
+#permissions-build-group:
+#permissions-build-access: 755
+## Uncomment this to not set permissions on build files.
+#permissions-build-ignore: yes
+
+## These permissions apply to the files directory, which
+## should be owned by the webserver. These need to be adjusted 
+## depending on your server configuration.
+#permissions-server-owner: apache
+#permissions-server-group: apache
+#permissions-server-access: 700
+## Uncomment this to not set permissions on server files.
+#permissions-server-ignore: yes
+
+## These permissions apply to files that the toolkit considers to be
+## system files. 
+#permissions-system-owner: root
+#permissions-system-group: root
+#permissions-system-access: 700
+## Uncomment this to not set permissions on system files.
+#permissions-system-ignore: yes
+
+
+############################
+### PHPLOC CONFIGURATION ###
+############################
+
+## Controls which files are examined by PHPloc for code
+## quality review.
+#phploc-file-patterns: 
+#- *.php
+#- *.inc
+#- *.module
+#- *.install
+
+
+#####################
+### UPSTREAM SYNC ###
+#####################
+
+## Uncomment to use the upstream syncing system.
+#upstream-ignore: no
+
+## Specify an array of table names to avoid downloading.
+#upstream-ignore-upstream-tables-key:
+#- cache
+#- cache_form
+
+## Specify an array of table names to preserve locally.
+#upstream-local-tables-key:
+#- cache_form
+
+## Uncomment if the upstream server supports gzip
+#upstream-gzip: yes
+
+## Specify an array of variables to preserve locally.
+## The default ones are included below for reference.
+## The specified Drupal variables will have their old
+## value restored after the update has taken place.
+#preserve-local-variables:
+#- cron_key
+#- drupal_private_key
+#- file_temporary_path
+#- background_process_token
+#- background_process_derived_default_host
+
+
+###################################
+### SERVER INTERACTION SETTINGS ###
+###################################
+
+## This YAML variable contains most of the external servers that must be
+## connected to. Each type of server (eg web, apache, etc) is specified
+## using a key under si-servers. Underneath the key is one or more servers
+## keyed by a unique identifier. Each server has an associative array of
+## settings which includes the information needed to connect to the server,
+## as well as the necessary information for the specific usage.
+##
+## Below is an example of how to connect to different types of servers.
+## si-servers:
+##   # these servers will have a cron file installed on them.
+##   cron: 
+##     example_cron:
+##       # these settings should appear for every server
+##       disabled: no # change to yes to disable
+##       host: cron.example.com
+##       connection: pubkey # only public-key authentication is currently supported
+##       user: example
+##       privkey: /home/example/.ssh/id_rsa
+##       passphrase: exampel # leave blank or remove if there is no passphrase for the key
+##       fingerprint: 93711a75c972d7c0de076ce76d02fdd9
+##       # these settings are specific to cron servers
+##       cron-type: crontab # overrides the default type provided in the cron section
+##       cron-static-config: no # change to "yes" to prevent the update script from modifying the cron file
+##
+##  # these servers will have a drush alias file installed on them.
+##  drush:
+##    example_drush:
+##    # same SSH configuration settings as above
+##    # these settings are specific to drush servers and override the defaults in the drush section
+##    drush-alias-dir: /etc/drush
+##    drush-file-template: @@SITE_UUID.alias.drushrc.php
+##    drush-config-template-file: /home/example/dtk_templates/drush-alias.example_drush.tpl
+##
+##  # these servers will have HTTP configuration installed on them.
+##  http:
+##    example_http:
+##    # same SSH configuration settings as above
+##    # these settings are shared with gateway servers
+##    http-config-dir: /etc/httpd/vhosts.d
+##    http-skip-reboot: no ## change to "yes" to prevent HTTP servers from rebooting/restarting
+##    # these settings are specific to HTTP servers.
+##    http-config-template: /home/example/dtk_templates/httpd.example_http.tpl
+##    http-file-template: @@BUILD_NAME
+##    http-type: apache2
+##    http-static-config: no ## change to "yes" to prevent updating the config file
+##
+##  # these servers will have a gateway configuration file installed on them.
+##  gateway:
+##    example_gateway:
+##    # same SSH configuration settings as above
+##    # these settings are shared with HTTP servers
+##    http-config-dir: /etc/httpd/vhosts.d
+##    http-skip-reboot: no ## change to "yes" to prevent HTTP servers from rebooting/restarting
+##    # these settings are specific to gateway servers and override the defaults in the gateway section
+##    gateway-filename-template: @@BUILD_NAME
+##    gateway-template-file: /home/example/dtk_templates/gateway.example_gateway.tpl
+##    gateway-static-config: no ## change to "yes" to prevent config file updates
+##    gateway-type: nginx
+##
+##  # these servers will have their host file updated
+##  managed-host:
+##    example_mh:
+##    # same SSH configuration settings as above
+##    # these settings are specific to servers that have their host files managed and override settings above
+##    managed-host-type: linux
+##    managed-host-file: /etc/hosts # here you can change the location of the host file
+##    managed-host-static: no
+##
+##  # these servers will be used as an upstream server. Only one server will be used,
+##  # and it will be the last one defined.
+##  upstream:
+##    upstream_server:
+##    # same SSH config settings as above
+
+#si-servers:
+
+## Local server settings for any given type can be provided using the following keys.
+## These are only used if the local server is used for the given type and the disabled
+## property is not set to "yes".
+#si-local-cron:
+#si-local-drush:
+#si-local-http:
+#si-local-gateway:
+#si-local-managed-host:
+
