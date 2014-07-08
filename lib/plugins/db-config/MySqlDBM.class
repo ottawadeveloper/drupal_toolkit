@@ -117,7 +117,12 @@ class MySqlDBM extends GenericDBM {
       '!PASSWORD' => $password,
       '!HOST' => $host,
     ));
-    return $this->mysqlCommand($q);
+    $ret = $this->mysqlCommand($q);
+    if (!$ret) {
+      $this->deleteDatabase($database);
+      $this->deleteUser($username);
+    }
+    return $ret;
   }
   
 }
