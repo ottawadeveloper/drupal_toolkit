@@ -247,7 +247,7 @@ class DatabaseConfigurationPlugin extends GenericPlugin implements EventListener
     if ($ret) {
       $this->success(STRING_SUCCESS_DB_CREATE);
     }
-    return ret;
+    return $ret;
   }
   
   /**

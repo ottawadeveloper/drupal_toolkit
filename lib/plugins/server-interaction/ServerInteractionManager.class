@@ -75,7 +75,7 @@ class ServerInteractionManager implements ServerInteractionManagerInterface {
       if ($machine instanceof PhysicalServerInterface) {
         $type = NULL;
         if (!empty($typeKey)) {
-          $type = $machine->getSetting($type);
+          $type = $machine->getSetting($typeKey);
         }
         if (empty($type)) {
           $type = $defaultType;
