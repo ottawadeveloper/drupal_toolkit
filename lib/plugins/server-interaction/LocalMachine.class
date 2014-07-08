@@ -8,7 +8,7 @@
  */
 class LocalMachine extends GenericMachine {
   
-  public function __construct($vars = array()) {
+  public function __construct(array $vars = array()) {
     parent::__construct($vars);
     $this->setNameKey('auto-localhost');
   }
