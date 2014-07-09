@@ -29,6 +29,7 @@ class CronPlugin extends GenericPlugin implements EventListener, ServerInteracti
       EVENT_CAST_CRON_SERVER,
       EVENT_REMOVE_ALL,
       EVENT_UPDATE_PRIOR_ACTIONS,
+      EVENT_REMOVE_SUBSITE_ALL,
     ), $this);
     $this->config()->extendDefaultConfiguration(array(
       CONFIG_CRONTAB_FREQUENCY => '@daily',
