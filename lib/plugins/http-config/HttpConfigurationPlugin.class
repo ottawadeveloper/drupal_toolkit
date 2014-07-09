@@ -35,6 +35,7 @@ class HttpConfigurationPlugin extends GenericPlugin implements EventListener, Se
       EVENT_SITE_BUILD_CONFIGURE_SERVER,
       EVENT_UPDATE_PREPARE_SERVER,
       EVENT_SUBSITE_BUILD_PARENT_SERVER_REFRESH,
+      EVENT_REMOVE_SUBSITE_CLEANUP,
     ), $this);
     $this->config()->extendDefaultConfiguration(array(
       CONFIG_HTTP_STATIC_CONFIG => FALSE,
@@ -56,6 +57,7 @@ class HttpConfigurationPlugin extends GenericPlugin implements EventListener, Se
           $context->setResult($this->publishConfig($context->getSite()));
         }
         break;
+      case EVENT_REMOVE_SUBSITE_CLEANUP:
       case EVENT_UPDATE_REFRESH_SERVER_CONFIG:
         if ($context->checkExecution()) {
           $context->setResult($this->updateAll($context->getSite()));
