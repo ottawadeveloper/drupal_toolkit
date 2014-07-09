@@ -24,6 +24,14 @@ class DrupalSite extends GenericDrupalEntity {
   private $cachedSubSites = array();
   
   /**
+   * Temporary holding point for a subsite that is currently built
+   * in case it needs to be accessed.
+   * 
+   * @var DrupalSubSite
+   */
+  private $inProgressSubSite = NULL;
+  
+  /**
    * Constructs an instance of DrupalSite.
    * 
    * You should use the factory method instead.
@@ -47,6 +55,17 @@ class DrupalSite extends GenericDrupalEntity {
     $this->setToken(SITE_TOKEN_BUILD_NAME, $name);
     $this->setToken(SITE_TOKEN_BUILD_DIR, $folder);
     $this->setToken(SITE_TOKEN_UUID, $this->uuid());
+  }
+  
+  /**
+   * Allows the site to use the temporary subsite object before it is
+   * registered properly after creation.
+   * 
+   * @param DrupalSubSite $subsite
+   *   The subsite being created.
+   */
+  public function registerTemporarySubSite(DrupalSubSite $subsite) {
+    $this->inProgressSubSite = $subsite;
   }
   
   protected function getConfigurationPath() {
@@ -122,11 +141,14 @@ class DrupalSite extends GenericDrupalEntity {
         $subsite = $this->getSubSite($subsiteID);
         if (!$subsite->isDeleted()) {
           foreach ($subsite->getSetting(SITE_SETTING_ALL_DOMAINS) as $domain) {
-            if (!in_array($domain, $domains)) {
-              $domains[] = $domain;
-            }
+            $domains[] = $domain;
           }
         }
+      }
+    }
+    if (!empty($this->inProgressSubSite)) {
+      foreach ($this->inProgressSubSite->getSetting(SITE_SETTING_ALL_DOMAINS) as $domain) {
+        $domains[] = $domain;
       }
     }
     return array_unique($domains);

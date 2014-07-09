@@ -59,6 +59,7 @@ class SubSiteBuildCommand extends GenericSiteCommand {
   }
   
   public function executeCommand() {
+    $this->getSite()->registerTemporarySubSite($this->getSubSite());
     $this->executeAllSteps($this->steps, array(
       'error' => STRING_SUBSITE_BUILD_GENERIC_ERROR,
       'type' => COMMAND_STEP_SUBSITE,
