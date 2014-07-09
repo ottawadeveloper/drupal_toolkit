@@ -203,7 +203,7 @@
 
 ## The pattern for creating subsite URLs.
 ## The same options can be used as for site-url-pattern.
-#subsite-url-pattern: "@@SUBSITE_PARENT_ID.localhost/@@SUBSITE_UID"
+#subsite-url-pattern: "@@SUBSITE_PARENT_ID.localhost/@@SUBSITE_ID"
 
 ## Specifies where symlinks to the current version of each build
 ## will be kept. This is the path used in configuration files.
