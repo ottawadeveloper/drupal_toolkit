@@ -110,6 +110,27 @@ class DrupalSite extends GenericDrupalEntity {
     }
   }
   
+  /**
+   * Deletes a subsite from this site's reference.
+   * 
+   * @param DrupalSubSite $subsite
+   *   Subsite to be deleted.
+   */
+  public function deleteSubSite(DrupalSubSite $subsite) {
+    $id = $subsite->getSubSiteID();
+    $subsites = $this->getSetting(SITE_SUBSITE_LIST);
+    $newSubsites = array();
+    foreach ($subsites as $subsite) {
+      if ($subsite !== $id) {
+        $newSubsites[$subsite] = $subsite;
+      }
+    }
+    $this->setSetting(SITE_SUBSITE_LIST, $subsites);
+    if (isset($this->cachedSubSites[$id])) {
+      unset($this->cachedSubSites[$id]);
+    }
+  }
+  
   public function uuid() {
     return $this->getBuildName();
   }

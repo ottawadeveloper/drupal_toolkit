@@ -37,7 +37,9 @@ class SubSiteDeleteCommand extends GenericSiteCommand {
     $this->executeAllSteps($this->steps, array(
       'type' => COMMAND_STEP_SUBSITE,
     ));
+    $this->getSite()->deleteSubSite($this->getSubSite());
     $this->saveSubSiteConfiguration();
+    $this->getSubSite()->deleteConfiguration();
   }
   
 }

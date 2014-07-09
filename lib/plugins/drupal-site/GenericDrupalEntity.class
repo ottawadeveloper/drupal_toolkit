@@ -350,6 +350,13 @@ abstract class GenericDrupalEntity implements OutputDependency, StringDependency
   }
   
   /**
+   * Deletes the configuration file.
+   */
+  public function deleteConfiguration() {
+    return unlink($this->getConfigurationPath());
+  }
+  
+  /**
    * Loads settings from the settings file.
    * 
    * @return boolean
