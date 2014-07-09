@@ -13,8 +13,17 @@ class SiteListCommand extends GenericCommand {
   
   public function executeCommand() {
     $sites = DrupalSite::findSites($this->config());
+    $headers = array(
+      'name' => $this->strings()->getString(STRING_DISPLAY_BUILD_NAME),
+      'alias' => $this->strings()->getString(STRING_DISPLAY_DRUSH_ALIAS),
+      'url' => $this->strings()->getString(STRING_DISPLAY_PRIMARY_URL),
+    );
     $entries = array();
-    $longest = array();
+    $longest = array(
+      'name' => strlen($headers['name']),
+      'alias' => strlen($headers['alias']),
+      'url' => strlen($headers['url']),
+    );
     foreach ($sites as $key => $site) {
       $entries[$key] = array(
         'name' => $site->getBuildName(),
@@ -44,11 +53,11 @@ class SiteListCommand extends GenericCommand {
     echo PHP_EOL;
     echo PHP_EOL;
     $header = '';
-    $header .= str_pad($this->strings()->getString(STRING_DISPLAY_BUILD_NAME), $longest['name']);
+    $header .= str_pad($headers['name'], $longest['name']);
     $header .= ' | ';
-    $header .= str_pad($this->strings()->getString(STRING_DISPLAY_DRUSH_ALIAS), $longest['alias']);
+    $header .= str_pad($headers['alias'], $longest['alias']);
     $header .= ' | ';
-    $header .= $this->strings()->getString(STRING_DISPLAY_PRIMARY_URL);
+    $header .= $headers['url'];
     $header .= PHP_EOL;
     echo terminal_color_string($header, TERMINAL_FOREGROUND_COLOR_WHITE);
     echo str_pad('', array_sum($longest) + 20, '-') . PHP_EOL;
