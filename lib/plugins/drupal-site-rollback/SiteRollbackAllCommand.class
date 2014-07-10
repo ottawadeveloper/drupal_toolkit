@@ -29,14 +29,14 @@ class SiteRollbackAllCommand extends GenericCommand {
       execute_system_command($command, array(
         '!site' => $sitekey,
       ), $out, $return);
-      if (!empty($return)) {
+      if (!extra_empty($return)) {
         $errored[$sitekey] = $sitekey;
       }
     }
     if (!empty($errored)) {
       foreach ($errored as $key) {
         $this->error(STRING_ERROR_ROLLBACK_ALL_SITE, array(
-          '!name' => $key,
+          '!site' => $key,
         ));
       }
       $this->error(STRING_ERROR_ROLLBACK_ALL_SITES);
