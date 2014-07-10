@@ -42,6 +42,9 @@ class DrupalSiteStandardBuildPlugin extends GenericPlugin implements EventListen
     switch ($type) {
       case EVENT_GET_INFO:
         $entity = $context->getEntity();
+        if ($entity instanceof DrupalSubSite) {
+          $entity = $entity->getParentSite();
+        }
         $context->appendInfo($this->str(STRING_INFO_BUILD), $entity->getSetting(SITE_BUILD_DIR));
         $context->appendInfo($this->str(STRING_INFO_BRANCH), $entity->getSetting(SITE_SETTING_CLONED_BRANCH));
         break;
