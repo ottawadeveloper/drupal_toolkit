@@ -4,6 +4,13 @@
  */
 
 /**
+ * String token for when a site is being updated.
+ * 
+ * @ingroup strings
+ */
+define('STRING_WORKING_ROLLBACK_ALL_SITE', 'drupal_site_rollback.working.site');
+
+/**
  * String token for when starting to rollback sites.
  * 
  * @ingroup strings

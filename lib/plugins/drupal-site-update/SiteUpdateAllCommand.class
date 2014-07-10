@@ -29,7 +29,10 @@ class SiteUpdateAllCommand extends GenericCommand {
     $sites = array_keys(DrupalSite::findSites($this->config()));
     $errored = array();
     $this->events()->fireEvent(EVENT_UPDATE_ALL_START, $e);
-    foreach ($sites as $sitekey) {
+    foreach ($sites as $sitekey) {      
+      $this->working(STRING_WORKING_UPDATE_ALL_SITE, array(
+        '!site' => $sitekey,
+      ));
       $return = 0;
       execute_system_command($command, array(
         '!site' => $sitekey,

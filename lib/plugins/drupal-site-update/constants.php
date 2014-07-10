@@ -18,6 +18,13 @@ define('EVENT_UPDATE_ALL_START', 'update-all-start');
 define('EVENT_UPDATE_ALL_FINISH', 'update-all-finish');
 
 /**
+ * String token for when a site is about to be updated.
+ * 
+ * @ingroup strings
+ */
+define('STRING_WORKING_UPDATE_ALL_SITE', 'drupal_site_update.working.site');
+
+/**
  * String token for when starting to update all sites.
  * 
  * @ingroup strings
