@@ -22,28 +22,28 @@ define('EVENT_UPDATE_ALL_FINISH', 'update-all-finish');
  * 
  * @ingroup strings
  */
-define('STRING_WORKING_UPDATE_ALL_SITES', 'drupal_site_rollback.working.all-sites');
+define('STRING_WORKING_UPDATE_ALL_SITES', 'drupal_site_update.working.all-sites');
 
 /**
  * String token for when a site errored.
  * 
  * @ingroup strings
  */
-define('STRING_ERROR_UPDATE_ALL_SITE', 'drupal_site_rollback.error.all-site');
+define('STRING_ERROR_UPDATE_ALL_SITE', 'drupal_site_update.error.all-site');
 
 /**
  * String token for when there was an error on any site.
  * 
  * @ingroup strings
  */
-define('STRING_ERROR_UPDATE_ALL_SITES', 'drupal_site_rollback.error.all-sites');
+define('STRING_ERROR_UPDATE_ALL_SITES', 'drupal_site_update.error.all-sites');
 
 /**
  * String token for when all sites were updated successfully.
  * 
  * @ingroup strings
  */
-define('STRING_SUCCESS_UPDATE_ALL_SITES', 'drupal_site_rollback.success.all-sites');
+define('STRING_SUCCESS_UPDATE_ALL_SITES', 'drupal_site_update.success.all-sites');
 
 /**
  * Fired for sites to do actions after the main actions.

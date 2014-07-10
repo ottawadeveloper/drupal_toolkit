@@ -21,7 +21,7 @@ class SiteUpdateAllCommand extends GenericCommand {
     if (empty($command)) {
       $command = 'dtk';
     }
-    $command .= ' update !site';
+    $command .= ' site-update !site';
     $branch = $this->args()->getOption(OPTION_BRANCH);
     if (!empty($branch)) {
       $command .= ' --' . OPTION_BRANCH . '=' . $branch;
