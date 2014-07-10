@@ -22,7 +22,7 @@ class SiteRollbackAllCommand extends GenericCommand {
     $sites = array_keys(DrupalSite::findSites($this->config()));
     $errored = array();
     foreach ($sites as $sitekey) {
-      $this->working(STRING_WORKING_ROLLBACK_SITE, array(
+      $this->working(STRING_WORKING_ROLLBACK_ALL_SITE, array(
         '!site' => $sitekey,
       ));
       $return = 0;
