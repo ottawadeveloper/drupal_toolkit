@@ -314,3 +314,11 @@ db_config.info.db-info = 'Database Connection'
 
 drush_config.info.drush-alias = 'Drush Alias'
 drupal_site_info.info.header = 'Build / Install Information'
+
+drupal_site_update.error.all-site = 'There was an error updating site [!site].'
+drupal_site_update.error.all-sites = 'There was an error while updating one of the sites.'
+drupal_site_update.working.site = 'Updating site [!site]...'
+
+drupal_site_rollback.error.all-site = 'There was an rollback updating site [!site].'
+drupal_site_rollback.error.all-sites = 'There was an rollback while updating one of the sites.'
+drupal_site_rollback.working.site = 'Rollback site [!site]...'
