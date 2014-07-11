@@ -54,7 +54,7 @@ drupal_site.error.not-installed = 'The site has not been installed yet.'
 drupal_site.error.already-installed = 'The site has already been installed.'
 drupal_site.error.generic-step = 'An error occurred while executing step !event.'
 
-drupal_site_build.error.no-more-config = 'An error occured during additional configuration steps.'
+drupal_site_build.error.no-more-config = 'An error occurred during additional configuration steps.'
 drupal_site_build.error.no-server-config = 'Unable to configure the server.'
 drupal_site_build.error.no-server-structure = 'Unable to initialize the server structure.'
 drupal_site_build.error.no-sites = 'Unable to setup the sites structure.'
@@ -279,7 +279,7 @@ cron.success.setup = 'Successfully created all crontab entries.'
 cron.working.delete_item = 'Deleting crontask for !name.'
 cron.working.setup_item = 'Creating crontask for !name.'
 
-drupal_site_build.error.subsite-generic = "An error occured while building a subsite."
+drupal_site_build.error.subsite-generic = "An error occurred while building a subsite."
 
 drupal_site.working.history-cleanup = 'Removing up to !count old builds.'
 drupal_site.success.history-cleanup = 'Build history has been pruned.'
@@ -322,3 +322,42 @@ drupal_site_update.working.site = 'Updating site [!site]...'
 drupal_site_rollback.error.all-site = 'There was an rollback updating site [!site].'
 drupal_site_rollback.error.all-sites = 'There was an rollback while updating one of the sites.'
 drupal_site_rollback.working.site = 'Rollback site [!site]...'
+
+doxygen.failure.generate = "Could not generate doxygen files."
+doxygen.success.generate = "Doxygen generated successfully."
+doxygen.working.generate = "Generating doxygen docs..."
+
+drupal_site.error.old-subsite = "An older subsite already exists with that name."
+
+drupal_site_delete.error.removing-subsite = "An error occurred while removing the subsite."
+
+drupal_site_rollback.success.all-sites = "All sites rolled back successfully!"
+drupal_site_rollback.working.all-sites = "Rolling back all sites..."
+
+drupal_site_update.success.all-sites = "All sites updated successfully!"
+drupal_site_update.working.all-sites = "Updating all sites..."
+
+drush-simpletest.failure.testing = "An error occurred while executing SimpleTest through drush."
+drush-simpletest.success.testing = "SimpleTest classes executed successfully."
+drush-simpletest.working.testing = "Executing SimpleTest classes..."
+
+drush_config.error.no-alias-file = "An error occurred while writing the Drush alias file."
+
+hosts_config.working-removing-hosts-item = "Removing entry from host file..."
+
+phploc.failure.phploc = "An error occurred while generating phploc data."
+phploc.success.phploc = "phploc data generated."
+phploc.working.phploc = "Generating phploc statistics..."
+
+self-update.error.on-update = "An error occurred while updating DTK."
+
+self-update.failure.on-update = "Could not pull DTK from github."
+self-update.success.on-update = "DTK codebase updated."
+self-update.working.on-update = "Updating DTK codebase..."
+
+server_interaction.error.unable-to-cast = "Unable to find a suitable type definition for a server."
+
+upstream.error.missing-upstream-server = "Upstream server was not found."
+upstream_files.error.cannot-copy = "Could not copy upstream files from server."
+upstream_files.error.no-local-files = "Could not find a local directory."
+upstream_files.error.no-remote-files = "Could not find a remote directory."

@@ -13,6 +13,9 @@ asort($constants['user']);
 
 foreach ($constants['user'] as $c => $v) {
   if (substr($c, 0, 7) === 'STRING_') {
-    echo $v . ' = "' . $c . '"' . PHP_EOL;
+    $r = $sm->getString($v);
+    if ($r === $v) {
+      echo $v . ' = "' . $c . '"' . PHP_EOL;
+    }
   }
 }
