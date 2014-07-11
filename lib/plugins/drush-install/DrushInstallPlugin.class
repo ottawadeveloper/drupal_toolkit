@@ -114,7 +114,7 @@ class DrushInstallPlugin extends GenericPlugin implements EventListener {
     }
     $config = $this->getConfig(array(), array(
       '!admin-email' => CONFIG_INSTALL_DEFAULT_EMAIL,
-      '!admin-user' => CONFIG_INSTALL_DEFAULT_PASSWORD,
+      '!admin-user' => CONFIG_INSTALL_DEFAULT_USER,
       '!admin-password' => CONFIG_INSTALL_DEFAULT_PASSWORD,
       '!site-name' => CONFIG_INSTALL_SITE_NAME,
       '!site-email' => CONFIG_INSTALL_SITE_EMAIL,
