@@ -18,6 +18,14 @@ define('STRING_INFO_DB', 'db_config.info.db-info');
 define('DB_SERVER_TYPE_MYSQL', 'mysql');
 
 /**
+ * DB server type constant for MySQL servers that require query
+ * verification before being executed.
+ * 
+ * @ingroup db_types
+ */
+define('DB_SERVER_TYPE_DUMMY_MSQL', 'dummy-mysql');
+
+/**
  * Event to cast a DB server based on its type.
  * 
  * This event is fired when we want to convert an array of settings into

@@ -4,6 +4,11 @@
  */
 
 /**
+ * String token for if there is an error creating a site rootlink.
+ */
+define('STRING_ERROR_COULD_NOT_CREATE_ROOTLINK', 'standard_site.error.rootlink-creation');
+
+/**
  * String token for if the settings.php file was not found.
  * 
  * @ingroup strings

@@ -15,6 +15,13 @@
  */
 class DrupalSiteStandardBuildPlugin extends GenericPlugin implements EventListener {
   
+  /**
+   * The name of the symlink to the current build.
+   * 
+   * @var string
+   */
+  private static $currentSymlinkName = 'current';
+  
   public function initialize() {
     $this->events()->registerListener(array(
       EVENT_SITE_BUILD_CODEBASE,
@@ -187,7 +194,7 @@ class DrupalSiteStandardBuildPlugin extends GenericPlugin implements EventListen
     $this->working(STRING_WORKING_BUILD_CURRENT_SYMLINK);
     $latestCodebase = $site->getSetting(SITE_SETTING_CURRENT_BUILD, NULL, TRUE);
     if (empty($latestCodebase)) { return FALSE; }
-    $currentLink = assemble_path($site->getBuildFolder(), 'current');
+    $currentLink = assemble_path($site->getBuildFolder(), self::$currentSymlinkName);
     if (is_link($currentLink)) {
       unlink($currentLink);
     }
@@ -195,6 +202,7 @@ class DrupalSiteStandardBuildPlugin extends GenericPlugin implements EventListen
       $this->error(STRING_SITE_NO_CURRENT);
       return FALSE;
     }
+    $site->setSetting(SITE_CURRENT_SYMLINK, $currentLink);
     $this->success(STRING_SUCCESS_BUILD_CURRENT_SYMLINK);
     return TRUE;
   }

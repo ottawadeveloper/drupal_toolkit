@@ -325,6 +325,8 @@ class DatabaseConfigurationPlugin extends GenericPlugin implements EventListener
     switch ($type) {
       case DB_SERVER_TYPE_MYSQL:
         return new MySqlDBM($settings);
+      case DB_SERVER_TYPE_DUMMY_MSQL:
+        return new DummyMySqlDBM($settings);
     }
     return NULL;
   }

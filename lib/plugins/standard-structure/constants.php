@@ -18,6 +18,13 @@ define('SITE_CODEBASE_DIR', 'structure_codebases_dir');
 define('SITE_SITES_DIR', 'structure_sites_dir');
 
 /**
+ * Site setting for the rootlinks directory.
+ * 
+ * @ingroup site_settings
+ */
+define('SITE_ROOTLINKS_DIR', 'structure_rootlinks_dir');
+
+/**
  * Fired to allow plugins to extend this process without overridding it.
  * 
  * @ingroup events

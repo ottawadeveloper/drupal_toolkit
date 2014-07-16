@@ -6,3 +6,4 @@ dependencies[] = server-interaction
 files[] = DatabaseManagerInterface.iface
 files[] = GenericDBM.class
 files[] = MySqlDBM.class
+files[] = DummyMySqlDBM.class

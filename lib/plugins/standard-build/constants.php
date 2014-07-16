@@ -4,6 +4,13 @@
  */
 
 /**
+ * Site setting for the location of the current symlink.
+ * 
+ * @ingroup site_settings
+ */
+define('SITE_CURRENT_SYMLINK', 'build-current-symlink');
+
+/**
  * Config key for the git repository server name.
  * 
  * This should include everything up until the git repo name.

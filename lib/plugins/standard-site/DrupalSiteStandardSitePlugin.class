@@ -95,10 +95,22 @@ class DrupalSiteStandardSitePlugin extends GenericPlugin implements EventListene
     }
   }
   
+  /**
+   * Refreshes a subsite's symlinks.
+   * 
+   * @param DrupalSubSite $subsite
+   *   Subsite to refresh links on.
+   * 
+   * @return boolean
+   *   TRUE if successful, otherwise FALSE.
+   */
   private function refreshSubsiteSymlinks(DrupalSubSite $subsite) {
     $currentBase = $subsite->getParentSite()->getSetting(SITE_SETTING_CURRENT_BUILD, NULL, TRUE);
     if (empty($currentBase)) { return FALSE; }
-    if (!$this->createRootSymlinks($currentBase, $subsite)) {
+    $rootLinkBase = $subsite->getParentSite()->getSetting(SITE_CURRENT_SYMLINK, NULL, TRUE);
+    if (empty($rootLinkBase)) { return FALSE; }
+    $rootLinks = assemble_path($subsite->getBuildFolder(), $rootLinkBase);
+    if (!$this->linkRootLinks($currentBase, $rootLinks)) {
       return FALSE;
     }
     return TRUE;
@@ -124,7 +136,7 @@ class DrupalSiteStandardSitePlugin extends GenericPlugin implements EventListene
       return FALSE;
     }
     $this->success(STRING_SUCCESS_REMOVE_DEFAULT_SITE);
-    return $this->symlinkAllSites($site);
+    return $this->refreshSiteSymlinks($site);
   }
   
   /**
@@ -144,6 +156,9 @@ class DrupalSiteStandardSitePlugin extends GenericPlugin implements EventListene
     if (empty($currentBase)) { return FALSE; }
     $structureSites = $site->getSetting(SITE_SITES_DIR, NULL, TRUE);
     if (empty($structureSites)) { return FALSE; }
+    $rootLinks = $site->getSetting(SITE_ROOTLINKS_DIR, NULL, TRUE);
+    if (empty($rootLinks)) { return FALSE; }
+    $rootLinkDirectory = assemble_path($site->getBuildFolder(), $rootLinks);
     
     // Move default site to where we want it to be.
     $realDefault = assemble_path($site->getBuildFolder(), $structureSites, self::$defaultDirectory);
@@ -161,15 +176,85 @@ class DrupalSiteStandardSitePlugin extends GenericPlugin implements EventListene
     if (!$this->writeSettingsFile($site, assemble_path($site->getBuildFolder(), $structureSites))) {
       return FALSE;
     }
-    if (!$this->symlinkAllSites($site)) {
+    if (!$this->createRootLinks($rootLinkDirectory, $site)) {
       return FALSE;
     }
-    if (!$this->createRootSymlinks($currentBase, $site)) {
+    if (!$this->refreshSiteSymlinks($site)) {
       return FALSE;
     }
     $this->success(STRING_SUCCESS_CREATE_SITES);
     return TRUE;
   }
+  
+  /**
+   * Responsible for creating root symlinks in the rootlink directory.
+   * 
+   * @param GenericDrupalEntity $entity
+   *   The entity to create rootlinks for.
+   * 
+   * @return boolean
+   *   TRUE upon success, otherwise FALSE.
+   */
+  private function createRootLinks($rootLinkDirectory, GenericDrupalEntity $entity) {
+    $top = $entity instanceof DrupalSubSite ? $entity->getParentSite() : $entity;
+    $target = $top->getSetting(SITE_CURRENT_SYMLINK);
+    $roots = $this->getRootSymlinks($entity);
+    foreach ($roots as $root) {
+      $path = assemble_path($rootLinkDirectory, $root);
+      if (!is_link($path)) {
+        if (!symlink($target, $path)) {
+          $this->error(STRING_ERROR_COULD_NOT_CREATE_ROOTLINK, array(
+            '!link' => $root,
+          ));
+          return FALSE;
+        }
+      }
+    }
+    return TRUE;
+  }
+  
+  /**
+   * Responsible for creating all the rootlinks that need to be created.
+   * 
+   * @param string $baseDirectory
+   *   The base directory in which to create rootlinks.
+   * @param string $rootLinkDirectory
+   *   The path to the directory in which rootlinks are stored.
+   * 
+   * @return boolean
+   *   TRUE if successful, otherwise FALSE.
+   */
+  private function linkRootLinks($baseDirectory, $rootLinkDirectory) {
+    $this->working(STRING_WORKING_CREATING_ROOT_SYMLINKS);
+    $h = opendir($rootLinkDirectory);
+    if (empty($h)) { return FALSE; }
+    while (($file = readdir($h)) !== FALSE) {
+      if ($file !== "." && $file !== "..") {
+        $this->working(STRING_WORKING_CREATING_ROOT_SYMLINK, array(
+          '!link' => $file,
+        ));
+        $target = assemble_path($rootLinkDirectory, $file);
+        $link = assemble_path($baseDirectory, $file);
+        if (!file_exists($link)) {
+          if (!symlink($target, $link)) {
+            $this->error(STRING_ERROR_UNABLE_TO_CREATE_ROOT_SYMLINK, array(
+              '!link' => $file,
+            ));
+            return FALSE;
+          }
+        }
+        elseif (!is_link($link)) {
+          $this->error(STRING_ERROR_UNABLE_TO_CREATE_ROOT_SYMLINK, array(
+            '!link' => $file,
+          ));
+          return FALSE;
+        }
+      }
+    }
+    $this->success(STRING_SUCCESS_CREATING_ROOT_SYMLINKS);
+    return TRUE;
+  }
+  
   
   /**
    * Responsible for modifying and registering the default settings.php file.
@@ -286,6 +371,9 @@ class DrupalSiteStandardSitePlugin extends GenericPlugin implements EventListene
     if (empty($structureSites)) { return FALSE; }
     $primary = $subsite->getSetting(SITE_PRIMARY_URL, NULL, TRUE);
     if (empty($primary)) { return FALSE; }
+    $root = $subsite->getParentSite()->getSetting(SITE_ROOTLINKS_DIR, NULL, TRUE);
+    if (empty($root)) { return FALSE; }
+    $rootDirectory = assemble_path($subsite->getParentSite()->getBuildFolder(), $root);
     
     // Build primary site folder.
     $primarySite = DrupalSite::convertURLToSiteName($primary);
@@ -304,56 +392,16 @@ class DrupalSiteStandardSitePlugin extends GenericPlugin implements EventListene
     if (!$this->createRedundantSymlinks($subsite, $primarySite, assemble_path($subsite->getParentSite()->getBuildFolder(), $structureSites))) {
       return FALSE;
     }
-    if (!$this->refreshSiteSymlinks($subsite->getParentSite())) {
+    if (!$this->createRootLinks($rootDirectory, $subsite)) {
       return FALSE;
     }
-    if (!$this->refreshSubsiteSymlinks($subsite)) {
+    if (!$this->refreshSiteSymlinks($subsite->getParentSite())) {
       return FALSE;
     }
     $this->success(STRING_SUCCESS_CREATE_SUBSITE_SITES);
     return TRUE;
   }
-  
-  /**
-   * Creates all the necessary root symlinks for subsites and paths.
-   * 
-   * @param string $base
-   *   Current/new codebase root directory.
-   * @param GenericDrupalEntity $entity
-   *   The entity to create symlinks for.
-   * 
-   * @return boolean
-   *   TRUE if successful, otherwise FALSE.
-   */
-  private function createRootSymlinks($base, GenericDrupalEntity $entity) {
-    $roots = $this->getRootSymlinks($entity);
-    if (empty($roots)) {
-      return TRUE;
-    }
-    $this->working(STRING_WORKING_CREATING_ROOT_SYMLINKS);
-    $ret = TRUE;
     
-    foreach ($roots as $root) {
-      $this->working(STRING_WORKING_CREATING_ROOT_SYMLINK, array(
-        '!link' => $root,
-      ));
-      $link = assemble_path($base, $root);
-      if (!is_link($link)) {
-        symlink($base, $link);
-        if (!is_link($link)) {
-          $this->error(STRING_ERROR_UNABLE_TO_CREATE_ROOT_SYMLINK, array(
-            '!link' => $link,
-          ));
-          $ret = FALSE;
-        }
-      }
-    }
-    if ($ret) {
-      $this->success(STRING_SUCCESS_CREATING_ROOT_SYMLINKS);
-    }
-    return $ret;
-  }
-  
   /**
    * Retrieves a list of root symlinks that should exist. Note that anything
    * returned by this function CANNOT be used as path in Drupal without
@@ -378,9 +426,7 @@ class DrupalSiteStandardSitePlugin extends GenericPlugin implements EventListene
         foreach ($pieces as $piece) {
           $piece = trim($piece);
           if (!empty($piece)) {
-            if (!in_array($piece, $dirs)) {
-              $dirs[] = $piece;
-            }
+            $dirs[$piece] = $piece;
           }
         }
       }
@@ -400,7 +446,10 @@ class DrupalSiteStandardSitePlugin extends GenericPlugin implements EventListene
   private function refreshSiteSymlinks(DrupalSite $site) {
     $currentBase = $site->getSetting(SITE_SETTING_CURRENT_BUILD, NULL, TRUE);
     if (empty($currentBase)) { return FALSE; }
-    if (!$this->createRootSymlinks($currentBase, $site)) {
+    $rootLinksBase = $site->getSetting(SITE_ROOTLINKS_DIR, NULL, TRUE);
+    if (empty($rootLinksBase)) { return FALSE; }
+    $rootLinks = assemble_path($site->getBuildFolder(), $rootLinksBase);
+    if (!$this->linkRootLinks($currentBase, $rootLinks)) {
       return FALSE;
     }
     if (!$this->symlinkAllSites($site)) {

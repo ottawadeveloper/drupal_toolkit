@@ -89,9 +89,11 @@ class DrupalSiteStandardStructurePlugin extends GenericPlugin implements EventLi
         '/',
         'codebases',
         'sites',
+        'rootlinks',
       ),
       'codebaseDir' => 'codebases',
       'sitesDir' => 'sites',
+      'rootlinkDir' => 'rootlinks',
     ));
     $this->events()->fireEvent(EVENT_DISCOVER_STRUCTURE_DIRS, $event);
     $root = $site->getBuildFolder();
@@ -109,6 +111,7 @@ class DrupalSiteStandardStructurePlugin extends GenericPlugin implements EventLi
     }
     $site->setSetting(SITE_CODEBASE_DIR, $event->getVariable('codebaseDir'));
     $site->setSetting(SITE_SITES_DIR, $event->getVariable('sitesDir'));
+    $site->setSetting(SITE_ROOTLINKS_DIR, $event->getVariable('rootlinkDir'));
 
     $this->success(STRING_SUCCESS_BUILD_STRUCTURE);
     
