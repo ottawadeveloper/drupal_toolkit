@@ -194,6 +194,21 @@ class DrupalSite extends GenericDrupalEntity {
   public function getSubSites() {
     return $this->getSetting(SITE_SUBSITE_LIST, array());
   }
+  
+  /**
+   * Retrieves all rootlinks for this site and it's subsites.
+   * 
+   * @return array
+   *   An array of rootlinks.
+   */
+  public function getAllRootLinks() {
+    $rootlinks = $this->getRootLinks();
+    $subsites = $this->getSubSites();
+    foreach ($subsites as $subsite) {
+      $entity = $this->getSubSite($subsite);
+      $rootlinks += $entity->getRootLinks();
+    }
+  }
     
   /**
    * Retrieves the build folder.

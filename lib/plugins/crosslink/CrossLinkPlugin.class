@@ -1,0 +1,75 @@
+<?php
+/**
+ * @file Defines the CrossLinkPlugin class.
+ */
+
+/**
+ * Responsible for creating a cross-site rootlink to another site on install.
+ * 
+ * @defgroup plugins
+ */
+class CrossLinkPlugin extends GenericPlugin implements EventListener {
+  
+  public function initialize() {
+    $this->events()->registerListener(array(
+      EVENT_SUBSITE_BUILD_SERVER_CONFIG,
+      EVENT_SITE_BUILD_SERVER_STRUCTURE,
+    ), $this);
+  }
+  
+  public function captureEvent(DtkEvent &$context, $eventType) {
+    switch ($eventType) {
+      case EVENT_SUBSITE_BUILD_SERVER_CONFIG:
+      case EVENT_SITE_BUILD_SERVER_STRUCTURE:
+        if ($context->checkExecution()) {
+          $context->setResult($this->createCrossLink($context->getEntity()));
+        }
+        break;
+    }
+  }
+  
+  /**
+   * Responsible for firing an event to create the cross link. Actual creation 
+   * of the cross link is handled by another plug-in.
+   * 
+   * @param GenericDrupalEntity $entity
+   *   The entity to create a crosslink for.
+   * 
+   * @return boolean
+   *   TRUE if successful, otherwise FALSE.
+   */
+  private function createCrossLink(GenericDrupalEntity $entity) {
+    $rootlinks = $entity->getRootLinks();
+    if (empty($rootlinks)) { return TRUE; }
+    $crosslink = $this->args()->getOption(OPTION_CROSSLINK_SITE);
+    if (empty($crosslink)) { return TRUE; }
+    $this->working(STRING_WORKING_CREATE_CROSSLINKS, array(
+      '!site' => $entity->getBuildName(),
+      '!links' => implode(', ', $rootlinks),
+      '!newsite' => $crosslink,
+    ));
+    $newsite = DrupalSite::createSite($this->config(), $crosslink, FALSE);
+    if (empty($newsite)) {
+      $this->error(STRING_ERROR_CROSSLINKS_NO_SITE, array(
+        '!newsite' => $crosslink,
+      ));
+      return FALSE; 
+    }
+    if (!$newsite->exists()) {
+      $this->error(STRING_ERROR_CROSSLINKS_NO_SITE, array(
+        '!newsite' => $crosslink,
+      ));
+      return FALSE;
+    }
+    $newsite->loadSettings();
+    $event = new DtkEvent(FALSE);
+    $event->setVariable('source', $entity);
+    $event->setVariable('target', $newsite);
+    $this->events()->fireEvent(EVENT_CROSSLINK_CREATE_CROSSLINK, $event);
+    if ($event->success()) {
+      $this->success(STRING_SUCCESS_CREATE_CROSSLINKS);
+    }
+    return $event->success();
+  }
+  
+}

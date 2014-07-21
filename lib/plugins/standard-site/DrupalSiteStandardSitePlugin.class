@@ -14,6 +14,8 @@
  * 'default'. This behaviour prevents the default site from being overridden
  * by a subsite.
  * 
+ * @todo At some point we should check for existing crosslinks within the site.
+ * 
  * @ingroup plugins
  */
 class DrupalSiteStandardSitePlugin extends GenericPlugin implements EventListener {
@@ -61,11 +63,23 @@ class DrupalSiteStandardSitePlugin extends GenericPlugin implements EventListene
       EVENT_SUBSITE_BUILD_CODEBASE,
       EVENT_UPDATE_SUBSITE_SITES,
       EVENT_ROLLBACK_SUBSITE_CLEAN,
+      EVENT_CROSSLINK_CREATE_CROSSLINK,
     ), $this);
   }
     
   public function captureEvent(DtkEvent &$context, $type) {
     switch ($type) {
+      case EVENT_REMOVE_ALL:
+      case EVENT_REMOVE_SUBSITE_ALL:
+        if ($context->checkExecution()) {
+          $context->setResult($this->removeCrossLinks($context->getEntity()));
+        }
+        break;
+      case EVENT_CROSSLINK_CREATE_CROSSLINK:
+        if ($context->checkExecution()) {
+          $context->setResult($this->createCrossLinks($context->getVariable('source'), $context->getVariable('target')));
+        }
+        break;
       case EVENT_ROLLBACK_SUBSITE_CLEAN:
       case EVENT_UPDATE_SUBSITE_SITES:
         if ($context->checkExecution()) {
@@ -96,6 +110,68 @@ class DrupalSiteStandardSitePlugin extends GenericPlugin implements EventListene
   }
   
   /**
+   * Responsible for creating a cross link between two sites.
+   * 
+   * @param GenericDrupalEntity $source
+   *   The source site or subsite.
+   * @param DrupalSite $target
+   *   The target site.
+   */
+  private function createCrossLinks(GenericDrupalEntity $source, DrupalSite $target) {
+    $rootlinks = $source->getRootLinks();
+    $rootlinkBase = $target->getSetting(SITE_ROOTLINKS_DIR, NULL, TRUE);
+    if (empty($rootlinkBase)) { return FALSE; }
+    $targetDirectory = assemble_path($target->getBuildFolder(), $rootlinkBase);
+    if (!is_writable($targetDirectory)) { 
+      $this->error(STRING_ERROR_CROSSLINK_DIR_NOT_WRITABLE, array(
+        '!dir' => $targetDirectory,
+      ));
+      return FALSE; 
+    }
+    $links = array();
+    foreach ($rootlinks as $link) {
+      $tp = assemble_path($targetDirectory, $link);
+      if (file_exists($tp)) {
+        $this->error(STRING_ERROR_CROSSLINK_EXISTS, array(
+          '!link' => $link,
+        ));
+        return FALSE;
+      }
+      $links[] = $tp;
+    }
+    $success = $this->createRootLinks($targetDirectory, $source);
+    if (!$success) {
+      return FALSE; 
+    }
+    $source->setSetting(SITE_SETTING_CROSSLINKS, $links);
+    $currentBase = $target->getSetting(SITE_SETTING_CURRENT_BUILD, NULL, TRUE);
+    if (empty($currentBase)) { return FALSE; }
+    if (!$this->linkRootLinks($currentBase, $targetDirectory)) {
+      return FALSE;
+    }
+    return TRUE;
+  }
+  
+  /**
+   * Removes all registered cross links.
+   * 
+   * @param GenericDrupalEntity $source
+   *   The site to remove crosslinks from.
+   * 
+   * @return boolean
+   *   TRUE upon success, otherwise FALSE.
+   */
+  function removeCrossLinks(GenericDrupalEntity $source) {
+    $crosslinks = $source->getSetting(SITE_SETTING_CROSSLINKS);
+    foreach ($crosslinks as $crosslink) {
+      if (file_exists($crosslink)) {
+        unlink($crosslink);
+      }
+    }
+    return TRUE;
+  }
+  
+  /**
    * Refreshes a subsite's symlinks.
    * 
    * @param DrupalSubSite $subsite
@@ -107,7 +183,7 @@ class DrupalSiteStandardSitePlugin extends GenericPlugin implements EventListene
   private function refreshSubsiteSymlinks(DrupalSubSite $subsite) {
     $currentBase = $subsite->getParentSite()->getSetting(SITE_SETTING_CURRENT_BUILD, NULL, TRUE);
     if (empty($currentBase)) { return FALSE; }
-    $rootLinkBase = $subsite->getParentSite()->getSetting(SITE_CURRENT_SYMLINK, NULL, TRUE);
+    $rootLinkBase = $subsite->getParentSite()->getSetting(SITE_ROOTLINKS_DIR, NULL, TRUE);
     if (empty($rootLinkBase)) { return FALSE; }
     $rootLinks = assemble_path($subsite->getBuildFolder(), $rootLinkBase);
     if (!$this->linkRootLinks($currentBase, $rootLinks)) {
@@ -414,24 +490,7 @@ class DrupalSiteStandardSitePlugin extends GenericPlugin implements EventListene
    *   An array of path components that need to exist as symlinks.
    */
   private function getRootSymlinks(GenericDrupalEntity $entity) {
-    $dirs = array();
-    foreach ($entity->getAllURLs() as $url) {
-      if (strpos($url, '://') === FALSE) {
-        $url = 'http://' . $url;
-      }
-      $path = parse_url($url, PHP_URL_PATH);
-      if (!empty($path)) {
-        $path = str_replace('\\' ,'/', $path);
-        $pieces = explode('/', $path);
-        foreach ($pieces as $piece) {
-          $piece = trim($piece);
-          if (!empty($piece)) {
-            $dirs[$piece] = $piece;
-          }
-        }
-      }
-    }
-    return $dirs;
+    return $entity->getRootLinks();
   }
   
   /**

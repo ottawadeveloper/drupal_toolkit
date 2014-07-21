@@ -313,6 +313,32 @@ abstract class GenericDrupalEntity implements OutputDependency, StringDependency
   }
   
   /**
+   * Retrieves all the rootlinks relevant to this site.
+   * 
+   * @return array
+   *   An array of rootlinks
+   */
+  public function getRootLinks() {
+    $urls = $this->getAllURLs();
+    $rootlinks = array();
+    foreach ($urls as $url) {
+      $url = str_replace('\\', '/', $url);
+      if (strpos($url, '://') === FALSE) {
+        $url = 'http://' . $url;
+      }
+      $path = parse_url($url, PHP_URL_PATH);
+      $pathPieces = explode('/', $path);
+      foreach ($pathPieces as $rootlink) {
+        $rootlink = trim($rootlink, '\\/ ');
+        if (!empty($rootlink)) {
+          $rootlinks[$rootlink] = $rootlink;
+        }
+      }
+    }
+    return $rootlinks;
+  }
+  
+  /**
    * Extends the settings with more settings.
    * 
    * @param array $settings

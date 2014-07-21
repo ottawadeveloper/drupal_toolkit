@@ -361,3 +361,7 @@ upstream.error.missing-upstream-server = "Upstream server was not found."
 upstream_files.error.cannot-copy = "Could not copy upstream files from server."
 upstream_files.error.no-local-files = "Could not find a local directory."
 upstream_files.error.no-remote-files = "Could not find a remote directory."
+
+crosslink.error.no-site = 'No site with the specified name was found.'
+crosslink.working.create = 'Creating crosslinks...'
+crosslink.success.create = 'Crosslinks created.'

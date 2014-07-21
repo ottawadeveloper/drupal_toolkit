@@ -4,6 +4,27 @@
  */
 
 /**
+ * String token for when the crosslinks directory is not writable.
+ * 
+ * @ingroup strings
+ */
+define('STRING_ERROR_CROSSLINK_DIR_NOT_WRITABLE', 'standard_site.error.crosslink-no-write');
+
+/**
+ * String token for when a crosslink already exists in the other site.
+ * 
+ * @ingroup strings
+ */
+define('STRING_ERROR_CROSSLINK_EXISTS', 'standard_site.error.crosslink-exists');
+
+/**
+ * Setting which stores where crosslinks are created.
+ * 
+ * @ingroup site_settings
+ */
+define('SITE_SETTING_CROSSLINKS', 'crosslinks');
+
+/**
  * String token for if there is an error creating a site rootlink.
  */
 define('STRING_ERROR_COULD_NOT_CREATE_ROOTLINK', 'standard_site.error.rootlink-creation');
