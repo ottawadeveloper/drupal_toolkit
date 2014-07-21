@@ -38,6 +38,7 @@ class HttpConfigurationPlugin extends GenericPlugin implements EventListener, Se
       EVENT_REMOVE_SUBSITE_CLEANUP,
     ), $this);
     $this->config()->extendDefaultConfiguration(array(
+      CONFIG_NO_HTTP_SERVER => FALSE,
       CONFIG_HTTP_STATIC_CONFIG => FALSE,
       CONFIG_HTTP_USE_LOCAL => TRUE,
       CONFIG_HTTP_DEFAULT_SERVER_TYPE => '',
@@ -47,6 +48,7 @@ class HttpConfigurationPlugin extends GenericPlugin implements EventListener, Se
         SERVER_TYPE_HTTP => array(),
       ),
     ));
+    $this->config()->extendFromOption(CONFIG_NO_HTTP_SERVER, OPTION_NO_HTTP_SERVER);
   }
   
   public function captureEvent(DtkEvent &$context, $eventType) {
@@ -153,6 +155,12 @@ class HttpConfigurationPlugin extends GenericPlugin implements EventListener, Se
    *   FALSE.
    */
   private function publishConfig(DrupalSite $site, $update = FALSE) {
+    $skip = !extra_empty($this->config()->getConfig(CONFIG_NO_HTTP_SERVER));
+    if (!($skip)) {
+      $skip = $site->getSetting(SITE_SETTING_NO_HTTP); 
+    }
+    $site->setSetting(SITE_SETTING_NO_HTTP, $skip ? 1 : 0);
+    if ($skip) { return TRUE; }
     $this->working(STRING_WORKING_HTTP_CONFIGURE);
     $c = $this->getConfig(array(), array(
       'template' => CONFIG_HTTP_DEFAULT_CONFIG_TEMPLATE,

@@ -25,6 +25,29 @@ define('CONFIG_GATEWAY_USE_LOCAL', 'gateway-local');
 define('CONFIG_GATEWAY_TYPE', 'gateway-server-type');
 
 /**
+ * Configuration setting to prevent HTTP server configuration from being
+ * created.
+ * 
+ * @ingroup config
+ */
+define('CONFIG_NO_GATEWAY_SERVER', 'no-gateway');
+
+/**
+ * Command-line option to prevent HTTP server configuration from being
+ * created.
+ * 
+ * @ingroup config
+ */
+define('OPTION_NO_GATEWAY_SERVER', 'no-gateway');
+
+/**
+ * Keep track of this site not having HTTP configuration.
+ * 
+ * @ingroup config
+ */
+define('SITE_SETTING_NO_GATEWAY', 'skip-gateway');
+
+/**
  * Config key to set the default gateway config template.
  * 
  * @ingroup config

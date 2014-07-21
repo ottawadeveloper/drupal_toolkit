@@ -33,6 +33,29 @@ define('SERVER_SETTING_HTTP_FILE_TEMPLATE', 'http-file-template');
 define('EVENT_CAST_HTTP_SERVER', 'cast-http-server');
 
 /**
+ * Configuration setting to prevent HTTP server configuration from being
+ * created.
+ * 
+ * @ingroup config
+ */
+define('CONFIG_NO_HTTP_SERVER', 'no-http');
+
+/**
+ * Command-line option to prevent HTTP server configuration from being
+ * created.
+ * 
+ * @ingroup config
+ */
+define('OPTION_NO_HTTP_SERVER', 'no-http');
+
+/**
+ * Keep track of this site not having HTTP configuration.
+ * 
+ * @ingroup config
+ */
+define('SITE_SETTING_NO_HTTP', 'skip-http');
+
+/**
  * Config key for whether or not we should use the local server as an HTTP
  * server.
  * 

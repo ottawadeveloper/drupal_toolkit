@@ -34,6 +34,7 @@ class GatewayConfigurationPlugin extends GenericPlugin implements EventListener,
       EVENT_SUBSITE_BUILD_PARENT_SERVER_REFRESH,
     ), $this);
     $this->config()->extendDefaultConfiguration(array(
+      CONFIG_NO_GATEWAY_SERVER => FALSE,
       CONFIG_HAS_GATEWAY => FALSE,
       CONFIG_GATEWAY_STATIC_CONFIG => FALSE,
       CONFIG_GATEWAY_USE_LOCAL => FALSE,
@@ -44,6 +45,7 @@ class GatewayConfigurationPlugin extends GenericPlugin implements EventListener,
         SERVER_TYPE_GATEWAY => array(),
       ),
     ));
+    $this->config()->extendFromOption(CONFIG_NO_GATEWAY_SERVER, OPTION_NO_GATEWAY_SERVER);
   }
   
   public function captureEvent(DtkEvent &$context, $type) {
@@ -90,6 +92,12 @@ class GatewayConfigurationPlugin extends GenericPlugin implements EventListener,
     if (extra_empty($this->config()->getConfig(CONFIG_HAS_GATEWAY))) {
       return TRUE;
     }
+    $skip = !extra_empty($this->config()->getConfig(CONFIG_NO_GATEWAY_SERVER));
+    if ((!$skip)) {
+      $skip = !extra_empty($site->getSetting(SITE_SETTING_NO_GATEWAY));
+    }
+    $site->setSetting(SITE_SETTING_NO_GATEWAY, $skip);
+    if ($skip) { return TRUE; }
     $this->working(STRING_WORKING_CONFIGURE_GATEWAY);
     $c = $this->getConfig(array(
       'template' => CONFIG_GATEWAY_CONFIG_TEMPLATE,
