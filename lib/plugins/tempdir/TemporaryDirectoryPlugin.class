@@ -1,7 +1,67 @@
 <?php
-
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
+/**
+ * @file Defines the TemporaryDirectoryPlugin class.
  */
-?>
+
+/**
+ * Responsible for deleting the temporary directory contents before an update.
+ * 
+ * Sometimes an update or build will fail because the temp directory is full. 
+ * This usually is a result of failed Drush make commands. In order to help
+ * cope with it, this plugin is provided to allow clients to delete the tmp
+ * directory before any operation that may require it be used.
+ * 
+ * To use this plug-in, set the config variable clear-temp-directory to "yes" 
+ * and then provide a value for temp-directory.
+ */
+class TemporaryDirectoryPlugin extends GenericPlugin implements EventListener {
+  
+  public function initialize() {
+    $this->events()->registerListener(array(
+      EVENT_SITE_BUILD_START,
+      EVENT_SUBSITE_BUILD_START,
+      EVENT_UPDATE_PREPARE,
+    ), $this);
+    $this->config()->extendDefaultConfiguration(array(
+      CONFIG_TEMPDIR_CLEAR => FALSE,
+      CONFIG_TEMPDIR_DIRECTORY => "/tmp",
+    ));
+  }
+  
+  public function captureEvent(DtkEvent &$context, $eventType) {
+    switch ($eventType) {
+      case EVENT_SITE_BUILD_START:
+      case EVENT_SUBSITE_BUILD_START:
+      case EVENT_UPDATE_PREPARE:
+        if ($context->checkExecution()) {
+          $context->setResult($this->clearTemporaryFiles());
+        }
+        break;
+    }
+  }
+  
+  /**
+   * Responsible for clearing the directory marked as the temporary directory.
+   * 
+   * @return boolean
+   *   TRUE upon success, otherwise FALSE.
+   */
+  private function clearTemporaryFiles() {
+    $flag = $this->config()->getConfig(CONFIG_TEMPDIR_CLEAR);
+    if (extra_empty($flag)) { return TRUE; }
+    $this->working(STRING_WORKING_TEMPDIR_CLEANUP);
+    $c = $this->getConfig(array(
+      'dir' => CONFIG_TEMPDIR_DIRECTORY,
+    ));
+    if (empty($c)) { return FALSE; }
+    if (!remove_directory($c['dir'], TRUE)) {
+      $this->error(STRING_ERROR_TEMPDIR_CLEANUP);
+      return FALSE;
+    }
+    else {
+      $this->success(STRING_SUCCESS_TEMPDIR_CLEANUP);
+      return TRUE;
+    }
+  }
+  
+}

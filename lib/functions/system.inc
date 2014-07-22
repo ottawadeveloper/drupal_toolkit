@@ -188,7 +188,7 @@ function get_hostname() {
  * @return boolean
  *   TRUE if the directory was deleted successfully, otherwise FALSE.
  */
-function remove_directory($directory) {
+function remove_directory($directory, $keepTop = FALSE) {
   if (extra_empty(trim($directory, '/\\'))) {
     return FALSE;
   }
@@ -210,6 +210,7 @@ function remove_directory($directory) {
     }
   }
   closedir($h);
+  if ($keepTop) { return TRUE; }
   return rmdir($directory);
 }
 

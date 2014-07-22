@@ -365,3 +365,7 @@ upstream_files.error.no-remote-files = "Could not find a remote directory."
 crosslink.error.no-site = 'No site with the specified name was found.'
 crosslink.working.create = 'Creating crosslinks...'
 crosslink.success.create = 'Crosslinks created.'
+
+tempdir.success.cleanup = 'Temporary directory cleaned up.'
+tempdir.error.cleanup = 'An error occurred while cleaning the temporary directory.'
+tempdir.working.cleanup = 'Cleaning up temp directory...'
