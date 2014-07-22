@@ -51,6 +51,9 @@ class DrushBackupPlugin extends GenericPlugin implements EventListener {
       EVENT_ROLLBACK_SUBSITES,
       EVENT_ROLLBACK_SUBSITE_PREP,
     ), $this);
+    $this->config()->extendDefaultConfiguration(array(
+      CONFIG_DRUSH_BACKUP_STRUCTURE_ONLY => array(),
+    ));
   }
 
   public function captureEvent(DtkEvent &$context, $eventType) {
@@ -292,6 +295,11 @@ class DrushBackupPlugin extends GenericPlugin implements EventListener {
     if (empty($drushAlias)) { return FALSE; }
     $keys = $this->getDatabaseKeys($entity);
     $directory = $this->getBackupDirectoryName($entity, $buildID, $targetDirectoryName);
+    $gzip = !extra_empty($this->config()->getConfig(CONFIG_GZIP_SUPPORT));
+    $structureOnlyTables = $this->config()->getConfig(CONFIG_DRUSH_BACKUP_STRUCTURE_ONLY);
+    if (empty($structureOnlyTables)) {
+      $structureOnlyTables = array();
+    }
     foreach ($keys as $dbkey) {
       $this->working(STRING_WORKING_DRUSH_BACKUP_ITEM, array(
         '!dbkey' => $dbkey,
@@ -299,6 +307,8 @@ class DrushBackupPlugin extends GenericPlugin implements EventListener {
       $file = assemble_path($directory, $drushAlias . '-' . $dbkey . '.sql');
       if (!drush_db_dump($drushAlias, $file, array(
             'database' => $dbkey,
+            'gzip' => $gzip,
+            'structure-tables-key' => $structureOnlyTables,
       ))) {
         $this->error(STRING_COULD_NOT_BACKUP_DB);
         return FALSE;

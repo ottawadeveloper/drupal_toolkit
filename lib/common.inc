@@ -69,6 +69,7 @@ $default_settings = array(
   CONFIG_CONFIG_FILES => array(),
   CONFIG_YAML_FILES => array(),
   CONFIG_SPYC_LOCATION => '/usr/lib/php/spyc/Spyc.php',
+  CONFIG_GZIP_SUPPORT => FALSE,
 );
 
 /**

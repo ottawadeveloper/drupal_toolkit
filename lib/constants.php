@@ -489,3 +489,10 @@ define('STRING_PLUGIN_NO_CONFIG', 'plugin.error.missing-config');
  * @ingroup config
  */
 define('CONFIG_SKIP_PLUGINS', 'disabled-plugins');
+
+/**
+ * Config setting for whether or not gzip is available.
+ * 
+ * @ingroup config
+ */
+define('CONFIG_GZIP_SUPPORT', 'gzip-enabled');

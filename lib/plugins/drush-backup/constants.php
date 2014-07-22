@@ -4,6 +4,14 @@
  */
 
 /**
+ * Config key which is one or more keys within drushrc.php's structure-tables
+ * array.
+ * 
+ * @ingroup config
+ */
+define('CONFIG_DRUSH_BACKUP_STRUCTURE_ONLY', 'drush-backup-struct-only');
+
+/**
  * String token for when we are unable to backup the database.
  * 
  * @ingroup strings
