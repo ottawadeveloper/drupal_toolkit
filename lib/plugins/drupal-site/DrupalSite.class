@@ -160,7 +160,7 @@ class DrupalSite extends GenericDrupalEntity {
     if (!empty($subsiteIDs)) {
       foreach ($subsiteIDs as $subsiteID) {
         $subsite = $this->getSubSite($subsiteID);
-        if (!$subsite->isDeleted()) {
+        if (!$subsite->isDeleted() && $subsite->exists()) {
           foreach ($subsite->getSetting(SITE_SETTING_ALL_DOMAINS) as $domain) {
             $domains[] = $domain;
           }
