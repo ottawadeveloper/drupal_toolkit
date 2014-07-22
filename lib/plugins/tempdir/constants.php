@@ -17,7 +17,7 @@ define('CONFIG_TEMPDIR_DIRECTORY', 'temp-directory');
  * 
  * @ingroup config
  */
-define('CONFIG_TEMPDIR_CLEAR', 'clear-temp-directory');
+define('CONFIG_TEMPDIR_CLEAR', 'clean-temp-directory');
 
 /**
  * String token for when the temp directory was wiped.

@@ -497,6 +497,18 @@
 #  - *.install
 
 
+######################################
+### TEMPORARY DIRECTORY MANAGEMENT ###
+######################################
+
+## Uncomment to change the location of the temp directory.
+#temp-directory = /tmp
+
+## Uncomment to erase the temp directory specified above
+## before every build and update
+#clean-temp-directory = yes
+
+
 #####################
 ### UPSTREAM SYNC ###
 #####################
