@@ -64,6 +64,8 @@ class DrupalSiteStandardSitePlugin extends GenericPlugin implements EventListene
       EVENT_UPDATE_SUBSITE_SITES,
       EVENT_ROLLBACK_SUBSITE_CLEAN,
       EVENT_CROSSLINK_CREATE_CROSSLINK,
+      EVENT_REMOVE_ALL,
+      EVENT_REMOVE_SUBSITE_ALL,
     ), $this);
   }
     

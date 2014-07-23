@@ -192,7 +192,7 @@ class DrushConfigurationPlugin extends GenericPlugin implements EventListener, S
       return file_get_contents($fromConfig);
     }
     return '<?php' . PHP_EOL .
-        ' $aliases[@@BUILD_NAME] = array(' . PHP_EOL . 
+        ' $aliases["@@BUILD_NAME"] = array(' . PHP_EOL . 
         '    "root" => "@@SITE_DOCROOT",' . PHP_EOL . 
         '    "uri" => "http://@@SITE_PRIMARY_URL",' . PHP_EOL . 
         '  );' . PHP_EOL;
