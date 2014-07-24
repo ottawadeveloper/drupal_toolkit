@@ -284,6 +284,7 @@ abstract class GenericSiteCommand extends GenericCommand {
   protected function executeAllSteps(array $steps, $defaults = array()) {
     $defaults += array(
       'optional' => FALSE,
+      'failContinue' => FALSE,
       'die' => 1,
       'error' => STRING_ERROR_STEP_GENERIC,
       'type' => COMMAND_STEP_SITE,
@@ -301,6 +302,7 @@ abstract class GenericSiteCommand extends GenericCommand {
               empty($step['die']) ? 0 : $step['die'],
               isset($step['error']) ? $step['error'] : NULL,
               $step['vars'],
+              $step['failContinue'],
               TRUE
           ) && $success;
           break;
@@ -310,7 +312,8 @@ abstract class GenericSiteCommand extends GenericCommand {
               !empty($step['optional']),
               empty($step['die']) ? 0 : $step['die'],
               isset($step['error']) ? $step['error'] : NULL,
-              $step['vars']
+              $step['vars'],
+              $step['failContinue']
           ) && $success;
           break;
         case COMMAND_STEP_SUBSITE:
@@ -329,7 +332,8 @@ abstract class GenericSiteCommand extends GenericCommand {
               !empty($step['optional']),
               empty($step['die']) ? 0 : $step['die'],
               isset($step['error']) ? $step['error'] : NULL,
-              $step['vars']
+              $step['vars'],
+              $step['failContinue']
           ) && $success;
           break;
       }
@@ -351,12 +355,14 @@ abstract class GenericSiteCommand extends GenericCommand {
    *   a message.
    * @param array $vars
    *   An array of extra variables.
+   * @param boolean $failContinue
+   *   Whether or not to continue execution on failure.
    * 
    * @return boolean
    *   TRUE if successful (or optional and not handled), FALSE if die is empty
    *   otherwise.
    */
-  protected function executeSiteCommandStep($event, $optional = FALSE, $die = 1, $error = NULL, $vars = array()) {
+  protected function executeSiteCommandStep($event, $optional = FALSE, $die = 1, $error = NULL, $vars = array(), $failContinue = FALSE) {
     $context = array(
       'entity' => $this->getSite(),
       'name' => $event,
@@ -365,6 +371,7 @@ abstract class GenericSiteCommand extends GenericCommand {
       'error' => $error,
       'continue' => !empty($die),
       'code' => empty($die) ? 1 : $die,
+      'failContinue' => !empty($failContinue),
     );
     return DrupalSiteEvent::fireSiteEvent($this->strings(), $this->out(), $this->events(), $context);
   }
@@ -383,12 +390,14 @@ abstract class GenericSiteCommand extends GenericCommand {
    *   a message.
    * @param array $vars
    *   An array of extra variables.
+   * @param boolean $failContinue
+   *   Whether or not to continue execution on failure.
    * 
    * @return boolean
    *   TRUE if successful (or optional and not handled), FALSE if die is empty
    *   otherwise.
    */
-  protected function executeSubSiteCommandStep($event, $optional = FALSE, $die = 1, $error = NULL, $vars = array()) {
+  protected function executeSubSiteCommandStep($event, $optional = FALSE, $die = 1, $error = NULL, $vars = array(), $failContinue = FALSE) {
     $context = array(
       'entity' => $this->getSubSite(),
       'name' => $event,
@@ -397,6 +406,7 @@ abstract class GenericSiteCommand extends GenericCommand {
       'error' => $error,
       'continue' => !empty($die),
       'code' => empty($die) ? 1 : $die,
+      'failContinue' => !empty($failContinue),
     );
     return DrupalSiteEvent::fireSiteEvent($this->strings(), $this->out(), $this->events(), $context);
   }
@@ -415,6 +425,8 @@ abstract class GenericSiteCommand extends GenericCommand {
    *   a message.
    * @param array $vars
    *   An array of extra variables.
+   * @param boolean $failContinue
+   *   Whether or not to continue execution on failure.
    * @param boolean $installedOnly
    *   Limit actions to subsites that have been installed.
    * 
@@ -422,7 +434,7 @@ abstract class GenericSiteCommand extends GenericCommand {
    *   TRUE if successful (or optional and not handled), FALSE if die is empty
    *   otherwise.
    */
-  protected function executeAllSubSiteCommandStep($event, $optional = FALSE, $die = 1, $error = NULL, $vars = array(), $installedOnly = FALSE) {
+  protected function executeAllSubSiteCommandStep($event, $optional = FALSE, $die = 1, $error = NULL, $vars = array(), $failContinue = FALSE, $installedOnly = FALSE) {
     $context = array(
       'entity' => NULL,
       'name' => $event,
@@ -431,6 +443,7 @@ abstract class GenericSiteCommand extends GenericCommand {
       'error' => $error,
       'continue' => !empty($die),
       'code' => empty($die) ? 1 : $die,
+      'failContinue' => !empty($failContinue),
     );
     $success = TRUE;
     $site = $this->getSite();

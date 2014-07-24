@@ -26,9 +26,11 @@ class DrupalSiteEvent extends DtkEvent {
    *   Whether or not this event is optional.
    * @param array $variables
    *   Extra variables.
+   * @param boolean $failContinue
+   *   Whether or not to continue upon failure.
    */
-  public function __construct(GenericDrupalEntity $entity, $optional = FALSE, $variables = array()) {
-    parent::__construct($optional, $variables);
+  public function __construct(GenericDrupalEntity $entity, $optional = FALSE, $variables = array(), $failContinue) {
+    parent::__construct($optional, $variables, $failContinue);
     $this->site = $entity;
   }
   
@@ -96,7 +98,8 @@ class DrupalSiteEvent extends DtkEvent {
     $event = new DrupalSiteEvent(
         $context['entity'], 
         isset($context['optional']) ? $context['optional'] : FALSE, 
-        isset( $context['variables']) ? $context['variables'] : array()
+        isset($context['variables']) ? $context['variables'] : array(),
+        isset($context['failContinue']) ? $context['failContinue'] : FALSE
     );
     $events->fireEvent($context['name'], $event);
     if (!$event->success()) {

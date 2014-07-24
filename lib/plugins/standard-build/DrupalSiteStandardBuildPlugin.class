@@ -26,7 +26,7 @@ class DrupalSiteStandardBuildPlugin extends GenericPlugin implements EventListen
     $this->events()->registerListener(array(
       EVENT_SITE_BUILD_CODEBASE,
       EVENT_UPDATE_CODEBASE,
-      EVENT_DELETE_BUILD,
+      EVENT_REMOVE_ALL,
       EVENT_UPDATE_PREPARE_FOR_UPDATE,
       EVENT_ROLLBACK_PHASE1,
       EVENT_ROLLBACK_PHASE3,

@@ -45,6 +45,13 @@ class DtkEvent {
    * @var boolean
    */
   private $propagate = TRUE;
+
+  /**
+   * Whether or not failure is cause to fail execution.
+   * 
+   * @var boolean
+   */
+  private $continueOnFail = FALSE;
   
   /**
    * 
@@ -53,9 +60,10 @@ class DtkEvent {
    * @param array $variables
    *   Extra variables.
    */
-  public function __construct($optional = FALSE, $variables = array()) {
+  public function __construct($optional = FALSE, $variables = array(), $continueOnFail = FALSE) {
     $this->optional = $optional;
     $this->variables = $variables;
+    $this->continueOnFail = $continueOnFail;
   }
   
   /**
@@ -179,7 +187,7 @@ class DtkEvent {
    * @return boolean
    */
   public function checkExecution() {
-    return empty($this->handled) || $this->success;
+    return empty($this->handled) || $this->continueOnFail || $this->success;
   }
   
   
