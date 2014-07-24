@@ -88,9 +88,11 @@ class DummyMySqlDBM extends GenericDBM {
       if (!empty($host)) {
         $query .= '@\'!HOST'.$k.'\'';
       }
+      $query .= ';';
       $replacements['!HOST' . $k] = $h;
       $k++;
     }
+    $query .= ' FLUSH PRIVILEGES;';
     $q = str_replace_all($query, $replacements);
     return $this->mysqlCommand($q, $username);
   }
