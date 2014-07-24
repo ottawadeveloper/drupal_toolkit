@@ -30,7 +30,10 @@ class LocalMachine extends GenericMachine {
   }
   
   public function deleteFile($file) {
-    return unlink($file);
+    if (file_exists($file)) {
+      return unlink($file);
+    }
+    return TRUE;
   }
   
   public function downloadFile($file, $destination = NULL) {
