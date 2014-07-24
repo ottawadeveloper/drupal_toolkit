@@ -29,7 +29,7 @@ class DrupalSiteEvent extends DtkEvent {
    * @param boolean $failContinue
    *   Whether or not to continue upon failure.
    */
-  public function __construct(GenericDrupalEntity $entity, $optional = FALSE, $variables = array(), $failContinue) {
+  public function __construct(GenericDrupalEntity $entity, $optional = FALSE, $variables = array(), $failContinue = FALSE) {
     parent::__construct($optional, $variables, $failContinue);
     $this->site = $entity;
   }
