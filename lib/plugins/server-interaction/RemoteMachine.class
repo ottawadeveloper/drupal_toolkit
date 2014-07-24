@@ -33,8 +33,8 @@ class RemoteMachine extends GenericMachine {
       $this->handle = NULL;
       return FALSE;
     }
-    $fingerprint = ssh2_fingerprint($this->handle, SSH2_FINGERPRINT_MD5 | SSH2_FINGERPRINT_HEX);
-    if (strcmp($fingerprint, $this->getSetting(SERVER_SETTING_FINGERPRINT)) !== 0) {
+    $fingerprint = strtolower(ssh2_fingerprint($this->handle, SSH2_FINGERPRINT_MD5 | SSH2_FINGERPRINT_HEX));
+    if (strcmp($fingerprint, strtolower($this->getSetting(SERVER_SETTING_FINGERPRINT))) !== 0) {
       $this->handle = NULL;
       return FALSE;
     }
