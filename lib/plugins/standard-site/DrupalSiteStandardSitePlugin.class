@@ -165,6 +165,7 @@ class DrupalSiteStandardSitePlugin extends GenericPlugin implements EventListene
    */
   function removeCrossLinks(GenericDrupalEntity $source) {
     $crosslinks = $source->getSetting(SITE_SETTING_CROSSLINKS);
+    if (empty($crosslinks)) { return TRUE; }
     foreach ($crosslinks as $crosslink) {
       if (file_exists($crosslink)) {
         unlink($crosslink);
