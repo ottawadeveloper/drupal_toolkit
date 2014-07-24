@@ -79,14 +79,27 @@ class MySqlDBM extends GenericDBM {
   }
   
   public function deleteUser($username, $host = NULL) {
-    $query = 'DROP USER \'!USER\'';
-    if (!empty($host)) {
-      $query .= '@\'!HOST\'';
+    $hosts = array('%');
+    if (is_array($host)) {
+      $hosts = $host;
     }
-    $q = str_replace_all($query, array(
+    elseif (!empty($host)) {
+      $hosts = array($host);
+    }
+    $replacements = array(
       '!USER' => $username,
-      '!HOST' => $host,
-    ));
+    );
+    $query = '';
+    $k = 1;
+    foreach ($hosts as $h) {
+      $query .= 'DROP USER \'!USER\'';
+      if (!empty($host)) {
+        $query .= '@\'!HOST'.$k.'\'';
+      }
+      $replacements['!HOST' . $k] = $h;
+      $k++;
+    }
+    $q = str_replace_all($query, $replacements);
     return $this->mysqlCommand($q);
   }
   
