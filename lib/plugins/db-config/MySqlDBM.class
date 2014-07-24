@@ -100,23 +100,33 @@ class MySqlDBM extends GenericDBM {
   
   public function createDatabase($database, $username = NULL, $password = NULL, $host = NULL) {
     $q = "CREATE DATABASE IF NOT EXISTS !DB;";
-    if (!empty($username)) {
-      $q .= " GRANT ALL ON !DB.* TO '!USER'";
-      if (!empty($host)) {
-        $q .= "@'!HOST'";
-      }
-      if (!empty($password)) {
-        $q .= " IDENTIFIED BY '!PASSWORD'";
-      }
-      $q .= ";";
+    $hosts = array('%');
+    if (is_array($host)) {
+      $hosts = $host;
     }
-    $q .= ' FLUSH PRIVILEGES;';
-    $q = str_replace_all($q, array(
+    elseif (!empty($host)) {
+      $hosts = array($host);
+    }
+    $replacements = array(
       '!DB' => $database,
       '!USER' => $username,
       '!PASSWORD' => $password,
-      '!HOST' => $host,
-    ));
+    );
+    if (!empty($username)) {
+      $k = 1;
+      foreach ($hosts as $h) {
+        $q .= " GRANT ALL ON !DB.* TO '!USER'";
+        $q .= "@'!HOST".$k."'";
+        $replacements['!HOST' . $k] = $h;
+        if (!empty($password)) {
+          $q .= " IDENTIFIED BY '!PASSWORD'";
+        }
+        $q .= ";";
+        $k++;
+      }
+    }
+    $q .= ' FLUSH PRIVILEGES;';
+    $q = str_replace_all($q, $replacements);
     $ret = $this->mysqlCommand($q);
     if (!$ret) {
       $this->deleteDatabase($database);
