@@ -48,6 +48,7 @@ class RemoteMachine extends GenericMachine {
           $this->handle = NULL;
           return FALSE;
         }
+        break;
       default:
         $this->handle = NULL;
         return FALSE;
