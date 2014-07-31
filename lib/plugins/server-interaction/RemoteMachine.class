@@ -79,7 +79,7 @@ class RemoteMachine extends GenericMachine {
     return reset($out);
   }
   
-  public function writeFile($destination, $contents, $mode=0644) {
+  public function writeFile($destination, $contents, $mode = 0644) {
     $temp = tempnam(sys_get_temp_dir(), 'dtk-up-');
     file_put_contents($temp, $contents);
     $result = ssh2_scp_send($this->handle, $temp, $destination, $mode);

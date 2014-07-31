@@ -12,7 +12,11 @@ class LinuxCrontab extends GenericCronManager {
   
   public function scheduleTask($identifier, $task) {
     $frequency = $this->getCronFrequency();
-    $line = $frequency . ' ' . $task;
+    $line = 'SHELL=/bin/bash' . "\n";
+    $line .= 'PATH=/sbin:/bin:/usr/sbin:/usr/bin' . "\n";
+    $line .= 'MAILTO:root' . "\n";
+    $line .= 'HOME=/' . "\n";
+    $line .= 'root ' . $frequency . ' ' . $task;
     return $this->machine()->writeFile($this->normalizeFilename($identifier), $line);
   }
   
