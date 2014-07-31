@@ -66,13 +66,16 @@ abstract class GenericHostFileManager implements HostFileManagerInterface {
   }
   
   public function loadHostFile() {
-    if (empty($this->defs)) {
+    if (!is_array($this->defs)) {
       $content = $this->machine()->readFile($this->hostfile);
-      if (!empty($content)) {
+      if ($content === '') {
+        $this->defs = array();
+      }
+      elseif (!empty($content)) {
         $this->defs = hosts_file_parse($content);
       }
     }
-    return !empty($this->defs);
+    return is_array($this->defs);
   }
   
   public function saveHostFile() {
