@@ -57,9 +57,11 @@ class RemoteMachine extends GenericMachine {
   }
   
   public function sleep() {
-    if (is_resource($this->handle)) {
-      ssh2_exec($this->handle, 'exit');
-      unset($this->handle);
+    if (isset($this->handle)) {
+      if (is_resource($this->handle)) {
+        ssh2_exec($this->handle, 'exit');
+        unset($this->handle);
+      }
     }
   }
   
