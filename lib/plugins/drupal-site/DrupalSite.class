@@ -30,7 +30,7 @@ class DrupalSite extends GenericDrupalEntity {
    * @var DrupalSubSite
    */
   private $inProgressSubSite = NULL;
-  
+    
   /**
    * Constructs an instance of DrupalSite.
    * 

@@ -68,6 +68,13 @@ abstract class GenericDrupalEntity implements OutputDependency, StringDependency
    */
   private $isDeleted = FALSE;
   
+  /**
+   * Callback tokens.
+   * 
+   * @var array
+   */
+  private $callbackTokens = array();
+  
   public function setOutput(OutputManagerInterface $out) {
     $this->out = $out;
   }
@@ -82,6 +89,19 @@ abstract class GenericDrupalEntity implements OutputDependency, StringDependency
   
   public function out() {
     return $this->out;
+  }
+  
+  /**
+   * Sets a token on the site that uses a callable method in order to get the
+   * value of the token.
+   * 
+   * @param string $token
+   *   The token to set.
+   * @param callable $callback
+   *   The function/object method to call as accepted by call_user_func().
+   */
+  public function setCallbackToken($token, $callback) {
+    $this->callbackTokens[$token] = $callback;
   }
   
   /**
@@ -168,7 +188,11 @@ abstract class GenericDrupalEntity implements OutputDependency, StringDependency
    *   the replacement value.
    */
   protected function getDynamicTokens() {
-    return array();
+    $tokens = array();
+    foreach ($this->callbackTokens as $key => $cb) {
+      $tokens[$key] = call_user_func($cb, $this);
+    }
+    return $tokens;
   }
   
   /**
