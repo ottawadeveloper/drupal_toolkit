@@ -34,6 +34,7 @@ class DrushInstallPlugin extends GenericPlugin implements EventListener {
     $this->config()->extendFromOption(CONFIG_INSTALL_SITE_NAME, OPTION_INSTALL_SITE_NAME);
     $this->config()->extendFromOption(CONFIG_INSTALL_SITE_OPTIONS, OPTION_INSTALL_OPTIONS, NULL, TRUE);
     $this->config()->extendFromOption(CONFIG_INSTALL_MODULES, OPTION_INSTALL_MODULES, NULL, TRUE);
+    $this->config()->extendFromOption(CONFIG_INSTALL_MODULES_FILE, OPTION_INSTALL_MODULES_FILE);
   }
     
   public function captureEvent(DtkEvent &$context, $type) {
@@ -92,7 +93,11 @@ class DrushInstallPlugin extends GenericPlugin implements EventListener {
    */
   private function installModules($alias) {
     $modules = $this->config()->getConfig(CONFIG_INSTALL_MODULES);
-    if (!extra_empty($modules)) {
+    $file = $this->config()->getConfig(CONFIG_INSTALL_MODULES_FILE);
+    if (!empty($file) && is_readable($file)) {
+      $modules = array_unique(array_merge($modules, file($file)));
+    }
+    if (!extra_empty($modules) && count($modules) > 0) {
       return drush_install_modules($modules, $alias);
     }
     return TRUE;

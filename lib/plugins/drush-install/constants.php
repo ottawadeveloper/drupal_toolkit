@@ -11,6 +11,22 @@
 define('CONFIG_INSTALL_PROFILE', 'install-profile');
 
 /**
+ * Command line option for a file with the names of modules to
+ * install.
+ * 
+ * @ingroup args
+ */
+define('OPTION_INSTALL_MODULES_FILE', 'install-modules-file');
+
+/**
+ * Config key for a file with the names of modules to
+ * install.
+ * 
+ * @ingroup config
+ */
+define('CONFIG_INSTALL_MODULES_FILE', 'install-modules-file');
+
+/**
  * Config key for the default user 1 email address.
  * 
  * @ingroup config
