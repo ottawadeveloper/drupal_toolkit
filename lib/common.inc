@@ -8,6 +8,8 @@
 // Include all the constants from our core file.
 include "constants.php";
 
+date_default_timezone_set('America/Montreal');
+
 // A list of files, relative to TOOLKIT_COMMON_DIR, that must be
 // included for everything to work properly.
 $files = array(
