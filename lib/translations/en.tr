@@ -5,7 +5,7 @@ core.error.no-command-found = 'No command matching [!command] was found.'
 
 router.error.missing-command  = 'The requested command requires the shell command [!command] to execute.'
 router.error.missing-argument = 'The requested command requires at least [!count] arguments to execute.'
-router.error.missing-config = 'The requested command requires the config setting [!config] to execute.' 
+router.error.missing-config = 'The requested command requires the config setting [!key] to execute.' 
 router.error.missing-function = 'The requested command requires the PHP function [!function] to execute.'
 router.error.command-not-implemented = 'The requested command [!command] is not yet implemented.'
 
