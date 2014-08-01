@@ -23,7 +23,36 @@ while ($added) {
   }
 }
 
-/**
+// We extend this option first, in case the user defined a different
+// Spyc location in the options.
+$settings->extendFromOption(CONFIG_SPYC_LOCATION, ARG_SPYC_LOCATION);
+
+// Additional configuration via YAML files
+// YAML is a much more flexible means of important data.
+$spycLocation = $settings->getConfig(CONFIG_SPYC_LOCATION);
+if (is_readable($spycLocation)) {
+  require_once $spycLocation;
+  $added = TRUE;
+  $processed = array();
+  while ($added) {
+    $added = FALSE;
+    $files = $settings->getConfig(CONFIG_YAML_FILES);
+    if (!empty($files)) {
+      foreach ($files as $yamlfile) {
+        if (!in_array($yamlfile, $processed)) {
+          $settings->appendYamlFile($yamlfile);
+          $processed[] = $yamlfile; 
+          $added = TRUE;
+        }
+      }
+    }
+  }
+}
+elseif (!extra_empty($settings->getConfig(CONFIG_YAML_FILES))) {
+  echo 'Warning: Spyc parser not detected at ' . $spycLocation;
+}
+
+/*
  * Runtime configuration is added after all the main configuration.
  * 
  * Plugins can leverage the extendFromOption() method in their initialize()
@@ -34,17 +63,4 @@ foreach ($runtime_settings as $setting_name => $arg_info) {
   $short = isset($arg_info['short']) ? $arg_info['short'] : NULL;
   $split = isset($arg_info['split']) ? $arg_info['split'] : FALSE;
   $settings->extendFromOption($setting_name, $long, $short, $split);
-}
-
-// Additional configuration via YAML files
-// YAML is a much more flexible means of important data.
-$spycLocation = $settings->getConfig(CONFIG_SPYC_LOCATION);
-if (is_readable($spycLocation)) {
-  require_once $spycLocation;
-  foreach ($settings->getConfig(CONFIG_YAML_FILES) as $yamlfile) {
-    $settings->appendYamlFile($yamlfile);
-  }
-}
-elseif (!extra_empty($settings->getConfig(CONFIG_YAML_FILES))) {
-  echo 'Warning: Spyc parser not detected at ' . $spycLocation;
 }

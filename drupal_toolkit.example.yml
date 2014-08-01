@@ -11,6 +11,9 @@
 ## Uncomment this to enable silent mode on every DTK call.
 #silent: yes
 
+## Uncomment this if you want to use gzip to compress archives.
+#gzip-enabled: yes
+
 ## If you need to change the path to where Spyc is installed, 
 ## uncomment this line and alter the path as needed.
 #spyc-location: /usr/lib/php/spyc/Spyc.php
