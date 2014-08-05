@@ -82,7 +82,7 @@ abstract class GenericSiteCommand extends GenericCommand {
     elseif ($config == LOCAL_SITES_NEVER) {
       return FALSE;
     }
-    return $this->args()->hasOption(ARG_IS_LOCAL);
+    return $this->args()->hasOption(ARG_IS_LOCAL, TRUE);
   }
   
   /**
