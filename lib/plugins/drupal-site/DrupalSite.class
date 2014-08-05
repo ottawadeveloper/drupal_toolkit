@@ -350,7 +350,7 @@ class DrupalSite extends GenericDrupalEntity {
   public static function createSite(Configuration $config, $name, $isLocal) {
     $path = $config->getConfig(CONFIG_BUILD_DIRECTORY);
     if ($isLocal) {
-      $path = getcwd();
+      $path = assemble_path(getcwd(), "dtk");
     }
     $path = expand_path($path);
     if (!is_writable($path)) {
