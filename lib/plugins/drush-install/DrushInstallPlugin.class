@@ -95,8 +95,10 @@ class DrushInstallPlugin extends GenericPlugin implements EventListener {
     $modules = $this->config()->getConfig(CONFIG_INSTALL_MODULES);
     $file = $this->config()->getConfig(CONFIG_INSTALL_MODULES_FILE);
     if (!empty($file) && is_readable($file)) {
-      $modules = array_unique(array_merge($modules, file($file)));
+      $modules = array_merge($modules, file($file));
     }
+    $modules = array_walk($modules, 'drush_install_array_trim');
+    $modules = array_unique($modules);
     if (!extra_empty($modules) && count($modules) > 0) {
       return drush_install_modules($modules, $alias);
     }

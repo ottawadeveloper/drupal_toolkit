@@ -1,3 +1,5 @@
 plugin = DrushInstallPlugin
 
 dependencies[] = drupal-site
+
+files[] = functions.php

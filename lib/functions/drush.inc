@@ -156,8 +156,10 @@ function drush_install_modules(array $modules, $alias = NULL) {
     '!modules' => implode(',', $modules),
   ));
   foreach ($modules as $module) {
-    if (!drush_check_module($module, $alias)) {
-      return FALSE;
+    if (!empty($module)) {
+      if (!drush_check_module($module, $alias)) {
+        return FALSE;
+      }
     }
   }
   return TRUE;
@@ -218,6 +220,9 @@ function drush_directory($alias = NULL, $type = NULL) {
  */
 function drush_check_module($module_name, $alias = NULL) {
   $pmi = drush_project_info($module_name, $alias);
+  if (empty($pmi)) {
+    return FALSE;
+  }
   return drush_info_has_key_value($pmi, 'Status', 'enabled');
 }
 
