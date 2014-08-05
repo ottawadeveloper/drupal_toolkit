@@ -57,6 +57,10 @@ class DrupalSite extends GenericDrupalEntity {
     $this->setToken(SITE_TOKEN_UUID, $this->uuid());
   }
   
+  public function isLocal() {
+    return $this->getSetting(SITE_IS_LOCAL, FALSE);
+  }
+  
   /**
    * Allows the site to use the temporary subsite object before it is
    * registered properly after creation.
@@ -350,7 +354,7 @@ class DrupalSite extends GenericDrupalEntity {
   public static function createSite(Configuration $config, $name, $isLocal) {
     $path = $config->getConfig(CONFIG_BUILD_DIRECTORY);
     if ($isLocal) {
-      $path = assemble_path(getcwd(), "dtk");
+      $path = getcwd();
     }
     $path = expand_path($path);
     if (!is_writable($path)) {

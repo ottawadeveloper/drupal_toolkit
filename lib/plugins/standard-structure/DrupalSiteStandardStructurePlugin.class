@@ -50,7 +50,7 @@ class DrupalSiteStandardStructurePlugin extends GenericPlugin implements EventLi
    */
   private function deleteSite(DrupalSite $site) {
     $this->working(STRING_WORKING_REMOVE_SITE);
-    if (!remove_directory($site->getBuildFolder())) {
+    if (!remove_directory($site->getBuildFolder(), $site->isLocal())) {
       $this->warn(STRING_COULD_NOT_REMOVE_BUILD_DIR);
       return FALSE;
     }
