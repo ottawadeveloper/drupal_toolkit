@@ -6,7 +6,12 @@
 /**
  * Current version of the toolkit.
  */
-define('TOOLKIT_VERSION', '0.0.7');
+define('TOOLKIT_VERSION', '0.0.8');
+
+/**
+ * User's current directory when the first command was executed.
+ */
+define('TOOLKIT_EXECUTION_PATH', getcwd());
 
 /**
  * Location of the common directory.
