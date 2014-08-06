@@ -270,6 +270,9 @@ function drush_site_install($profile = NULL, $alias = NULL, array $extra = array
   }
   drush_command($subcommand, $alias, $args);
   $status = drush_status($alias);
+  if (empty($status)) {
+    return FALSE;
+  }
   return drush_info_has_key_value($status, 'Database', 'Connected') &&
     drush_info_has_key_value($status, 'Drupal bootstrap', 'Successful');
 }
@@ -385,7 +388,8 @@ function drush_updb($alias = NULL) {
  * @return boolean
  *   TRUE if the key:value pair was found, otherwise false.
  */
-function drush_info_has_key_value(array &$info, $key, $value) {
+function drush_info_has_key_value(&$info, $key, $value) {
+  if (!is_array($info)) { return FALSE; }
   return drush_info_get_key_value($info, $key) === trim($value);
 }
 
@@ -401,7 +405,8 @@ function drush_info_has_key_value(array &$info, $key, $value) {
  * @return string
  *   The value of a given array key.
  */
-function drush_info_get_key_value(array $info, $key) {
+function drush_info_get_key_value($info, $key) {
+  if (!is_array($info)) { return NULL; }
   $key = trim($key);
   foreach ($info as $line) {
     $pieces = explode(':', $line, 2);
