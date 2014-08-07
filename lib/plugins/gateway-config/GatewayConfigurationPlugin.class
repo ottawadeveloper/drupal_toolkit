@@ -29,6 +29,7 @@ class GatewayConfigurationPlugin extends GenericPlugin implements EventListener,
   public function initialize() {
     $this->events()->registerListener(array(
       EVENT_REMOVE_SUBSITE_CLEANUP,
+      EVENT_SITE_BUILD_CONFIGURE_SERVER,
       EVENT_SITE_BUILD_MORE_CONFIG,
       EVENT_UPDATE_REFRESH_SERVER_CONFIG,
       EVENT_SUBSITE_BUILD_PARENT_SERVER_REFRESH,
@@ -50,7 +51,7 @@ class GatewayConfigurationPlugin extends GenericPlugin implements EventListener,
   
   public function captureEvent(DtkEvent &$context, $type) {
     switch ($type) {
-      case EVENT_SITE_BUILD_CONFIGURE_SERVER:
+      case EVENT_SITE_BUILD_MORE_CONFIG:
         if ($context->checkExecution()) {
           $context->setResult($this->publishGatewayConfig($context->getSite()));
         }
