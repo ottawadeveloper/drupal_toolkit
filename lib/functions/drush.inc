@@ -558,6 +558,11 @@ function drush_restore_db($sqlFile, $alias = NULL, $database = NULL) {
  * @see http://drush.ws/#sql-dump
  */
 function drush_db_dump($alias = NULL, $destination = NULL, $extras = array()) {
+  if (!empty($extras['gzip']) && ($destination !== TRUE) && (!empty($destination))) {
+    if (substr($destination, -3) !== '.gz') {
+      $destination .= '.gz';
+    }
+  }
   $options = array(
     'data-only' => FALSE,
     'database' => NULL,
