@@ -49,7 +49,7 @@ class DatabaseConfigurationPlugin extends GenericPlugin implements EventListener
           $context->appendInfo($this->str(STRING_INFO_DB, array(
             '!type' => $server['dbSettings'][DB_HOST_DRUPAL_CATEGORY],
             '!mode' => $server['dbSettings'][DB_HOST_DRUPAL_MODE],
-          )), $server['dbSettings'][DB_HOST_TYPE] . '://' . $server['username'] . '@' . $server['host'] . ':' . $server['database']);          
+          )), $server['dbSettings'][DB_HOST_TYPE] . '://' . $server['username'] . '@' . $server['hostname'] . ':' . $server['database']);          
         }
         break;
       case EVENT_SITE_BUILD_MORE_CONFIG:
@@ -226,6 +226,7 @@ class DatabaseConfigurationPlugin extends GenericPlugin implements EventListener
         'dbSettings' => $server->getSettings(),
         'username' => $config['username'],
         'database' => $config['database'],
+        'hostname' => $server->getHost(),
         'host' => $config['host_restriction'],
       );
       $drupalSettings[$server->getDatabaseCategory()][$server->getDatabaseMode()] = array(
