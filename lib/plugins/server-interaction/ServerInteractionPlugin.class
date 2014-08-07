@@ -67,10 +67,10 @@ class ServerInteractionPlugin extends GenericPlugin implements EventListener {
         if (isset($allServers[$type])) {
           foreach ($allServers[$type] as $key => $serverConfiguration) {
             $server = NULL;
-            $type = NULL;
             if (!empty($serverConfiguration[SERVER_SETTING_TYPE])) {
               $event = new DtkEvent();
               $event->setVariable('type', $serverConfiguration[SERVER_SETTING_TYPE]);
+              $event->setVariable('config', $serverConfiguration);
               $this->events()->fireEvent(EVENT_CAST_PHYSICAL_SERVER, $event);
               $server = $event->getVariable('server', NULL);
               if (empty($server)) {

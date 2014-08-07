@@ -19,10 +19,10 @@ class RemoteMachine extends GenericMachine {
    * 
    * @var resource
    */
-  private $handle;
+  private $handle = NULL;
   
   public function initialize() {
-    if (is_resource($this->handle)) {
+    if (isset($this->handle) && is_resource($this->handle)) {
       return TRUE;
     }
     if (!extra_empty($this->getSetting(SERVER_SETTING_DISABLED))) {
