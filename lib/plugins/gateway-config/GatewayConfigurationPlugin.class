@@ -125,13 +125,16 @@ class GatewayConfigurationPlugin extends GenericPlugin implements EventListener,
             continue;
           }
         }
-        if (!$this->writeGatewayTemplate($gatewayServer, $key, $site, $defaultConfig, $c['fn_template'])) {
+        $files = $this->writeGatewayTemplate($gatewayServer, $key, $site, $defaultConfig, $c['fn_template']);
+        if (empty($files)) {
           return FALSE;
         }
-        $gatewayRegistry[] = array(
-          'server' => $gatewayServer->machine(),
-          'file' => $gatewayServer->getConfigFilePath($file),
-        );
+        foreach ($files as $file) {
+          $gatewayRegistry[] = array(
+            'server' => $gatewayServer->machine(),
+            'file' => $file,
+          );
+        }
       }
     }
     $site->appendSettingValue(SITE_REMOTE_FILES, $gatewayRegistry);
@@ -175,7 +178,9 @@ class GatewayConfigurationPlugin extends GenericPlugin implements EventListener,
       return FALSE;
     }
     $gatewayServer->doReboot();
-    return TRUE;
+    $files = $gatewayServer->extraFiles($file);
+    $files[] = $gatewayServer->getConfigFilePath($file);
+    return $files;
   }
   
 }
