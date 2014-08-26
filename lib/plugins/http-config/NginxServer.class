@@ -19,17 +19,17 @@ class NginxServer extends GenericHttpServer {
   }
   
   protected function reboot() {
-    $this->machine()->executeCommand('service nginx reload', array(), $n, $exit);
+    $this->machine()->executeCommand('sudo service nginx reload', array(), $n, $exit);
     return empty($exit);
   }
   
   protected function testConfig() {
-    $this->machine()->executeCommand('service nginx configtest', array(), $n, $exit);
+    $this->machine()->executeCommand('sudo service nginx configtest', array(), $n, $exit);
     return empty($exit);
   }
   
   public function available() {
-    $this->machine()->executeCommand('service nginx status', array(), $n, $exit);
+    $this->machine()->executeCommand('sudo service nginx status', array(), $n, $exit);
     return empty($exit);
   }
   

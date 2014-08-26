@@ -19,17 +19,17 @@ class HttpdServer extends GenericHttpServer {
   }
   
   protected function reboot() {
-    $this->machine()->executeCommand('service httpd graceful', array(), $n, $exit);
+    $this->machine()->executeCommand('sudo service httpd graceful', array(), $n, $exit);
     return empty($exit);
   }
   
   protected function testConfig() {
-    $this->machine()->executeCommand('apachectl configtest', array(), $n, $exit);
+    $this->machine()->executeCommand('sudo apachectl configtest', array(), $n, $exit);
     return empty($exit);
   }
   
   public function available() {
-    $this->machine()->executeCommand('service httpd status', array(), $n, $exit);
+    $this->machine()->executeCommand('sudo service httpd status', array(), $n, $exit);
     return empty($exit);
   }
   
