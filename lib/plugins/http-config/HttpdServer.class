@@ -24,7 +24,7 @@ class HttpdServer extends GenericHttpServer {
   }
   
   protected function testConfig() {
-    $this->machine()->executeCommand('sudo apachectl configtest', array(), $n, $exit);
+    $this->machine()->executeCommand('sudo service httpd configtest', array(), $n, $exit);
     return empty($exit);
   }
   
