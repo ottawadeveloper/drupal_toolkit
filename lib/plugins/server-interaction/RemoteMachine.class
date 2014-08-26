@@ -78,6 +78,9 @@ class RemoteMachine extends GenericMachine {
     fclose($stream);
     $out = explode(PHP_EOL, $output);
     $exit = array_pop($out);
+    if ($exit === "") {
+      $exit = array_pop($out);
+    }
     return reset($out);
   }
   
