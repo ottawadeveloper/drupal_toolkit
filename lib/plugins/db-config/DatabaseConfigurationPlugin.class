@@ -31,7 +31,7 @@ class DatabaseConfigurationPlugin extends GenericPlugin implements EventListener
     $this->config()->extendDefaultConfiguration(array(
       CONFIG_SITE_DB_USER_PATTERN => '@@SITE_UUID',
       CONFIG_SITE_DB_NAME_PATTERN => '@@SITE_UUID',
-      CONFIG_SITE_DB_HOST_RESTRICTION => 'localhost',
+      CONFIG_SITE_DB_HOST_RESTRICTION => array(),
       CONFIG_DB_DEFAULT_TYPE => '',
       CONFIG_DB_DEFAULT_PASSWORD => DB_RANDOM_PASSWORD,
       CONFIG_DB_SERVERS => array(),
