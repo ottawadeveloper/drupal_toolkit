@@ -85,6 +85,20 @@ class RemoteMachine extends GenericMachine {
     return reset($out);
   }
   
+  public function fileExists($file) {
+    $command = 'if [ -e "!file" ]
+then
+  echo 1
+else
+  echo 0
+fi';
+    $output = array();
+    $this->executeCommand($command, array(
+      '!file' => $file,
+    ), $output);
+    return (bool) array_pop($output);
+  }
+  
   public function writeFile($destination, $contents, $mode = 0644) {
     $temp = tempnam(sys_get_temp_dir(), 'dtk-up-');
     file_put_contents($temp, $contents);

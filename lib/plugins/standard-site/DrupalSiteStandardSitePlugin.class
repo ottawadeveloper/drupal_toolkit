@@ -357,7 +357,6 @@ class DrupalSiteStandardSitePlugin extends GenericPlugin implements EventListene
       return FALSE;
     }
     $site->setSetting(SITE_SETTINGS_TEMPLATE, $defaultSettingsFile);
-    $site->registerServerFile($defaultSettingsFile);
     return TRUE;
   }
   
@@ -400,7 +399,6 @@ class DrupalSiteStandardSitePlugin extends GenericPlugin implements EventListene
       return FALSE;
     }
     $entity->setSetting(SITE_SETTINGS_FILE, $target);
-    $entity->registerServerFile($target);
     $entity->registerServerFile(assemble_path($sitesDirectory, $targetDirectory, self::$filesDirectory));
     return TRUE;
   }

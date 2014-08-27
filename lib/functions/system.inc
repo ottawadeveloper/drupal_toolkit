@@ -377,6 +377,14 @@ function chmog($target, $owner, $group, $access, $recursive = FALSE, $chmog_proc
   if (is_link($target)) {
     $target = realpath($target);
   }
+  // skip git directories
+  // @todo a more robust way of omitting directories.
+  if (is_dir($target)) {
+    $name = basename($target);
+    if ($name === '.git') {
+      return 0;
+    }
+  }
   if (in_array($target, $chmog_processed)) {
     return 0;
   }
