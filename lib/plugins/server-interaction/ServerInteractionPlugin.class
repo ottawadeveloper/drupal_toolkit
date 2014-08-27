@@ -63,7 +63,7 @@ class ServerInteractionPlugin extends GenericPlugin implements EventListener {
     if (empty($this->servers[$type])) {
       $servers = array();
       $allServers = $this->config()->getConfig(CONFIG_SERVER_LIST);
-      if (!empty($allServers)) {
+      if (!empty($allServers) && is_array($allServers)) {
         if (isset($allServers[$type])) {
           foreach ($allServers[$type] as $key => $serverConfiguration) {
             $server = NULL;
