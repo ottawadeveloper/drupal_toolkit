@@ -64,6 +64,13 @@ define('EVENT_CAST_MANAGED_HOST_SERVER', 'cast-managed-host-server');
 define('EVENT_FIND_MANAGED_HOST_SERVERS', 'find-managed-host-servers');
 
 /**
+ * Allows overridding the default IP address.
+ * 
+ * @ingroup server_settings
+ */
+define('SERVER_SETTING_HOST_IP_OVERRIDE', 'managed-host-ip-override');
+
+/**
  * Allows changing the managed host type.
  * 
  * @ingroup server_settings

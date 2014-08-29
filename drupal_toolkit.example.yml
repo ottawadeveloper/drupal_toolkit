@@ -618,6 +618,7 @@
 ##    managed-host-type: linux
 ##    managed-host-file: /etc/hosts # here you can change the location of the host file
 ##    managed-host-static: no
+##    managed-host-ip-override: 127.0.0.1 # here you can change the IP address used by this particular host server
 ##
 ##  # these servers will be used as an upstream server. Only one server will be used,
 ##  # and it will be the last one defined.
