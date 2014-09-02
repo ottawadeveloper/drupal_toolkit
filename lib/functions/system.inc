@@ -353,6 +353,9 @@ function shell_command_available($command_name) {
  * function specifically designed to make recursive applications easier since
  * the directories only need to be opened once.
  * 
+ * Note that if the system commands 'chmod' and 'chown' are available to PHP, 
+ * it will use 
+ * 
  * Relies on chmod(), chown() and chgrp().
  * 
  * @param string $target
@@ -389,6 +392,29 @@ function chmog($target, $owner, $group, $access, $recursive = FALSE, $chmog_proc
     return 0;
   }
   $failures = 0;
+  if (shell_command_available('chmod') && shell_command_available('chown')) {
+    $cmd = 'chmod ' . ($recursive ? '-R ' : '') . decoct($access) . ' !file';
+    $exit = 0;
+    execute_system_command($cmd, array(
+      '!file' => $target,
+    ), $out, $exit);
+    if (!extra_empty($exit)) {
+      $failures++;
+    }
+    $cmd = 'chown ' . ($recursive ? '-R ' : '') . $owner . ':' . $group . ' !file';
+    $exit = 0;
+    execute_system_command($cmd, array(
+      '!file' => $target,
+    ), $out, $exit);
+    if (!extra_empty($exit)) {
+      $failures++;
+    }
+    // if both the above commands worked, we don't have to go through
+    // the lengthy process of recursing ourselves.
+    if ($failures < 1) {
+      return $failures;
+    }
+  }
   if (!chmod($target, $access)) {
     $failures++;
   }
