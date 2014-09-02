@@ -23,3 +23,24 @@ define('STRING_DISPLAY_DRUSH_ALIAS', 'drupal-site-list.display.drush-alias');
  * @ingroup strings
  */
 define('STRING_DISPLAY_PRIMARY_URL', 'drupal-site-list.display.primary-url');
+
+/**
+ * String token for displaying the column title "Installed?".
+ * 
+ * @ingroup strings
+ */
+define('STRING_DISPLAY_INSTALLED', 'drupal-site-list.display.installed');
+
+/**
+ * String token for display when the site is not installed.
+ * 
+ * @ingroup strings
+ */
+define('STRING_DISPLAY_INSTALLED_NO', 'drupal-site-list.display.installed-no');
+
+/**
+ * String token for display when the site is installed.
+ * 
+ * @ingroup strings
+ */
+define('STRING_DISPLAY_INSTALLED_YES', 'drupal-site-list.display.installed-yes');

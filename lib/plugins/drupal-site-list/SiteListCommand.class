@@ -16,18 +16,25 @@ class SiteListCommand extends GenericCommand {
     $headers = array(
       'name' => $this->strings()->getString(STRING_DISPLAY_BUILD_NAME),
       'alias' => $this->strings()->getString(STRING_DISPLAY_DRUSH_ALIAS),
+      'installed' => $this->strings()->getString(STRING_DISPLAY_INSTALLED),
       'url' => $this->strings()->getString(STRING_DISPLAY_PRIMARY_URL),
     );
     $entries = array();
     $longest = array(
       'name' => strlen($headers['name']),
       'alias' => strlen($headers['alias']),
+      'installed' => strlen($headers['installed']),
       'url' => strlen($headers['url']),
+    );
+    $installedOptions = array(
+      'y' => $this->strings()->getString(STRING_DISPLAY_INSTALLED_YES),
+      'n' => $this->strings()->getString(STRING_DISPLAY_INSTALLED_NO),
     );
     foreach ($sites as $key => $site) {
       $entries[$key] = array(
         'name' => $site->getBuildName(),
         'alias' => $site->getDrushAlias(),
+        'installed' => extra_empty($site->getSetting(SITE_IS_INSTALLED)) ? $installedOptions['n'] : $installedOptions['y'],
         'primary' => $site->getSetting(SITE_PRIMARY_URL),
       );
       $ids = $site->getSubSites();
@@ -38,6 +45,7 @@ class SiteListCommand extends GenericCommand {
           $entries[$key . '_' . $id] = array(
             'name' => '- ' . $subsite->getBuildName(),
             'alias' => $subsite->getDrushAlias(),
+            'installed' => extra_empty($subsite->getSetting(SITE_IS_INSTALLED)) ? $installedOptions['n'] : $installedOptions['y'],
             'primary' => $subsite->getSetting(SITE_PRIMARY_URL),
           );
         }
@@ -57,14 +65,18 @@ class SiteListCommand extends GenericCommand {
     $header .= ' | ';
     $header .= str_pad($headers['alias'], $longest['alias']);
     $header .= ' | ';
+    $header .= str_pad($headers['installed'], $longest['installed']);
+    $header .= ' | ';
     $header .= $headers['url'];
     $header .= PHP_EOL;
     echo terminal_color_string($header, TERMINAL_FOREGROUND_COLOR_WHITE);
-    echo str_pad('', array_sum($longest) + 20, '-') . PHP_EOL;
+    echo str_pad('', array_sum($longest) + 23, '-') . PHP_EOL;
     foreach ($entries as $entry) {
       echo str_pad($entry['name'], $longest['name']);
       echo ' | ';
       echo str_pad($entry['alias'], $longest['alias']);
+      echo ' | ';
+      echo str_pad($entry['installed'], $longest['installed']);
       echo ' | ';
       echo 'http://' . $entry['primary'];
       echo PHP_EOL;

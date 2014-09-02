@@ -299,6 +299,9 @@ help.option.site-extra-urls = 'Any additional URLs for a site separated by a com
 drupal-site-list.display.build-name = 'Build Name'
 drupal-site-list.display.drush-alias = 'Drush Alias'
 drupal-site-list.display.primary-url = 'Primary URL'
+drupal-site-list.display.installed = 'Installed?'
+drupal-site-list.display.installed-yes = 'Yes'
+drupal-site-list.display.installed-no = 'No'
 
 string.category.core = 'Core'
 string.command-desc.help = 'Displays this help dialog.'
