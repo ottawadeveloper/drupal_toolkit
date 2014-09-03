@@ -51,6 +51,7 @@ class SiteListCommand extends GenericCommand {
         }
       }
     }
+    ksort($entries);
     foreach ($entries as $set) {
       foreach ($set as $k => $v) {
         if (empty($longest[$k]) || $longest[$k] < strlen($v)) {
