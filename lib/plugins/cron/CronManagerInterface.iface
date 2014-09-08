@@ -16,11 +16,14 @@ interface CronManagerInterface extends ConfigurationDependency {
    *   A unique identifier for this cron task.
    * @param string $task
    *   The command to be executed.
+   * @param string $frequency
+   *   The frequency to use. If empty, will be set to the frequency generated
+   *   from configuration.
    * 
    * @return boolean
    *   TRUE if the scheduled task was created, otherwise FALSE.
    */
-  function scheduleTask($identifier, $task);
+  function scheduleTask($identifier, $task, &$frequency = NULL);
   
   /**
    * Deletes a scheduled task.

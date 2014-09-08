@@ -4,6 +4,13 @@
  */
 
 /**
+ * Saves the crontab frequency in use.
+ * 
+ * @ingroup site_settings
+ */
+define('SITE_SETTING_CRONTAB_FREQUENCY', 'crontab-frequency');
+
+/**
  * Overrides the crontab frequency specified in CONFIG_CRONTAB_FREQUENCY.
  * 
  * @ingroup args

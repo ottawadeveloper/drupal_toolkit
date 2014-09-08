@@ -200,6 +200,7 @@ class CronPlugin extends GenericPlugin implements EventListener, ServerInteracti
     if (empty($cron)) { $this->error(STRING_ERROR_NO_CRON_URL); return FALSE; }
     $command = 'wget ' . escapeshellarg($cron);
     $machines = $this->getCronMachines();
+    $frequencies = $site->getSetting(SITE_SETTING_CRONTAB_FREQUENCY, array());
     foreach ($machines as $key => $machine) {
       if ($machine instanceof CronManagerInterface) {
         if ($update) {
@@ -210,15 +211,23 @@ class CronPlugin extends GenericPlugin implements EventListener, ServerInteracti
         $this->working(STRING_WORKING_CRON_SETUP_ITEM, array(
           '!name' => $key,
         ));
-        if (!$machine->scheduleTask($alias, $command)) {
+        $frequency = NULL;
+        if (isset($frequencies[$key])) {
+          $frequency = $frequencies[$key];
+        }
+        if (!$machine->scheduleTask($alias, $command, $frequency)) {
           $this->error(STRING_ERROR_COULD_NOT_CREATE_CRON, array(
             '!server' => $key,
             '!alias' => $alias,
           ));
           return FALSE;
         }
+        else {
+          $frequencies[$key] = $frequency;
+        }
       }
     }
+    $site->setSetting(SITE_SETTING_CRONTAB_FREQUENCY, $frequencies);
     $site->setSetting(SITE_CRON_MACHINES, $machines);
     $this->success(STRING_SUCCESS_CRON_SETUP);
     return TRUE;

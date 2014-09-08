@@ -10,8 +10,10 @@
  */
 class LinuxCrontab extends GenericCronManager {
   
-  public function scheduleTask($identifier, $task) {
-    $frequency = $this->getCronFrequency();
+  public function scheduleTask($identifier, $task, &$frequency = NULL) {
+    if (empty($frequency)) {
+      $frequency = $this->getCronFrequency();
+    }
     $line = 'SHELL=/bin/bash' . "\n";
     $line .= 'PATH=/sbin:/bin:/usr/sbin:/usr/bin' . "\n";
     $line .= 'MAILTO:root' . "\n";
