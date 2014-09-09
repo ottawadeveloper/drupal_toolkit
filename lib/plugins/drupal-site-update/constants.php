@@ -4,6 +4,13 @@
  */
 
 /**
+ * Fired to finish off a subsite's update procedure.
+ * 
+ * @ingroup events
+ */
+define('EVENT_UPDATE_FINISH_SUBSITE', 'update-finish-subsite');
+
+/**
  * Fired when the update-all command is about to begin.
  * 
  * @ingroup events

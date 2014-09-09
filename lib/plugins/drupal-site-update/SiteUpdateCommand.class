@@ -140,6 +140,12 @@ class SiteUpdateCommand extends GenericSiteCommand {
       'continue' => TRUE,
       'optional' => TRUE,
     ),
+    array(
+      'event' => EVENT_UPDATE_FINISH_SUBSITE,
+      'optional' => TRUE,
+      'continue' => TRUE,
+      'type' => COMMAND_STEP_ALL_INSTALLED_SUBSITES,
+    ),
   );
   
   public function verifyRequirements() {
