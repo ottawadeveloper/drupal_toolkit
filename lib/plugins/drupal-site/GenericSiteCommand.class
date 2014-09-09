@@ -219,6 +219,11 @@ abstract class GenericSiteCommand extends GenericCommand {
       if (!empty($this->loadedSite)) {
         $this->loadedSite->loadSettings();
       }
+      DrupalSiteEvent::fireSiteEvent($this->strings(), $this->out(), $this->events(), array(
+        'entity' => $this->loadedSite,
+        'name' => EVENT_DRUPAL_SITE_CONSTRUCTOR,
+        'optional' => TRUE,
+      ));
     }
     return $this->loadedSite;
   }
@@ -245,6 +250,11 @@ abstract class GenericSiteCommand extends GenericCommand {
       if (!empty($this->loadedSubSite)) {
         $this->loadedSubSite->loadSettings();
       }
+      DrupalSiteEvent::fireSiteEvent($this->strings(), $this->out(), $this->events(), array(
+        'entity' => $this->loadedSubSite,
+        'name' => EVENT_DRUPAL_SITE_CONSTRUCTOR,
+        'optional' => TRUE,
+      ));
     }
     return $this->loadedSubSite;
   }

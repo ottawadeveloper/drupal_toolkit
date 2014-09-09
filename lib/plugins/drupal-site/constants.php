@@ -121,6 +121,13 @@ define('EVENT_CLEANUP_BUILD', 'drupal-build-cleanup');
 define('EVENT_DELETE_BUILD', 'drupal-delete-build');
 
 /**
+ * Fired after a site is created
+ * 
+ * @ingroup events
+ */
+define('EVENT_DRUPAL_SITE_CONSTRUCTOR', 'drupal-site-construct');
+
+/**
  * String token for when the build history needs to be pruned.
  * 
  * @ingroup strings
