@@ -100,7 +100,21 @@ class DrushInstallPlugin extends GenericPlugin implements EventListener {
     array_walk($modules, 'drush_install_array_trim');
     $modules = array_unique($modules);
     if (!extra_empty($modules) && count($modules) > 0) {
-      return drush_install_modules($modules, $alias);
+      $groups = array(0 => array());
+      $k = 0;
+      $max = 5;
+      foreach ($modules as $module) {
+        if (count($groups[$k]) >= $max) {
+          $k++;
+          $groups[$k] = array();
+        }
+        $groups[$k][] = $module;
+      }
+      foreach ($groups as $group) {
+        if (!drush_install_modules($group, $alias)) {
+          return FALSE;
+        }
+      }
     }
     return TRUE;
   }
