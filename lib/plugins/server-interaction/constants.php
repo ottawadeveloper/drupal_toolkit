@@ -4,6 +4,13 @@
  */
 
 /**
+ * Server setting for whether or not to use sudo on appropriate commands.
+ * 
+ * @ingroup server_settings
+ */
+define('SERVER_SETTING_NO_SUDO_COMMANDS', 'no-sudo-commands');
+
+/**
  * Server setting to disable the server.
  * 
  * @ingroup server_settings
