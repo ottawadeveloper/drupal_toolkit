@@ -571,6 +571,8 @@
 ##       privkey: /home/example/.ssh/id_rsa
 ##       passphrase: exampel # leave blank or remove if there is no passphrase for the key
 ##       fingerprint: 93711a75c972d7c0de076ce76d02fdd9
+##       # uncomment this line to prevent sudo from being used
+##       #no-sudo-commands: yes
 ##       # these settings are specific to cron servers
 ##       cron-type: crontab # overrides the default type provided in the cron section
 ##       cron-static-config: no # change to "yes" to prevent the update script from modifying the cron file
