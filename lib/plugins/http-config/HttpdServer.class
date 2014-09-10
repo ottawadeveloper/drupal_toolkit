@@ -19,7 +19,8 @@ class HttpdServer extends GenericHttpServer {
   }
   
   private function useSudo() {
-    return empty($this->machine()->getSetting(SERVER_SETTING_NO_SUDO_COMMANDS));
+    $noSudo = $this->machine()->getSetting(SERVER_SETTING_NO_SUDO_COMMANDS);
+    return empty($noSudo);
   }
   
   protected function reboot() {
