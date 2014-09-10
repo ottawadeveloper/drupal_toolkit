@@ -177,8 +177,11 @@ class DrupalSiteStandardConfigPlugin extends GenericPlugin implements EventListe
         }
       }
     }
+    var_dump($primary);
+    var_dump($domains);
     $entity->setSetting(SITE_SETTING_ALL_DOMAINS, $domains);
     $entity->setToken(SITE_TOKEN_ALL_DOMAINS, implode(', ', $domains));
+    die();
     return TRUE;
   }
   
