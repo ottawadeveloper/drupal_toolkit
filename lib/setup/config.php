@@ -3,6 +3,17 @@
  * @file Contains additional setup for the Configuration item.
  */
 
+/*
+ * Pre-runtime configuration includes config files and spec, thus must be done
+ * first.
+ */
+foreach ($preruntime_settings as $setting_name => $arg_info) {
+  $long = isset($arg_info['long']) ? $arg_info['long'] : NULL;
+  $short = isset($arg_info['short']) ? $arg_info['short'] : NULL;
+  $split = isset($arg_info['split']) ? $arg_info['split'] : FALSE;
+  $settings->extendFromOption($setting_name, $long, $short, $split);
+}
+
 /* 
  * Add all the relevant configuration files. Since config files can define more
  * config files, this process is a bit weird.
@@ -22,10 +33,6 @@ while ($added) {
     }
   }
 }
-
-// We extend this option first, in case the user defined a different
-// Spyc location in the options.
-$settings->extendFromOption(CONFIG_SPYC_LOCATION, ARG_SPYC_LOCATION);
 
 // Additional configuration via YAML files
 // YAML is a much more flexible means of important data.

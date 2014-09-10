@@ -92,6 +92,12 @@ $runtime_settings = array(
   CONFIG_DEBUG => array('long' => ARG_DEBUG),
   CONFIG_VERBOSE => array('short' => ARG_VERBOSE_SHORT, 'long' => ARG_VERBOSE),
   CONFIG_SILENT => array('long' => ARG_SILENT),
+);
+
+/**
+ * As above, but will be processed before configuration is loaded.
+ */
+$preruntime_settings = array(
   CONFIG_CONFIG_FILES => array('long' => ARG_CONFIG_FILES, 'split' => TRUE),
   CONFIG_SPYC_LOCATION => array('long' => ARG_SPYC_LOCATION),
   CONFIG_YAML_FILES => array('long' => ARG_YAML_FILES),
