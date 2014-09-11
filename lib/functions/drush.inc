@@ -166,6 +166,28 @@ function drush_install_modules(array $modules, $alias = NULL) {
 }
 
 /**
+ * Drush command to set a user's password.
+ * 
+ * @param string $username
+ *   The username to set the password for.
+ * @param string $password
+ *   The password to set.
+ * @param string $alias
+ *   The alias to use.
+ * 
+ * @return boolean
+ *   TRUE upon success, otherwise FALSE.
+ */
+function drush_set_password($username, $password, $alias = NULL) {
+  $exit = 0;
+  drush_command('user-password !username --password=!password', $alias, array(
+    '!username' => $username,
+    '!password' => $password,
+  ), $out, $exit);
+  return extra_empty($exit);
+}
+
+/**
  * Determines the cron URL for a given Drupal installation.
  * 
  * @param string $alias
