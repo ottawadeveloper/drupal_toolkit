@@ -111,10 +111,10 @@ class DrushInstallPlugin extends GenericPlugin implements EventListener {
         $groups[$k][] = $module;
       }
       foreach ($groups as $group) {
+        sleep(1);
         if (!drush_install_modules($group, $alias)) {
           return FALSE;
         }
-        sleep(1);
       }
     }
     return TRUE;
