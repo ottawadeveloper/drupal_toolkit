@@ -241,6 +241,7 @@ class PHPTerminal implements Writer, Logger, Messenger {
     }
     $message .= $status;
     $this->write($message . "\r\n");
+    flush();
   }
   
   public function write($message) {
