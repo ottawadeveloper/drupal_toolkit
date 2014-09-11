@@ -79,7 +79,7 @@ class RemoteMachine extends GenericMachine {
       $data .= $b;
     }
     fclose($stream);
-    $data = trim($data);
+    $output = trim($data);
     $out = explode(PHP_EOL, $output);
     $exit = array_pop($out);
     if ($exit === "") {
