@@ -28,7 +28,11 @@ class RemoteMachine extends GenericMachine {
     if (!extra_empty($this->getSetting(SERVER_SETTING_DISABLED))) {
       return FALSE;
     }
-    $this->handle = ssh2_connect($this->getSetting(SERVER_SETTING_HOST), $this->getSetting(SERVER_SETTING_PORT, 22));
+    $this->handle = ssh2_connect($this->getSetting(SERVER_SETTING_HOST), $this->getSetting(SERVER_SETTING_PORT, 22), array(
+      
+    ), array(
+      'disconnect' => 'dtk_ssh_cb_disconnect',
+    ));
     if (empty($this->handle)) {
       $this->handle = NULL;
       return FALSE;
