@@ -43,6 +43,11 @@ abstract class GenericHttpServer implements HttpServerInterface {
     return $this->machine;
   }
   
+  protected function useSudo() {
+    $noSudo = $this->machine()->getSetting(SERVER_SETTING_NO_SUDO_COMMANDS);
+    return empty($noSudo);
+  }
+  
   /**
    * Reboots the server. This should be done as gracefully as possible for
    * the software and environment.

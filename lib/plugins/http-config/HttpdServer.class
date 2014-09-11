@@ -18,11 +18,6 @@ class HttpdServer extends GenericHttpServer {
     parent::__construct($server, '/etc/httpd/conf.d');
   }
   
-  private function useSudo() {
-    $noSudo = $this->machine()->getSetting(SERVER_SETTING_NO_SUDO_COMMANDS);
-    return empty($noSudo);
-  }
-  
   protected function reboot() {
     $command = ($this->useSudo() ? 'sudo ' : '') . 'service httpd graceful';
     $this->machine()->executeCommand($command, array(), $n, $exit);
