@@ -1,5 +1,6 @@
 plugin = ServerInteractionPlugin
 
+files[] = ssh_functions.php
 files[] = PhysicalServerInterface.iface
 files[] = GenericMachine.class
 files[] = LocalMachine.class
