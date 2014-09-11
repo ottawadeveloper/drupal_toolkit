@@ -10,6 +10,10 @@
  */
 class LinuxCrontab extends GenericCronManager {
   
+  public function __construct(PhysicalServerInterface $server) {
+    parent::__construct($server, '/etc/cron.d');
+  }
+  
   public function scheduleTask($identifier, $task, &$frequency = NULL) {
     if (empty($frequency)) {
       $frequency = $this->getCronFrequency();
@@ -38,7 +42,7 @@ class LinuxCrontab extends GenericCronManager {
   protected function normalizeFilename($identifier) {
     $s1 = preg_replace('`[^A-Za-z0-9_.-]`', '_', $identifier);
     $s2 = preg_replace('`_{2,}`', '_', $s1);
-    return assemble_path('/etc/cron.d', trim($s2, '_'));
+    return assemble_path($this->getCronDirectory(), trim($s2, '_'));
   }
   
   /**

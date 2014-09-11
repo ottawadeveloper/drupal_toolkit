@@ -4,6 +4,13 @@
  */
 
 /**
+ * Server setting to override the default cron directory.
+ * 
+ * @ingroup server_settings
+ */
+define('SERVER_SETTING_CRON_DIRECTORY', 'cron-directory');
+
+/**
  * Saves the crontab frequency in use.
  * 
  * @ingroup site_settings

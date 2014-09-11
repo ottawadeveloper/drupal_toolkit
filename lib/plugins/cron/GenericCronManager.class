@@ -22,14 +22,21 @@ abstract class GenericCronManager implements CronManagerInterface {
    */
   private $config = NULL;
   
+  private $directory = '';
+  
   /**
    * Constructor.
    * 
    * @param PhysicalServerInterface $server
    *   The server that is being wrapped.
    */
-  public function __construct(PhysicalServerInterface $server) {
+  public function __construct(PhysicalServerInterface $server, $directory) {
     $this->machine = $server;
+    $this->directory = $directory;
+    $fromConfig = $server->getSetting(SERVER_SETTING_CRON_DIRECTORY);
+    if (!empty($fromConfig)) {
+      $this->directory = $fromConfig;
+    }
   }
   
   public function setConfiguration(ConfigurationManagerInterface $config) {
@@ -42,6 +49,10 @@ abstract class GenericCronManager implements CronManagerInterface {
   
   public function machine() {
     return $this->machine;
+  }
+  
+  protected function getCronDirectory() {
+    return $this->directory;
   }
   
 }
