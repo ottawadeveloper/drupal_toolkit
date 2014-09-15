@@ -133,7 +133,7 @@ function drush_simple_test($alias = NULL, $extras = array()) {
     $command .= ' --xml=!xml';
     $args['!xml'] = $options['junit-output'];
   }
-  drush_command($command, $alias, $args, $out, $exit);
+  drush_command($command, $alias, $args, $out, $exit, FALSE);
   return extra_empty($exit);
 }
 
@@ -154,7 +154,7 @@ function drush_install_modules(array $modules, $alias = NULL) {
   }
   drush_command('pm-enable -y !modules', $alias, array(
     '!modules' => implode(',', $modules),
-  ));
+  ), $out, $exit, FALSE);
   foreach ($modules as $module) {
     if (!empty($module)) {
       if (!drush_check_module($module, $alias)) {
@@ -183,7 +183,7 @@ function drush_set_password($username, $password, $alias = NULL) {
   drush_command('user-password !username --password=!password', $alias, array(
     '!username' => $username,
     '!password' => $password,
-  ), $out, $exit);
+  ), $out, $exit, FALSE);
   return extra_empty($exit);
 }
 
@@ -290,7 +290,7 @@ function drush_site_install($profile = NULL, $alias = NULL, array $extra = array
   if (!empty($extra)) {
     $subcommand .= ' ' . implode(' ', $extra);
   }
-  drush_command($subcommand, $alias, $args);
+  drush_command($subcommand, $alias, $args, $out, $exit, FALSE);
   $status = drush_status($alias);
   if (empty($status)) {
     return FALSE;
@@ -359,7 +359,7 @@ function drush_set_variable($variable, $value, $alias = NULL) {
     '!variable' => $variable,
     '!value' => $value,
   );
-  drush_command($cmd, $alias, $args, $out, $exit);
+  drush_command($cmd, $alias, $args, $out, $exit, FALSE);
   if (!extra_empty($exit)) {
     return FALSE;
   }
@@ -392,7 +392,7 @@ function drush_check_maintenance_mode($alias = NULL) {
  */
 function drush_updb($alias = NULL) {  
   $cmd = 'updb -y';
-  drush_command($cmd, $alias, array(), $out, $exit);
+  drush_command($cmd, $alias, array(), $out, $exit, FALSE);
   return extra_empty($exit);
 }
 
@@ -453,7 +453,7 @@ function drush_cache_clear($alias = NULL, $cache = NULL) {
   if (empty($cache)) {
     $cache = 'all';
   }
-  drush_command('cc ' . $cache, $alias, array(), $out, $exit);
+  drush_command('cc ' . $cache, $alias, array(), $out, $exit, FALSE);
   return extra_empty($exit);
 }
 
@@ -488,17 +488,19 @@ function drush_status($alias = NULL) {
  *   An array for the command output.
  * @param int $exit
  *   A variable for the exit code.
+ * @param boolean $returnOutput
+ *   Set to TRUE if $out is needed.
  * 
  * @return string
  *   The last line of the command executed.
  */
-function drush_command($subcommand, $alias = NULL, array $args = array(), &$out = array(), &$exit = NULL) {
+function drush_command($subcommand, $alias = NULL, array $args = array(), &$out = array(), &$exit = NULL, $returnOutput = TRUE) {
   $cmd = 'drush ';
   if (!empty($alias)) {
     $cmd .= '@' . $alias . ' ';
   }
   $cmd .= $subcommand;
-  $ret = execute_system_command($cmd, $args, $out, $exit);
+  $ret = execute_system_command($cmd, $args, $out, $exit, $returnOutput);
   return $ret;
 }
 
@@ -675,7 +677,7 @@ function drush_make($makeFile, array $options = array(), array $args = array()) 
   $command .= '!makefile';
   execute_system_command($command, array(
     '!makefile' => $makeFile
-  ) + $args);
+  ) + $args, $out, $exit, FALSE);
   return file_exists(assemble_path(dirname($makeFile), 'index.php'));
 }
 

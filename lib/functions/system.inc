@@ -503,17 +503,19 @@ function register_system_command_listener($cb = NULL) {
  *   Will be set to an array of the output lines.
  * @param int $returnCode
  *   Will be set to the exit code of the function.
+ * @param boolean $returnOutput
+ *   If TRUE, prevents system() from being used, otherwise allows system().
  * 
  * @return string
  *   The last time returned by $command.
  */
-function execute_system_command($command, array $args = array(), &$output = array(), &$returnCode = '') {
+function execute_system_command($command, array $args = array(), &$output = array(), &$returnCode = '', $returnOutput = TRUE) {
   $command = escapeshellcmd($command);
   $command = str_replace_all($command, $args, 'escapeshellarg');
   foreach (register_system_command_listener() as $listener) {
     call_user_func($listener, 'System command about to execute: `' . $command . '`');
   }
-  if (ssh_direct_system_commands()) {
+  if ((!$returnOutput) && ssh_direct_system_commands()) {
     $result = system($command, $returnCode);
   }
   else {
