@@ -75,18 +75,13 @@ class RemoteMachine extends GenericMachine {
   
   public function executeCommand($command, $args, &$out = array(), &$exit = 0) {
     $escapedCommand = escapeshellcmd(str_replace_all($command, $args, 'escapeshellarg'));
-    $fullCommand = '(' . $escapedCommand . '); echo -e "\n$?"';
+    $fullCommand = '(' . $escapedCommand . '  2<&1); echo -e "\n$?"';
     $stream = ssh2_exec($this->handle, $fullCommand);
-    $errors = ssh2_fetch_stream($stream, SSH2_STREAM_STDERR);
     stream_set_blocking($stream, TRUE);
-    stream_set_blocking($errors, TRUE);
     $data = "";
     while ($b = fread($stream, 4096)) {
       $data .= $b;
     }
-    $errorText = stream_get_contents($errors);
-    var_dump($errorText);
-    fclose($errors);
     fclose($stream);
     $output = trim($data);
     $out = explode(PHP_EOL, $output);

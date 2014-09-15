@@ -513,7 +513,7 @@ function execute_system_command($command, array $args = array(), &$output = arra
   foreach (register_system_command_listener() as $listener) {
     call_user_func($listener, 'System command about to execute: `' . $command . '`');
   }
-  $result = exec($command . '', $output, $returnCode);
+  $result = exec($command . ' 2<&1', $output, $returnCode);
   foreach (register_system_command_listener() as $listener) {
     call_user_func($listener, 'System command executed: `' . $command . '`');
   }
