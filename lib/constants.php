@@ -23,7 +23,7 @@ define("TOOLKIT_COMMON_DIR", dirname(__FILE__));
  * commands to be displayed directly. This helps automation systems (like
  * Jenkins) to better see all the execution.
  */
-define('OPTION_SSH_DIRECT_OUTPUG', 'ssh-direct-output');
+define('OPTION_SSH_DIRECT_OUTPUT', 'ssh-direct-output');
 
 /**
  * Indicates that the debug level has been set to silent.
