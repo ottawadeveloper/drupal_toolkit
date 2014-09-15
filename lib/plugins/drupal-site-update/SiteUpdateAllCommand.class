@@ -26,6 +26,9 @@ class SiteUpdateAllCommand extends GenericCommand {
     if (!empty($branch)) {
       $command .= ' --' . OPTION_BRANCH . '=' . $branch;
     }
+    if (ssh_direct_system_commands()) {
+      $command .= ' --ssh-direct-output';
+    }
     $sites = array_keys(DrupalSite::findSites($this->config()));
     $errored = array();
     $this->events()->fireEvent(EVENT_UPDATE_ALL_START, $e);
