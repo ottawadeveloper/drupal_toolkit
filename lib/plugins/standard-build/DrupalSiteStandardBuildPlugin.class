@@ -58,7 +58,7 @@ class DrupalSiteStandardBuildPlugin extends GenericPlugin implements EventListen
       case EVENT_UPDATE_CODEBASE:
       case EVENT_SITE_BUILD_CODEBASE:
         if ($context->checkExecution()) {
-          $context->setResult($this->buildSite($context->getSite(), $context->getVariable('buildID')));
+          $context->setResult($this->buildSite($context->getSite(), $context->getVariable('buildID'), $type === EVENT_UPDATE_CODEBASE));
         }
         break;
       case EVENT_UPDATE_PREPARE_FOR_UPDATE:
