@@ -542,7 +542,7 @@ function execute_system_command($command, array $args = array(), &$output = arra
  * @todo Can this be supported in RemoteFile::executeCommand() as well?
  */
 function ssh_direct_system_commands($set = NULL) {
-  $sdsc = state(__FUNCTION__, FALSE);
+  $sdsc = &state(__FUNCTION__, FALSE);
   if ($set !== NULL ){
     $sdsc = $set;
   }
