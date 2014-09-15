@@ -102,7 +102,7 @@ class DrushInstallPlugin extends GenericPlugin implements EventListener {
     if (!extra_empty($modules) && count($modules) > 0) {
       $groups = array(0 => array());
       $k = 0;
-      $max = 1;
+      $max = 50;
       foreach ($modules as $module) {
         if (count($groups[$k]) >= $max) {
           $k++;
