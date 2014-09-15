@@ -48,6 +48,11 @@ class CrossLinkPlugin extends GenericPlugin implements EventListener {
       '!links' => implode(', ', $rootlinks),
       '!newsite' => $crosslink,
     ));
+    if ($entity instanceof DrupalSite) {
+      $this->error(STRING_ERROR_NO_SITE_CROSSLINKS);
+      return FALSE;
+    }
+    $entity->setSetting(SITE_SETTING_IS_CROSSLINKED, 1);
     $newsite = DrupalSite::createSite($this->config(), $crosslink, FALSE);
     if (empty($newsite)) {
       $this->error(STRING_ERROR_CROSSLINKS_NO_SITE, array(

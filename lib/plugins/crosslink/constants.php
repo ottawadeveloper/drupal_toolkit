@@ -4,6 +4,20 @@
  */
 
 /**
+ * String token for when we try to crosslink a top-level site (a no-no).
+ * 
+ * @ingroup strings
+ */
+define('STRING_ERROR_NO_SITE_CROSSLINKS', 'crosslink.error.no-top-level-sites');
+
+/**
+ * Setting to indicate that the site is crosslinked.
+ * 
+ * @ingroup site_settings
+ */
+define('SITE_SETTING_IS_CROSSLINKED', 'is-crosslinked');
+
+/**
  * Fired to create a crosslink between this site and another one.
  * 
  * @ingroup events

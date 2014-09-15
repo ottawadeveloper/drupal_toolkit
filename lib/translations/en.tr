@@ -307,6 +307,7 @@ string.category.core = 'Core'
 string.command-desc.help = 'Displays this help dialog.'
 string.option.command = 'Show only the help for the specific command.'
 
+crosslink.error.no-top-level-sites = 'You can only crosslink top-level sites.'
 
 drupal_site.info.identifier = 'Identifier'
 standard_build.info.build-path = 'Build Path'
