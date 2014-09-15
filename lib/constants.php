@@ -6,7 +6,7 @@
 /**
  * Current version of the toolkit.
  */
-define('TOOLKIT_VERSION', '0.0.8');
+define('TOOLKIT_VERSION', '0.1.0');
 
 /**
  * User's current directory when the first command was executed.
@@ -17,6 +17,13 @@ define('TOOLKIT_EXECUTION_PATH', getcwd());
  * Location of the common directory.
  */
 define("TOOLKIT_COMMON_DIR", dirname(__FILE__));
+
+/**
+ * This fancy option, if set at all, will cause output from internal system
+ * commands to be displayed directly. This helps automation systems (like
+ * Jenkins) to better see all the execution.
+ */
+define('OPTION_SSH_DIRECT_OUTPUG', 'ssh-direct-output');
 
 /**
  * Indicates that the debug level has been set to silent.

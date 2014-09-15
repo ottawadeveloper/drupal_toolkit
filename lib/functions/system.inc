@@ -513,11 +513,40 @@ function execute_system_command($command, array $args = array(), &$output = arra
   foreach (register_system_command_listener() as $listener) {
     call_user_func($listener, 'System command about to execute: `' . $command . '`');
   }
-  $result = exec($command . ' 2<&1', $output, $returnCode);
+  if (ssh_direct_system_commands()) {
+    $result = system($command, $returnCode);
+  }
+  else {
+    $result = exec($command . ' 2<&1', $output, $returnCode);
+  }
   foreach (register_system_command_listener() as $listener) {
     call_user_func($listener, 'System command executed: `' . $command . '`');
   }
   return $result;
+}
+
+/**
+ * Checks whether or not the system should display command execution directly
+ * or suppress it. Enabling this is useful to connections that need to see
+ * data in realtime. Note that this only works for execute_system_command(), not
+ * for RemoteFile::executeCommand() because PHP SSH2 doesn't seem to support
+ * something like this (as far as I can figure out, yet).
+ * 
+ * @param boolean $set
+ *   Set to TRUE or FALSE to change the value, leave as NULL to get the value.
+ * 
+ * @return boolean
+ *   TRUE if command results should be output directly, otherwise FALSE. Defaults
+ *   to FALSE.
+ * 
+ * @todo Can this be supported in RemoteFile::executeCommand() as well?
+ */
+function ssh_direct_system_commands($set = NULL) {
+  $sdsc = state(__FUNCTION__, FALSE);
+  if ($set !== NULL ){
+    $sdsc = $set;
+  }
+  return $sdsc;
 }
 
 /**

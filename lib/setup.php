@@ -37,6 +37,11 @@ if (!extra_empty($settings->getConfig(CONFIG_DEBUG))) {
   $debugLevel = DEBUG_LEVEL_DEBUG;
 }
 
+// Check if we should be outputting direct system commands.
+if (!extra_empty($args->getOption(OPTION_SSH_DIRECT_OUTPUG))) {
+  ssh_direct_system_commands(TRUE);
+}
+
 // Initialize the output object.
 $out = new OutputManager($debugLevel >= DEBUG_LEVEL_VERBOSE);
 DependencyManager::inject($out);

@@ -76,7 +76,7 @@ class RemoteMachine extends GenericMachine {
   public function executeCommand($command, $args, &$out = array(), &$exit = 0) {
     $escapedCommand = escapeshellcmd(str_replace_all($command, $args, 'escapeshellarg'));
     $fullCommand = '(' . $escapedCommand . '  2<&1); echo -e "\n$?"';
-    $stream = ssh2_exec($this->handle, $fullCommand);
+    $stream = ssh2_exec($this->handle, $fullCommand, 'xterm');
     stream_set_blocking($stream, TRUE);
     $data = "";
     while ($b = fread($stream, 4096)) {

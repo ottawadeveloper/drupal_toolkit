@@ -32,6 +32,41 @@ function dtk_send_mail($data) {
 }
 
 /**
+ * Function for maintaining some form of global state for low-level functions.
+ * 
+ * @param string $name
+ *   Key to store/retrieve data with.
+ * @param mixed $default
+ *   Default value for $name.
+ * @param boolean $reset
+ *   Set to TRUE to reset values to defaults.
+ * 
+ * @return mixed
+ *   The value of static $data[$name].
+ */
+function &state($name, $default = NULL, $reset = FALSE) {
+  static $data = array(), $defaults = array();
+  if ($reset) {
+    if (empty($name)) {
+      foreach ($default as $k => $v) {
+        $data[$k] = $v;
+      }
+    }
+    elseif (isset($data[$name])) {
+      $data[$name] = $defaults[$name];
+    }
+  }
+  if (isset($name)) {
+    if (!isset($data[$name])) {
+      $defaults[$name] = $default;
+      $data[$name] = $defaults[$name];
+    }
+    return $data[$name];
+  }
+  return $data;
+}
+
+/**
  * Executes a command for the Drupal Toolkit.
  * 
  * @param string $commandName
