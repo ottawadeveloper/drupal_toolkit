@@ -193,6 +193,10 @@ define('TERMINAL_BACKGROUND_COLOR_LIGHT_GRAY', '47');
  * @return type
  */
 function terminal_color_string($string, $foreground = NULL, $background = NULL) {
+  // no colours when this is being used as we cannot color strings on Jenkins.
+  if (ssh_direct_system_commands()) {
+    return $string;
+  }
   if (!shell_command_available('tput')) {
     return $string;
   }
