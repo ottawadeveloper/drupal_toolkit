@@ -164,14 +164,14 @@ class DrupalSite extends GenericDrupalEntity {
     if (!empty($subsiteIDs)) {
       foreach ($subsiteIDs as $subsiteID) {
         $subsite = $this->getSubSite($subsiteID);
-        if (!$subsite->isDeleted() && $subsite->exists() && empty($subsite->getSetting(SITE_SETTING_IS_CROSSLINKED))) {
+        if (!$subsite->isDeleted() && $subsite->exists() && extra_empty($subsite->getSetting(SITE_SETTING_IS_CROSSLINKED))) {
           foreach ($subsite->getSetting(SITE_SETTING_ALL_DOMAINS) as $domain) {
             $domains[] = $domain;
           }
         }
       }
     }
-    if (!empty($this->inProgressSubSite) && empty($this->inProgressSubSite->getSetting(SITE_SETTING_IS_CROSSLINKED))) {
+    if (!empty($this->inProgressSubSite) && extra_empty($this->inProgressSubSite->getSetting(SITE_SETTING_IS_CROSSLINKED))) {
       foreach ($this->inProgressSubSite->getSetting(SITE_SETTING_ALL_DOMAINS) as $domain) {
         $domains[] = $domain;
       }
