@@ -206,7 +206,7 @@ class DrupalSiteStandardBuildPlugin extends GenericPlugin implements EventListen
     // we save the configuration here because an out-of-date symlink causes
     // many problems (eg if the update fails/stalls after this point). Saving
     // the new build ID at this point prevents some of these problems from
-    // occuring.
+    // occuring. 
     $site->saveConfiguration();
     $this->success(STRING_SUCCESS_BUILD_CURRENT_SYMLINK);
     return TRUE;
