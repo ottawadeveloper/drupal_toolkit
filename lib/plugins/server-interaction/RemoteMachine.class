@@ -73,9 +73,14 @@ class RemoteMachine extends GenericMachine {
     $this->sleep();
   }
   
-  public function executeCommand($command, $args, &$out = array(), &$exit = 0) {
+  public function executeCommand($command, $args, &$out = array(), &$exit = 0, $noExit = FALSE) {
     $escapedCommand = escapeshellcmd(str_replace_all($command, $args, 'escapeshellarg'));
-    $fullCommand = '(' . $escapedCommand . '  2<&1); echo -e "\n$?"';
+    if ($noExit) {
+      $fullCommand = $escapedCommand;
+    }
+    else {
+      $fullCommand = '(' . $escapedCommand . '  2<&1); echo -e "\n$?"';
+    }
     $stream = ssh2_exec($this->handle, $fullCommand, 'xterm');
     stream_set_blocking($stream, TRUE);
     $data = "";
@@ -103,8 +108,8 @@ fi';
     $output = array();
     $this->executeCommand($command, array(
       '!file' => $file,
-    ), $output);
-    return (bool) array_pop($output);
+    ), $output, $exit, TRUE);
+    return array_pop($output) === "1";
   }
   
   public function writeFile($destination, $contents, $mode = 0644) {
