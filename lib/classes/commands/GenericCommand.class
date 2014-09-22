@@ -185,6 +185,9 @@ abstract class GenericCommand implements RouterCommand {
    *   TRUE if the command is available, otherwise false.
    */
   protected function requireCommand($commandName) {
+    dtk_info('Checking if command [!command] is available', array(
+      '!command' => $commandName,
+    ));
     if (!shell_command_available($commandName)) {
       $this->error(STRING_ROUTER_NO_COMMAND, array(
         '!command' => $commandName,
@@ -205,6 +208,9 @@ abstract class GenericCommand implements RouterCommand {
    *   TRUE if there are at least $pos arguments, otherwise FALSE.
    */
   protected function requireArgument($pos) {
+    dtk_info('Checking if argument #!pos is available', array(
+      '!pos' => $pos,
+    ));
     if (!$this->args()->hasArg($pos)) {
       $this->error(STRING_ROUTER_NO_ARGUMENT, array(
         '!count' => $pos,
@@ -224,6 +230,9 @@ abstract class GenericCommand implements RouterCommand {
    *   TRUE if the config key is present, otherwise FALSE.
    */
   protected function requireConfig($key) {
+    dtk_info('Checking if config [!config] is available.', array(
+      '!config' => $key,
+    ));
     $config = $this->config()->getConfig($key);
     if (empty($config)) {
       $this->error(STRING_ROUTER_NO_CONFIG, array(
@@ -244,6 +253,9 @@ abstract class GenericCommand implements RouterCommand {
    *   TRUE if the function is present and enabled, otherwise FALSE.
    */
   protected function requireFunction($func_name) {
+    dtk_info('Checking if PHP function [!func] is available.', array(
+      '!func' => $func_name,
+    ));
     if (!php_function_available($func_name)) {
       $this->error(STRING_ROUTER_NO_FUNCTION, array(
         '!function' => $func_name,
