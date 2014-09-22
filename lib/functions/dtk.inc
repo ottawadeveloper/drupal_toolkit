@@ -31,7 +31,7 @@ function dtk_info($string, $args) {
  * @param string $string
  *   String to display.
  */
-function dtk_debug($string) {
+function dtk_debug($string, $args) {
   global $debugLevel;
   if ($debugLevel < DEBUG_LEVEL_DEBUG) {
     return;

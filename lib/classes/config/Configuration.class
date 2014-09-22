@@ -92,6 +92,10 @@ class Configuration implements ConfigurationManagerInterface {
         }
       }
     }
+    dtk_debug('Configuration value [!config] requested, returning [!value]', array(
+      '!config' => $key,
+      '!value' => var_export($value, TRUE),
+    ));
     return $value;
   }
   
