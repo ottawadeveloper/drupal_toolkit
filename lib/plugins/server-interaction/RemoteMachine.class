@@ -74,11 +74,11 @@ class RemoteMachine extends GenericMachine {
   }
   
   public function executeCommand($command, $args, &$out = array(), &$exit = 0, $noExit = FALSE) {
-    $escapedCommand = escapeshellcmd(str_replace_all($command, $args, 'escapeshellarg'));
     if ($noExit) {
-      $fullCommand = $escapedCommand;
+      $fullCommand = str_replace_all($command, $args);
     }
     else {
+      $escapedCommand = escapeshellcmd(str_replace_all($command, $args, 'escapeshellarg'));
       $fullCommand = '(' . $escapedCommand . '  2<&1); echo -e "\n$?"';
     }
     $stream = ssh2_exec($this->handle, $fullCommand, 'xterm');
