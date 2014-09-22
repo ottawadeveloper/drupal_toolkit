@@ -90,11 +90,13 @@ class RemoteMachine extends GenericMachine {
     fclose($stream);
     $output = trim($data);
     $out = explode(PHP_EOL, $output);
-    $exit = array_pop($out);
-    if ($exit === "") {
+    if ($noExit) {
       $exit = array_pop($out);
+      if ($exit === "") {
+        $exit = array_pop($out);
+      }
+      $exit = (int) $exit;
     }
-    $exit = (int) $exit;
     return reset($out);
   }
   
@@ -109,7 +111,7 @@ fi';
     $this->executeCommand($command, array(
       '!file' => $file,
     ), $output, $exit, TRUE);
-    return array_pop($output) === "1";
+    return array_pop($output) !== "1";
   }
   
   public function writeFile($destination, $contents, $mode = 0644) {
