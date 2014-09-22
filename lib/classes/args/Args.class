@@ -62,8 +62,15 @@ class Args implements ArgsInterface {
   
   public function getArg($pos) {
     if (isset($this->arguments[$pos])) {
+      dtk_debug('Argument #!pos requested, returned [!value]', array(
+        '!pos' => $pos,
+        '!value' => $this->arguments[$pos],
+      ));
       return $this->arguments[$pos];
     }
+    dtk_debug('Argument #!pos requested, not available', array(
+      '!pos' => $pos,
+    ));
     return NULL;
   }
   
@@ -82,11 +89,23 @@ class Args implements ArgsInterface {
       $short = substr($long, 0 ,1);
     }
     if (!empty($long) && isset($this->options[$long])) {
+      dtk_debug('Long option [!option] requested, returned [!value]', array(
+        '!option' => $long,
+        '!value' => $this->options[$long],
+      ));
       return $this->options[$long];
     }
     elseif (!empty($short) && isset($this->options[$short])) {
+      dtk_debug('Short option [!option] requested, returned [!value]', array(
+        '!option' => $short,
+        '!value' => $this->options[$short],
+      ));
       return $this->options[$short];
     }
+    dtk_debug('Option [long:!long;short:!short] requested, none set', array(
+      '!long' => $long,
+      '!short' => $short,
+    ));
     return NULL;
   }
   
@@ -111,6 +130,10 @@ class Args implements ArgsInterface {
         return;
       }
     }
+    dtk_debug('Setting argument #!pos to [!value]', array(
+      '!pos' => count($this->arguments) + 1,
+      '!value' => $arg,
+    ));
     $this->arguments[] = $arg;
   }
   
@@ -128,12 +151,23 @@ class Args implements ArgsInterface {
    */
   private function processOption($option, $short = TRUE) {
     if (($split = strpos($option, '=')) !== FALSE) {
+      dtk_debug('Setting option [!option] to [!value]', array(
+        '!option' => substr($option, 0, $split),
+        '!value' => substr($option, $split + 1),
+      ));
       $this->options[substr($option, 0, $split)] = substr($option, $split + 1);
     }
     elseif ($short && strlen($option) > 1) {
+      dtk_debug('Setting option [!option] to [!value]', array(
+        '!option' => substr($option, 0, 1),
+        '!value' => substr($option, 1),
+      ));
       $this->options[substr($option, 0, 1)] = substr($option, 1);
     }
     else {
+      dtk_debug('Setting option [!option] to TRUE', array(
+        '!option' => $option,
+      ));
       $this->options[$option] = TRUE;
     }
   }

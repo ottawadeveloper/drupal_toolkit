@@ -5,6 +5,48 @@
  */
 
 /**
+ * Shortcut function to display an info message.
+ * 
+ * @param string $string
+ *   String to display.
+ */
+function dtk_info($string, $args) {
+  global $debugLevel;
+  if ($debugLevel < DEBUG_LEVEL_VERBOSE) {
+    return;
+  }
+  global $out;
+  $str = str_replace_all($string, $args);
+  if ($out instanceof OutputManagerInterface) {
+    $out->log($str, CLOG_INFO);
+  }
+  else {
+    echo '[info] ' . $str . PHP_EOL;
+  }
+}
+
+/**
+ * Shortcut function to display a debug message.
+ * 
+ * @param string $string
+ *   String to display.
+ */
+function dtk_debug($string) {
+  global $debugLevel;
+  if ($debugLevel < DEBUG_LEVEL_DEBUG) {
+    return;
+  }
+  global $out;
+  $str = str_replace_all($string, $args);
+  if ($out instanceof OutputManagerInterface) {
+    $out->log($str, CLOG_DEBUG);
+  }
+  else {
+    echo '[debug] ' . $str . PHP_EOL;
+  }
+}
+
+/**
  * Sends mail.
  * 
  * @param array $data
