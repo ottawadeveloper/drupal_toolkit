@@ -218,12 +218,12 @@ abstract class GenericSiteCommand extends GenericCommand {
       $this->loadedSite = DrupalSite::createSite($this->config(), $name, $this->isLocal());
       if (!empty($this->loadedSite)) {
         $this->loadedSite->loadSettings();
+        DrupalSiteEvent::fireSiteEvent($this->strings(), $this->out(), $this->events(), array(
+          'entity' => $this->loadedSite,
+          'name' => EVENT_DRUPAL_SITE_CONSTRUCTOR,
+          'optional' => TRUE,
+        ));
       }
-      DrupalSiteEvent::fireSiteEvent($this->strings(), $this->out(), $this->events(), array(
-        'entity' => $this->loadedSite,
-        'name' => EVENT_DRUPAL_SITE_CONSTRUCTOR,
-        'optional' => TRUE,
-      ));
     }
     return $this->loadedSite;
   }
@@ -249,12 +249,12 @@ abstract class GenericSiteCommand extends GenericCommand {
       $this->loadedSubSite = new DrupalSubSite($this->getSite($parentName), $subsiteName);
       if (!empty($this->loadedSubSite)) {
         $this->loadedSubSite->loadSettings();
+        DrupalSiteEvent::fireSiteEvent($this->strings(), $this->out(), $this->events(), array(
+          'entity' => $this->loadedSubSite,
+          'name' => EVENT_DRUPAL_SITE_CONSTRUCTOR,
+          'optional' => TRUE,
+        ));
       }
-      DrupalSiteEvent::fireSiteEvent($this->strings(), $this->out(), $this->events(), array(
-        'entity' => $this->loadedSubSite,
-        'name' => EVENT_DRUPAL_SITE_CONSTRUCTOR,
-        'optional' => TRUE,
-      ));
     }
     return $this->loadedSubSite;
   }
