@@ -358,6 +358,9 @@ class DrupalSite extends GenericDrupalEntity {
     }
     $path = expand_path($path);
     if (!is_writable($path)) {
+      dtk_info('!path is not writable, failed to create site object', array(
+        '!path' => $path,
+      ));
       return NULL;
     }
     if (!$isLocal) {
