@@ -146,6 +146,9 @@ class DrupalSiteStandardServerStructurePlugin extends GenericPlugin implements E
     }
     $this->working(STRING_WORKING_DELETE_SERVER_STRUCT);
     $path = $site->getSetting(SITE_SETTING_DOCROOT);
+    dtk_info('Identified docroot path as !path, deleting', array(
+      '!path' => var_export($path, TRUE),
+    ));
     if (!empty($path)) {
       unlink($path);
     }
