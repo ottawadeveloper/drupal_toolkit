@@ -295,6 +295,9 @@ function drush_site_install($profile = NULL, $alias = NULL, array $extra = array
     $subcommand .= ' ' . implode(' ', $extra);
   }
   drush_command($subcommand, $alias, $args, $out, $exit, FALSE);
+  // cache clearing is sometimes necessary between install and status to
+  // ensure that all the variables are set up properly.
+  drush_cache_clear($alias);
   $status = drush_status($alias);
   if (empty($status)) {
     return FALSE;
