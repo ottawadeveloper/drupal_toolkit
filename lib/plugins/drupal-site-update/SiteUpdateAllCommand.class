@@ -21,13 +21,10 @@ class SiteUpdateAllCommand extends GenericCommand {
     if (empty($command)) {
       $command = 'dtk';
     }
-    $command .= ' site-update !site';
+    $command .= ' site-update !site --ssh-direct-output';
     $branch = $this->args()->getOption(OPTION_BRANCH);
     if (!empty($branch)) {
       $command .= ' --' . OPTION_BRANCH . '=' . $branch;
-    }
-    if (ssh_direct_system_commands()) {
-      $command .= ' --ssh-direct-output';
     }
     $sites = array_keys(DrupalSite::findSites($this->config()));
     $errored = array();

@@ -18,10 +18,7 @@ class SiteRollbackAllCommand extends GenericCommand {
     if (empty($command)) {
       $command = 'dtk';
     }
-    $command .= ' site-rollback !site';
-    if (ssh_direct_system_commands()) {
-      $command .= ' --ssh-direct-output';
-    }
+    $command .= ' site-rollback !site --ssh-direct-output';
     $sites = array_keys(DrupalSite::findSites($this->config()));
     $errored = array();
     foreach ($sites as $sitekey) {
