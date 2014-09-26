@@ -28,7 +28,7 @@ class SiteRollbackAllCommand extends GenericCommand {
       $return = 0;
       execute_system_command($command, array(
         '!site' => $sitekey,
-      ), $out, $return);
+      ), $out, $return, FALSE);
       if (!extra_empty($return)) {
         $errored[$sitekey] = $sitekey;
       }
