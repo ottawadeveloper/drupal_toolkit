@@ -36,6 +36,7 @@ if (!extra_empty($settings->getConfig(CONFIG_VERBOSE))) {
 if (!extra_empty($settings->getConfig(CONFIG_DEBUG))) {
   $debugLevel = DEBUG_LEVEL_DEBUG;
 }
+dtk_debug_level($debugLevel);
 
 // Check if we should be outputting direct system commands.
 if (!extra_empty($args->getOption(OPTION_SSH_DIRECT_OUTPUT))) {

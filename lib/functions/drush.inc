@@ -183,7 +183,7 @@ function drush_set_password($username, $password, $alias = NULL) {
   drush_command('user-password !username --password=!password', $alias, array(
     '!username' => $username,
     '!password' => $password,
-  ), $out, $exit, FALSE);
+  ), $out, $exit, TRUE);
   return extra_empty($exit);
 }
 
@@ -245,7 +245,11 @@ function drush_check_module($module_name, $alias = NULL) {
   if (empty($pmi)) {
     return FALSE;
   }
-  return drush_info_has_key_value($pmi, 'Status', 'enabled');
+  $moduleCheck = drush_info_has_key_value($pmi, 'Status', 'enabled');
+  if (!$moduleCheck) {
+    dtk_debug(var_export($pmi, TRUE));
+  }
+  return $moduleCheck;
 }
 
 /**
@@ -295,8 +299,12 @@ function drush_site_install($profile = NULL, $alias = NULL, array $extra = array
   if (empty($status)) {
     return FALSE;
   }
-  return drush_info_has_key_value($status, 'Database', 'Connected') &&
+  $installed = drush_info_has_key_value($status, 'Database', 'Connected') &&
     drush_info_has_key_value($status, 'Drupal bootstrap', 'Successful');
+  if (!$installed) {
+    dtk_debug(var_export($status, TRUE));
+  }
+  return $installed;
 }
 
 /**
@@ -496,6 +504,14 @@ function drush_status($alias = NULL) {
  */
 function drush_command($subcommand, $alias = NULL, array $args = array(), &$out = array(), &$exit = NULL, $returnOutput = TRUE) {
   $cmd = 'drush ';
+  switch (dtk_debug_level()) {
+      case DEBUG_LEVEL_VERBOSE:
+          $cmd .= '--verbose ';
+          break;
+      case DEBUG_LEVEL_DEBUG:
+          $cmd .= '--debug ';
+          break;
+  }
   if (!empty($alias)) {
     $cmd .= '@' . $alias . ' ';
   }

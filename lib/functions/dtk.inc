@@ -4,6 +4,14 @@
  * package.
  */
 
+function dtk_debug_level($set = NULL) {
+  $level = state(__FUNCTION__, DEBUG_LEVEL_NORMAL);
+  if ($set !== NULL) {
+    $level = $set;
+  }
+  return $level;
+}
+
 /**
  * Shortcut function to display an info message.
  * 
@@ -11,8 +19,7 @@
  *   String to display.
  */
 function dtk_info($string, $args) {
-  global $debugLevel;
-  if ($debugLevel < DEBUG_LEVEL_VERBOSE) {
+  if (dtk_debug_level() < DEBUG_LEVEL_VERBOSE) {
     return;
   }
   global $out;
@@ -32,8 +39,7 @@ function dtk_info($string, $args) {
  *   String to display.
  */
 function dtk_debug($string, $args) {
-  global $debugLevel;
-  if ($debugLevel < DEBUG_LEVEL_DEBUG) {
+  if (dtk_debug_level() < DEBUG_LEVEL_DEBUG) {
     return;
   }
   global $out;
