@@ -142,7 +142,7 @@ class DrupalSite extends GenericDrupalEntity {
   public function getDynamicTokens() {
     $tokens = array(
       SITE_TOKEN_RECURSIVE_DOMAINS => implode(" ", $this->getRecursiveDomains()),
-      SITE_RECURSIVE_PREFIXED_DOMAINS => implode(" ", $this->getPrefixedRecursiveDomains()),
+      SITE_TOKEN_PREFIXED_DOMAINS => implode(" ", $this->getPrefixedRecursiveDomains()),
     );
     return $tokens + parent::getDynamicTokens();
   }
