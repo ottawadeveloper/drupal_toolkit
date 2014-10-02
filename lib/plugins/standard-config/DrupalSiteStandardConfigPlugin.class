@@ -155,10 +155,14 @@ class DrupalSiteStandardConfigPlugin extends GenericPlugin implements EventListe
       $this->fetchDomain($primary),
     );
     $prefix = $this->config()->getConfig(CONFIG_SITE_URL_PREFIX);
+    $allPrefixed = array();
     if (!empty($prefix)) {
       $prefixedPrimary = $prefix . $primary;
       $entity->addExtraURL($prefixedPrimary);
-      $domains[] = $this->fetchDomain($prefixedPrimary);
+      $pd = $this->fetchDomain($prefixedPrimary);
+      $domains[] = $pd;
+      $allPrefixed[] = $pd;
+      $entity->setSetting(SITE_SETTING_PREFIXED_PRIMARY, $prefixedPrimary);
     }
     foreach ($this->getExtraURLs() as $url) {
       $url = trim($url);
@@ -170,6 +174,7 @@ class DrupalSiteStandardConfigPlugin extends GenericPlugin implements EventListe
         }
         if (!empty($prefix)) {
           $entity->addExtraURL($prefix . $url);
+          $allPrefixed[] = $prefix . $d;
           $prefixedDomain = $prefix . $d;
           if (!in_array($prefixedDomain, $domains)) {
             $domains[] = $prefixedDomain;
@@ -177,6 +182,7 @@ class DrupalSiteStandardConfigPlugin extends GenericPlugin implements EventListe
         }
       }
     }
+    $entity->setSetting(SITE_SETTING_PREFIXED_DOMAINS, $allPrefixed);
     $entity->setSetting(SITE_SETTING_ALL_DOMAINS, $domains);
     $entity->setToken(SITE_TOKEN_ALL_DOMAINS, implode(', ', $domains));
     return TRUE;

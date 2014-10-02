@@ -450,3 +450,17 @@ define('SITE_SETTING_ALL_DOMAINS', 'all-domains');
  * @ingroup site_tokens
  */
 define('SITE_TOKEN_UUID', 'SITE_UUID');
+
+/**
+ * Site setting for only prefixed domains.
+ * 
+ * @ingroup site_settings
+ */
+define('SITE_SETTING_PREFIXED_DOMAINS', 'prefixed-domains');
+
+/**
+ * Site token for all the prefixed domains for this site and all subsites.
+ * 
+ * @ingroup site_tokens
+ */
+define('SITE_TOKEN_PREFIXED_DOMAINS', 'SITE_RECURSIVE_PREFIXED_DOMAINS');

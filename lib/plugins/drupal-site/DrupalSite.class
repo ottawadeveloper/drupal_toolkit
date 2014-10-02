@@ -142,6 +142,7 @@ class DrupalSite extends GenericDrupalEntity {
   public function getDynamicTokens() {
     $tokens = array(
       SITE_TOKEN_RECURSIVE_DOMAINS => implode(" ", $this->getRecursiveDomains()),
+      SITE_RECURSIVE_PREFIXED_DOMAINS => implode(" ", $this->getPrefixedRecursiveDomains()),
     );
     return $tokens + parent::getDynamicTokens();
   }
@@ -152,9 +153,13 @@ class DrupalSite extends GenericDrupalEntity {
    * @return array
    *   An array of unique domains used by this site and all of it's subsites.
    */
-  public function getRecursiveDomains() {
+  public function getRecursiveDomains($prefixed = FALSE) {
     if ($this->isDeleted()) {
       return array();
+    }
+    $k = SITE_SETTING_ALL_DOMAINS;
+    if ($prefixed) {
+      $k = SITE_SETTING_PREFIXED_DOMAINS;
     }
     $domains = $this->getSetting(SITE_SETTING_ALL_DOMAINS);
     if (empty($domains)) {
@@ -165,18 +170,25 @@ class DrupalSite extends GenericDrupalEntity {
       foreach ($subsiteIDs as $subsiteID) {
         $subsite = $this->getSubSite($subsiteID);
         if (!$subsite->isDeleted() && $subsite->exists() && extra_empty($subsite->getSetting(SITE_SETTING_IS_CROSSLINKED))) {
-          foreach ($subsite->getSetting(SITE_SETTING_ALL_DOMAINS) as $domain) {
+          foreach ($subsite->getSetting($k) as $domain) {
             $domains[] = $domain;
           }
         }
       }
     }
     if (!empty($this->inProgressSubSite) && extra_empty($this->inProgressSubSite->getSetting(SITE_SETTING_IS_CROSSLINKED))) {
-      foreach ($this->inProgressSubSite->getSetting(SITE_SETTING_ALL_DOMAINS) as $domain) {
+      foreach ($this->inProgressSubSite->getSetting($k) as $domain) {
         $domains[] = $domain;
       }
     }
     return array_unique($domains);
+  }
+  
+  /**
+   * Wrapper around getRecursiveDomains() that returns only prefixed domains.
+   */
+  public function getPrefixedRecursiveDomains() {
+    return $this->getRecursiveDomains(TRUE);
   }
   
   /**
