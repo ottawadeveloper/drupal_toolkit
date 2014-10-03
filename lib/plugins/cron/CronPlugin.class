@@ -194,7 +194,6 @@ class CronPlugin extends GenericPlugin implements EventListener, ServerInteracti
    *   TRUE if the cron tabs were installed successfully, otherwise FALSE.
    */
   private function installCronJob(GenericDrupalEntity $site, $update = FALSE) {
-    $default = $this->config()->getConfig(CONFIG_CRONTAB_FREQUENCY);
     $this->working(STRING_WORKING_CRON_SETUP);
     $alias = $site->getDrushAlias(TRUE);
     if (empty($alias)) { return FALSE; }
@@ -213,14 +212,10 @@ class CronPlugin extends GenericPlugin implements EventListener, ServerInteracti
         $this->working(STRING_WORKING_CRON_SETUP_ITEM, array(
           '!name' => $key,
         ));
-        $frequency = $default;
+        $frequency = NULL;
         if (isset($frequencies[$key])) {
           //$frequency = $frequencies[$key];
         }
-        dtk_debug('Setting crontab frequency on [!server] to [!freq]', arraY(
-          '!server' => $key,
-          '!freq' => $frequency,
-        ));
         if (!$machine->scheduleTask($alias, $command, $frequency)) {
           $this->error(STRING_ERROR_COULD_NOT_CREATE_CRON, array(
             '!server' => $key,
@@ -229,6 +224,10 @@ class CronPlugin extends GenericPlugin implements EventListener, ServerInteracti
           return FALSE;
         }
         else {
+          dtk_debug('Set crontab frequency on [!server] to [!freq]', arraY(
+            '!server' => $key,
+            '!freq' => $frequency,
+          ));
           $frequencies[$key] = $frequency;
         }
       }
