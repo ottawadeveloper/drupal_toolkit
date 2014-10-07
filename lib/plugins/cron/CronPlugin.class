@@ -214,7 +214,7 @@ class CronPlugin extends GenericPlugin implements EventListener, ServerInteracti
         ));
         $frequency = NULL;
         if (isset($frequencies[$key])) {
-          //$frequency = $frequencies[$key];
+          $frequency = $frequencies[$key];
         }
         if (!$machine->scheduleTask($alias, $command, $frequency)) {
           $this->error(STRING_ERROR_COULD_NOT_CREATE_CRON, array(

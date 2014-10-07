@@ -117,6 +117,7 @@ class DrupalSiteStandardStructurePlugin extends GenericPlugin implements EventLi
       $full = assemble_path($root, $dir);
       if (!is_dir($full)) {
         mkdir($full);
+        var_dump($full);
         if (!is_dir($full)) {
           $this->error(STRING_STRUCTURE_DIR_FAILURE, array(
             '!dir' => $full,

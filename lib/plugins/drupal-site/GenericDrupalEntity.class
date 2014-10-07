@@ -89,7 +89,7 @@ abstract class GenericDrupalEntity implements OutputDependency, StringDependency
    */
   private $isNew = FALSE;
   
-  protected function __construct() {}
+  public function __construct() {}
   
   /**
    * Flags this entity as new.

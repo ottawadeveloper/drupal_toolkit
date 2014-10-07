@@ -27,7 +27,7 @@ class DrupalSubSite extends GenericDrupalEntity {
    * @param string $subsiteID
    *   The subsite ID for this subsite.
    */
-  protected function __construct(DrupalSite $site, $subsiteID) {
+  public function __construct(DrupalSite $site, $subsiteID) {
     parent::__construct();
     $this->parentSite = $site;
     $this->parentSite->primeSubSiteCache($subsiteID, $this);

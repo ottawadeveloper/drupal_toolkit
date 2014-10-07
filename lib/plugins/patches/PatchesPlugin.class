@@ -43,7 +43,7 @@ class PatchesPlugin extends GenericPlugin implements EventListener {
    * @param DrupalSite $site
    */
   private function removeOrphanBuilds(DrupalSite $site) {
-    if (!$site->isNew() && !$site->minVersion('0.9.2')) {
+    if (!$site->isNew()) {
       $cbs = $site->getSetting(SITE_BUILD_IDS);
       $cbDir = $site->getSetting(SITE_CODEBASE_DIR, NULL, TRUE);
       if (empty($cbDir)) { return FALSE; }

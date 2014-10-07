@@ -1,0 +1,21 @@
+<?php
+/**
+ * Defines the DrupalSiteUpdatePlugin class.
+ */
+
+/**
+ * Sets up the site-update command.
+ * 
+ * @ingroup plugins
+ */
+class DrupalSiteUpdatePlugin extends GenericPlugin implements EventListener {
+  
+  public function initialize() {
+    
+  }
+  
+  public function captureEvent(DtkEvent &$event, $type) {
+    
+  }
+  
+}
