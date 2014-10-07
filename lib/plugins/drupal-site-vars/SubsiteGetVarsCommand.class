@@ -14,17 +14,4 @@ class SubsiteGetVarsCommand extends SiteGetVarsCommand {
     $this->displaySettings($this->getSubSite(), $this->args()->getArg(3));
   }
   
-  protected function displaySettings(GenericDrupalEntity $entity, $setting = NULL) {
-    $settings = array();
-    if (empty($setting)) {
-      $settings = $entity->getSettings();
-    }
-    else {
-      $settings = array(
-        $setting => $entity->getSetting($setting, NULL),
-      );
-    }
-    $this->renderSettings($settings);
-  }
-  
 }
