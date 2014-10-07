@@ -21,8 +21,56 @@ class PatchesPlugin extends GenericPlugin implements EventListener {
         if ($context->checkExecution()) {
           $context->setResult($this->applyFilesDirectoryPatch($context->getEntity()));
         }
+        if ($context->checkExecution()) {
+          $context->setResult($this->applyRootlinkPatch($context->getEntity()));
+        }
+        if ($context->checkExecution()) {
+          $context->setResult($this->applyPrefixPatch($context->getEntity()));
+        }
         break;
     }
+  }
+  
+  /**
+   * Some older sites will not have a ROOTLINKS directory, if they were made 
+   * before there was a rootlinks directory. It can be created manually,
+   * this patch merely sets up the setting properly.
+   * 
+   * @param GenericDrupalEntity $entity The entity to setup rootlinks for.
+   * 
+   */
+  private function applyRootlinkPatch(GenericDrupalEntity $entity) {
+    $rl = $entity->getSetting(SITE_ROOTLINKS_DIR);
+    if (empty($rl)) {
+      $entity->setSetting(SITE_ROOTLINKS_DIR, 'rootlinks');
+    }
+    return TRUE;
+  }
+  
+  /**
+   * Verifies that the PREFIXED_DOMAINS settings are all valid.
+   * 
+   * @param GenericDrupalEntity $entity
+   *   The entity to fix.
+   */
+  private function applyPrefixPatch(GenericDrupalEntity $entity) {
+    if (!$entity()->isNew()) {
+      $domains = $entity->getSetting(SITE_SETTING_PREFIXED_DOMAINS);
+      $prefix = $this->config()->getConfig(CONFIG_SITE_URL_PREFIX);
+      if (empty($domains) && !empty($prefix)) {
+        $existing = $entity->getSetting(SITE_SETTING_ALL_DOMAINS);
+        if (!empty($existing)) {
+          $domains = array();
+          foreach ($existing as $d) {
+            if (substr($d, 0, strlen($prefix)) === $prefix) {
+              $domains[] = $d;
+            }
+          }
+        }
+        $entity->setSetting(SITE_SETTING_PREFIXED_DOMAINS, $domains);
+      }
+    }
+    return TRUE;
   }
   
   /**
