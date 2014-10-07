@@ -105,4 +105,9 @@ class LinuxCrontab extends GenericCronManager {
     return implode(' ', $components);
   }
   
+  
+  public function __toString() {
+    return '[object] LinuxCrontab|' . $this->machine()->getNameKey();
+  }
+  
 }

@@ -1,0 +1,67 @@
+<?php
+
+class SiteGetVarsCommand extends GenericSiteCommand {
+  
+  
+  public function verifyRequirements() {
+    if (!$this->requireSite()) {
+      return FALSE;
+    }
+    return parent::verifyRequirements();
+  }
+  
+  public function executeCommand() {
+    $this->displaySettings($this->getSite(), $this->args()->getArg(2));
+  }
+  
+  protected function displaySettings(GenericDrupalEntity $entity, $setting = NULL) {
+    $settings = array();
+    if (empty($setting)) {
+      $settings = $entity->getSettings();
+    }
+    else {
+      $settings = array(
+        $setting => $entity->getSetting($setting, NULL),
+      );
+    }
+    $this->renderSettings($settings);
+  }
+  
+  private function renderSettings($settings) {
+    $keys = array();
+    $values = array();
+    $this->parseSettings($settings, $keys, $values);
+    $max = 2;
+    foreach ($keys as $str) {
+      if (strlen($str) > $max) {
+        $max = strlen($str) + 2;
+      }
+    }
+    foreach ($keys as $k => $str) {
+      echo str_pad($str . ':  ', $max + 4, ' ') . $values[$k] . PHP_EOL;
+    }
+  }
+  
+  private function parseSettings($settings, &$keys, &$values, $prefix = '') {
+    ksort($settings);
+    foreach ($settings as $key => $value) {
+      $keys[] = $prefix . $key;
+      if (is_object($value)) {
+        $values[] = strval($value);
+      }
+      elseif (is_array($value)) {
+        $values[] = '';
+        $this->parseSettings($value, $keys, $values, $prefix . '  ');
+      }
+      elseif (is_bool($value)) {
+        $values[] = $value ? 'yes' : 'no';
+      }
+      else {
+        $values[] = $value;
+      }
+    }
+    
+  }
+  
+  
+}

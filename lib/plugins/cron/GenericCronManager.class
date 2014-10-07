@@ -55,4 +55,8 @@ abstract class GenericCronManager implements CronManagerInterface {
     return $this->directory;
   }
   
+  public function __toString() {
+    return '[object] GenericCronManager';
+  }
+  
 }

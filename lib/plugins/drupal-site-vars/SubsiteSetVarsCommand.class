@@ -1,0 +1,18 @@
+<?php
+
+class SubsiteSetVarsCommand extends SiteSetVarsCommand {
+  
+  
+  public function verifyRequirements() {
+    if (!$this->requireSite()) {
+      return FALSE;
+    }
+    return parent::verifyRequirements();
+  }
+  
+  public function executeCommand() {
+    $this->setVariable($this->getSubSite(), $this->args()->getArg(3), $this->args()->getArg(4));
+    $this->saveSubSiteConfiguration();
+  }
+  
+}

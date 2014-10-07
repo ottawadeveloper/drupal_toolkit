@@ -82,4 +82,8 @@ abstract class GenericMachine implements PhysicalServerInterface {
     return "\n";
   }
   
+  public function __toString() {
+    return '[object]] GenericMachine|' . $this->getNameKey();
+  }
+  
 }

@@ -65,6 +65,10 @@ class RemoteMachine extends GenericMachine {
     return TRUE;
   }
   
+  public function __toString() {
+    return '[object] RemoteMachine|' . $this->getNameKey() . ' [host: ' . $this->getSetting(SERVER_SETTING_HOST) . '; user: '.$this->getSetting(SERVER_SETTING_USER).']';
+  }
+  
   public function sleep() {
     if (isset($this->handle)) {
       if (is_resource($this->handle)) {

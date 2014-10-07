@@ -1,0 +1,9 @@
+plugin = DrupalSiteVarsPlugin
+
+files[] = SiteGetVarsCommand.class
+files[] = SubsiteGetVarsCommand.class
+files[] = SiteSetVarsCommand.class
+files[] = SubsiteSetVarsCommand.class
+
+
+dependencies[] = drupal-site

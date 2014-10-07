@@ -147,6 +147,16 @@ abstract class GenericDrupalEntity implements OutputDependency, StringDependency
   }
   
   /**
+   * Returns all the settings.
+   *
+   * @return array
+   *   An array of settings
+   */
+  public function getSettings() {
+    return $this->settings;
+  }
+  
+  /**
    * Fires an error using string translation.
    * 
    * @param string $message

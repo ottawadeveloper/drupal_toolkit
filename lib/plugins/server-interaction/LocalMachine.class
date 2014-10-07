@@ -88,4 +88,8 @@ class LocalMachine extends GenericMachine {
     return $dirs;
   }
   
+  public function __toString() {
+    return '[object] local server';
+  }
+  
 }

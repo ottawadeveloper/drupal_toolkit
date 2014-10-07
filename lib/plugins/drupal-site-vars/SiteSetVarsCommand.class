@@ -1,0 +1,75 @@
+<?php
+
+class SiteSetVarsCommand extends GenericSiteCommand {
+  
+  
+  public function verifyRequirements() {
+    if (!$this->requireSite()) {
+      return FALSE;
+    }
+    return parent::verifyRequirements();
+  }
+  
+  public function executeCommand() {
+    $this->setVariable($this->getSite(), $this->args()->getArg(2), $this->args()->getArg(3));
+    $this->saveSiteConfiguration();
+  }
+  
+  protected function setVariable(GenericDrupalEntity $entity, $setting, $value) {
+    if (strpos($setting, '::') !== FALSE) {
+      $this->setDeepVariable($entity, explode('::', $setting), $value);
+    }
+    else {
+      $existing = $entity->getSetting($setting);
+      if (is_array($existing)) {
+        exit(1);
+      }
+      elseif (is_object($existing)) {
+        exit(3);
+      }
+      elseif (is_bool($existing)) {
+        $value = strtolower($value);
+        if (in_array($value, array(1, '1', 'yes', 'true', 'on'), TRUE)) {
+          $value = TRUE;
+        }
+        elseif (in_array($value, array(0, '0', 'no', 'false', 'off'), TRUE)) {
+          $value = FALSE;
+        }
+        else {
+          exit(2);
+        }
+      }
+      $entity->setSetting($setting, $value);
+    }
+  }
+  
+  private function setDeepVariable(GenericDrupalEntity $entity, $deepSet, $value) {
+    $reversed = array_reverse($deepSet);
+    $top = array_pop($reversed);
+    $array = $entity->getSetting($top);
+    if (!is_array($array)) {
+      exit(4);
+    }
+    if (!array_set_deep($array, $reversed, $value)) {
+      exit(5);
+    }
+    $entity->setSetting($top, $array);
+  }
+  
+}
+
+function array_set_deep(&$array, $keys, $value) {
+  if (count($keys) > 1) {
+    $next = array_pop($keys);
+    if (is_array($array[$next])) {
+      return array_set_deep($array[$next], $keys, $value);
+    }
+    else {
+      return FALSE;
+    }
+  }
+  else {
+    $array[array_pop($keys)] = $value;
+    return TRUE;
+  }
+}

@@ -1,21 +1,30 @@
 <?php
 /**
- * Defines the DrupalSiteUpdatePlugin class.
+ * Defines the DrupalSiteVarsPlugin class.
  */
 
 /**
- * Sets up the site-update command.
+ * Sets up the set/get vars commands
  * 
  * @ingroup plugins
  */
-class DrupalSiteUpdatePlugin extends GenericPlugin implements EventListener {
+class DrupalSiteVarsPlugin extends GenericPlugin implements EventListener {
   
   public function initialize() {
-    
+    $this->events()->registerListener(array(
+      EVENT_CORE_REGISTER_COMMANDS,
+    ), $this);
   }
   
-  public function captureEvent(DtkEvent &$event, $type) {
-    
+  public function captureEvent(DtkEvent &$event, $eventType) {
+    switch ($eventType) {
+      case EVENT_CORE_REGISTER_COMMANDS:
+        $this->router()->addCommand('site-get-var', new SiteGetVarsCommand());
+        $this->router()->addCommand('site-set-var', new SiteSetVarsCommand());
+        $this->router()->addCommand('subsite-get-var', new SubsiteGetVarsCommand());
+        $this->router()->addCommand('subsite-set-var', new SubsiteSetVarsCommand());
+        break;
+    }
   }
   
 }
