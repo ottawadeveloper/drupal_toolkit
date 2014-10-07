@@ -54,7 +54,7 @@ class PatchesPlugin extends GenericPlugin implements EventListener {
    *   The entity to fix.
    */
   private function applyPrefixPatch(GenericDrupalEntity $entity) {
-    if (!$entity()->isNew()) {
+    if (!$entity->isNew()) {
       $domains = $entity->getSetting(SITE_SETTING_PREFIXED_DOMAINS);
       $prefix = $this->config()->getConfig(CONFIG_SITE_URL_PREFIX);
       if (empty($domains) && !empty($prefix)) {
