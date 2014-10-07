@@ -82,12 +82,13 @@ class DrupalSiteStandardSitePlugin extends GenericPlugin implements EventListene
           $context->setResult($this->createCrossLinks($context->getVariable('source'), $context->getVariable('target')));
         }
         break;
+        /*
       case EVENT_ROLLBACK_SUBSITE_CLEAN:
       case EVENT_UPDATE_SUBSITE_SITES:
         if ($context->checkExecution()) {
           $context->setResult($this->refreshSubsiteSymlinks($context->getSubSite()));
         }
-        break;
+        break;*/
       case EVENT_UPDATE_SITES:
         if ($context->checkExecution()) {
           $context->setResult($this->updateSites($context->getSite()));
