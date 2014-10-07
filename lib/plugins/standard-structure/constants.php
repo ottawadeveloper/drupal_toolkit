@@ -4,6 +4,13 @@
  */
 
 /**
+ * String token for when we are removing an old codebase.
+ * 
+ * @ingroup strings
+ */
+define('STRING_WORKING_REMOVE_OLD_CB', 'standard-structure.working.remove-old');
+
+/**
  * Site setting for the codebase directory.
  * 
  * @ingroup site_settings

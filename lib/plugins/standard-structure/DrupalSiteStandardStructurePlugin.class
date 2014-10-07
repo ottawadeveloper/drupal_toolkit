@@ -15,6 +15,7 @@ class DrupalSiteStandardStructurePlugin extends GenericPlugin implements EventLi
       EVENT_SITE_BUILD_STRUCTURE,
       EVENT_DISCOVER_STRUCTURE_DIRS,
       EVENT_REMOVE_ALL,
+      EVENT_DELETE_BUILD,
     ), $this);
   }
   
@@ -30,6 +31,11 @@ class DrupalSiteStandardStructurePlugin extends GenericPlugin implements EventLi
           $context->setResult($this->deleteSite($context->getSite()));
         }
         break;
+      case EVENT_DELETE_BUILD:
+        if ($context->checkExecution()) {
+          $context->setResult($this->deleteCodebase($context->getSite(), $context->getVariable('buildID')));
+        }
+        break;
       case EVENT_DISCOVER_STRUCTURE_DIRS:
         $context->setVariable('dirs', array_merge(
             $context->getVariable('dirs'),
@@ -37,6 +43,16 @@ class DrupalSiteStandardStructurePlugin extends GenericPlugin implements EventLi
         ));
         break;
     }
+  }
+  
+  private function deleteCodebase(DrupalSite $site, $buildID) {
+    $this->working(STRING_WORKING_REMOVE_OLD_CB, array(
+      '!build' => $buildID,
+    ));
+    $cbDir = $site->getSetting(SITE_CODEBASE_DIR, NULL, TRUE);
+    if (empty($cbDir)) { return FALSE; }
+    $dir = assemble_path($site->getBuildFolder(), $cbDir, $buildID);
+    return remove_directory($dir);
   }
   
   /**
