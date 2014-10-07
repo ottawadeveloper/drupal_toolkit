@@ -26,6 +26,7 @@ class RemoteMachine extends GenericMachine {
       return TRUE;
     }
     if (!extra_empty($this->getSetting(SERVER_SETTING_DISABLED))) {
+      dtk_info('Server !key is disabled', array('!key' => $this->getNameKey()));
       return FALSE;
     }
     $this->handle = ssh2_connect($this->getSetting(SERVER_SETTING_HOST), $this->getSetting(SERVER_SETTING_PORT, 22), array(
@@ -34,11 +35,13 @@ class RemoteMachine extends GenericMachine {
       'disconnect' => 'dtk_ssh_cb_disconnect',
     ));
     if (empty($this->handle)) {
+      dtk_info('Unable to connect to server [!key]', array('!key' => $this->getNameKey()));
       $this->handle = NULL;
       return FALSE;
     }
     $fingerprint = strtolower(ssh2_fingerprint($this->handle, SSH2_FINGERPRINT_MD5 | SSH2_FINGERPRINT_HEX));
     if (strcmp($fingerprint, strtolower($this->getSetting(SERVER_SETTING_FINGERPRINT))) !== 0) {
+      dtk_info('Fingerprints do not match for server [!key]', array('!key' => $this->getNameKey()));
       $this->handle = NULL;
       return FALSE;
     }
@@ -49,12 +52,14 @@ class RemoteMachine extends GenericMachine {
             $this->getSetting(SERVER_SETTING_PUBKEY), 
             $this->getSetting(SERVER_SETTING_PRIVKEY), 
             $this->getSetting(SERVER_SETTING_PASSPHRASE))) {
+          dtk_info('Unable to authenticate with [!key] using pubkey method', array('!key' => $this->getNameKey()));
           $this->handle = NULL;
           return FALSE;
         }
         break;
       default:
         $this->handle = NULL;
+        dtk_info('Unknown authentication method for [!key]', array('!key' => $this->getNameKey()));
         return FALSE;
     }
     return TRUE;
@@ -63,6 +68,7 @@ class RemoteMachine extends GenericMachine {
   public function sleep() {
     if (isset($this->handle)) {
       if (is_resource($this->handle)) {
+        dtk_info('Sleeping server connection [!key]', array('!key' => $this->getNameKey()));
         ssh2_exec($this->handle, 'exit');
         unset($this->handle);
       }
@@ -81,6 +87,7 @@ class RemoteMachine extends GenericMachine {
       $escapedCommand = escapeshellcmd(str_replace_all($command, $args, 'escapeshellarg'));
       $fullCommand = '(' . $escapedCommand . '  2<&1); echo -e "\n$?"';
     }
+    $this->initialize();
     $stream = ssh2_exec($this->handle, $fullCommand, 'xterm');
     stream_set_blocking($stream, TRUE);
     $data = "";
@@ -117,6 +124,7 @@ fi';
   public function writeFile($destination, $contents, $mode = 0644) {
     $temp = tempnam(sys_get_temp_dir(), 'dtk-up-');
     file_put_contents($temp, $contents);
+    $this->initialize();
     $result = ssh2_scp_send($this->handle, $temp, $destination, $mode);
     unlink($temp);
     return $result;
@@ -136,6 +144,7 @@ fi';
     if (empty($destination)) {
       $destination = tempnam(sys_get_temp_dir(), 'dtk-down-');
     }
+    $this->initialize();
     $result = ssh2_scp_recv($this->handle, $file, $destination);
     if ($result) {
       return $destination;
