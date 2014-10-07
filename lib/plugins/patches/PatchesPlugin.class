@@ -28,7 +28,37 @@ class PatchesPlugin extends GenericPlugin implements EventListener {
           $context->setResult($this->applyPrefixPatch($context->getEntity()));
         }
         break;
+      case EVENT_CLEANUP_BUILD:
+        if ($context->checkExecution()) {
+          $context->setResult($this->removeOrphanBuilds($context->getSite()));
+        }
+        break;
     }
+  }
+  
+  /**
+   * Older sites were not removing codebase directories completely. This
+   * patch is here to fix that.
+   * 
+   * @param DrupalSite $site
+   */
+  private function removeOrphanBuilds(DrupalSite $site) {
+    if (!$site->isNew() && !$site->minVersion('0.9.2')) {
+      $cbs = $site->getSetting(SITE_BUILD_IDS);
+      $cbDir = $site->getSetting(SITE_CODEBASE_DIR, NULL, TRUE);
+      if (empty($cbDir)) { return FALSE; }
+      $dir = assemble_path($site->getBuildFolder(), $cbDir);
+      $h = opendir($dir);
+      if (empty($h)) { return FALSE; }
+      while (($f = readdir($h)) !== FALSE) {
+        if ($f != '.' && $f != '..') {
+          if (!in_array($f, $cbs)) {
+            $site->deleteBuild($this->events(), $f);
+          }
+        }
+      } 
+    }
+    return TRUE;
   }
   
   /**
