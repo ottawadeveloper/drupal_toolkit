@@ -1,0 +1,63 @@
+<?php
+/**
+ * @file Defines the PatchesPlugin class.
+ */
+
+/**
+ * Responsible for patching older sites that may cause problems
+ * with new versions of the toolkit.
+ */
+class PatchesPlugin extends GenericPlugin implements EventListener {
+  
+  public function initialize() {
+    $this->events()->registerListener(array(
+      dtk_constant('EVENT_DRUPAL_SITE_CONSTRUCTOR'),
+    ), $this);
+  }
+  
+  public function captureEvent(DtkEvent &$context, $type) {
+    switch ($type) {
+      case EVENT_DRUPAL_SITE_CONSTRUCTOR:
+        if ($context->checkExecution()) {
+          $context->setResult($this->applyFilesDirectoryPatch($context->getEntity()));
+        }
+        break;
+    }
+  }
+  
+  /**
+   * Prior to 0.9.1, the serverFiles and systemFiles were not being preserved 
+   * during a save/load of the configuration. This caused the files directory
+   * to not have the correct permissions after an update. After patching the
+   * GenericDrupalEntity class to preserve the files, older sites needed to have
+   * the sites/X/files directory added back into their configuration. This
+   * patch accomplishes that.
+   * 
+   * @param GenericDrupalEntity $entity
+   *   The site or subsite to patch.
+   * 
+   * @return boolean
+   *   TRUE upon success, otherwise FALSE.
+   */
+  private function applyFilesDirectoryPatch(GenericDrupalEntity $entity) {
+    if (!$entity->minVersion('0.9.1')) {
+      $sites = '';
+      $target = 'default';
+      if ($entity instanceof DrupalSite) {
+        $sites = $entity->getSetting(SITE_SITES_DIR, NULL, TRUE);
+      } elseif ($entity instanceof DrupalSubSite) {
+        $sites = $entity->getParentSite()->getSetting(SITE_SITES_DIR, NULL, TRUE);
+        $target = DrupalSite::convertURLToSiteName($entity->getSetting(SITE_PRIMARY_URL, NULL, TRUE));
+      }
+      if (empty($sites)) { return FALSE; }
+      if (empty($target)) { return FALSE; }
+      $filesDir = assemble_path($entity->getBuildFolder(), $sites, $target, 'files');
+      dtk_info('Patching the site to have a files directory of !fdir', array(
+        '!fdir' => $filesDir,
+      ));
+      $entity->registerServerFile($filesDir);
+    }
+    return TRUE;
+  }
+  
+}

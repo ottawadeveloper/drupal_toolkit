@@ -4,6 +4,14 @@
  */
 
 /**
+ * Site setting for the version in which this site was last updated or 
+ * created.
+ * 
+ * @ingroup site_settings
+ */
+define('SITE_SETTING_CURRENT_VERSION', 'version');
+
+/**
  * Config setting for where DTK is located. If not specified, assumed to be
  * in the path settings.
  * 

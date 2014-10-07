@@ -105,6 +105,7 @@ class SiteBuildCommand extends GenericSiteCommand {
   }
   
   public function executeCommand() {
+    $this->getSite()->makeNew();
     $this->cleanup = !extra_empty($this->config()->getConfig(CONFIG_SITE_CLEANUP_ON_ERROR));
     $vars = array(
       'buildID' => dtk_generate_build_id(),

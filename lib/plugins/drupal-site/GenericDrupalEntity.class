@@ -75,6 +75,33 @@ abstract class GenericDrupalEntity implements OutputDependency, StringDependency
    */
   private $callbackTokens = array();
   
+  /**
+   * Flag for whether or not this entity is new.
+   * 
+   * @var boolean
+   */
+  private $isNew = FALSE;
+  
+  protected function __construct() {}
+  
+  /**
+   * Flags this entity as new.
+   */
+  public function makeNew() {
+    $this->isNew = TRUE;
+    $this->setSetting(SITE_SETTING_CURRENT_VERSION, TOOLKIT_VERSION);
+  }
+  
+  /**
+   * Checks if this entity is new.
+   * 
+   * @return boolean
+   *   Whether or not the entity is new.
+   */
+  public function isNew() {
+    return $this->isNew;
+  }
+  
   public function setOutput(OutputManagerInterface $out) {
     $this->out = $out;
   }
@@ -375,12 +402,35 @@ abstract class GenericDrupalEntity implements OutputDependency, StringDependency
   }
   
   /**
+   * Checks to see if the site was last updated with at least the provided 
+   * version. Useful to detect changes in configuration.
+   * 
+   * @param string $version
+   *   A three number version code, separated by periods.
+   * 
+   * @return boolean
+   *   TRUE if the last build version is at least $version, otherwise FALSE.
+   */
+  public function minVersion($version) {
+    $current = explode('.', $version);
+    // version has only been on GDEs since 0.9.1
+    $local = explode('.', $this->getSetting(SITE_SETTING_CURRENT_VERSION, '0.9.0'));
+    foreach ($current as $k => $value) {
+      if ($value > $local[$k]) {
+        return FALSE;
+      }
+    }
+    return TRUE;
+  }
+  
+  /**
    * Saves the configuration file.
    * 
    * @return boolean
    *   TRUE if the file was saved, otherwise FALSE.
    */
   public function saveConfiguration() {
+    //$this->setSetting(SITE_SETTING_CURRENT_VERSION, TOOLKIT_VERSION);
     $path = $this->getConfigurationPath();
     if (!is_writable($path)) {
       if (file_exists($path)) {
@@ -395,6 +445,8 @@ abstract class GenericDrupalEntity implements OutputDependency, StringDependency
     $export = array(
       'settings' => $this->settings,
       'placeholders' => $this->placeholders,
+      'server_files' => $this->serverFiles,
+      'system_files' => $this->systemFiles,
     );
     return file_put_contents($path, serialize($export));
   }
@@ -417,6 +469,12 @@ abstract class GenericDrupalEntity implements OutputDependency, StringDependency
       $contents = unserialize(file_get_contents($this->getConfigurationPath()));
       array_extend($this->settings, $contents['settings']);
       array_extend($this->placeholders, $contents['placeholders']);
+      if (isset($contents['server_files'])) {
+        array_extend($this->serverFiles, $contents['server_files']);
+      }
+      if (isset($contents['system_files'])) {
+        array_extend($this->systemFiles, $contents['system_files']);
+      }
       $this->settingsLoaded = TRUE;
     }
     return $this->settingsLoaded;

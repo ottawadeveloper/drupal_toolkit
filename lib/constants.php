@@ -6,7 +6,7 @@
 /**
  * Current version of the toolkit.
  */
-define('TOOLKIT_VERSION', '0.9.0');
+define('TOOLKIT_VERSION', '0.9.1');
 
 /**
  * User's current directory when the first command was executed.

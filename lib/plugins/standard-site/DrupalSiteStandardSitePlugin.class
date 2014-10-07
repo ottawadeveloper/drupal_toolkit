@@ -153,7 +153,7 @@ class DrupalSiteStandardSitePlugin extends GenericPlugin implements EventListene
     }
     return TRUE;
   }
-  
+    
   /**
    * Removes all registered cross links.
    * 
@@ -163,7 +163,7 @@ class DrupalSiteStandardSitePlugin extends GenericPlugin implements EventListene
    * @return boolean
    *   TRUE upon success, otherwise FALSE.
    */
-  function removeCrossLinks(GenericDrupalEntity $source) {
+  private function removeCrossLinks(GenericDrupalEntity $source) {
     $crosslinks = $source->getSetting(SITE_SETTING_CROSSLINKS);
     if (empty($crosslinks)) { return TRUE; }
     foreach ($crosslinks as $crosslink) {

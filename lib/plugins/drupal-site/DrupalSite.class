@@ -43,7 +43,8 @@ class DrupalSite extends GenericDrupalEntity {
    * @param boolean $local
    *   Whether or not this is a local build.
    */
-  private function __construct($name, $folder, $local = FALSE) {
+  protected function __construct($name, $folder, $local = FALSE) {
+    parent::__construct();
     $this->setSetting(SITE_IS_LOCAL, !!$local);
     $this->setSetting(SITE_BUILD_DIR, $folder);
     $this->setSetting(SITE_BUILD_NAME, $name);
