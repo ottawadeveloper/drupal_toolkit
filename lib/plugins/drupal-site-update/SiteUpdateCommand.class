@@ -38,6 +38,10 @@ class SiteUpdateCommand extends GenericSiteCommand {
       'event' => EVENT_UPDATE_TAKE_BACKUP,
     ),
     array(
+      'event' => EVENT_UPDATE_TAKE_SUBSITE_BACKUP,
+      'type' => COMMAND_STEP_ALL_INSTALLED_SUBSITES,
+    ),
+    array(
       'event' => EVENT_UPDATE_PREPARE_SUBSITE,
       'type' => COMMAND_STEP_ALL_INSTALLED_SUBSITES,
       'optional' => TRUE,

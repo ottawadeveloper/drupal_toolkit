@@ -4,6 +4,13 @@
  */
 
 /**
+ * Fired to take a backup of a subsite.
+ * 
+ * @ingroup events
+ */
+define('EVENT_UPDATE_TAKE_SUBSITE_BACKUP', 'update-subsite-backup');
+
+/**
  * Fired to finish off a subsite's update procedure.
  * 
  * @ingroup events

@@ -47,7 +47,7 @@ class DrushBackupPlugin extends GenericPlugin implements EventListener {
       EVENT_DELETE_BUILD,
       EVENT_ROLLBACK_BACKUP,
       EVENT_ROLLBACK_PHASE2,
-      EVENT_UPDATE_PREPARE_SUBSITE,
+      EVENT_UPDATE_TAKE_SUBSITE_BACKUP,
       EVENT_ROLLBACK_SUBSITES,
       EVENT_ROLLBACK_SUBSITE_PREP,
     ), $this);
@@ -63,7 +63,7 @@ class DrushBackupPlugin extends GenericPlugin implements EventListener {
           $context->setResult($this->backupForUpdate($context->getSite()));
         }
         break;
-      case EVENT_UPDATE_PREPARE_SUBSITE:
+      case EVENT_UPDATE_TAKE_SUBSITE_BACKUP:
         if ($context->checkExecution()) {
           $context->setResult($this->backupForUpdate($context->getSubSite()));
         }
