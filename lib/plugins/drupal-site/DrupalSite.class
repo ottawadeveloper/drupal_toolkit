@@ -95,6 +95,11 @@ class DrupalSite extends GenericDrupalEntity {
     if (!isset($this->cachedSubSites[$subsiteID])) {
       $this->cachedSubSites[$subsiteID] = new DrupalSubSite($this, $subsiteID);
       $this->cachedSubSites[$subsiteID]->loadSettings();
+      DrupalSiteEvent::fireSiteEvent($this->strings(), $this->out(), $this->events(), array(
+        'entity' => $this->cachedSubSites[$subsiteID],
+        'name' => EVENT_DRUPAL_SITE_CONSTRUCTOR,
+        'optional' => TRUE,
+      ));
     }
     return $this->cachedSubSites[$subsiteID];
   }

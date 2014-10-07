@@ -6,7 +6,7 @@
 /**
  * Provides common tools required by both Sites and Subsites.
  */
-abstract class GenericDrupalEntity implements OutputDependency, StringDependency {
+abstract class GenericDrupalEntity implements OutputDependency, StringDependency, EventDependency {
 
   /**
    * String manager DI variable.
@@ -20,6 +20,13 @@ abstract class GenericDrupalEntity implements OutputDependency, StringDependency
    * @var OutputManagerInterface
    */
   private $out;
+  
+  /**
+   * Event manager DI variable
+   * 
+   * @var EventManagerInterface
+   */
+  private $events;
   
   /**
    * Settings for the site. Plugins may extend these.
@@ -108,6 +115,14 @@ abstract class GenericDrupalEntity implements OutputDependency, StringDependency
   
   public function setStringManager(StringManagerInterface $sm) {
     $this->strings = $sm;
+  }
+  
+  public function setEventManager(EventManagerInterface $events) {
+    $this->events = $events;
+  }
+  
+  public function events() {
+    return $this->events;
   }
   
   public function strings() {
