@@ -500,6 +500,8 @@ abstract class GenericDrupalEntity implements OutputDependency, StringDependency
       if (isset($contents['system_files'])) {
         array_extend($this->systemFiles, $contents['system_files']);
       }
+      // this is necessary because of the default value of the array.
+      $this->settings[SITE_EXISTING_SITES] = array_unique_numeric($this->settings[SITE_EXISTING_SITES]);
       $this->settingsLoaded = TRUE;
     }
     return $this->settingsLoaded;

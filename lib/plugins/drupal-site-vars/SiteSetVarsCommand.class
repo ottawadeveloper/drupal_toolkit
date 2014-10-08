@@ -57,19 +57,3 @@ class SiteSetVarsCommand extends GenericSiteCommand {
   }
   
 }
-
-function array_set_deep(&$array, $keys, $value) {
-  if (count($keys) > 1) {
-    $next = array_pop($keys);
-    if (is_array($array[$next])) {
-      return array_set_deep($array[$next], $keys, $value);
-    }
-    else {
-      return FALSE;
-    }
-  }
-  else {
-    $array[array_pop($keys)] = $value;
-    return TRUE;
-  }
-}

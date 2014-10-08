@@ -180,6 +180,40 @@ function array_unique_numeric($array) {
   return $newArray;
 }
 
+/**
+ * Sets a key deep in an array.
+ * 
+ * @param array $array
+ *   An array to set a key within.
+ * @param array $keys
+ *   A hierarchy of keys, in reverse order (eg the first key is the key to set, the next key is the key above that, etc).
+ * @param mixed $value
+ *   The value to set
+ * 
+ * @return boolean
+ *   TRUE if the value was found and set, otherwise FALSE. Should only return
+ *   FALSE if $keys contains a key that is set but not an array (except for the
+ *   first one).
+ */
+function array_set_deep(&$array, $keys, $value) {
+  if (count($keys) > 1) {
+    $next = array_pop($keys);
+    if (!isset($array[$next])) {
+      $array[$next] = array();
+    }
+    if (is_array($array[$next])) {
+      return array_set_deep($array[$next], $keys, $value);
+    }
+    else {
+      return FALSE;
+    }
+  }
+  else {
+    $array[array_pop($keys)] = $value;
+    return TRUE;
+  }
+}
+
 // Additional includes.
 require "functions/system.inc";
 require "functions/git.inc";
