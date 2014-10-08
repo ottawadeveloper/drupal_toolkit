@@ -410,6 +410,7 @@ class DrupalSite extends GenericDrupalEntity {
           $site = new DrupalSite($file, $p);
           if ($site->exists()) {
             $site->loadSettings();
+            DependencyManager::inject($site);
             $sites[$file] = $site;
           }
         }
