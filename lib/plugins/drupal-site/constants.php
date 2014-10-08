@@ -4,6 +4,13 @@
  */
 
 /**
+ * Site setting for the prefixed primary URL.
+ * 
+ * @ingroup site_settings
+ */
+define('SITE_SETTING_PREFIXED_PRIMARY', 'prefixed-primary');
+
+/**
  * Site setting for the version in which this site was last updated or 
  * created.
  * 
