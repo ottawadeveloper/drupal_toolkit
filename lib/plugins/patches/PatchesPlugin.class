@@ -118,7 +118,7 @@ class PatchesPlugin extends GenericPlugin implements EventListener {
    *   TRUE upon success, otherwise FALSE.
    */
   private function applyFilesDirectoryPatch(GenericDrupalEntity $entity) {
-    if (!$entity->minVersion('0.9.1')) {
+    if (!$entity->minVersion('0.9.1') && !$entity->isNew()) {
       $sites = '';
       $target = 'default';
       if ($entity instanceof DrupalSite) {

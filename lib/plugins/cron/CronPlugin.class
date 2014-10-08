@@ -199,7 +199,7 @@ class CronPlugin extends GenericPlugin implements EventListener, ServerInteracti
     if (empty($alias)) { return FALSE; }
     $cron = drush_get_cron_url($alias);
     if (empty($cron)) { $this->error(STRING_ERROR_NO_CRON_URL); return FALSE; }
-    $command = '/usr/bin/wget ' . escapeshellarg($cron);
+    $command = '/usr/bin/wget ' . escapeshellarg($cron) . ' > /dev/null 2>&1';
     $machines = $this->getCronMachines();
     $frequencies = $site->getSetting(SITE_SETTING_CRONTAB_FREQUENCY, array());
     foreach ($machines as $key => $machine) {
