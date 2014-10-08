@@ -27,12 +27,24 @@ class PatchesPlugin extends GenericPlugin implements EventListener {
         if ($context->checkExecution()) {
           $context->setResult($this->applyPrefixPatch($context->getEntity()));
         }
+        if ($context->checkExecution()) {
+          $context->setResult($this->applyPrefixedPrimaryPatch($context->getEntity()));
+        }
         break;
       case EVENT_CLEANUP_BUILD:
         if ($context->checkExecution()) {
           $context->setResult($this->removeOrphanBuilds($context->getSite()));
         }
         break;
+    }
+  }
+  
+  private function applyPrefixedPrimaryPatch(GenericDrupalEntity $entity) {
+    if (!$entity->minVersion('0.9.3') && !$entity->isNew()) {
+      $check = $entity->getSetting('SITE_SETTING_PREFIXED_PRIMARY');
+      if (!empty($check)) {
+        $entity->setSetting(SITE_SETTING_PREFIXED_PRIMARY, $check);
+      }
     }
   }
   

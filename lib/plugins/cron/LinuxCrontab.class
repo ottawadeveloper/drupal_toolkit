@@ -20,9 +20,10 @@ class LinuxCrontab extends GenericCronManager {
     }
     $line = 'SHELL=/bin/bash' . "\n";
     $line .= 'PATH=/sbin:/bin:/usr/sbin:/usr/bin' . "\n";
-    $line .= 'MAILTO:root' . "\n";
+    $line .= 'MAILTO=root' . "\n";
     $line .= 'HOME=/' . "\n";
     $line .=  $frequency . ' root ' . $task;
+    $line .= "\n";
     return $this->machine()->writeFile($this->normalizeFilename($identifier), $line);
   }
   
