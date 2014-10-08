@@ -42,13 +42,13 @@ class SiteUpdateCommand extends GenericSiteCommand {
       'type' => COMMAND_STEP_ALL_INSTALLED_SUBSITES,
     ),
     array(
+      'event' => EVENT_UPDATE_PREPARE_FOR_UPDATE,
+      'continue' => TRUE,
+    ),
+    array(
       'event' => EVENT_UPDATE_PREPARE_SUBSITE,
       'type' => COMMAND_STEP_ALL_INSTALLED_SUBSITES,
       'optional' => TRUE,
-    ),
-    array(
-      'event' => EVENT_UPDATE_PREPARE_FOR_UPDATE,
-      'continue' => TRUE,
     ),
     array(
       'event' => EVENT_UPDATE_PREPARE_SERVER,
