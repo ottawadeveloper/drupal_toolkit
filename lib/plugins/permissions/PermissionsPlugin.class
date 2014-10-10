@@ -161,7 +161,8 @@ class PermissionsPlugin extends GenericPlugin implements EventListener {
         break;
       case EVENT_SUBSITE_BUILD_COMPLETE:
       case EVENT_UPDATE_PREPARE_SUBSITE:
-        if ($context->checkExecution()) {          
+        if ($context->checkExecution()) {  
+          $site = $context->getEntity();        
           $context->setResult($this->applyPermissions($site->getServerFiles(), PERMISSION_TYPE_SERVER, TRUE));
         }
         if ($context->checkExecution()) {
