@@ -391,6 +391,12 @@ function chmog($target, $owner, $group, $access, $recursive = FALSE, $chmog_proc
   if (in_array($target, $chmog_processed)) {
     return 0;
   }
+  if (!file_exists($target)) {
+    dtk_info('Missing file: !file', array(
+      '!file' => $target,
+    ));
+    return 1;
+  }
   $failures = 0;
   if (shell_command_available('chmod') && shell_command_available('chown')) {
     $cmd = 'chmod ' . ($recursive ? '-R ' : '') . decoct($access) . ' !file';
