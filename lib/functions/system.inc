@@ -354,7 +354,7 @@ function shell_command_available($command_name) {
  * the directories only need to be opened once.
  * 
  * Note that if the system commands 'chmod' and 'chown' are available to PHP, 
- * it will use 
+ * it will use those instead.
  * 
  * Relies on chmod(), chown() and chgrp().
  * 
@@ -403,7 +403,7 @@ function chmog($target, $owner, $group, $access, $recursive = FALSE, $chmog_proc
     $exit = 0;
     execute_system_command($cmd, array(
       '!file' => $target,
-    ), $out, $exit);
+    ), $out, $exit, TRUE);
     if (!extra_empty($exit)) {
       $failures++;
     }
@@ -411,7 +411,7 @@ function chmog($target, $owner, $group, $access, $recursive = FALSE, $chmog_proc
     $exit = 0;
     execute_system_command($cmd, array(
       '!file' => $target,
-    ), $out, $exit);
+    ), $out, $exit, TRUE);
     if (!extra_empty($exit)) {
       $failures++;
     }
