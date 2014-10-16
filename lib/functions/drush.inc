@@ -90,6 +90,24 @@ define('DRUSH_DIRECTORY_FILES', 'files');
 define('DRUSH_DIRECTORY_PRIVATE', 'private');
 
 /**
+ * Returns information about which user Drush should execute as.
+ * 
+ * @param string $username
+ *   The username Drush should execute as or FALSE for no user. Setting to NULL
+ *   will avoid changing the variable.
+ * 
+ * @return string
+ *   The username Drush should execute as or FALSE for no user.
+ */
+function drush_execute_as_user($username = NULL) {
+  $s = state(__FUNCTION__, FALSE);
+  if ($username !== NULL) {
+    $s = $username;
+  }
+  return $s;
+}
+
+/**
  * Executes Drupal simple tests via Drush.
  * 
  * @param string $alias
@@ -519,7 +537,7 @@ function drush_command($subcommand, $alias = NULL, array $args = array(), &$out 
     $cmd .= '@' . $alias . ' ';
   }
   $cmd .= $subcommand;
-  $ret = execute_system_command($cmd, $args, $out, $exit, $returnOutput);
+  $ret = execute_system_command($cmd, $args, $out, $exit, $returnOutput, drush_execute_as_user());
   return $ret;
 }
 

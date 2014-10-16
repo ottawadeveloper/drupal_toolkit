@@ -512,11 +512,18 @@ function register_system_command_listener($cb = NULL) {
  *   Will be set to the exit code of the function.
  * @param boolean $returnOutput
  *   If TRUE, prevents system() from being used, otherwise allows system().
+ * @param string|boolean $asUser
+ *   Set to the user that this command should be executed as. If FALSE, will
+ *   be executed as the current user.
  * 
  * @return string
  *   The last time returned by $command.
  */
-function execute_system_command($command, array $args = array(), &$output = array(), &$returnCode = '', $returnOutput = TRUE) {
+function execute_system_command($command, array $args = array(), &$output = array(), &$returnCode = '', $returnOutput = TRUE, $asUser = FALSE) {
+  if (!empty($asUser)) {
+    $asUser = trim(escapeshellarg($asUser), '\'"');
+    $command = 'sudo -u' . $asUser;
+  }
   $command = escapeshellcmd($command);
   $command = str_replace_all($command, $args, 'escapeshellarg');
   foreach (register_system_command_listener() as $listener) {

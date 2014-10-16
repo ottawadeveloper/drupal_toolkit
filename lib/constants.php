@@ -4,9 +4,16 @@
  */
 
 /**
+ * Configuration setting to specify a user to execute Drush commands.
+ * 
+ * @ingroup config
+ */
+define('CONFIG_DRUSH_USER', 'drush-user');
+
+/**
  * Current version of the toolkit.
  */
-define('TOOLKIT_VERSION', '0.9.3');
+define('TOOLKIT_VERSION', '0.9.4');
 
 /**
  * User's current directory when the first command was executed.

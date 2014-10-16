@@ -43,6 +43,10 @@ if (!extra_empty($args->getOption(OPTION_SSH_DIRECT_OUTPUT))) {
   ssh_direct_system_commands(TRUE);
 }
 
+if (!extra_empty($settings->getConfig(CONFIG_DRUSH_USER))) {
+  drush_execute_as_user($settings->getConfig(CONFIG_DRUSH_USER));
+}
+
 // Initialize the output object.
 $out = new OutputManager($debugLevel >= DEBUG_LEVEL_VERBOSE);
 DependencyManager::inject($out);
