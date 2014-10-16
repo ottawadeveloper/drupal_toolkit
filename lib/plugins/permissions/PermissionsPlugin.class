@@ -69,8 +69,6 @@ class PermissionsPlugin extends GenericPlugin implements EventListener {
    *   - TRUE if permissions were applied completely and successfully.
    */
   private function applyPermissions($target, $permissionType, $recursive = FALSE) {
-    // no point in operating on multiple copies of things
-    $target = array_unique($target);
     if (!extra_empty($this->config()->getConfig(CONFIG_PERMISSIONS_IGNORE_ALL))) {
       return NULL;
     }
@@ -110,6 +108,10 @@ class PermissionsPlugin extends GenericPlugin implements EventListener {
     $access = octdec($rawaccess);
     if (!is_array($target)) {
       $target = array($target);
+    }
+    else {
+      // no point in operating on multiple copies of things
+      $target = array_unique($target);
     }
     $failures = 0;
     foreach ($target as $tfile) {
