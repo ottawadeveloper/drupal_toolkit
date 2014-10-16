@@ -46,6 +46,7 @@ class PatchesPlugin extends GenericPlugin implements EventListener {
         $entity->setSetting(SITE_SETTING_PREFIXED_PRIMARY, $check);
       }
     }
+    return TRUE;
   }
   
   /**
