@@ -22,6 +22,7 @@ class UpstreamDatabasePlugin extends GenericPlugin implements EventListener {
         'file_temporary_path',
         'background_process_token',
         'background_process_derived_default_host',
+        'file_public_path',
       ),
     ));
     $this->events()->registerListener(array(
