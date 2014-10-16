@@ -312,6 +312,20 @@ abstract class GenericDrupalEntity implements OutputDependency, StringDependency
   }
   
   /**
+   * Deregisters a file as a system file.
+   * 
+   * @param string $file
+   *   The path to a system file.
+   */
+  public function deregisterSystemFile($file) {
+    foreach ($this->systemFiles as $k => $f) {
+      if ($f === $file) {
+        unset($this->systemFiles[$k]);
+      }
+    }
+  }
+  
+  /**
    * Registers a file as a server file.
    * 
    * @param string $file
@@ -319,6 +333,20 @@ abstract class GenericDrupalEntity implements OutputDependency, StringDependency
    */
   public function registerServerFile($file) {
     $this->serverFiles[] = $file;
+  }
+  
+  /**
+   * Deregisters a file as a server file.
+   * 
+   * @param string $file
+   *   The path to a server file.
+   */
+  public function deregisterServerFile($file) {
+    foreach ($this->serverFiles as $k => $f) {
+      if ($f === $file) {
+        unset($this->serverFiles[$k]);
+      }
+    }
   }
   
   /**
@@ -455,7 +483,7 @@ abstract class GenericDrupalEntity implements OutputDependency, StringDependency
    *   TRUE if the file was saved, otherwise FALSE.
    */
   public function saveConfiguration() {
-    //$this->setSetting(SITE_SETTING_CURRENT_VERSION, TOOLKIT_VERSION);
+    $this->setSetting(SITE_SETTING_CURRENT_VERSION, TOOLKIT_VERSION);
     $path = $this->getConfigurationPath();
     if (!is_writable($path)) {
       if (file_exists($path)) {
@@ -470,8 +498,8 @@ abstract class GenericDrupalEntity implements OutputDependency, StringDependency
     $export = array(
       'settings' => $this->settings,
       'placeholders' => $this->placeholders,
-      'server_files' => $this->serverFiles,
-      'system_files' => $this->systemFiles,
+      'server_files' => array_unique($this->serverFiles),
+      'system_files' => array_unique($this->systemFiles),
     );
     return file_put_contents($path, serialize($export));
   }

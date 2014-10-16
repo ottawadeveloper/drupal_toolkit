@@ -421,6 +421,7 @@ function chmog($target, $owner, $group, $access, $recursive = FALSE, $chmog_proc
       return $failures;
     }
   }
+  $failures = 0;
   if (!chmod($target, $access)) {
     $failures++;
   }
