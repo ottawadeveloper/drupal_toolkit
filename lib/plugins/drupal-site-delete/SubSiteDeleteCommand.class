@@ -40,7 +40,7 @@ class SubSiteDeleteCommand extends GenericSiteCommand {
       'continue' => TRUE,
     ));
     $this->getSite()->deleteSubSite($this->getSubSite());
-    $this->saveSubSiteConfiguration();
+    $this->saveSiteConfiguration();
     $this->getSubSite()->deleteConfiguration();
   }
   

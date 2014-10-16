@@ -130,9 +130,9 @@ class DrupalSite extends GenericDrupalEntity {
     $id = $subsite->getSubSiteID();
     $subsites = $this->getSetting(SITE_SUBSITE_LIST);
     $newSubsites = array();
-    foreach ($subsites as $subsite) {
-      if ($subsite !== $id) {
-        $newSubsites[$subsite] = $subsite;
+    foreach ($subsites as $ss) {
+      if ($ss !== $id) {
+        $newSubsites[$ss] = $ss;
       }
     }
     $this->setSetting(SITE_SUBSITE_LIST, $subsites);
