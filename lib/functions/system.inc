@@ -521,10 +521,13 @@ function register_system_command_listener($cb = NULL) {
  */
 function execute_system_command($command, array $args = array(), &$output = array(), &$returnCode = '', $returnOutput = TRUE, $asUser = FALSE) {
   if (!empty($asUser)) {
+    dtk_info('Executing system command as user [!user]', array('!user' => $asUser));
     $asUser = trim(escapeshellarg($asUser), '\'"');
-    $command = 'sudo -u' . $asUser;
+    $command = 'sudo -u' . $asUser . ' ' . escapeshellcmd($command);
   }
-  $command = escapeshellcmd($command);
+  else {
+    $command = escapeshellcmd($command);
+  }
   $command = str_replace_all($command, $args, 'escapeshellarg');
   foreach (register_system_command_listener() as $listener) {
     call_user_func($listener, 'System command about to execute: `' . $command . '`');
