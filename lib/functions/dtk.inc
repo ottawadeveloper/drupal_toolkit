@@ -5,7 +5,7 @@
  */
 
 function dtk_debug_level($set = NULL) {
-  $level = state(__FUNCTION__, DEBUG_LEVEL_NORMAL);
+  $level = &state(__FUNCTION__, DEBUG_LEVEL_NORMAL);
   if ($set !== NULL) {
     $level = $set;
   }

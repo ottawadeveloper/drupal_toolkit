@@ -100,7 +100,7 @@ define('DRUSH_DIRECTORY_PRIVATE', 'private');
  *   The username Drush should execute as or FALSE for no user.
  */
 function drush_execute_as_user($username = NULL) {
-  $s = state(__FUNCTION__, FALSE);
+  $s = &state(__FUNCTION__, FALSE);
   if ($username !== NULL) {
     $s = $username;
   }
