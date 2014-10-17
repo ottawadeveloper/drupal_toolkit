@@ -523,7 +523,7 @@ function execute_system_command($command, array $args = array(), &$output = arra
   if (!empty($asUser)) {
     dtk_info('Executing system command as user [!user]', array('!user' => $asUser));
     $asUser = trim(escapeshellarg($asUser), '\'"');
-    $command = 'sudo -u' . $asUser . ' ' . escapeshellcmd($command);
+    $command = 'sudo -n -u' . $asUser . ' ' . escapeshellcmd($command);
   }
   else {
     $command = escapeshellcmd($command);
