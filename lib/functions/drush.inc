@@ -151,7 +151,7 @@ function drush_simple_test($alias = NULL, $extras = array()) {
     $command .= ' --xml=!xml';
     $args['!xml'] = $options['junit-output'];
   }
-  drush_command($command, $alias, $args, $out, $exit, FALSE);
+  drush_command($command, $alias, $args, $out, $exit, FALSE, TRUE);
   return extra_empty($exit);
 }
 
@@ -519,11 +519,13 @@ function drush_status($alias = NULL) {
  *   A variable for the exit code.
  * @param boolean $returnOutput
  *   Set to TRUE if $out is needed.
+ * @param boolean $stayRoot
+ *   Set to TRUE if this command should execute as root
  * 
  * @return string
  *   The last line of the command executed.
  */
-function drush_command($subcommand, $alias = NULL, array $args = array(), &$out = array(), &$exit = NULL, $returnOutput = TRUE) {
+function drush_command($subcommand, $alias = NULL, array $args = array(), &$out = array(), &$exit = NULL, $returnOutput = TRUE, $stayRoot = FALSE) {
   $cmd = 'drush ';
   switch (dtk_debug_level()) {
       case DEBUG_LEVEL_VERBOSE:
@@ -537,7 +539,7 @@ function drush_command($subcommand, $alias = NULL, array $args = array(), &$out 
     $cmd .= '@' . $alias . ' ';
   }
   $cmd .= $subcommand;
-  $ret = execute_system_command($cmd, $args, $out, $exit, $returnOutput, drush_execute_as_user());
+  $ret = execute_system_command($cmd, $args, $out, $exit, $returnOutput, $stayRoot ? NULL : drush_execute_as_user());
   return $ret;
 }
 
@@ -655,7 +657,7 @@ function drush_db_dump($alias = NULL, $destination = NULL, $extras = array()) {
       }
     }
   }
-  drush_command($cmd, $alias, $args, $out, $exit);
+  drush_command($cmd, $alias, $args, $out, $exit, TRUE, TRUE);
   if (!extra_empty($exit)) {
     return FALSE;
   }
