@@ -30,6 +30,7 @@ class CronPlugin extends GenericPlugin implements EventListener, ServerInteracti
       EVENT_REMOVE_ALL,
       EVENT_UPDATE_PRIOR_ACTIONS,
       EVENT_REMOVE_SUBSITE_ALL,
+      EVENT_ALTER_HELP_INSTRUCTIONS,
     ), $this);
     $this->config()->extendDefaultConfiguration(array(
       CONFIG_CRONTAB_FREQUENCY => '@daily',
@@ -41,6 +42,13 @@ class CronPlugin extends GenericPlugin implements EventListener, ServerInteracti
   
   public function captureEvent(DtkEvent &$context, $eventType) {
     switch($eventType) {
+      case EVENT_ALTER_HELP_INSTRUCTIONS:
+        $context->defineOptions(array(
+          'site-install',
+          'site-update',
+          'subsite-install',
+        ), OPTION_CRONTAB_FREQUENCY, $this->str(STRING_HELP_OPTION_CRONTAB_FREQUENCY_DESC));
+        break;
       case EVENT_UPDATE_PRIOR_SUBSITE_ACTIONS:
       case EVENT_UPDATE_PRIOR_ACTIONS:
         if ($context->checkExecution()) {

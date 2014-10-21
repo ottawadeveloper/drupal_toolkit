@@ -10,6 +10,8 @@
  */
 define('OPTION_SIMPLETEST_CASES', 'simple-test-classes');
 
+define('STRING_HELP_OPTION_SIMPLETEST_CASES_DESC', 'help.option_desc.simple-test-classes');
+
 /**
  * Option for specifying simple test methods. Only used if you specified
  * one and only one test class or group with OPTION_SIMPLETEST_CASES.
@@ -18,12 +20,16 @@ define('OPTION_SIMPLETEST_CASES', 'simple-test-classes');
  */
 define('OPTION_SIMPLETEST_METHODS', 'simple-test-methods');
 
+define('STRING_HELP_OPTION_SIMPLETEST_METHODS_DESC', 'help.option_desc.simple-test-methods');
+
 /**
  * Option for overriding CONFIG_SIMPLETEST_DIRTY.
  * 
  * @ingroup args
  */
 define('OPTION_SIMPLETEST_DIRTY', 'simple-test-dirty');
+
+define('STRING_HELP_OPTION_SIMPLETEST_DIRTY_DESC', 'help.option_desc.simple-test-dirty');
 
 /**
  * If set to TRUE, will not cleanup the test databases on failure.

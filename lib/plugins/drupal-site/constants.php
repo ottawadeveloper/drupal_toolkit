@@ -493,3 +493,5 @@ define('SITE_SETTING_PREFIXED_DOMAINS', 'prefixed-domains');
  * @ingroup site_tokens
  */
 define('SITE_TOKEN_PREFIXED_DOMAINS', 'SITE_RECURSIVE_PREFIXED_DOMAINS');
+
+define('STRING_HELP_OPTION_LOCAL_DESC', 'help.option_desc.local');

@@ -53,3 +53,5 @@ define('STRING_SUCCESS_CREATE_CROSSLINKS', 'crosslink.success.create');
  * @ingroup strings
  */
 define('STRING_ERROR_CROSSLINKS_NO_SITE', 'crosslink.error.no-site');
+
+define('STRING_HELP_OPTION_CROSSLINK_DESC', 'help.option_desc.crosslink');

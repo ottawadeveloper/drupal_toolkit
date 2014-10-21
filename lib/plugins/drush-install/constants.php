@@ -18,6 +18,8 @@ define('CONFIG_INSTALL_PROFILE', 'install-profile');
  */
 define('OPTION_INSTALL_MODULES_FILE', 'install-modules-file');
 
+define('STRING_HELP_OPTION_INSTALL_MODULES_FILE_DESC', 'help.option_desc.install-modules-file');
+
 /**
  * Config key for a file with the names of modules to
  * install.
@@ -91,12 +93,16 @@ define('CONFIG_INSTALL_MODULES', 'install-modules');
  */
 define('OPTION_INSTALL_PROFILE', 'install-profile');
 
+define('STRING_HELP_OPTION_INSTALL_PROFILE_DESC', 'help.option_desc.install-profile');
+
 /**
  * Command line long option to override the user 1 email address.
  * 
  * @ingroup args
  */
 define('OPTION_INSTALL_EMAIL', 'install-email');
+
+define('STRING_HELP_OPTION_INSTALL_EMAIL_DESC', 'help.option_desc.install-email');
 
 /**
  * Command line long option to override the user 1 user name.
@@ -105,12 +111,16 @@ define('OPTION_INSTALL_EMAIL', 'install-email');
  */
 define('OPTION_INSTALL_USER', 'install-user');
 
+define('STRING_HELP_OPTION_INSTALL_USER_DESC', 'help.option_desc.install-user');
+
 /**
  * Command line long option to override the user 1 password.
  * 
  * @ingroup args
  */
 define('OPTION_INSTALL_PASSWORD', 'install-password');
+
+define('STRING_HELP_OPTION_INSTALL_PASSWORD_DESC', 'help.option_desc.install-password');
 
 /**
  * Command line long option to add additional form values to the installer. 
@@ -119,6 +129,8 @@ define('OPTION_INSTALL_PASSWORD', 'install-password');
  * @ingroup args
  */
 define('OPTION_INSTALL_SETTINGS', 'install-settings');
+
+define('STRING_HELP_OPTION_INSTALL_SETTINGS_DESC', 'help.option_desc.install-settings');
 
 /**
  * Command line long option to specify additional flags to the installer.
@@ -129,12 +141,16 @@ define('OPTION_INSTALL_SETTINGS', 'install-settings');
  */
 define('OPTION_INSTALL_OPTIONS', 'install-options');
 
+define('STRING_HELP_OPTION_INSTALL_OPTIONS_DESC', 'help.option_desc.install-options');
+
 /**
  * Command line long option to override the site email address.
  * 
  * @ingroup args
  */
 define('OPTION_INSTALL_SITE_EMAIL', 'site-email');
+
+define('STRING_HELP_OPTION_INSTALL_SITE_EMAIL_DESC', 'help.option_desc.site-email');
 
 /**
  * Command line long option to override the site name.
@@ -143,6 +159,8 @@ define('OPTION_INSTALL_SITE_EMAIL', 'site-email');
  */
 define('OPTION_INSTALL_SITE_NAME', 'site-name');
 
+define('STRING_HELP_OPTION_INSTALL_SITE_NAME_DESC', 'help.option_desc.site-name');
+
 /**
  * Command line long option to specify additional modules to install. Module
  * names should be separated by commas, without spaces.
@@ -150,6 +168,8 @@ define('OPTION_INSTALL_SITE_NAME', 'site-name');
  * @ingroup args
  */
 define('OPTION_INSTALL_MODULES', 'install-modules');
+
+define('STRING_HELP_OPTION_INSTALL_MODULES_DESC', 'help.option_desc.install-modules');
 
 /**
  * String token for the error message if no local alias was provided.

@@ -523,3 +523,17 @@ define('CONFIG_GZIP_SUPPORT', 'gzip-enabled');
  * @ingroup strings
  */
 define('STRING_HELP_FINAL_HELP_TEXT', 'help.text.final-text');
+
+define('STRING_HELP_OPTION_SSH_DIRECT_DESC', 'help.option_desc.ssh-direct-output');
+
+define('STRING_HELP_OPTION_DEBUG_DESC', 'help.option_desc.debug');
+
+define('STRING_HELP_OPTION_VERBOSE_DESC', 'help.option_desc.verbose');
+
+define('STRING_HELP_OPTION_SILENT_DESC', 'help.option_desc.silent');
+
+define('STRING_HELP_OPTION_CONFIG_FILES_DESC', 'help.option_desc.config-files');
+
+define('STRING_HELP_OPTION_SPYC_LOCATION_DESC', 'help.option_desc.spyc-location');
+
+define('STRING_HELP_OPTION_YAML_FILES_DESC', 'help.option_desc.yaml-files');

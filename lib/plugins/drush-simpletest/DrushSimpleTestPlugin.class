@@ -20,6 +20,7 @@ class DrushSimpleTestPlugin extends GenericPlugin implements EventListener {
   public function initialize() {
     $this->events()->registerListener(array(
       EVENT_GENERATE_TESTS,
+      EVENT_ALTER_HELP_INSTRUCTIONS,
     ), $this);
     $this->config()->extendDefaultConfiguration(array(
       CONFIG_SIMPLETEST_DIRTY => FALSE,
@@ -29,6 +30,17 @@ class DrushSimpleTestPlugin extends GenericPlugin implements EventListener {
   
   public function captureEvent(DtkEvent &$event, $type) {
     switch ($type) {
+      case EVENT_ALTER_HELP_INSTRUCTIONS:
+        $event->defineOptions(array(
+          'site-test',
+        ), OPTION_SIMPLETEST_DIRTY, $this->str(STRING_HELP_OPTION_SIMPLETEST_DIRTY_DESC));
+        $event->defineOptions(array(
+          'site-test',
+        ), OPTION_SIMPLETEST_CASES, $this->str(STRING_HELP_OPTION_SIMPLETEST_CASES_DESC));
+        $event->defineOptions(array(
+          'site-test',
+        ), OPTION_SIMPLETEST_METHODS, $this->str(STRING_HELP_OPTION_SIMPLETEST_METHODS_DESC));
+        break;
       case EVENT_GENERATE_TESTS:
         if ($event->checkExecution()) {
           $event->setResult($this->runSimpleTest($event->getSite()));

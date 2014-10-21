@@ -13,14 +13,18 @@ class CrossLinkPlugin extends GenericPlugin implements EventListener {
   public function initialize() {
     $this->events()->registerListener(array(
       EVENT_SUBSITE_BUILD_SERVER_CONFIG,
-      EVENT_SITE_BUILD_SERVER_STRUCTURE,
+      EVENT_ALTER_HELP_INSTRUCTIONS,
     ), $this);
   }
   
   public function captureEvent(DtkEvent &$context, $eventType) {
     switch ($eventType) {
+      case EVENT_ALTER_HELP_INSTRUCTIONS:
+        $context->defineOptions(array(
+          'subsite-build',
+        ), OPTION_CROSSLINK_SITE, $this->str(STRING_HELP_OPTION_CROSSLINK_DESC));
+        break;
       case EVENT_SUBSITE_BUILD_SERVER_CONFIG:
-      case EVENT_SITE_BUILD_SERVER_STRUCTURE:
         if ($context->checkExecution()) {
           $context->setResult($this->createCrossLink($context->getEntity()));
         }

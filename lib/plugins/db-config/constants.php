@@ -303,3 +303,11 @@ define('STRING_SUCCESS_DB_CREATE', 'db_config.success.db-create');
  * @ingroup strings
  */
 define('STRING_WORKING_DB_CREATE_ITEM', 'db_config.working.db-create-item');
+
+define('STRING_HELP_OPTION_DB_PREFIX_DESC', 'help.option_desc.db-prefix');
+
+define('STRING_HELP_OPTION_DB_USER_DESC', 'help.option_desc.db-user');
+
+define('STRING_HELP_OPTION_DB_PASSWORD_DESC', 'help.option_desc.db-password');
+
+define('STRING_HELP_OPTION_DB_NAME_DESC', 'help.option_desc.db-name');

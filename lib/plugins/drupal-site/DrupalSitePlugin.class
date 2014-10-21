@@ -28,11 +28,18 @@ class DrupalSitePlugin extends GenericPlugin implements EventListener {
     $this->events()->registerListener(array(
       EVENT_CLEANUP_BUILD,
       EVENT_GET_INFO,
+      EVENT_ALTER_HELP_INSTRUCTIONS,
     ), $this);
   }
   
   public function captureEvent(DtkEvent &$context, $eventType) {
     switch ($eventType) {
+      case EVENT_ALTER_HELP_INSTRUCTIONS:
+        $context->defineOptions(array(
+          'site-build',
+          'subsite-build',
+        ), ARG_IS_LOCAL, $this->str(STRING_HELP_OPTION_LOCAL_DESC), array('-l'));
+        break;
       case EVENT_GET_INFO:
         if ($context->checkExecution() && ($context instanceof SiteInfoEvent)) {
           $entity = $context->getEntity();

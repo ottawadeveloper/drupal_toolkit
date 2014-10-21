@@ -180,6 +180,7 @@ class HelpInstructions {
       ksort($this->options);
       $text[] = '  Options';
       foreach ($this->options as $option => $desc) {
+        $original = $option;
         if (strlen($option) > 0) {
           $option = '--' . $option;
         }
@@ -188,8 +189,8 @@ class HelpInstructions {
         }
         $text[] = '    ' . terminal_color_string($option, TERMINAL_FOREGROUND_COLOR_LIGHT_GRAY);
         $text[] = terminal_word_wrap_line($desc, '      ');
-        if (!empty($this->optionAliases[$option])) {
-          $text[] = terminal_word_wrap_line('    Aliases: ' . implode(', ', $this->optionAliases[$option]), '    ', 80, TRUE);
+        if (!empty($this->optionAliases[$original])) {
+          $text[] = terminal_word_wrap_line('    Aliases: ' . implode(', ', $this->optionAliases[$original]), '    ', 80, TRUE);
         }
       }
       $text[] = '';

@@ -18,6 +18,13 @@ class HelpCommand extends GenericCommand {
     $this->events()->fireEvent(EVENT_FIND_HELP_INSTRUCTIONS, $event);
     $event->reset();
     $this->events()->fireEvent(EVENT_ALTER_HELP_INSTRUCTIONS, $event);
+    $event->defineOptions(NULL, OPTION_SSH_DIRECT_OUTPUT, $this->str(STRING_HELP_OPTION_SSH_DIRECT_DESC));
+    $event->defineOptions(NULL, ARG_DEBUG, $this->str(STRING_HELP_OPTION_DEBUG_DESC));
+    $event->defineOptions(NULL, ARG_VERBOSE, $this->str(STRING_HELP_OPTION_VERBOSE_DESC), array('-v'));
+    $event->defineOptions(NULL, ARG_SILENT, $this->str(STRING_HELP_OPTION_SILENT_DESC));
+    $event->defineOptions(NULL, ARG_CONFIG_FILES, $this->str(STRING_HELP_OPTION_CONFIG_FILES_DESC));
+    $event->defineOptions(NULL, ARG_SPYC_LOCATION, $this->str(STRING_HELP_OPTION_SPYC_LOCATION_DESC));
+    $event->defineOptions(NULL, ARG_YAML_FILES, $this->str(STRING_HELP_OPTION_YAML_FILES_DESC));
     $categorized = array();
     foreach ($event->getInstructions() as $instruction) {
       if ($instruction instanceof HelpInstructions) {
@@ -33,6 +40,7 @@ class HelpCommand extends GenericCommand {
     $requested = $this->args()->getOption(OPTION_HELP_COMMAND);
     foreach ($categorized as $category => $list) {
       if (empty($requested) || isset($list[$requested])) {
+        ksort($list);
         echo PHP_EOL;
         echo terminal_color_string($category, TERMINAL_FOREGROUND_COLOR_WHITE) . PHP_EOL . '--------------------' . PHP_EOL;
         foreach ($list as $key => $command) {

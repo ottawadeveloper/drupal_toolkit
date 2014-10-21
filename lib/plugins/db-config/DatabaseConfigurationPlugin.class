@@ -42,6 +42,24 @@ class DatabaseConfigurationPlugin extends GenericPlugin implements EventListener
   
   public function captureEvent(DtkEvent &$context, $type) {
     switch ($type) {
+      case EVENT_ALTER_HELP_INSTRUCTIONS:
+        $context->defineOptions(array(
+          'site-install',
+          'subsite-install'
+        ), OPTION_DB_PREFIX, $this->str(STRING_HELP_OPTION_DB_PREFIX_DESC));
+         $context->defineOptions(array(
+          'site-install',
+          'subsite-install'
+        ), OPTION_DB_USER, $this->str(STRING_HELP_OPTION_DB_USER_DESC));
+         $context->defineOptions(array(
+          'site-install',
+          'subsite-install'
+        ), OPTION_DB_PASSWORD, $this->str(STRING_HELP_OPTION_DB_PASSWORD_DESC));
+         $context->defineOptions(array(
+          'site-install',
+          'subsite-install'
+        ), OPTION_DB_NAME, $this->str(STRING_HELP_OPTION_DB_NAME_DESC));
+        break;
       case EVENT_GET_INFO:
         $entity = $context->getEntity();
         $servers = $entity->getSetting(SITE_DATABASE_LIST);

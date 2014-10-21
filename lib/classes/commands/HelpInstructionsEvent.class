@@ -28,6 +28,20 @@ class HelpInstructionsEvent extends DtkEvent {
     $this->setResult(TRUE);
   }
   
+  public function defineOptions($module, $option, $description, $aliases = array()) {
+    if (empty($module)) {
+      $module = array_keys($this->instructions);
+    }
+    elseif (!is_array($module)) {
+      $module = array($module);
+    }
+    foreach ($module as $m) {
+      if (isset($this->instructions[$m])) {
+        $this->instructions[$m]->defineOption($option, $description, $aliases);
+      }
+    }
+  }
+  
   /**
    * Retrieves an array of all instructions.
    * 

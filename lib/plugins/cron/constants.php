@@ -185,3 +185,5 @@ define('STRING_WORKING_CRON_DELETE_ITEM', 'cron.working.delete_item');
  * @ingroup strings
  */
 define('STRING_WORKING_CRON_SETUP_ITEM', 'cron.working.setup_item');
+
+define('STRING_HELP_OPTION_CRONTAB_FREQUENCY_DESC', 'help.option_desc.crontab-frequency');
