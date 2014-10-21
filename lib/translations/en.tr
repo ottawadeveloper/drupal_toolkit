@@ -84,6 +84,7 @@ help.option_desc.simple-test-dirty = 'Specify whether or not to clean up after s
 help.option_desc.no-gateway = 'If this flag is present, prevent the gateway server configuration files from being generated.'
 help.option_desc.no-http = 'If this flag is present, prevent the HTTP server server configuration files from being generated.'
 help.option_desc.branch = 'Specify the branch to use in the build process.'
+help.command_desc.self-update = 'Updates the toolkit and any plugins.'
 
 plugin.error.missing-config = 'Plugin requires configuration setting [!key].'
 
