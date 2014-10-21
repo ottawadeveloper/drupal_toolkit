@@ -14,11 +14,15 @@ class SelfUpdatePlugin extends GenericPlugin implements EventListener {
     $this->events()->registerListener(array(
       EVENT_CORE_REGISTER_COMMANDS,
       EVENT_SELF_UPDATE_CORE,
+      EVENT_FIND_HELP_INSTRUCTIONS,
     ), $this);
   }
   
   public function captureEvent(DtkEvent &$event, $type) {
     switch ($type) {
+      case EVENT_FIND_HELP_INSTRUCTIONS:
+        $event->registerInstruction(new HelpInstructions($this->str(STRING_HELP_CORE_CATEGORY), 'self-update', $this->str(STRING_HELP_COMMAND_SELF_UPDATE_DESC)));
+        break;
       case EVENT_SELF_UPDATE_CORE:
         if ($event->checkExecution()) {
           $event->setResult($this->selfUpdate());

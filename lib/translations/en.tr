@@ -22,6 +22,10 @@ types.log.notice = 'Notice'
 types.log.info = 'Info'
 types.log.debug = 'Debug'
 
+standard_site.error.crosslink-exists = "The crosslink already exists."
+standard_site.error.crosslink-no-write = "The crosslinks directory is not writable."
+standard_site.error.rootlink-creation = 'Could not create a rootlink.'
+
 standard-structure.working.remove-old = 'Removing old codebase directory [!build].'
 
 help.error.no-commands = 'No help commands have been defined.'

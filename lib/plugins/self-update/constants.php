@@ -3,6 +3,8 @@
  * @file Defines several useful constants for this project.
  */
 
+define('STRING_HELP_COMMAND_SELF_UPDATE_DESC', 'help.command_desc.self-update');
+
 /**
  * Fired to update the core of DTK.
  * 
