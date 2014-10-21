@@ -9,3 +9,10 @@
  * @ingroup events
  */
 define('EVENT_GENERATE_TESTS', 'run-tests');
+
+/**
+ * String to describe the site-test command.
+ * 
+ * @ingroup strings
+ */
+define('STRING_HELP_TEST_DESCRIPTION', 'help.command-desc.site-test');

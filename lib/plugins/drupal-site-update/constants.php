@@ -249,3 +249,17 @@ define('EVENT_UPDATE_REFRESH_SUBSITE_CONFIG', 'update-subsite-config');
  * @ingroup events
  */
 define('EVENT_UPDATE_PREP_SUBSITE_FOR_REFRESH', 'update-subsite-prep-refresh');
+
+/**
+ * String token for describing the site-update command.
+ * 
+ * @ingroup strings
+ */
+define('STRING_HELP_SITE_UPDATE_DESCRIPTION', 'help.command-desc.site-update');
+
+/**
+ * String token for describing the subsite-update-all command.
+ * 
+ * @ingroup strings
+ */
+define('STRING_HELP_SITE_UPDATE_ALL_DESCRIPTION', 'help.command-desc.site-update-all');

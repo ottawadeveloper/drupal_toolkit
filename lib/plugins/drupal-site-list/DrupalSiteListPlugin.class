@@ -22,7 +22,7 @@ class DrupalSiteListPlugin extends GenericPlugin implements EventListener {
       case EVENT_FIND_HELP_INSTRUCTIONS:
         if ($context instanceof HelpInstructionsEvent) {
           $docs = new HelpInstructions(
-            $this->str(STRING_HELP_DSM_CATEGORY),
+            $this->str(STRING_HELP_DGSM_CATEGORY),
             'site-list',
             $this->str(STRING_HELP_SITE_LIST_DESCRIPTION)
           );

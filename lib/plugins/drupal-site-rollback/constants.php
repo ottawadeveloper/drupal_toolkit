@@ -155,3 +155,17 @@ define('EVENT_ROLLBACK_SUBSITE_CLEAN', 'rollback-subsite-clean');
  * @ingroup strings
  */
 define('STRING_ROLLBACK_REQUIRES_TWO_BUILDS', 'drupal_site_rollback.error.two-builds-required');
+
+/**
+ * String token for describing the site-rollback command.
+ * 
+ * @ingroup strings
+ */
+define('STRING_HELP_SITE_ROLLBACK_DESCRIPTION', 'help.command-desc.site-rollback');
+
+/**
+ * String token for describing the subsite-rollback-all command.
+ * 
+ * @ingroup strings
+ */
+define('STRING_HELP_SITE_ROLLBACK_ALL_DESCRIPTION', 'help.command-desc.site-rollback-all');

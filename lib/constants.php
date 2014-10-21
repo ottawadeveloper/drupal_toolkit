@@ -515,3 +515,11 @@ define('CONFIG_SKIP_PLUGINS', 'disabled-plugins');
  * @ingroup config
  */
 define('CONFIG_GZIP_SUPPORT', 'gzip-enabled');
+
+/**
+ * String key for the final help text that tells the user about the --command
+ * parameter.
+ * 
+ * @ingroup strings
+ */
+define('STRING_HELP_FINAL_HELP_TEXT', 'help.text.final-text');

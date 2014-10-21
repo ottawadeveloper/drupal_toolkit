@@ -35,6 +35,7 @@ class HelpInstructionsEvent extends DtkEvent {
    *   An array of HelpInstruction objects.
    */
   public function getInstructions() {
+    ksort($this->instructions);
     return $this->instructions;
   }
   

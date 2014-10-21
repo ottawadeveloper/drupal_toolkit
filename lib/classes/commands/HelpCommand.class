@@ -52,6 +52,9 @@ class HelpCommand extends GenericCommand {
     if (!$found) {
       echo $this->strings()->getString(STRING_ERROR_NO_HELP_COMMANDS) . PHP_EOL;
     }
+    elseif (empty($requested)) {
+      echo $this->strings()->getString(STRING_HELP_FINAL_HELP_TEXT) . PHP_EOL;
+    }
   }
   
 }

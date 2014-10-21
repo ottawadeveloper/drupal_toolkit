@@ -41,6 +41,13 @@ define('STRING_HELP_DSM_CATEGORY', 'help.category.drupal-site-management');
 define('STRING_HELP_DSSM_CATEGORY', 'help.category.drupal-subsite-management');
 
 /**
+ * Help category name for drupal global site management commands.
+ * 
+ * @ingroup strings
+ */
+define('STRING_HELP_DGSM_CATEGORY', 'help.category.drupal-global-site-management');
+
+/**
  * Help description for the site name argument.
  * 
  * @ingroup strings
