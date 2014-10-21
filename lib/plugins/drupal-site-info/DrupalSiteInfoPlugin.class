@@ -12,12 +12,24 @@ class DrupalSiteInfoPlugin extends GenericPlugin implements EventListener {
   
   public function initialize() {
     $this->events()->registerListener(array(
-      EVENT_CORE_REGISTER_COMMANDS
+      EVENT_CORE_REGISTER_COMMANDS,
+      EVENT_FIND_HELP_INSTRUCTIONS,
     ), $this);
   }
   
   public function captureEvent(DtkEvent &$event, $type) {
-    switch ($type) {
+    switch ($type) { 
+      case EVENT_FIND_HELP_INSTRUCTIONS:
+        if ($event instanceof HelpInstructionsEvent) {
+          $site = new HelpInstructions($this->str(STRING_HELP_DSM_CATEGORY), 'site-info', $this->str(STRING_HELP_SITE_INFO_DESCRIPTION));
+          $site->defineArgument(1, $this->str(STRING_HELP_SITE_NAME));
+          $event->registerInstruction($site);
+          $subsite = new HelpInstructions($this->str(STRING_HELP_DSSM_CATEGORY), 'subsite-info', $this->str(STRING_HELP_SUBSITE_INFO_DESCRIPTION));
+          $subsite->defineArgument(1, $this->str(STRING_HELP_SITE_NAME));
+          $subsite->defineArgument(2, $this->str(STRING_HELP_SUBSITE_NAME));
+          $event->registerInstruction($subsite);
+        }
+        break;
       case EVENT_CORE_REGISTER_COMMANDS:
         $this->router()->addCommand('site-info', new SiteInfoCommand());
         $this->router()->addCommand('subsite-info', new SubSiteInfoCommand());
