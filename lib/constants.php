@@ -256,6 +256,14 @@ define('STRING_CORE_INITIALIZED', 'core.message.initialized');
 define('STRING_CORE_MISSING_SUBCOMMAND', 'core.error.missing-subcommand');
 
 /**
+ * Config setting for whether or not the --no-edit flag is available for
+ * git.
+ * 
+ * @ingroup config
+ */
+define('CONFIG_GIT_NO_EDIT', 'git-no-edit');
+
+/**
  * String token for when there is no command found to match the command.
  * 
  * Replacement strings:

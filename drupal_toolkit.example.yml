@@ -11,6 +11,10 @@
 ## Uncomment this to enable silent mode on every DTK call.
 #silent: yes
 
+## Uncomment to specify a user to execute compatible Drush commands as.
+## Should generally be set to your server's web server user.
+#drush-user: apache
+
 ## Uncomment this if you want to use gzip to compress archives.
 #gzip-enabled: yes
 
@@ -82,13 +86,16 @@
 #  - upstream-db
 #  - upstream-files
 
+## Uncomment to tell the system that --no-edit is not available
+#git-no-edit: no
+
 
 ####################
 ### FILE LOGGING ###
 ####################
 
 ## Specifies the location of a log file to send output to. Optional.
-#log-file=/var/log/dtk/dtk.log
+#log-file: /var/log/dtk/dtk.log
 
 
 #######################
@@ -233,7 +240,7 @@
 ## Uncomment this line to change the default cron job type created. Current
 ## options are:
 ## - crontab: Linux-style cron jobs created in /etc/cron.d
-#crontab-type-default: crontab
+#cron-type-default: crontab
 
 ## Uncomment this line to prevent cron jobs from being updated with
 ## the rest of the site.
@@ -243,6 +250,9 @@
 ################################
 ### DATABASE CONFIG SETTINGS ###
 ################################
+
+## Uncomment to set a default type for MySQL servers
+#db-default-server-type: mysql
 
 ## Uncomment to change the pattern for building DB usernames
 #site-db-username-pattern: @@SITE_UUID
@@ -351,6 +361,9 @@
 #  - simpletest 
 #  - devel
 
+## File containing a list of additional modules (one project name per line).
+#install-modules-file: /path/to/install/modules
+
 ## Additional form arguments for the installer, one per line
 ## Command line option to override: --install-settings="install_configure_form.site_default_country=FR,install_configure_form.other_setting=value"
 #install-settings:
@@ -396,6 +409,9 @@
 ## Uncomment to prevent gateway config files from being updated
 #gateway-config-static: yes
 
+## Uncomment to temporarily disable creating gateway files
+#no-gateway: yes
+
 
 #################################
 ### HTTP SERVER CONFIGURATION ###
@@ -415,6 +431,9 @@
 
 ## Controls the template for naming the configuration file.
 #http-config-filename-template: @@BUILD_NAME
+
+## Uncomment to temporarily disable creating HTTP files
+#no-http: yes
 
 
 ##########################################
@@ -509,11 +528,11 @@
 ######################################
 
 ## Uncomment to change the location of the temp directory.
-#temp-directory = /tmp
+#temp-directory: /tmp
 
 ## Uncomment to erase the temp directory specified above
 ## before every build and update
-#clean-temp-directory = yes
+#clean-temp-directory: yes
 
 
 #####################
@@ -639,3 +658,9 @@
 #si-local-gateway:
 #si-local-managed-host:
 
+## Uncomment any of the following to disable the local server.
+#si-disable-local-cron: yes
+#si-disable-local-drush: yes
+#si-disable-local-http: yes
+#si-disable-local-gateway: yes
+#si-disable-local-managed-host: yes
