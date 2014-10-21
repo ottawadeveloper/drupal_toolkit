@@ -192,6 +192,9 @@ function remove_directory($directory, $keepTop = FALSE) {
   if (extra_empty(trim($directory, '/\\'))) {
     return FALSE;
   }
+  if (!file_exists($directory)) {
+    return TRUE;
+  }
   if (!is_dir($directory)) {
     return unlink($directory);
   }
