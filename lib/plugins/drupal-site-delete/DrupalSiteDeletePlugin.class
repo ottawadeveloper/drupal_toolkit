@@ -30,7 +30,7 @@ class DrupalSiteDeletePlugin extends GenericPlugin implements EventListener {
           $build->defineArgument(1, $this->str(STRING_HELP_SITE_NAME));
           $context->registerInstruction($build);
           $subbuild = new HelpInstructions(
-              $this->str(STRING_HELP_DSM_CATEGORY),
+              $this->str(STRING_HELP_DSSM_CATEGORY),
               'subsite-delete',
               $this->str(STRING_HELP_SUBSITE_DELETE_DESCRIPTION)
           );

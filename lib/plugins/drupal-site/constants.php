@@ -34,6 +34,13 @@ define('CONFIG_DTK_LOCATION', 'dtk-location');
 define('STRING_HELP_DSM_CATEGORY', 'help.category.drupal-site-management');
 
 /**
+ * Help category name for drupal subsite management commands.
+ * 
+ * @ingroup strings
+ */
+define('STRING_HELP_DSSM_CATEGORY', 'help.category.drupal-subsite-management');
+
+/**
  * Help description for the site name argument.
  * 
  * @ingroup strings
