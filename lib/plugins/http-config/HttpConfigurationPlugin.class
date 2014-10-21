@@ -36,6 +36,7 @@ class HttpConfigurationPlugin extends GenericPlugin implements EventListener, Se
       EVENT_UPDATE_PREPARE_SERVER,
       EVENT_SUBSITE_BUILD_PARENT_SERVER_REFRESH,
       EVENT_REMOVE_SUBSITE_CLEANUP,
+      EVENT_ALTER_HELP_INSTRUCTIONS,
     ), $this);
     $this->config()->extendDefaultConfiguration(array(
       CONFIG_NO_HTTP_SERVER => FALSE,
@@ -53,6 +54,13 @@ class HttpConfigurationPlugin extends GenericPlugin implements EventListener, Se
   
   public function captureEvent(DtkEvent &$context, $eventType) {
     switch ($eventType) {
+      case EVENT_ALTER_HELP_INSTRUCTIONS:
+        $context->defineOptions(array(
+          'site-build',
+          'subsite-build',
+          'site-update',
+        ), OPTION_NO_HTTP_SERVER, $this->str(STRING_HELP_OPTION_NO_HTTP_SERVER_DESC));
+        break;
       case EVENT_SUBSITE_BUILD_PARENT_SERVER_REFRESH:
       case EVENT_SITE_BUILD_CONFIGURE_SERVER:
         if ($context->checkExecution()) {

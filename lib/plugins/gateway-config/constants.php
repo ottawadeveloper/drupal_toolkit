@@ -40,6 +40,8 @@ define('CONFIG_NO_GATEWAY_SERVER', 'no-gateway');
  */
 define('OPTION_NO_GATEWAY_SERVER', 'no-gateway');
 
+define('STRING_HELP_OPTION_NO_GATEWAY_SERVER', 'help.option_desc.no-gateway');
+
 /**
  * Keep track of this site not having HTTP configuration.
  * 

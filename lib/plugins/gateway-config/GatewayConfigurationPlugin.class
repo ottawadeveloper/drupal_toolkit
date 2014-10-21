@@ -33,6 +33,7 @@ class GatewayConfigurationPlugin extends GenericPlugin implements EventListener,
       EVENT_SITE_BUILD_MORE_CONFIG,
       EVENT_UPDATE_REFRESH_SERVER_CONFIG,
       EVENT_SUBSITE_BUILD_PARENT_SERVER_REFRESH,
+      EVENT_ALTER_HELP_INSTRUCTIONS,
     ), $this);
     $this->config()->extendDefaultConfiguration(array(
       CONFIG_NO_GATEWAY_SERVER => FALSE,
@@ -51,6 +52,13 @@ class GatewayConfigurationPlugin extends GenericPlugin implements EventListener,
   
   public function captureEvent(DtkEvent &$context, $type) {
     switch ($type) {
+      case EVENT_ALTER_HELP_INSTRUCTIONS:
+        $context->defineOptions(array(
+          'site-build',
+          'subsite-build',
+          'site-update',
+        ), OPTION_NO_GATEWAY_SERVER, $this->str(STRING_HELP_OPTION_NO_GATEWAY_SERVER));
+        break;
       case EVENT_SITE_BUILD_MORE_CONFIG:
         if ($context->checkExecution()) {
           $context->setResult($this->publishGatewayConfig($context->getSite()));

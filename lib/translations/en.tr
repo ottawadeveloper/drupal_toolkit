@@ -77,6 +77,9 @@ help.option_desc.install-modules = 'Specify additional modules to install.'
 help.option_desc.simple-test-classes = 'Specify a list of classes to execute simpletests for.'
 help.option_desc.simple-test-methods = 'Specify a list of simpletest methods to execute.'
 help.option_desc.simple-test-dirty = 'Specify whether or not to clean up after simpletests.'
+help.option_desc.no-gateway = 'If this flag is present, prevent the gateway server configuration files from being generated.'
+help.option_desc.no-http = 'If this flag is present, prevent the HTTP server server configuration files from being generated.'
+help.option_desc.branch = 'Specify the branch to use in the build process.'
 
 plugin.error.missing-config = 'Plugin requires configuration setting [!key].'
 

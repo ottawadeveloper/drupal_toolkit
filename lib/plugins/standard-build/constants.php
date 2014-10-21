@@ -72,6 +72,8 @@ define('CONFIG_BRANCH_WHITELIST', 'branch-whitelist');
  */
 define('OPTION_BRANCH', 'branch');
 
+define('STRING_HELP_OPTION_BRANCH_DESC', 'help.option_desc.branch');
+
 /**
  * String token for the error message if no branch is specified.
  * 

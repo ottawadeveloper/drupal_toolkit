@@ -48,6 +48,8 @@ define('CONFIG_NO_HTTP_SERVER', 'no-http');
  */
 define('OPTION_NO_HTTP_SERVER', 'no-http');
 
+define('STRING_HELP_OPTION_NO_HTTP_SERVER_DESC', 'help.option_desc.no-http');
+
 /**
  * Keep track of this site not having HTTP configuration.
  * 

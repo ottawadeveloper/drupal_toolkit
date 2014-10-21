@@ -31,6 +31,7 @@ class DrupalSiteStandardBuildPlugin extends GenericPlugin implements EventListen
       EVENT_ROLLBACK_PHASE1,
       EVENT_ROLLBACK_PHASE3,
       EVENT_GET_INFO,
+      EVENT_ALTER_HELP_INSTRUCTIONS,
     ), $this);
     $this->config()->extendDefaultConfiguration(array(
       CONFIG_GIT_REPO_ROOT => '',
@@ -47,6 +48,9 @@ class DrupalSiteStandardBuildPlugin extends GenericPlugin implements EventListen
   
   public function captureEvent(DtkEvent &$context, $type) {
     switch ($type) {
+      case EVENT_ALTER_HELP_INSTRUCTIONS:
+        $context->defineOptions(array('site-build', 'subsite-build', 'site-update'), OPTION_BRANCH, $this->str(STRING_HELP_OPTION_BRANCH_DESC));
+        break;
       case EVENT_GET_INFO:
         $entity = $context->getEntity();
         if ($entity instanceof DrupalSubSite) {
