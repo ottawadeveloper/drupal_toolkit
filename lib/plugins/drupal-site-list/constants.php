@@ -44,3 +44,10 @@ define('STRING_DISPLAY_INSTALLED_NO', 'drupal-site-list.display.installed-no');
  * @ingroup strings
  */
 define('STRING_DISPLAY_INSTALLED_YES', 'drupal-site-list.display.installed-yes');
+
+/**
+ * String token for describing the site-list command.
+ * 
+ * @ingroup strings
+ */
+define('STRING_HELP_SITE_LIST_DESCRIPTION', 'help.command-desc.site-list');

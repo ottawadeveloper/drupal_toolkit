@@ -48,3 +48,17 @@ define('STRING_INSTALL_ERROR', 'drupal_site_install.error.install-error');
  * @ingroup site_settings
  */
 define('SITE_LAST_SUBSITE_INSTALL_BUILD', 'subsite-last-install-build');
+
+/**
+ * String token for describing the site-install command.
+ * 
+ * @ingroup strings
+ */
+define('STRING_HELP_SITE_INSTALL_DESCRIPTION', 'help.command-desc.site-install');
+
+/**
+ * String token for describing the subsite-install command.
+ * 
+ * @ingroup strings
+ */
+define('STRING_HELP_SUBSITE_INSTALL_DESCRIPTION', 'help.command-desc.subsite-install');
