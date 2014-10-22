@@ -235,7 +235,7 @@ function remove_all_symlinks($directory) {
   if (is_link($directory)) {
     return unlink($directory);
   }
-  if (is_directory($directory)) {
+  if (is_dir($directory)) {
     $h = opendir($directory);
     if (empty($h)) {
       return FALSE;
