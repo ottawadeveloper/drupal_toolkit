@@ -188,7 +188,7 @@ function get_hostname() {
  * @return boolean
  *   TRUE if the directory was deleted successfully, otherwise FALSE.
  */
-function remove_directory($directory, $keepTop = FALSE) {
+function remove_directory($directory, $keepTop = FALSE, $first = TRUE) {
   if (extra_empty(trim($directory, '/\\'))) {
     return FALSE;
   }
@@ -201,13 +201,18 @@ function remove_directory($directory, $keepTop = FALSE) {
   elseif (is_link($directory)) {
     return unlink($directory);
   }
+  if ($first) {
+    if (!remove_all_symlinks($directory)) {
+      return FALSE;
+    }
+  }
   $h = opendir($directory);
   if (empty($h)) {
     return FALSE;
   }
   while(($file = readdir($h)) !== FALSE) {
     if ($file !== '.' && $file !== '..') {
-      if (!remove_directory(assemble_path($directory, $file))) {
+      if (!remove_directory(assemble_path($directory, $file), FALSE, FALSE)) {
         return FALSE;
       }
     }
@@ -215,6 +220,34 @@ function remove_directory($directory, $keepTop = FALSE) {
   closedir($h);
   if ($keepTop) { return TRUE; }
   return rmdir($directory);
+}
+
+/**
+ * Recursively deletes all the symlinks in directories.
+ * 
+ * @param string $directory
+ *   Directory to recursively delete symlinks from.
+ * 
+ * @return boolean
+ *   TRUE if the symlinks were deleted successfully, otherwise FALSE.
+ */
+function remove_all_symlinks($directory) {
+  if (is_link($directory)) {
+    return unlink($directory);
+  }
+  $h = opendir($directory);
+  if (empty($h)) {
+    return FALSE;
+  }
+  while(($file = readdir($h)) !== FALSE) {
+    if ($file !== '.' && $file !== '..') {
+      if (!remove_all_symlinks(assemble_path($directory, $file))) {
+        return FALSE;
+      }
+    }
+  }
+  closedir($h);
+  return TRUE;
 }
 
 /**
