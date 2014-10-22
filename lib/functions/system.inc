@@ -235,18 +235,20 @@ function remove_all_symlinks($directory) {
   if (is_link($directory)) {
     return unlink($directory);
   }
-  $h = opendir($directory);
-  if (empty($h)) {
-    return FALSE;
-  }
-  while(($file = readdir($h)) !== FALSE) {
-    if ($file !== '.' && $file !== '..') {
-      if (!remove_all_symlinks(assemble_path($directory, $file))) {
-        return FALSE;
+  if (is_directory($directory)) {
+    $h = opendir($directory);
+    if (empty($h)) {
+      return FALSE;
+    }
+    while(($file = readdir($h)) !== FALSE) {
+      if ($file !== '.' && $file !== '..') {
+        if (!remove_all_symlinks(assemble_path($directory, $file))) {
+          return FALSE;
+        }
       }
     }
+    closedir($h);
   }
-  closedir($h);
   return TRUE;
 }
 
