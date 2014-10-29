@@ -59,6 +59,15 @@ define('OPTION_CRONTAB_FREQUENCY', 'crontab-frequency');
 define('CONFIG_CRONTAB_FREQUENCY', 'crontab-frequency');
 
 /**
+ * Set this config key to TRUE when you want to use the URL prefix 
+ * in the cron file name and URL. Useful when multiple environments share a
+ * cron machine.
+ * 
+ * @ingroup config
+ */
+define('CONFIG_CRON_USE_PREFIX', 'cron-use-prefix');
+
+/**
  * String for when a cron URL could not be determined.
  * 
  * @ingroup strings

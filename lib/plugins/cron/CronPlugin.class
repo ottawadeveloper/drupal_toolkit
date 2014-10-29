@@ -143,6 +143,12 @@ class CronPlugin extends GenericPlugin implements EventListener, ServerInteracti
     $this->working(STRING_WORKING_CRON_DELETE);
     $alias = $site->getSetting(SITE_DRUSH_ALIAS, NULL, TRUE);
     if (empty($alias)) { return FALSE; }
+    if (!extra_empty($this->config()->getConfig(CONFIG_CRON_USE_PREFIX))) {
+      $prefix = $this->config()->getConfig(CONFIG_SITE_URL_PREFIX);
+      if (!empty($prefix)) {
+        $alias = $prefix . $alias;
+      }
+    }
     $ret = TRUE;
     foreach ($machines as $key => $machine) {
       $this->working(STRING_WORKING_CRON_DELETE_ITEM, array(
@@ -207,7 +213,23 @@ class CronPlugin extends GenericPlugin implements EventListener, ServerInteracti
     if (empty($alias)) { return FALSE; }
     $cron = drush_get_cron_url($alias);
     if (empty($cron)) { $this->error(STRING_ERROR_NO_CRON_URL); return FALSE; }
-    $command = '/usr/bin/wget ' . escapeshellarg($cron) . ' > /dev/null 2>&1';
+    $identifier = $alias;
+    if (!extra_empty($this->config()->getConfig(CONFIG_CRON_USE_PREFIX))) {
+      $pieces = parse_url($cron);
+      $prefix = $this->config()->getConfig(CONFIG_SITE_URL_PREFIX);
+      if (!empty($prefix)) {
+        $pieces['host'] = $prefix . $pieces['host'];
+        $identifier = $prefix . $identifier;
+        $cron = $pieces['scheme'] . '://' . $pieces['host'] . '/' . $pieces['path'] . '?' . $pieces['query'];
+      }
+      else {
+        $this->warn(STRING_WARNING_NO_PREFIXED_CRON, array(
+          '!host' => $pieces['host'],
+          '!path' => $pieces['path'],
+          '!alias' => $alias,
+        ));
+      }
+    }
     $machines = $this->getCronMachines();
     $frequencies = $site->getSetting(SITE_SETTING_CRONTAB_FREQUENCY, array());
     foreach ($machines as $key => $machine) {
@@ -224,7 +246,7 @@ class CronPlugin extends GenericPlugin implements EventListener, ServerInteracti
         if (isset($frequencies[$key])) {
           $frequency = $frequencies[$key];
         }
-        if (!$machine->scheduleTask($alias, $command, $frequency)) {
+        if (!$machine->scheduleTask($identifier, $cron, $frequency)) {
           $this->error(STRING_ERROR_COULD_NOT_CREATE_CRON, array(
             '!server' => $key,
             '!alias' => $alias,
