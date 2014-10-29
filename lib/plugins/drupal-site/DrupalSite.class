@@ -156,6 +156,9 @@ class DrupalSite extends GenericDrupalEntity {
   /**
    * Retrieves the sum of all the domains of this site and all it's subsites.
    * 
+   * @param boolean $prefixed
+   *   If set to TRUE, will return only prefixed domains.
+   * 
    * @return array
    *   An array of unique domains used by this site and all of it's subsites.
    */

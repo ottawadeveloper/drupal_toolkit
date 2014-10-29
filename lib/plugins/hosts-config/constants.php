@@ -4,8 +4,26 @@
  */
 
 /**
+ * Set this config key to YES to limit the managed hosts to only the prefixed
+ * versions of the URL.
+ * 
+ * @ingroup config
+ */
+define('CONFIG_MANAGED_HOSTS_PREFIXED_ONLY', 'managed-host-prefixed-only');
+
+/**
+ * Set this server setting to YES to limit the managed hosts to only the prefixed
+ * versions of the URL.
+ * 
+ * @ingroup server_settings
+ */
+define('SERVER_SETTING_MANAGED_HOSTS_PREFIXED_ONLY', 'managed-host-prefixed-only');
+
+/**
  * Config key for whether or not the local server needs its host file 
  * managed.
+ * 
+ * @ingroup config
  */
 define('CONFIG_MANAGED_HOSTS_USE_LOCAL', 'managed-host-local');
 

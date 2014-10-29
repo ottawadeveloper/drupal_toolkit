@@ -34,6 +34,7 @@ class HostsConfigurationPlugin extends GenericPlugin implements EventListener, S
       CONFIG_MANAGED_HOSTS_USE_LOCAL => TRUE,
       CONFIG_MANAGED_HOSTS_DEFAULT_TYPE => MANAGED_HOST_TYPE_LINUX,
       CONFIG_MANAGED_HOSTS_TARGET_IP_ADDRESS => '127.0.0.1',
+      CONFIG_MANAGED_HOSTS_PREFIXED_ONLY => FALSE,
       CONFIG_SERVER_LIST => array(
         SERVER_TYPE_MANAGED_HOST => array(),
       ),
@@ -112,12 +113,14 @@ class HostsConfigurationPlugin extends GenericPlugin implements EventListener, S
    * 
    * @param DrupalSite $site
    *   The Drupal site to get data for.
+   * @param boolean $prefixedOnly
+   *   Whether or not to include only the prefixed URLs.
    * 
    * @return array
    *   An associative array of data for updateHostFileConfiguration() or
    *   FALSE if some variables could not be determined.
    */
-  private function getHostConfiguration(DrupalSite $site) {
+  private function getHostConfiguration(DrupalSite $site, $prefixedOnly = FALSE) {
     $c = $this->getConfig(array(
       'ip' => CONFIG_MANAGED_HOSTS_TARGET_IP_ADDRESS,
     ));
@@ -126,7 +129,8 @@ class HostsConfigurationPlugin extends GenericPlugin implements EventListener, S
       'ip' => $c['ip'],
     );
     $config['map'] = array();
-    foreach ($site->getRecursiveDomains() as $host) {
+    $urls = array();
+    foreach ($site->getRecursiveDomains($prefixedOnly) as $host) {
       $config['map'][$host] = $c['ip'];
     }
     $config['loaded'] = $site->getSetting(SITE_HOST_FILES, array());
@@ -191,21 +195,34 @@ class HostsConfigurationPlugin extends GenericPlugin implements EventListener, S
    */
   private function updateHostFile(DrupalSite $site, $update = FALSE) {
     $this->working(STRING_WORKING_UPDATING_HOSTS);
-    $config = $this->getHostConfiguration($site);
-    if (empty($config)) { return FALSE; }
+    $configAll = $this->getHostConfiguration($site);
+    $configPrefix = $this->getHostConfiguration($site, TRUE);
+    if (empty($configAll)) { 
+      dtk_info('There were no domains to use for the host file.');
+      return FALSE; 
+    }
+    $defaultPrefixes = $this->config()->getConfig(CONFIG_MANAGED_HOSTS_PREFIXED_ONLY);
     $servers = $this->getHostServers();
     foreach ($servers as $key => $server) {
       if ($server instanceof HostFileManagerInterface) {
         if ($update) {
           if (!extra_empty($server->machine()->getSetting(SERVER_SETTING_STATIC_HOSTS))) {
+            dtk_info('Skipping host file update, server [!server] marked as static hosts', array(
+              '!server' => $key,
+            ));
             continue;
           }
+        }
+        $usePrefixed = $defaultPrefixes || !extra_empty($server->machine()->getSetting(SERVER_SETTING_MANAGED_HOSTS_PREFIXED_ONLY));
+        if ($usePrefixed && empty($configPrefix)) {
+          dtk_info('There were no prefixed domains to use for the host file.');
+          return FALSE;
         }
         $override = $server->machine()->getSetting(SERVER_SETTING_HOST_IP_OVERRIDE, NULL);
         $this->working(STRING_WORKING_UPDATING_HOSTS_ITEM, array(
           '!name' => $key,
         ));
-        $this->updateHostFileConfiguration($server, $key, $config, $override);
+        $this->updateHostFileConfiguration($server, $key, $usePrefixed ? $configPrefix : $configAll, $override);
         if (!$server->saveHostFile()) {
           $this->error(STRING_HOSTS_FILE_BAD_WRITE);
           return FALSE;

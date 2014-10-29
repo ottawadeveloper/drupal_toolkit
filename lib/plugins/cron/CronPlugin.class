@@ -36,6 +36,7 @@ class CronPlugin extends GenericPlugin implements EventListener, ServerInteracti
       CONFIG_CRONTAB_FREQUENCY => '@daily',
       CONFIG_DEFAULT_CRON_TYPE => CRON_TYPE_CRONTAB,
       CONFIG_STATIC_CRON => FALSE,
+      CONFIG_CRON_USE_PREFIX => FALSE,
     ));
     $this->config()->extendFromOption(CONFIG_CRONTAB_FREQUENCY, OPTION_CRONTAB_FREQUENCY);
   }
