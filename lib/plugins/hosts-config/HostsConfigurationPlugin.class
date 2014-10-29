@@ -133,7 +133,16 @@ class HostsConfigurationPlugin extends GenericPlugin implements EventListener, S
     foreach ($site->getRecursiveDomains($prefixedOnly) as $host) {
       $config['map'][$host] = $c['ip'];
     }
-    $config['loaded'] = $site->getSetting(SITE_HOST_FILES, array());
+    $loaded = $site->getSetting(SITE_HOST_FILES, array());
+    if (!isset($loaded['#all'])) {
+      $config['loaded'] = $loaded;
+    }
+    elseif ($prefixedOnly) {
+      $config['loaded'] = $loaded['#prefixed'];
+    }
+    else {
+      $config['loaded'] = $loaded['#all'];
+    }
     $config['registry'] = array(
       'map' => $config['map'],
       'originals' => array(),
@@ -222,14 +231,22 @@ class HostsConfigurationPlugin extends GenericPlugin implements EventListener, S
         $this->working(STRING_WORKING_UPDATING_HOSTS_ITEM, array(
           '!name' => $key,
         ));
-        $this->updateHostFileConfiguration($server, $key, $usePrefixed ? $configPrefix : $configAll, $override);
+        if ($usePrefixed) {
+          $this->updateHostFileConfiguration($server, $key, $configPrefix, $override);
+        }
+        else {
+          $this->updateHostFileConfiguration($server, $key, $configAll, $override);
+        }
         if (!$server->saveHostFile()) {
           $this->error(STRING_HOSTS_FILE_BAD_WRITE);
           return FALSE;
         }
       }
     }
-    $site->setSetting(SITE_HOST_FILES, $config['registry']);
+    $site->setSetting(SITE_HOST_FILES, array(
+      '#all' => $configAll['registry'],
+      '#prefix' => $configPrefix['registry'],
+    ));
     $this->success(STRING_SUCCESS_UPDATING_HOSTS);
     return TRUE;
   }
