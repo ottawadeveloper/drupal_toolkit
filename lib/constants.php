@@ -13,7 +13,7 @@ define('CONFIG_DRUSH_USER', 'drush-user');
 /**
  * Current version of the toolkit.
  */
-define('TOOLKIT_VERSION', '0.9.4');
+define('TOOLKIT_VERSION', '0.9.5');
 
 /**
  * User's current directory when the first command was executed.

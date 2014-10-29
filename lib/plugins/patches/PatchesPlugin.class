@@ -46,6 +46,9 @@ class PatchesPlugin extends GenericPlugin implements EventListener {
         $entity->setSetting(SITE_SETTING_PREFIXED_PRIMARY, $check);
       }
     }
+    if (!$entity->minVersion('0.9.5') && !$entity->isNew() && $entity->exists()) {
+      $entity->setToken(SITE_TOKEN_PREFIXED_PRIMARY, $entity->getSetting(SITE_SETTING_PREFIXED_PRIMARY));
+    }
     return TRUE;
   }
   

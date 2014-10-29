@@ -11,6 +11,13 @@
 define('SITE_SETTING_PREFIXED_PRIMARY', 'prefixed-primary');
 
 /**
+ * Site token for the prefixed primary URL.
+ * 
+ * @ingroup site_tokens
+ */
+define('SITE_TOKEN_PREFIXED_PRIMARY', 'SITE_PREFIXED_PRIMARY');
+
+/**
  * Site setting for the version in which this site was last updated or 
  * created.
  * 

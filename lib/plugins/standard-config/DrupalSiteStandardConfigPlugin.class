@@ -163,6 +163,7 @@ class DrupalSiteStandardConfigPlugin extends GenericPlugin implements EventListe
       $domains[] = $pd;
       $allPrefixed[] = $pd;
       $entity->setSetting(SITE_SETTING_PREFIXED_PRIMARY, $prefixedPrimary);
+      $entity->setToken(SITE_TOKEN_PREFIXED_PRIMARY, $prefixedPrimary);
     }
     foreach ($this->getExtraURLs() as $url) {
       $url = trim($url);
