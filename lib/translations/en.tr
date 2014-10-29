@@ -340,6 +340,7 @@ cron.success.delete = 'Successfully deleted all crontab entries.'
 cron.success.setup = 'Successfully created all crontab entries.'
 cron.working.delete_item = 'Deleting crontask for !name.'
 cron.working.setup_item = 'Creating crontask for !name.'
+cron.warning.no-prefix = 'Prefixed domains were requested for cron, but there is no prefixed defined.'
 
 drupal_site_build.error.subsite-generic = "An error occurred while building a subsite."
 

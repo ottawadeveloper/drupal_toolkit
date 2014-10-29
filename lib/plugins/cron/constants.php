@@ -196,3 +196,6 @@ define('STRING_WORKING_CRON_DELETE_ITEM', 'cron.working.delete_item');
 define('STRING_WORKING_CRON_SETUP_ITEM', 'cron.working.setup_item');
 
 define('STRING_HELP_OPTION_CRONTAB_FREQUENCY_DESC', 'help.option_desc.crontab-frequency');
+
+define('STRING_WARNING_NO_PREFIXED_CRON', 'cron.warning.no-prefix');
+  

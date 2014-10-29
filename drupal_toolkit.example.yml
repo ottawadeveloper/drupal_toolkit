@@ -246,6 +246,9 @@
 ## the rest of the site.
 #cron-static-config: yes
 
+## Uncomment this line to use prefixed URLs.
+#cron-use-prefix: yes
+
 
 ################################
 ### DATABASE CONFIG SETTINGS ###
