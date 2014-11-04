@@ -232,9 +232,11 @@ class HostsConfigurationPlugin extends GenericPlugin implements EventListener, S
           '!name' => $key,
         ));
         if ($usePrefixed) {
+          dtk_info('Using prefixed strings for !host', array('!host' => $key));
           $this->updateHostFileConfiguration($server, $key, $configPrefix, $override);
         }
         else {
+          dtk_info('Using all strings for !host', array('!host' => $key));
           $this->updateHostFileConfiguration($server, $key, $configAll, $override);
         }
         if (!$server->saveHostFile()) {
