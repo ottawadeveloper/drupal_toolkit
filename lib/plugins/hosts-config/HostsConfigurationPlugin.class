@@ -138,7 +138,7 @@ class HostsConfigurationPlugin extends GenericPlugin implements EventListener, S
       $config['loaded'] = $loaded;
     }
     elseif ($prefixedOnly) {
-      $config['loaded'] = $loaded['#prefixed'];
+      $config['loaded'] = $loaded['#prefix'];
     }
     else {
       $config['loaded'] = $loaded['#all'];
