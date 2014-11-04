@@ -170,7 +170,7 @@ class DrupalSite extends GenericDrupalEntity {
     if ($prefixed) {
       $k = SITE_SETTING_PREFIXED_DOMAINS;
     }
-    $domains = $this->getSetting(SITE_SETTING_ALL_DOMAINS);
+    $domains = $this->getSetting($k);
     if (empty($domains)) {
       return array();
     }
@@ -189,6 +189,9 @@ class DrupalSite extends GenericDrupalEntity {
       foreach ($this->inProgressSubSite->getSetting($k) as $domain) {
         $domains[] = $domain;
       }
+    }
+    if ($prefixed) {
+      dtk_info(var_export($domains, TRUE));
     }
     return array_unique($domains);
   }
