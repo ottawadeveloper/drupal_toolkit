@@ -1,0 +1,41 @@
+<?php
+
+class DrushMaintenanceCommand extends GenericCommand {
+  
+  private $maintenanceMode;
+  
+  public function __construct($maintenanceMode) {
+    $this->maintenanceMode = $maintenanceMode > 0 ? 1 : 0;
+  }
+  
+  public function executeCommand() {
+    $sites = DrupalSite::findSites($this->config());
+    $exit = 0;
+    foreach ($sites as $site) {
+      if (!$this->triggerMaintenanceMode($site)) {
+        $exit = 1;
+      }
+      foreach ($site->getSubSites() as $subsiteID) {
+        if (!$this->triggerMaintenanceMode($site->getSubSite($subsiteID))) {
+          $exit = 1;
+        }
+      }
+    }
+    exit($exit);
+  }
+  
+  private function triggerMaintenanceMode(GenericDrupalEntity $entity) {
+    if (extra_empty($entity->getSetting(SITE_IS_INSTALLED))) {
+      return TRUE;
+    }
+    dtk_info('Mass maintenance mode operation on !entity setting to !mm', array(
+      '!entity' => $entity->uuid(),
+      '!mm' => $this->maintenanceMode ? 'on' : 'off',
+    ));
+    $event = new DrupalSiteEvent($entity, FALSE);
+    $eventKey = $this->maintenanceMode > 0 ? EVENT_DRUSH_MAINTENANCE_MODE_ON : EVENT_DRUSH_MAINTENANCE_MODE_OFF; 
+    $this->events()->fireEvent($eventKey, $event);
+    return $event->success();
+  }
+  
+}

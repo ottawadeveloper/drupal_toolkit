@@ -1,0 +1,33 @@
+<?php
+
+class DrushCacheWipeCommand extends GenericCommand {
+  
+  public function executeCommand() {
+    $sites = DrupalSite::findSites($this->config());
+    $exit = 0;
+    foreach ($sites as $site) {
+      if (!$this->wipeCache($site)) {
+        $exit = 1;
+      }
+      foreach ($site->getSubSites() as $subsiteID) {
+        if (!$this->wipeCache($site->getSubSite($subsiteID))) {
+          $exit = 1;
+        }
+      }
+    }
+    exit($exit);
+  }
+  
+  private function triggerMaintenanceMode(GenericDrupalEntity $entity) {
+    if (extra_empty($entity->getSetting(SITE_IS_INSTALLED))) {
+      return TRUE;
+    }
+    dtk_info('Mass cache wipe operation on !entity', array(
+      '!entity' => $entity->uuid(),
+    ));
+    $event = new DrupalSiteEvent($entity, FALSE);
+    $this->events()->fireEvent(EVENT_DRUSH_CACHE_WIPE, $event);
+    return $event->success();
+  }
+  
+}

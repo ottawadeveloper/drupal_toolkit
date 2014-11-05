@@ -1,0 +1,6 @@
+plugin = DrushMassPlugin
+
+dependencies[] = drupal-site
+
+files[] = DrushMaintenanceCommand.class
+files[] = DrushCacheWipeCommand.class

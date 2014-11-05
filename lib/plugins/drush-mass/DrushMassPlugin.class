@@ -1,0 +1,27 @@
+<?php
+
+class DrushMassPlugin extends GenericPlugin implements EventListener {
+  
+  public function initialize() {
+    $this->events()->registerListener(array(
+      dtk_constant('EVENT_CORE_REGISTER_COMMANDS'),
+      dtk_constant('EVENT_FIND_HELP_INSTRUCTIONS'),
+    ), $this);
+  }
+  
+  public function captureEvent(DtkEvent &$context, $eventType) {
+    switch ($eventType) {
+      case EVENT_CORE_REGISTER_COMMANDS:
+        $this->router()->addCommand('site-down-all', new DrushMaintenanceCommand(1));
+        $this->router()->addCommand('site-up-all', new DrushMaintenanceCommand(0));
+        $this->router()->addCommand('site-cc-all', new DrushCacheWipeCommand());
+        break;
+      case EVENT_FIND_HELP_INSTRUCTIONS:
+        $context->registerInstruction(new HelpInstructions($this->str(STRING_HELP_DGSM_CATEGORY), 'site-down-all', $this->str(STRING_HELP_DRUSH_DOWN_COMMAND_DESC)));
+        $context->registerInstruction(new HelpInstructions($this->str(STRING_HELP_DGSM_CATEGORY), 'site-up-all', $this->str(STRING_HELP_DRUSH_UP_COMMAND_DESC)));
+        $context->registerInstruction(new HelpInstructions($this->str(STRING_HELP_DGSM_CATEGORY), 'site-cc-all', $this->str(STRING_HELP_CC_ALL_COMMAND_DESC)));
+        break;
+    }
+  }
+  
+}

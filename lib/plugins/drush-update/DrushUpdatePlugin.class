@@ -18,6 +18,7 @@ class DrushUpdatePlugin extends GenericPlugin implements EventListener {
       EVENT_UPDATE_SUBSITE,
       EVENT_UPDATE_REFRESH,
       EVENT_UPDATE_REFRESH_SUBSITE,
+      EVENT_DRUSH_CACHE_WIPE,
     ), $this);
   }
   
@@ -33,6 +34,7 @@ class DrushUpdatePlugin extends GenericPlugin implements EventListener {
       case EVENT_ROLLBACK_CLEAN:
       case EVENT_UPDATE_REFRESH:
       case EVENT_UPDATE_REFRESH_SUBSITE:
+      case EVENT_DRUSH_CACHE_WIPE:
         if ($context->checkExecution()) {
           $context->setResult($this->drushCacheWipe($context->getEntity()));
         }
