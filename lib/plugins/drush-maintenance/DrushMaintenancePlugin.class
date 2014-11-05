@@ -18,6 +18,8 @@ class DrushMaintenancePlugin extends GenericPlugin implements EventListener {
       dtk_constant('EVENT_UPDATE_PREP_SUBSITE_FOR_REFRESH'),
       dtk_constant('EVENT_ROLLBACK_SUBSITE_PREP'),
       dtk_constant('EVENT_ROLLBACK_SUBSITE_FINISH'),
+      dtk_constant('EVENT_PRE_RESET_DRUPAL_PASSWORD'),
+      dtk_constant('EVENT_POST_RESET_DRUPAL_PASSWORD'),
     ), $this);
   }
   
@@ -27,10 +29,12 @@ class DrushMaintenancePlugin extends GenericPlugin implements EventListener {
       case EVENT_ROLLBACK_FINISH:
       case EVENT_UPDATE_PREPARE_FOR_REFRESH:
       case EVENT_UPDATE_PREP_SUBSITE_FOR_REFRESH:
+      case EVENT_POST_RESET_DRUPAL_PASSWORD:
         if ($context->checkExecution()) {
           $context->setResult($this->setMaintenanceMode($context->getEntity(), FALSE));
         }
         break;
+      case EVENT_PRE_RESET_DRUPAL_PASSWORD:
       case EVENT_ROLLBACK_SUBSITE_PREP:
       case EVENT_ROLLBACK_PREPARE:
       case EVENT_UPDATE_PREPARE_FOR_UPDATE:

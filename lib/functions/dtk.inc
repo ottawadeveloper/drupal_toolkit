@@ -4,6 +4,42 @@
  * package.
  */
 
+function dtk_delegate_command_base($passOptions = array()) {
+  global $args, $settings;
+  $command = $settings->getConfig(CONFIG_DTK_LOCATION);
+  if (extra_empty($command)) { $command = 'dtk'; }
+  $passOptions[] = array(ARG_DEBUG, 'd');
+  $passOptions[] = array(ARG_SILENT, 's');
+  $passOptions[] = array(ARG_VERBOSE, 'v');
+  $passOptions[] = ARG_SPYC_LOCATION;
+  $passOptions[] = OPTION_SSH_DIRECT_OUTPUT;
+  foreach ($passOptions as $option) {
+    $long = $option;
+    $short = NULL;
+    if (is_array($option)) {
+      $long = array_shift($option);
+      $short = array_shift($option);
+    }
+    $value = $args->getOption($long, $short);
+    if (is_bool($value)) {
+      $value = $value ? '1' : '0';
+    }
+    $command .= ' --' . $long . '=' . escapeshellarg($value);
+  }
+  return $command;
+}
+
+function dtk_prompt_user($prompt) {
+  $stream = fopen('php://stdin', 'rw');
+  fputs($stream, $prompt);
+  if (empty($stream)) {
+    return FALSE;
+  }
+  $line = rtrim(fgets($stream));
+  fclose($stream);
+  return $line;
+}
+
 function dtk_debug_level($set = NULL) {
   $level = &state(__FUNCTION__, DEBUG_LEVEL_NORMAL);
   if ($set !== NULL) {

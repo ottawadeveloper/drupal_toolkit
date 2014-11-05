@@ -46,7 +46,12 @@ class DummyMySqlDBM extends GenericDBM {
     if (file_exists($file)) {
       $commands = file($file);
     }
-    $commands[] = $query;
+    foreach (explode(';', $query) as $q) {
+      $q = trim($q);
+      if (!empty($q)) {
+        $commands[] = $q . ';';
+      }
+    }
     return file_put_contents($file, implode(PHP_EOL, $commands));
   }
   
@@ -103,6 +108,30 @@ class DummyMySqlDBM extends GenericDBM {
       '!db_name' => $dbname,
     ));
     return $this->mysqlCommand($q, $dbname);
+  }
+  
+  public function updateUserPassword($username, $newPassword, $hosts = NULL) {
+    $query = '';
+    $hosts = array('%');
+    if (!empty($hosts)) {
+      if (is_array($hosts)) {
+        $hosts = $hosts;
+      }
+      else {
+        $hosts = array($hosts);
+      }
+    }
+    $replacements = array(
+      '!PASSWORD' => $newPassword,
+      '!USER' => $username,
+    );
+    foreach (array_values($hosts) as $k => $host) {
+      $replacements['!HOST_' . $k] = $host;
+      $query .= "SET PASSWORD FOR '!USER'@'!HOST_".$k."' = PASSWORD('!PASSWORD'); ";
+    }
+    $query .= 'FLUSH PRIVILEGES;';
+    $query = str_replace_all($query, $replacements);
+    return $this->mysqlCommand($query);
   }
   
   public function createDatabase($database, $username = NULL, $password = NULL, $host = NULL) {

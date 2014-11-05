@@ -100,6 +100,21 @@ interface DatabaseManagerInterface {
   function deleteUser($username);
   
   /**
+   * Updates a user's password.
+   * 
+   * @param string $username
+   *   The new username.
+   * @param string|array $hosts
+   *   The host (or an array of hosts) to update the password for.
+   * @param string $newPassword
+   *   The new password.
+   * 
+   * @return boolean
+   *   TRUE on success, otherwise FALSE.
+   */
+  function updateUserPassword($username, $newPassword, $hosts = NULL);
+  
+  /**
    * Retrieves an array of settings.
    * 
    * @return array

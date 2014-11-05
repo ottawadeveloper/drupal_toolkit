@@ -33,15 +33,18 @@ class DrupalSettingsEvent extends DtkEvent {
    */
   private $entity = NULL;
   
+  private $forUpdate = FALSE;
+  
   /**
    * @param GenericDrupalEntity $entity
    *   The entity being processed.
    * @param boolean $forDefault
    *   Set to TRUE if default settings are being requested.
    */
-  public function __construct(GenericDrupalEntity $entity, $forDefault = FALSE) {
+  public function __construct(GenericDrupalEntity $entity, $forDefault = FALSE, $forUpdate = FALSE) {
     parent::__construct(TRUE);
     $this->forDefault = !!$forDefault;
+    $this->forUpdate = !!$forUpdate;
     $this->entity = $entity;
   }
   
@@ -63,6 +66,10 @@ class DrupalSettingsEvent extends DtkEvent {
    */
   public function isForDefault() {
     return $this->forDefault;
+  }
+  
+  public function isForUpdate() {
+    return $this->forUpdate;
   }
   
   /**
