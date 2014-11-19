@@ -659,6 +659,7 @@ function drush_db_dump($alias = NULL, $destination = NULL, $extras = array()) {
   }
   drush_command($cmd, $alias, $args, $out, $exit, TRUE, TRUE);
   if (!extra_empty($exit)) {
+    dtk_info(implode(PHP_EOL, $out));
     return FALSE;
   }
   if ($destination === TRUE) {
@@ -672,12 +673,21 @@ function drush_db_dump($alias = NULL, $destination = NULL, $extras = array()) {
         }
       }
     }
+    if (empty($file)) {
+      dtk_info('no file! !output', array(
+        '!output' => implode(PHP_EOL, $out)
+      ));
+    }
+    dtk_info('backup file located at: !file', array('!file' => $file));
     return $file;
   }
   elseif (!empty($destination)) {
     if (file_exists($destination)) {
       return $destination;
     }
+    dtk_info('no backup file: !dest', array(
+      '!dest' => $destination,
+    ));
     return FALSE;
   }
   else {
