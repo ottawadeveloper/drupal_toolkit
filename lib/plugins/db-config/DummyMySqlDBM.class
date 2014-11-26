@@ -39,9 +39,11 @@ class DummyMySqlDBM extends GenericDBM {
    * 
    * @return boolean
    *   TRUE if the query executed with no errors, otherwise FALSE.
+   * 
+   * @todo Allow the file path to be customized.
    */
   private function mysqlCommand($query, $filename) {
-    $file = assemble_path("/var/www/dtk_mysql/", $filename . ".sql");
+    $file = assemble_path("/var/www/html/dtk_mysql/", $filename . ".sql");
     $commands = array();
     if (file_exists($file)) {
       $commands = file($file);
