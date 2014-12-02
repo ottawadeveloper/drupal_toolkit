@@ -129,6 +129,9 @@ fi';
     $temp = tempnam(sys_get_temp_dir(), 'dtk-up-');
     file_put_contents($temp, $contents);
     $this->initialize();
+    dtk_info('Writing remote file [!file]', array(
+      '!file' => $destination,
+    ));
     $result = ssh2_scp_send($this->handle, $temp, $destination, $mode);
     unlink($temp);
     return $result;
