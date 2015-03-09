@@ -595,6 +595,33 @@ function drush_restore_db($sqlFile, $alias = NULL, $database = NULL) {
 }
 
 /**
+ * Executes a SQL command against a Drupal installation using Drush.
+ * 
+ * @param string $sqlCommand
+ *   The command to execute. Multiple commands can be separated by the RDBM's 
+ *   standard separator.
+ * @param string $alias
+ *   Alias for a Drupal site to execute the command against.
+ * @param string $database
+ *   Database key to execute the command against.
+ * 
+ * @return boolean
+ *   TRUE if successful, otherwise FALSE.
+ */
+function drush_sql_query($sqlCommand, $alias = NULL, $database = NULL) {
+  $sub = 'sql-query !command';
+  $args = array(
+    '!command' => $sqlCommand,
+    '!db' => $database,
+  );
+  if (!empty($database)) {
+    $sub .= ' --database=!db';
+  }
+  $result = drush_command($sub, $alias, $args);
+  return extra_empty($result);
+}
+
+/**
  * Dumps out the database to a specific location.
  * 
  * @param string $alias
