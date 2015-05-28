@@ -648,10 +648,8 @@ function drush_sql_query($sqlCommand, $alias = NULL, $database = NULL) {
  * @see http://drush.ws/#sql-dump
  */
 function drush_db_dump($alias = NULL, $destination = NULL, $extras = array()) {
-  if (!empty($extras['gzip']) && ($destination !== TRUE) && (!empty($destination))) {
-    if (substr($destination, -3) !== '.gz') {
-      $destination .= '.gz';
-    }
+  if (substr($destination, -3) === '.gz') {
+    $destination = substr($destination, 0, -3);
   }
   $options = array(
     'data-only' => FALSE,
@@ -709,6 +707,9 @@ function drush_db_dump($alias = NULL, $destination = NULL, $extras = array()) {
     return $file;
   }
   elseif (!empty($destination)) {
+    if (!empty($extras['gzip'])) {
+      $destination .= '.gz';
+    }
     if (file_exists($destination)) {
       return $destination;
     }
