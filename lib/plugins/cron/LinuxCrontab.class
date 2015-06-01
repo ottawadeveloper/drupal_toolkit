@@ -23,7 +23,7 @@ class LinuxCrontab extends GenericCronManager {
     $line .= 'PATH=/sbin:/bin:/usr/sbin:/usr/bin' . "\n";
     $line .= 'MAILTO=root' . "\n";
     $line .= 'HOME=/' . "\n";
-    $line .=  $frequency . ' root /usr/bin/wget -O -' . escapeshellarg($task) . ' > /dev/null 2>&1';
+    $line .=  $frequency . ' root /usr/bin/wget -O - ' . escapeshellarg($task) . ' > /dev/null 2>&1';
     $line .= "\n";
     return $this->machine()->writeFile($this->normalizeFilename($identifier), $line);
   }
