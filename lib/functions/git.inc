@@ -44,6 +44,39 @@ function git_clone($server, $repository, $targetFolder = NULL, $branch = NULL) {
 }
 
 /**
+ * Checks to see if the given branch has already been created.
+ * 
+ * @param string $branchname
+ *   The branch to check if it exists.
+ * @param string $targetFolder
+ *   The directory in which to execute the command. If left empty, will use the
+ *   current working directory.
+ * 
+ * @return boolean
+ *   TRUE if the branch exists, otherwise FALSE.
+ */
+function git_branch_exists($branchname, $targetFolder = NULL) {
+  $current = NULL;
+  if (!empty($targetFolder)) {
+    $current = getcwd();
+    if (!chdir($targetFolder)) {
+      trigger_error('Unable to chdir to ' . $targetFolder);
+      return FALSE;
+    }
+  }
+  $command = 'git show-ref --verify --quiet refs/heads/ !branch';
+  $args = array(
+    '!branch' => $branchname,
+  );
+  $exit = 1;
+  execute_system_command($command, $args, $out, $exit);
+  if (!empty($current)) {
+    chdir($current);
+  }
+  return extra_empty($exit);
+}
+
+/**
  * Pulls all updates for a git repo.
  * 
  * @param string $targetFolder
