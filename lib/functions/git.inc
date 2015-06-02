@@ -64,7 +64,7 @@ function git_branch_exists($branchname, $targetFolder = NULL) {
       return FALSE;
     }
   }
-  $command = 'git show-ref --verify --quiet refs/heads/ !branch';
+  $command = 'git show-ref --verify --quiet refs/heads/!branch';
   $args = array(
     '!branch' => $branchname,
   );
