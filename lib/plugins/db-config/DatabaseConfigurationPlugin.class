@@ -171,7 +171,7 @@ class DatabaseConfigurationPlugin extends GenericPlugin implements EventListener
           $this->warn(STRING_UNABLE_TO_DELETE_USER, array(
             '!user' => $serverData['username'],
           ));
-          $ret = FALSE;
+          //$ret = FALSE;
         }
       }
       else {
